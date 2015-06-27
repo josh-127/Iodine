@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace Iodine
@@ -41,6 +42,9 @@ namespace Iodine
 
 		public void Initialize (Dictionary<string, IodineObject> globalDict)
 		{
+			globalDict["system"] = new InternalMethodCallback (system, null);
+			globalDict["getEnv"] = new InternalMethodCallback (getEnv, null);
+			globalDict["setEnv"] = new InternalMethodCallback (setEnv, null);
 			globalDict["raise"] = new InternalMethodCallback (raise, null);
 			globalDict["input"] = new InternalMethodCallback (input, null);
 			globalDict["toInt"] = new InternalMethodCallback (toInt, null);
@@ -59,7 +63,38 @@ namespace Iodine
 			globalDict["isLetter"] = new InternalMethodCallback (isLetter, null);
 		}
 
+		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString str = args[0] as IodineString;
+			IodineString cmdArgs = args[1] as IodineString;
+			ProcessStartInfo info = new ProcessStartInfo (str.Value, cmdArgs.Value);
+			info.UseShellExecute = false;
+			Process proc = Process.Start (info);
+			proc.WaitForExit ();
+			return new IodineInteger (proc.ExitCode);
+		}
+
+		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString str = args[0] as IodineString;
+			return new IodineString (Environment.GetEnvironmentVariable (str.Value));
+		}
+
+		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString str = args[0] as IodineString;
+			Environment.SetEnvironmentVariable (str.Value, args[1].ToString ());
+			return null;
+		}
+
 		private IodineObject raise (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString str = args[0] as IodineString;
+			vm.RaiseException (str.Value);
+			return null;
+		}
+
+		private IodineObject exec (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString str = args[0] as IodineString;
 			vm.RaiseException (str.Value);

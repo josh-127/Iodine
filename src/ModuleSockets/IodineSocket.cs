@@ -23,7 +23,7 @@ namespace ModuleSockets
 			this.Socket = new Socket (sockType, protoType);
 			this.SetAttribute ("connect", new InternalMethodCallback (connect ,this));
 			this.SetAttribute ("send", new InternalMethodCallback (send ,this));
-			this.SetAttribute ("recieve", new InternalMethodCallback (recieve ,this));
+			this.SetAttribute ("receive", new InternalMethodCallback (receive ,this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine ,this));
 		}
 
@@ -60,7 +60,7 @@ namespace ModuleSockets
 			return null;
 		}
 
-		private IodineObject recieve (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		private IodineObject receive (VirtualMachine vm, IodineObject self, IodineObject[] args) 
 		{
 			return new IodineInteger (this.stream.ReadByte ());
 		}

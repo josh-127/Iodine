@@ -28,14 +28,24 @@ class IRCBot {
 			self.sock.send ("PONG :" + msg.substr (msg.indexOf (":"					) + 1) + "\n");
 		} else if (msg.startsWith(":")) {
 			prefix = msg.substr (1)
-			if (prefix.contains (":"))
+			if (prefix.contains (":")) {
 				prefix = prefix.substr (0, prefix.indexOf(":"));
+				prefix = prefix.split (" ");
+				
+				if (prefix.getSize () >= 2 && prefix[1] == 
+					"PRIVMSG") {
+					if (prefix[1] == "PRIVMSG") {
+						self.speak ("#int0x10", "GtD is the greatest!");
+					}
+				}
+			}
+
 			print (prefix);
 		}
 		print (msg);
 	}
 
-	func speak (self, channel,  msg) {
+	func speak (self, channel, msg) {
 		self.sock.send ("PRIVMSG " + channel + " :" + msg + "\n");
 	}
 }
