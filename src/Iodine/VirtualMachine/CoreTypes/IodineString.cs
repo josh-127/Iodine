@@ -17,6 +17,8 @@ namespace Iodine
 			: base (StringTypeDef)
 		{
 			this.Value = val;
+			this.SetAttribute ("toLower", new InternalMethodCallback (toLower, this));
+			this.SetAttribute ("toUpper", new InternalMethodCallback (toUpper, this));
 			this.SetAttribute ("substr", new InternalMethodCallback (substring, this));
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			this.SetAttribute ("indexOf", new InternalMethodCallback (indexOf, this));
@@ -95,6 +97,18 @@ namespace Iodine
 			this.iterIndex = 0;
 		}
 
+		private IodineObject toUpper (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString selfStr = self as IodineString;
+			return new IodineString (selfStr.Value.ToUpper ());
+		}
+
+		private IodineObject toLower (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString selfStr = self as IodineString;
+			return new IodineString (selfStr.Value.ToLower ());
+		}
+
 		private IodineObject substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 1) {
@@ -120,7 +134,6 @@ namespace Iodine
 				}
 				len = (int)endObj.Value;
 			}
-			Console.WriteLine (len - start);
 			return new IodineString (selfStr.Value.Substring (start, len - start));
 		}
 

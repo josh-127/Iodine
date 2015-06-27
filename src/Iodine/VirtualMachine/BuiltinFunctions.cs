@@ -52,6 +52,7 @@ namespace Iodine
 			globalDict["toBool"] = new InternalMethodCallback (toBool, null);
 			globalDict["toChar"] = new InternalMethodCallback (toChar, null);
 			globalDict["list"] = new InternalMethodCallback (list, null);
+			globalDict["event"] = new InternalMethodCallback (createEvent, null);
 			globalDict["object"] = new InternalMethodCallback (Object, null);
 			globalDict["hashMap"] = new InternalMethodCallback (hashMap, null);
 			globalDict["filter"] = new InternalMethodCallback (filter, null);
@@ -133,6 +134,11 @@ namespace Iodine
 		private IodineObject list (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineList (args);
+		}
+
+		private IodineObject createEvent (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineEvent ();
 		}
 
 		private IodineObject Object (VirtualMachine vm, IodineObject self, IodineObject[] args)

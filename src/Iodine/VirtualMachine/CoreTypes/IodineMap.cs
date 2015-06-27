@@ -17,6 +17,7 @@ namespace Iodine
 			: base (MapTypeDef)
 		{
 			Dict = new Dictionary<int, IodineObject> ();
+			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
@@ -37,6 +38,11 @@ namespace Iodine
 		public override int GetHashCode ()
 		{
 			return Dict.GetHashCode ();
+		}
+
+		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineBool (Dict.ContainsKey (args[0].GetHashCode ()));
 		}
 	}
 }
