@@ -80,9 +80,13 @@ namespace Iodine
 
 		public void RaiseException (string message, params object[] args)
 		{
-			IodineException ex = new IodineException (message, args);
+			RaiseException (new IodineException (message, args));
+		}
+
+		public void RaiseException (IodineException ex) 
+		{
 			if (exceptionHandlers.Count == 0) {
-				throw new UnhandledIodineExceptionException (ex);
+				throw new UnhandledIodineExceptionException (Stack.Top, ex);
 			} else {
 				IodineExceptionHandler handler = exceptionHandlers.Pop ();
 				Stack.Unwind (Stack.Frames - handler.Frame);
@@ -157,7 +161,7 @@ namespace Iodine
 					if (globalDict.ContainsKey (name)) {
 						Stack.Push (globalDict[name]);
 					} else {
-						Stack.Push (Stack.CurrentModule.GetAttribute (name));
+						Stack.Push (Stack.CurrentModule.GetAttribute (this, name));
 					}
 					break;
 				}
@@ -171,23 +175,20 @@ namespace Iodine
 			case Opcode.LoadAttribute: {
 					IodineObject target = Stack.Pop ();
 					string attribute = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
-					if (target.HasAttribute (attribute))
-						Stack.Push (target.GetAttribute (attribute));
-					else
-						RaiseException ("Could not find attribute '{0}'", attribute);
+					Stack.Push (target.GetAttribute (this, attribute));
 					break;
 				}
 			case Opcode.StoreIndex: {
 					IodineObject index = Stack.Pop ();
 					IodineObject target = Stack.Pop ();
 					IodineObject value = Stack.Pop ();
-					target.SetIndex (index, value);
+					target.SetIndex (this, index, value);
 					break;
 				}
 			case Opcode.LoadIndex: {
 					IodineObject index = Stack.Pop ();
 					IodineObject target = Stack.Pop ();
-					Stack.Push (target.GetIndex (index));
+					Stack.Push (target.GetIndex (this, index));
 					break;
 				}
 			case Opcode.BinOp: {
@@ -196,7 +197,8 @@ namespace Iodine
 					break;
 				}
 			case Opcode.UnaryOp: {
-					Stack.Pop ().PerformUnaryOperation (this, (UnaryOperation)ins.Argument);
+					Stack.Push (Stack.Pop ().PerformUnaryOperation (this, 
+						(UnaryOperation)ins.Argument));
 					break;
 				}
 			case Opcode.Invoke: {

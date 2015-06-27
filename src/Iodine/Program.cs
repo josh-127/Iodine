@@ -55,6 +55,9 @@ namespace Iodine
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.WriteLine ("An unhandled exception has occured!");
 					Console.WriteLine ("\tMessage: {0}", ex.OriginalException.Message);
+					Console.WriteLine ();
+					ex.PrintStack ();
+					Console.WriteLine ();
 					Panic ("Program terminated.");
 				}
 

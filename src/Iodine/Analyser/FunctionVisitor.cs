@@ -163,6 +163,15 @@ namespace Iodine
 		{
 		}
 
+		public void Accept (NodeBreak brk)
+		{
+		}
+
+		public void Accept (NodeConstant constant)
+		{
+			errorLog.AddError (ErrorType.ParserError, "Can not define constant in function!");
+		}
+
 		public void Accept (NodeTryExcept tryExcept)
 		{
 			tryExcept.TryBody.Visit (this);

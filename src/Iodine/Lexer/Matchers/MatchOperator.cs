@@ -45,7 +45,37 @@ namespace Iodine
 			} else if (inputStream.MatchString ("++")) {
 				inputStream.ReadChars(2);
 				return Token.Create (TokenClass.Operator, "++", inputStream);
-			}
+			} else if (inputStream.MatchString ("+=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "+=", inputStream);
+			} else if (inputStream.MatchString ("-=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "-=", inputStream);
+			} else if (inputStream.MatchString ("/=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "/=", inputStream);
+			} else if (inputStream.MatchString ("*=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "*=", inputStream);
+			} else if (inputStream.MatchString ("%=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "%=", inputStream);
+			} else if (inputStream.MatchString ("^=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "^=", inputStream);
+			}  else if (inputStream.MatchString ("&=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "&=", inputStream);
+			} else if (inputStream.MatchString ("|=")) {
+				inputStream.ReadChars(2);
+				return Token.Create (TokenClass.Operator, "|=", inputStream);
+			} else if (inputStream.MatchString ("<<=")) {
+				inputStream.ReadChars(3);
+				return Token.Create (TokenClass.Operator, "<<=", inputStream);
+			} else if (inputStream.MatchString (">>=")) {
+				inputStream.ReadChars(3);
+				return Token.Create (TokenClass.Operator, ">>=", inputStream);
+			} 
 
 			return Token.Create (TokenClass.Operator, ((char)inputStream.ReadChar ()).ToString(), 
 				inputStream);

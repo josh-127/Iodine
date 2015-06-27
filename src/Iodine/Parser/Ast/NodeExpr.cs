@@ -24,6 +24,36 @@ namespace Iodine
 			AstNode left = ParseBoolOr (stream);
 			if (stream.Accept (TokenClass.Operator, "=")) {
 				return new NodeBinOp (BinaryOperation.Assign, left, ParseAssign (stream));
+			} else if (stream.Accept (TokenClass.Operator, "+=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.Add, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "-=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.Sub, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "*=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.Mul, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "/=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.Div, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "%=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.Mod, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "^=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.Xor, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "&=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.And, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "|=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.Or, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, "<<=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.LeftShift, left, ParseAssign (stream)));
+			} else if (stream.Accept (TokenClass.Operator, ">>=")) {
+				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
+					BinaryOperation.RightShift, left, ParseAssign (stream)));
 			}
 			return left;
 		}

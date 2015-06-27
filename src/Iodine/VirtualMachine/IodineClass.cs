@@ -3,21 +3,15 @@ using System.Collections.Generic;
 
 namespace Iodine
 {
-	public class IodineClass : IodineObject
+	public class IodineClass : IodineTypeDefinition
 	{
 		private IodineMethod constructor;
 		private IList<IodineMethod> instanceMethods = new List<IodineMethod> ();
 
-		public string Name
-		{
-			private set;
-			get;
-		}
-
 		public IodineClass (string name, IodineMethod constructor)
+			: base (name)
 		{
 			this.constructor = constructor;
-			this.Name = name;
 		}
 
 		public void AddInstanceMethod (IodineMethod method)
@@ -27,7 +21,7 @@ namespace Iodine
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			IodineObject obj = new IodineObject ();
+			IodineObject obj = new IodineObject (this);
 			foreach (IodineMethod method in this.instanceMethods) {
 				obj.SetAttribute (method.Name, method);
 			}

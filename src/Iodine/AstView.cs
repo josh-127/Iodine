@@ -172,6 +172,17 @@ namespace Iodine
 			viewSubnodes (tryExcept);
 		}
 
+		public void Accept (NodeConstant constant)
+		{
+			Write ("Constant");
+			viewSubnodes (constant);
+		}
+
+		public void Accept (NodeBreak brk)
+		{
+			Write ("Break");
+		}
+
 		private void viewSubnodes (AstNode root)
 		{
 			ident++;

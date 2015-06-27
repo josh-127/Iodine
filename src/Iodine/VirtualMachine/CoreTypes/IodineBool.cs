@@ -7,6 +7,8 @@ namespace Iodine
 		public static readonly IodineBool True = new IodineBool (true);
 		public static readonly IodineBool False = new IodineBool (false);
 
+		private static readonly IodineTypeDefinition BoolTypeDef = new IodineTypeDefinition ("Bool"); 
+
 		public bool Value
 		{
 			private set;
@@ -14,6 +16,7 @@ namespace Iodine
 		}
 
 		public IodineBool (bool val)
+			: base (BoolTypeDef)
 		{
 			this.Value = val;
 		}
@@ -30,6 +33,15 @@ namespace Iodine
 				return new IodineBool (boolVal.Value && Value);
 			case BinaryOperation.BoolOr:
 				return new IodineBool (boolVal.Value || Value);
+			}
+			return base.PerformBinaryOperation (vm, binop, rvalue);
+		}
+
+		public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
+		{
+			switch (op) {
+			case UnaryOperation.BoolNot:
+				return new IodineBool (!this.Value);
 			}
 			return null;
 		}

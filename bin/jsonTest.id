@@ -1,0 +1,16 @@
+use json;
+
+func main () {
+	test = open ("test.json", "r");
+
+	source = test.readAllText ();
+
+	person = json.parse (source);
+	
+	print (person["firstName"] + " " +  person["lastName"]);
+
+	foreach (phoneNumber in person["phoneNumbers"]) {
+		print (phoneNumber["type"] + " " + phoneNumber["number"]);
+	}
+	test.close ();
+}

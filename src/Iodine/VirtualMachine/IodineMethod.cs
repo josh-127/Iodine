@@ -17,10 +17,13 @@ namespace Iodine
 
 	public class IodineInstanceMethodWrapper : IodineObject
 	{
+		private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("InstanceMethod");
+
 		private IodineMethod method;
 		private IodineObject self;
 
 		public IodineInstanceMethodWrapper (IodineObject self, IodineMethod method)
+			: base (InstanceTypeDef)
 		{
 			this.method = method;
 			this.self = self;
@@ -34,6 +37,7 @@ namespace Iodine
 
 	public class IodineMethod : IodineObject 
 	{
+		private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
 		private static int nextLabelID = 0;
 
 		private Dictionary<int, IodineLabel> labelReferences = new Dictionary<int, IodineLabel> ();
@@ -84,7 +88,7 @@ namespace Iodine
 		}
 
 		public IodineMethod (IodineModule module, string name, bool isInstance, int parameterCount,
-			int localCount)
+			int localCount) : base (MethodTypeDef)
 		{
 			this.Name = name;
 			this.ParameterCount = parameterCount;

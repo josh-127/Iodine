@@ -32,6 +32,12 @@ namespace Iodine
 			return peekToken () != null && peekToken ().Class == clazz;
 		}
 
+		public bool Match (TokenClass clazz1, TokenClass clazz2)
+		{
+			return peekToken () != null && peekToken ().Class == clazz1 &&
+				peekToken (1) != null && peekToken (1).Class == clazz2;
+		}
+
 		public bool Match (TokenClass clazz, string val)
 		{
 			return peekToken () != null && peekToken ().Class == clazz &&
@@ -105,10 +111,15 @@ namespace Iodine
 
 		private Token peekToken () 
 		{
-			if (this.position >= this.tokens.Count) {
+			return peekToken (0);
+		}
+
+		private Token peekToken (int n) 
+		{
+			if (this.position + n >= this.tokens.Count) {
 				return null;
 			}
-			return this.tokens [this.position];
+			return this.tokens [this.position + n];
 		}
 
 		private Token readToken () 

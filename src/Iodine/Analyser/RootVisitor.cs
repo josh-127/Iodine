@@ -159,8 +159,18 @@ namespace Iodine
 			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
 		}
 
+		public void Accept (NodeBreak brk)
+		{
+			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+		}
+
 		public void Accept (NodeTryExcept tryExcept)
 		{
+		}
+
+		public void Accept (NodeConstant constant)
+		{
+			symbolTable.AddSymbol (constant.Name);
 		}
 
 		private void visitSubnodes (AstNode root)

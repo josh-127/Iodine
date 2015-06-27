@@ -4,6 +4,8 @@ namespace Iodine
 {
 	public class IodineName : IodineObject
 	{
+		private static readonly IodineTypeDefinition NameTypeDef = new IodineTypeDefinition ("Name"); 
+
 		public string Value
 		{
 			private set;
@@ -11,6 +13,7 @@ namespace Iodine
 		}
 
 		public IodineName (string val)
+			: base (NameTypeDef)
 		{
 			this.Value = val;
 		}

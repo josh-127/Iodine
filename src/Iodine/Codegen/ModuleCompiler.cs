@@ -54,7 +54,7 @@ namespace Iodine
 		public void Accept (NodeUseStatement useStmt)
 		{
 			module.Imports.Add (useStmt.Module);
-			IodineModule import = IodineModule.CompileModule (errorLog, useStmt.Module);
+			IodineModule import = IodineModule.LoadModule (errorLog, useStmt.Module);
 			if (import != null) {
 				module.SetAttribute (useStmt.Module, import);
 			}
@@ -71,6 +71,16 @@ namespace Iodine
 			module.SetAttribute (clazz.Name, clazz);
 		}
 
+		public void Accept (NodeConstant constant)
+		{
+			if (constant.Value is NodeString)
+				module.SetAttribute (constant.Name, new IodineString (((NodeString)constant.Value
+					).Value));
+			else if (constant.Value is NodeInteger)
+				module.SetAttribute (constant.Name, new IodineInteger (((NodeInteger)constant.Value
+					).Value));
+		}
+
 		public void Accept (NodeReturnStmt returnStmt) { }
 		public void Accept (NodeIndexer indexer) { }
 		public void Accept (NodeList list) { }
@@ -80,6 +90,7 @@ namespace Iodine
 		public void Accept (NodeNull nil) { }
 		public void Accept (NodeLambda lambda) { }
 		public void Accept (NodeTryExcept tryExcept) {}
+		public void Accept (NodeBreak brk) { }
 
 		private void visitSubnodes (AstNode root)
 		{

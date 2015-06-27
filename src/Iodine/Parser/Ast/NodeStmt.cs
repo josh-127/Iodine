@@ -29,10 +29,14 @@ namespace Iodine
 				return NodeReturnStmt.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "try")) {
 				return NodeTryExcept.Parse (stream);
+			} else if (stream.Accept (TokenClass.Keyword, "break")) {
+				return new NodeBreak ();
 			} else if (stream.Match (TokenClass.OpenBrace)) {
 				return NodeScope.Parse (stream);
 			} else if (stream.Accept (TokenClass.SemiColon)) {
 				return new NodeStmt ();
+			} else if (stream.Match (TokenClass.Identifier, TokenClass.Colon)) {
+				return NodeConstant.Parse (stream);
 			} else {
 				AstNode node = NodeExpr.Parse (stream);
 				return new NodeExpr (node);

@@ -1,0 +1,182 @@
+# Token constants
+
+OPEN_BRACE 		: 0;
+CLOSE_BRACE 		: 1;
+OPEN_BRACKET		: 2;
+CLOSE_BRACKET		: 3;
+COLON			: 4;
+STRING			: 5;
+COMMA			: 6;
+NUMBER			: 7;
+BOOLEAN			: 8;
+
+class JSONInputStream {
+	func JSONInputStream (self, json) {
+		self.json = json;
+		self.index = 0;
+		self.length = json.getSize ();
+	}
+
+	func isEnd (self) {
+		return self.index >= self.length;
+	}
+
+	func peekChar (self) {
+		return self.json[self.index];
+	}
+
+	func readChar (self) {
+		self.index = self.index + 1;
+		return self.json[self.index - 1];	
+	}
+}
+
+class JSONToken {
+	func JSONToken (self, type, value) {
+		self.type = type;
+		self.value = value;
+	}
+}
+
+class JSONTokenStream {
+	func JSONTokenStream (self) {
+		self.tokens = list ();
+		self.index = 0;
+	}
+
+	func add (self, token) {
+		self.tokens.add (token);
+	}
+
+	func match (self, type) {
+		return self.peekToken ().type == type;
+	}
+
+	func expect (self, type) {
+		if (self.readToken ().type != type) {
+			raise ("Invalid or corrupted JSON file!");
+		}
+	}
+
+	func peekToken (self) {
+		return self.tokens[self.index];
+	}
+
+	func readToken (self) {
+		self.index += 1;
+		return self.tokens[self.index - 1];
+	}
+
+}
+
+func parse (text) {
+	tokens = scanTokens (text);
+	return parseJsonItem (tokens);
+}
+
+func parseJsonItem (tokenStream) {
+	if (tokenStream.match (OPEN_BRACE)) {
+		return parseJsonMap (tokenStream);
+	} else if (tokenStream.match (OPEN_BRACKET)) {
+		return parseJsonList (tokenStream);
+	} else if (tokenStream.match (STRING)) {
+		return tokenStream.readToken ().value;
+	} else if (tokenStream.match (NUMBER)) {
+		return tokenStream.readToken ().value;
+	} else if (tokenStream.match (BOOLEAN)) {
+		return tokenStream.readToken ().value;
+	} 
+	raise ("Invalid or corrupted JSON file!");
+}
+
+func parseJsonMap (tokenStream) {
+	tokenStream.expect (OPEN_BRACE);
+	ret = hashMap ();
+	while (!tokenStream.match (CLOSE_BRACE)) {
+		if (tokenStream.match (STRING)) {
+			name = tokenStream.readToken ().value;
+			tokenStream.expect (COLON);
+			ret[name] = parseJsonItem (tokenStream);
+		} else if (tokenStream.match (COMMA)) {
+			tokenStream.readToken ();
+		} else {
+			break;
+		}
+	}
+	tokenStream.expect (CLOSE_BRACE);
+	return ret;
+}
+
+func parseJsonList (tokenStream) {
+	tokenStream.expect (OPEN_BRACKET);
+	ret = list ();
+	while (!tokenStream.match (CLOSE_BRACKET)) {
+		ret.add (parseJsonItem (tokenStream));
+		if (tokenStream.match (COMMA)) {
+			tokenStream.readToken ();
+		} else {
+			break;
+		}
+	}
+	tokenStream.expect (CLOSE_BRACKET);
+	return ret;
+}
+
+func scanTokens (json) {
+	tokenStream = JSONTokenStream ();
+	input = JSONInputStream (json);
+	
+	while (input.length > input.index) {
+		if (input.peekChar () == "{") {
+			input.readChar ();
+			tokenStream.add (JSONToken (OPEN_BRACE, "{"));
+		} else if (input.peekChar () == "}") {
+			input.readChar ();
+			tokenStream.add (JSONToken (CLOSE_BRACE, "}"));
+		} else if (input.peekChar () == "[") {
+			input.readChar ();
+			tokenStream.add (JSONToken (OPEN_BRACKET, "["));
+		} else if (input.peekChar () == "]") {
+			input.readChar ();
+			tokenStream.add (JSONToken (CLOSE_BRACKET, "]"));
+		} else if (input.peekChar () == ":") {
+			input.readChar ();
+			tokenStream.add (JSONToken (COLON, ":"));
+		} else if (input.peekChar () == ",") {
+			input.readChar ();
+			tokenStream.add (JSONToken (COMMA, ","));
+		} else if (input.peekChar () == "\"") {
+			input.readChar ();
+			accum = "";
+			while (input.peekChar () != "\"") {
+				accum += input.readChar ();
+			}
+			input.readChar ();
+			tokenStream.add (JSONToken (STRING, accum));
+		} else if (isDigit (input.peekChar ())) {
+			accum = "";
+ 			while (isDigit (input.peekChar ())) {
+				accum += input.readChar ()
+			}
+			tokenStream.add (JSONToken (NUMBER, toInt (accum)));
+		} else if (isLetter (input.peekChar ())) {
+			accum = "";
+			while (isLetter (input.peekChar ())) {
+				accum += input.readChar ();
+			}
+			if (accum == "true") {
+				tokenStream.add (JSONToken (BOOLEAN, true));
+			} else if (accum == "false") {
+				tokenStream.add (JSONToken (BOOLEAN, false));
+			}
+
+		} else if (isWhiteSpace (input.peekChar ())) {
+			input.readChar ();
+		} else {
+			return tokenStream;
+		}
+	}
+
+	return tokenStream;
+}
+

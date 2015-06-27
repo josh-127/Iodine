@@ -4,6 +4,8 @@ namespace Iodine
 {
 	public class IodineInteger : IodineObject
 	{
+		private static readonly IodineTypeDefinition IntTypeDef = new IodineTypeDefinition ("Int"); 
+
 		public long Value
 		{
 			private set;
@@ -11,6 +13,7 @@ namespace Iodine
 		}
 
 		public IodineInteger (long val)
+			: base (IntTypeDef)
 		{
 			this.Value = val;
 		}
@@ -48,7 +51,7 @@ namespace Iodine
 			case BinaryOperation.Equals:
 				return new IodineBool (Value == intVal.Value);
 			case BinaryOperation.NotEquals:
-				return new IodineBool (Value == intVal.Value);
+				return new IodineBool (Value != intVal.Value);
 			case BinaryOperation.GreaterThan:
 				return new IodineBool (Value > intVal.Value);
 			case BinaryOperation.GreaterThanOrEqu:
@@ -58,7 +61,7 @@ namespace Iodine
 			case BinaryOperation.LessThanOrEqu:
 				return new IodineBool (Value <= intVal.Value);
 			default:
-				return null;
+				return base.PerformBinaryOperation (vm, binop, rvalue);
 			}
 		}
 

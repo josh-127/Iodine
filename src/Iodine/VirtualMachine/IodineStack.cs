@@ -6,7 +6,7 @@ namespace Iodine
 	public class IodineStack
 	{
 		private Stack<StackFrame> frames = new Stack<StackFrame>( );
-		private StackFrame top;
+		private StackFrame top = null;
 
 		public IodineMethod CurrentMethod
 		{
@@ -68,7 +68,7 @@ namespace Iodine
 		public void NewFrame (IodineMethod method, IodineObject self, int localCount)
 		{
 			Frames++;
-			top = new StackFrame (method, self, localCount);
+			top = new StackFrame (method, top, self, localCount);
 			this.frames.Push (top);
 		}
 
@@ -151,17 +151,24 @@ namespace Iodine
 			get;
 			set;
 		}
-			
+
+		public StackFrame Parent
+		{
+			private set;
+			get;
+		}
+
 		private Stack<IodineObject> stack = new Stack<IodineObject> ();
 		private IodineObject[] locals;
 
-		public StackFrame (IodineMethod method, IodineObject self, int localCount)
+		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount)
 		{
 			this.LocalCount = localCount;
 			this.locals = new IodineObject[localCount];
 			this.Method = method;
 			this.Module = method.Module;
 			this.Self = self;
+			this.Parent = parent;
 		}
 
 		public void StoreLocal (int index, IodineObject obj)
@@ -184,9 +191,9 @@ namespace Iodine
 			return this.stack.Pop ();
 		}
 
-		public StackFrame Duplicate ()
+		public StackFrame Duplicate (StackFrame top)
 		{
-			StackFrame newStackFrame = new StackFrame (this.Method, this.Self, this.LocalCount);
+			StackFrame newStackFrame = new StackFrame (this.Method, top, this.Self, this.LocalCount);
 			for (int i = 0; i < LocalCount; i++) {
 				newStackFrame.StoreLocal (i, locals[i]);
 			}

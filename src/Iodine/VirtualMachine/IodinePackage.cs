@@ -10,6 +10,11 @@ namespace Iodine
 			get;
 		}
 
+		public IodinePackage () 
+			: base (null) {
+
+		}
+
 		public void AddModule (IodineModule module)
 		{
 			this.SetAttribute (module.Name, module);

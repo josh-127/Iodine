@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Iodine
 {
@@ -8,12 +9,22 @@ namespace Iodine
 		private SymbolTable symbolTable;
 		private IodineMethod methodBuilder;
 		private int currentScope = 0;
+		private Stack<IodineLabel> breakLabels = new Stack<IodineLabel>();
 
 		public FunctionCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineMethod methodBuilder)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.methodBuilder = methodBuilder;
+		}
+
+		public FunctionCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineMethod methodBuilder,
+			Stack<IodineLabel> breakLabels)
+		{
+			this.errorLog = errorLog;
+			this.symbolTable = symbolTable;
+			this.methodBuilder = methodBuilder;
+			this.breakLabels = breakLabels;
 		}
 
 		public void Accept (AstNode ast)
@@ -75,7 +86,7 @@ namespace Iodine
 		public void Accept (NodeUnaryOp unaryop)
 		{
 			visitSubnodes (unaryop);
-			methodBuilder.EmitInstruction (Opcode.UnaryOp);
+			methodBuilder.EmitInstruction (Opcode.UnaryOp, (int)unaryop.Operation);
 		}
 
 		public void Accept (NodeIdent ident)
@@ -141,18 +152,21 @@ namespace Iodine
 		{
 			IodineLabel whileLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
+			breakLabels.Push (breakLabel);
 			methodBuilder.MarkLabelPosition (whileLabel);
 			whileStmt.Condition.Visit (this);
 			methodBuilder.EmitInstruction (Opcode.JumpIfFalse, breakLabel);
 			whileStmt.Body.Visit (this);
 			methodBuilder.EmitInstruction (Opcode.Jump, whileLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
+			breakLabels.Pop ();
 		}
 
 		public void Accept (NodeForStmt forStmt)
 		{
 			IodineLabel forLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
+			breakLabels.Push (breakLabel);
 			forStmt.Initializer.Visit (this);
 			methodBuilder.MarkLabelPosition (forLabel);
 			forStmt.Condition.Visit (this);
@@ -161,12 +175,14 @@ namespace Iodine
 			forStmt.AfterThought.Visit (this);
 			methodBuilder.EmitInstruction (Opcode.Jump, forLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
+			breakLabels.Pop ();
 		}
 
 		public void Accept (NodeForeach foreachStmt) 
 		{
 			IodineLabel foreachLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
+			breakLabels.Push (breakLabel);
 			foreachStmt.Iterator.Visit (this);
 			int tmp = methodBuilder.CreateTemporary ();
 			methodBuilder.EmitInstruction (Opcode.Dup);
@@ -183,6 +199,7 @@ namespace Iodine
 			foreachStmt.Body.Visit (this);
 			methodBuilder.EmitInstruction (Opcode.Jump, foreachLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
+			breakLabels.Pop ();
 		}
 
 		public void Accept (NodeFuncDecl funcDecl)
@@ -193,7 +210,8 @@ namespace Iodine
 		{
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
 
-			FunctionCompiler scopeCompiler = new FunctionCompiler (errorLog, symbolTable, methodBuilder);
+			FunctionCompiler scopeCompiler = new FunctionCompiler (errorLog, symbolTable, methodBuilder,
+				breakLabels);
 			foreach (AstNode node in scope) {
 				node.Visit (scopeCompiler);
 			}
@@ -290,6 +308,16 @@ namespace Iodine
 			}
 			tryExcept.ExceptBody.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
+		}
+
+		public void Accept (NodeConstant constant)
+		{
+		}
+
+
+		public void Accept (NodeBreak brk) 
+		{
+			methodBuilder.EmitInstruction (Opcode.Jump, breakLabels.Peek ());
 		}
 
 		private void visitSubnodes (AstNode root)

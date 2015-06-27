@@ -5,6 +5,8 @@ namespace Iodine
 {
 	public class IodineList : IodineObject
 	{
+		private static readonly IodineTypeDefinition ListTypeDef = new IodineTypeDefinition ("List"); 
+
 		private int iterIndex = 0;
 		public List<IodineObject> Objects
 		{
@@ -13,6 +15,7 @@ namespace Iodine
 		}
 
 		public IodineList (IodineObject[] items)
+			: base (ListTypeDef)
 		{
 			this.Objects = new List<IodineObject> ();
 			this.Objects.AddRange (items);
@@ -20,13 +23,13 @@ namespace Iodine
 			this.SetAttribute ("add", new InternalMethodCallback (add, this));
 		}
 
-		public override IodineObject GetIndex (IodineObject key)
+		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			IodineInteger index = key as IodineInteger;
 			return this.Objects[(int)index.Value];
 		}
 
-		public override void SetIndex (IodineObject key, IodineObject value)
+		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
 			IodineInteger index = key as IodineInteger;
 			this.Objects[(int)index.Value] = value;

@@ -1,0 +1,48 @@
+use socket;
+
+class IRCBot {
+	
+	func IRCBot (self, ip, port) {
+		self.nick = "IOBot";
+		self.ipAddress = ip;
+		self.port = port;
+		self.registered = false;
+		self.sock = socket.socket (socket.SOCK_STREAM, 
+			socket.PROTO_TCP);
+	}
+
+	func connect (self) {
+		self.sock.connect (self.ipAddress, self.port);
+		self.sock.send ("USER " + self.nick + " " + self.nick +
+			" " + self.nick + " :Iodine IRC Bot\n");
+		self.sock.send ("NICK " + self.nick + "\n");
+	
+		while (true) {
+			line = self.sock.readLine ();
+			self.handleResponse (line);
+		}
+	}
+
+	func handleResponse (self, msg) {
+		if (msg.startsWith ("PING")) {
+			self.sock.send ("PONG :" + msg.substr (msg.indexOf (":"					) + 1) + "\n");
+		} else if (msg.startsWith(":")) {
+			prefix = msg.substr (1)
+			if (prefix.contains (":"))
+				prefix = prefix.substr (0, prefix.indexOf(":"));
+			print (prefix);
+		}
+		print (msg);
+	}
+
+	func speak (self, channel,  msg) {
+		self.sock.send ("PRIVMSG " + channel + " :" + msg + "\n");
+	}
+}
+
+func main () {
+
+	testBot = IRCBot ("107.191.108.159", 6667)
+	testBot.connect ();
+}
+
