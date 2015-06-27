@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Iodine</RootNamespace>
+    <AssemblyName>Iodine</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Lexer\Lexer.cs" />
+    <Compile Include="Lexer\InputStream.cs" />
+    <Compile Include="Lexer\Token.cs" />
+    <Compile Include="Lexer\TokenClass.cs" />
+    <Compile Include="Lexer\IMatcher.cs" />
+    <Compile Include="Lexer\TokenStream.cs" />
+    <Compile Include="Lexer\Matchers\MatchStringLit.cs" />
+    <Compile Include="Lexer\Matchers\MatchIdent.cs" />
+    <Compile Include="ErrorLog.cs" />
+    <Compile Include="ErrorType.cs" />
+    <Compile Include="Lexer\Matchers\MatchNumber.cs" />
+    <Compile Include="Lexer\Matchers\MatchGrouping.cs" />
+    <Compile Include="Lexer\Matchers\MatchOperator.cs" />
+    <Compile Include="Parser\AstNode.cs" />
+    <Compile Include="Parser\IAstVisitor.cs" />
+    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\Ast\NodeStmt.cs" />
+    <Compile Include="Parser\Ast\NodeExpr.cs" />
+    <Compile Include="Lexer\Matchers\MatchKeyword.cs" />
+    <Compile Include="Parser\Ast\NodeBinOp.cs" />
+    <Compile Include="Parser\BinaryOperation.cs" />
+    <Compile Include="Parser\UnaryOperation.cs" />
+    <Compile Include="Parser\Ast\NodeUnaryOp.cs" />
+    <Compile Include="Parser\Ast\NodeIdent.cs" />
+    <Compile Include="Parser\Ast\NodeCall.cs" />
+    <Compile Include="Parser\Ast\NodeArgList.cs" />
+    <Compile Include="Parser\Ast\NodeGetAttr.cs" />
+    <Compile Include="AstView.cs" />
+    <Compile Include="Parser\Ast\NodeInteger.cs" />
+    <Compile Include="Parser\Ast\NodeIfStmt.cs" />
+    <Compile Include="Parser\Ast\NodeWhileStmt.cs" />
+    <Compile Include="Parser\Ast\NodeForStmt.cs" />
+    <Compile Include="Parser\Ast\NodeFuncDecl.cs" />
+    <Compile Include="Parser\Ast\NodeClassDecl.cs" />
+    <Compile Include="Parser\Ast\NodeScope.cs" />
+    <Compile Include="Parser\Ast\NodeString.cs" />
+    <Compile Include="Parser\Ast\NodeUseStatement.cs" />
+    <Compile Include="Parser\Ast\NodeReturnStmt.cs" />
+    <Compile Include="Parser\Ast\NodeIndexer.cs" />
+    <Compile Include="Analyser\SemanticAnalyser.cs" />
+    <Compile Include="SymbolTable.cs" />
+    <Compile Include="Symbol.cs" />
+    <Compile Include="Analyser\RootVisitor.cs" />
+    <Compile Include="Analyser\FunctionVisitor.cs" />
+    <Compile Include="VirtualMachine\Instruction.cs" />
+    <Compile Include="VirtualMachine\Opcode.cs" />
+    <Compile Include="VirtualMachine\IodineObject.cs" />
+    <Compile Include="VirtualMachine\IodineMethod.cs" />
+    <Compile Include="VirtualMachine\InternalMethodCallback.cs" />
+    <Compile Include="VirtualMachine\VirtualMachine.cs" />
+    <Compile Include="VirtualMachine\IodineModule.cs" />
+    <Compile Include="VirtualMachine\IodineStack.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineInteger.cs" />
+    <Compile Include="VirtualMachine\IodinePackage.cs" />
+    <Compile Include="Codegen\IodineCompiler.cs" />
+    <Compile Include="Codegen\FunctionCompiler.cs" />
+    <Compile Include="Codegen\ModuleCompiler.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineBool.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineString.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineName.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineList.cs" />
+    <Compile Include="Parser\Ast\NodeList.cs" />
+    <Compile Include="Parser\Ast\NodeSelf.cs" />
+    <Compile Include="VirtualMachine\IodineClass.cs" />
+    <Compile Include="VirtualMachine\IIodineExtension.cs" />
+    <Compile Include="VirtualMachine\BuiltinFunctions.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineMap.cs" />
+    <Compile Include="Parser\Ast\NodeForeach.cs" />
+    <Compile Include="Parser\Ast\NodeFalse.cs" />
+    <Compile Include="Parser\Ast\NodeTrue.cs" />
+    <Compile Include="Parser\Ast\NodeNull.cs" />
+    <Compile Include="VirtualMachine\IodineClosure.cs" />
+    <Compile Include="Parser\Ast\NodeLambda.cs" />
+    <Compile Include="VirtualMachine\IodineException.cs" />
+    <Compile Include="VirtualMachine\IodineExceptionHandler.cs" />
+    <Compile Include="Parser\Ast\NodeTryExcept.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineChar.cs" />
+    <Compile Include="Lexer\Matchers\MatchComment.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Lexer\" />
+    <Folder Include="Lexer\Matchers\" />
+    <Folder Include="Parser\" />
+    <Folder Include="Parser\Ast\" />
+    <Folder Include="Analyser\" />
+    <Folder Include="VirtualMachine\" />
+    <Folder Include="VirtualMachine\CoreTypes\" />
+    <Folder Include="Codegen\" />
+  </ItemGroup>
+</Project>

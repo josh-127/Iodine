@@ -1,0 +1,21 @@
+class Dog {
+
+	func Dog (self, name) {
+		self.name = name;
+	}
+
+	func showName (self) {
+		print (self.name);
+	}
+
+	func bark (self) {
+		print ("Woof!");
+	}
+
+}
+
+func main (args) {
+	fido = Dog ("Fiddo");
+	fido.showName ();
+	fido.bark ();
+}
