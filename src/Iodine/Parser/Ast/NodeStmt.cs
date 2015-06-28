@@ -42,7 +42,7 @@ namespace Iodine
 			} else {
 				AstNode node = NodeExpr.Parse (stream);
 				if (node == null) {
-					//stream.MakeError ();
+					stream.MakeError ();
 				}
 				return new NodeExpr (node);
 			}

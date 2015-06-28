@@ -51,7 +51,7 @@ namespace Iodine
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			return new IodineInteger (((IodineList)self).Objects.Count);
+			return new IodineInteger (this.Objects.Length);
 		}
 
 		public override int GetHashCode ()
