@@ -2,6 +2,7 @@
 
 namespace Iodine
 {
+	
 	public class AstView : IAstVisitor
 	{
 		private int ident = 0;
@@ -183,6 +184,12 @@ namespace Iodine
 			Write ("Break");
 		}
 
+		public void Accept (NodeTuple tuple)
+		{
+			Write ("Tuple");
+			viewSubnodes (tuple);
+		}
+
 		private void viewSubnodes (AstNode root)
 		{
 			ident++;
@@ -200,5 +207,6 @@ namespace Iodine
 			Console.WriteLine(String.Format (format, args));
 		}
 	}
+
 }
 

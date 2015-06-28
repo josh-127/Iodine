@@ -5,7 +5,6 @@ namespace Iodine
 {
 	public class TokenStream
 	{
-		private int position = 0;
 		private ErrorLog errorLog;
 		private List<Token> tokens = new List<Token> ();
 
@@ -13,10 +12,16 @@ namespace Iodine
 		{
 			get
 			{
-				return this.tokens.Count <= position;
+				return this.tokens.Count <= Position;
 			}
 		}
 
+		public int Position
+		{
+			private set;
+			get;
+		}
+			
 		public TokenStream (ErrorLog errorLog)
 		{
 			this.errorLog = errorLog;
@@ -109,6 +114,11 @@ namespace Iodine
 			return null;
 		}
 
+		public void MakeError ()
+		{
+			this.errorLog.AddError (ErrorType.ParserError, "Unexpected {0}", readToken ().ToString ());
+		}
+
 		private Token peekToken () 
 		{
 			return peekToken (0);
@@ -116,18 +126,18 @@ namespace Iodine
 
 		private Token peekToken (int n) 
 		{
-			if (this.position + n >= this.tokens.Count) {
+			if (this.Position + n >= this.tokens.Count) {
 				return null;
 			}
-			return this.tokens [this.position + n];
+			return this.tokens [this.Position + n];
 		}
 
 		private Token readToken () 
 		{
-			if (this.position >= this.tokens.Count) {
+			if (this.Position >= this.tokens.Count) {
 				return null;
 			}
-			return this.tokens [this.position++];
+			return this.tokens [this.Position++];
 		}
 	}
 }

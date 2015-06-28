@@ -243,6 +243,14 @@ namespace Iodine
 					Stack.Push (new IodineList (items));
 					break;
 				}
+			case Opcode.BuildTuple: {
+					IodineObject[] items = new IodineObject[ins.Argument];
+					for (int i = 1; i <= ins.Argument; i++ ){
+						items[ins.Argument - i] = Stack.Pop ();
+					}
+					Stack.Push (new IodineTuple (items));
+					break;
+				}
 			case Opcode.BuildClosure: {
 					IodineMethod method = Stack.Pop () as IodineMethod;
 					Stack.Push (new IodineClosure (Stack.Top, method));

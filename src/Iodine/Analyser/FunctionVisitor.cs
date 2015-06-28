@@ -167,6 +167,11 @@ namespace Iodine
 		{
 		}
 
+		public void Accept (NodeTuple tuple)
+		{
+			visitSubnodes (tuple);
+		}
+
 		public void Accept (NodeConstant constant)
 		{
 			errorLog.AddError (ErrorType.ParserError, "Can not define constant in function!");

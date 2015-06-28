@@ -310,6 +310,12 @@ namespace Iodine
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
+		public void Accept (NodeTuple tuple)
+		{
+			visitSubnodes (tuple);
+			methodBuilder.EmitInstruction (Opcode.BuildTuple, tuple.Children.Count);
+		}
+
 		public void Accept (NodeConstant constant)
 		{
 		}

@@ -199,12 +199,8 @@ namespace Iodine
 
 		public StackFrame Duplicate (StackFrame top)
 		{
-			StackFrame newStackFrame = new StackFrame (this.Method, top, this.Self, this.LocalCount,
-				this.locals);
-			for (int i = 0; i < LocalCount; i++) {
-				newStackFrame.StoreLocal (i, locals[i]);
-			}
-			return newStackFrame;
+			return new StackFrame (this.Method, top, this.Self, this.LocalCount,
+				this.locals);;
 		}
 	}
 }

@@ -29,6 +29,7 @@ namespace Iodine
 		JumpIfFalse,
 		Jump,
 		BuildList,
+		BuildTuple,
 		BuildClosure,
 		IterGetNext,
 		IterMoveNext,

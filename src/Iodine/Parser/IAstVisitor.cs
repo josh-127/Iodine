@@ -34,6 +34,7 @@ namespace Iodine
 		void Accept (NodeTryExcept tryCatch);
 		void Accept (NodeConstant constant);
 		void Accept (NodeBreak brk);
+		void Accept (NodeTuple tuple);
 	}
 }
 

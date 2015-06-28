@@ -224,6 +224,9 @@ namespace Iodine
 				return NodeList.Parse (stream);
 			} else if (stream.Accept (TokenClass.OpenParan)) {
 				AstNode expr = NodeExpr.Parse (stream);
+				if (stream.Accept (TokenClass.Comma)) {
+					return NodeTuple.Parse (expr, stream);
+				}
 				stream.Expect (TokenClass.CloseParan);
 				return expr;
 			} else if (stream.Accept (TokenClass.Keyword, "self")) {

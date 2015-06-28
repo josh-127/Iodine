@@ -24,6 +24,7 @@ namespace ModuleSockets
 			this.SetAttribute ("connect", new InternalMethodCallback (connect ,this));
 			this.SetAttribute ("send", new InternalMethodCallback (send ,this));
 			this.SetAttribute ("receive", new InternalMethodCallback (receive ,this));
+			this.SetAttribute ("getBytesAvailable", new InternalMethodCallback (getBytesAvailable ,this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine ,this));
 		}
 
@@ -48,6 +49,11 @@ namespace ModuleSockets
 			return null;
 		}
 
+		private IodineObject getBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		{
+			return new IodineInteger (this.Socket.Available);
+		}
+
 		private IodineObject send (VirtualMachine vm, IodineObject self, IodineObject[] args) 
 		{
 			foreach (IodineObject obj in args) {
@@ -62,8 +68,16 @@ namespace ModuleSockets
 
 		private IodineObject receive (VirtualMachine vm, IodineObject self, IodineObject[] args) 
 		{
-			return new IodineInteger (this.stream.ReadByte ());
+			IodineInteger n = args[0] as IodineInteger;
+			StringBuilder accum = new StringBuilder ();
+			for (int i = 0; i < n.Value; i++) {
+				int b = this.stream.ReadByte ();
+				if (b != -1)
+					accum.Append ((char)b);
+			}
+			return new IodineString (accum.ToString ());
 		}
+
 		private IodineObject readLine (VirtualMachine vm, IodineObject self, IodineObject[] args) 
 		{
 			StringBuilder accum = new StringBuilder ();

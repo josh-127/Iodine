@@ -121,6 +121,8 @@
     <Compile Include="Parser\Ast\NodeBreak.cs" />
     <Compile Include="VirtualMachine\IodineTypeDefinition.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineEvent.cs" />
+    <Compile Include="Parser\Ast\NodeTuple.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineTuple.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -168,6 +168,11 @@ namespace Iodine
 		{
 		}
 
+		public void Accept (NodeTuple tuple)
+		{
+			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+		}
+
 		public void Accept (NodeConstant constant)
 		{
 			symbolTable.AddSymbol (constant.Name);
