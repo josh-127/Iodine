@@ -26,10 +26,16 @@ namespace Iodine
 		{
 			Stack.NewFrame (method, self, method.LocalCount);
 			int insCount = method.Body.Count;
-	
+
 			int i = 0;
 			foreach (string param in method.Parameters.Keys) {
-				Stack.StoreLocal (method.Parameters[param], arguments[i++]);
+				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {
+					IodineObject[] tupleItems = new IodineObject[arguments.Length - i];
+					Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
+					Stack.StoreLocal (method.Parameters[param], new IodineTuple (tupleItems));
+				} else {
+					Stack.StoreLocal (method.Parameters[param], arguments[i++]);
+				}
 			}
 
 			executeBytecode (method);
@@ -50,9 +56,14 @@ namespace Iodine
 
 			int i = 0;
 			foreach (string param in method.Parameters.Keys) {
-				Stack.StoreLocal (method.Parameters[param], arguments[i++]);
+				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {
+					IodineObject[] tupleItems = new IodineObject[arguments.Length - i];
+					Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
+					Stack.StoreLocal (method.Parameters[param], new IodineTuple (tupleItems));
+				} else {
+					Stack.StoreLocal (method.Parameters[param], arguments[i++]);
+				}
 			}
-
 			executeBytecode (method);
 
 			IodineObject retVal = Stack.Pop ();
