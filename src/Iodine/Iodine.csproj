@@ -125,6 +125,8 @@
     <Compile Include="VirtualMachine\CoreTypes\IodineTuple.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineNull.cs" />
     <Compile Include="Parser\Ast\NodeContinue.cs" />
+    <Compile Include="VirtualMachine\CoreModules\RandomModule.cs" />
+    <Compile Include="VirtualMachine\BuiltInModules.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -136,5 +138,6 @@
     <Folder Include="VirtualMachine\" />
     <Folder Include="VirtualMachine\CoreTypes\" />
     <Folder Include="Codegen\" />
+    <Folder Include="VirtualMachine\CoreModules\" />
   </ItemGroup>
 </Project>

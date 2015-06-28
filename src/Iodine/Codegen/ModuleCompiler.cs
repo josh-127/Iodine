@@ -122,6 +122,7 @@ namespace Iodine
 				funcDecl.Parameters.Count, symbolTable.CurrentScope.SymbolCount);
 			FunctionCompiler compiler = new FunctionCompiler (this.errorLog, this.symbolTable, 
 				methodBuilder);
+			methodBuilder.Variadic = funcDecl.Variadic;
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
 				methodBuilder.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
 					(funcDecl.Parameters[i]).Index;

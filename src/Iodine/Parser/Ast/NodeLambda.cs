@@ -17,6 +17,12 @@ namespace Iodine
 			get;
 		}
 
+		public bool Variadic
+		{
+			private set;
+			get;
+		}
+
 		public NodeLambda (bool isInstanceMethod, IList<string> parameters)
 		{
 			this.Parameters = parameters;
@@ -32,15 +38,20 @@ namespace Iodine
 		{
 			stream.Expect (TokenClass.Keyword, "lambda");
 			bool isInstanceMethod;
-			List<string> parameters = ParseFuncParameters (stream, out isInstanceMethod);
+			bool isVariadic;
+			List<string> parameters = ParseFuncParameters (stream, out isInstanceMethod, out isVariadic);
 			stream.Expect (TokenClass.Operator, "=>");
 			NodeLambda decl = new NodeLambda (isInstanceMethod, parameters);
+			decl.Variadic = isVariadic;
 			decl.Add (NodeStmt.Parse (stream));
 			return decl;
 		}
 
-		private static List<string> ParseFuncParameters (TokenStream stream, out bool isInstanceMethod)
+
+		private static List<string> ParseFuncParameters (TokenStream stream, out bool isInstanceMethod,
+			out bool isVariadic)
 		{
+			isVariadic = false;
 			List<string> ret = new List<string> ();
 			stream.Expect (TokenClass.OpenParan);
 			if (stream.Accept (TokenClass.Keyword, "self")) {
@@ -53,6 +64,14 @@ namespace Iodine
 				isInstanceMethod = false;
 			}
 			while (!stream.Match (TokenClass.CloseParan)) {
+				if (stream.Accept (TokenClass.Keyword, "params")) {
+					isVariadic = true;
+					Token ident = stream.Expect (TokenClass.Identifier);
+					if (ident != null)
+						ret.Add (ident.Value);
+					stream.Expect (TokenClass.CloseParan);
+					return ret;
+				}
 				Token param = stream.Expect (TokenClass.Identifier);
 				ret.Add (param.Value);
 				if (!stream.Accept (TokenClass.Comma)) {

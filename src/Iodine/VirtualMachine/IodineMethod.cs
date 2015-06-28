@@ -76,6 +76,12 @@ namespace Iodine
 			get;
 		}
 
+		public bool Variadic
+		{
+			set;
+			get;
+		}
+
 		public IodineModule Module
 		{
 			private set;

@@ -18,6 +18,14 @@ namespace Iodine
 			get;
 		}
 
+		public Dictionary<string, IodineObject> Attributes
+		{
+			get
+			{
+				return this.attributes;
+			}
+		}
+
 		protected Dictionary<string, IodineObject> attributes = new Dictionary<string, IodineObject> ();
 
 		public IodineObject (IodineTypeDefinition typeDef)

@@ -94,6 +94,8 @@ namespace Iodine
 					FindExtension (path));
 			} else if (FindModule (path) != null) {
 				return CompileModule (errLog, FindModule (path));
+			} else if (BuiltInModules.Modules.ContainsKey (path)) {
+				return BuiltInModules.Modules [path];
 			}
 			return null;
 		}
