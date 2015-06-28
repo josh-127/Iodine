@@ -1,0 +1,63 @@
+###
+# Name        : corelib
+# Author      : @SplittyDev
+# Description : Iodine core library
+# Please add yourself as author if you make changes
+###
+
+# format  : string
+# args    : object || tuple
+func printf (format, args) {
+  print (sprintf (format, args))
+}
+
+# format  : string
+# args    : object || tuple
+# returns : string
+func sprintf (format, args) {
+  if (args.typeDef.name != "Tuple")
+    args = (args,)
+  buf = ""
+  i = 0
+  arg_pos = 0
+  while (i < len (format)) {
+    if (format[i] != "{") {
+      buf += format[i]
+      i = i + 1
+    }
+    else if (format[i] == "{") {
+      i = i + 1
+      if (i < len (format) && format[i] == "}") {
+        if (arg_pos < len (args)) {
+          buf += toStr (args[arg_pos])
+          arg_pos = arg_pos + 1
+          i = i + 1
+        }
+        else
+          raise ("Index out of range: Requested element " +
+            toStr (arg_pos) + " of " + toStr (len (args) - 1))
+      }
+      else {
+        arg_index = ""
+        while (i < len (format) && format[i] != "}") {
+          arg_index += format[i]
+          i = i + 1
+        }
+        arg_index = toInt (arg_index)
+        if (arg_index < len (args))
+          buf += toStr (args[arg_index])
+        else
+          raise ("Index out of range: Requested element " +
+            toStr (arg_index) + " of " + toStr (len (args) - 1))
+        i = i + 1
+      }
+    }
+  }
+  return buf
+}
+
+# obj     : object
+# returns : int
+func len (obj) {
+  return obj.getSize ()
+}
