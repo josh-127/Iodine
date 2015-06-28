@@ -4,7 +4,7 @@
 # Description : An easy to use module for working with urls
 ###
 
-use corelib;
+use reverse, hex, len, printf, sprintf from corelib;
 
 ###
 ### Public functions
@@ -58,16 +58,18 @@ func _get_url_base (url) {
   start = url.indexOf ("://") + 3
   middle = url.substr (start)
   if (middle.contains ("/")) {
-    end = middle.indexOf ("/")
-    middle = middle.substr (0, end)
+    last_slash = len(middle) - reverse (middle).indexOf ("/")
+    middle = middle.substr (0, last_slash - 1)
   }
   return middle
 }
 
 func _get_url_tail (url) {
   start = url.substr (url.indexOf ("://") + 3)
-  if (start.contains ("/"))
-    return start.substr (start.indexOf ("/") + 1)
+  if (start.contains ("/")) {
+    last_slash = len(start) - reverse (start).indexOf ("/")
+    return start.substr (last_slash)
+  }
   else
     return ""
 }
@@ -99,43 +101,42 @@ func _opt_url_tail (url) {
   }
   lookup = hashMap ()
   n = 32
-  lookup[" "] = inc ()
-  lookup["!"] = inc ()
-  lookup["\""] = inc ()
-  lookup["#"] = inc ()
-  lookup["$"] = inc ()
-  lookup["%"] = inc ()
-  #lookup["&"] = inc ()
-  lookup["'"] = inc ()
-  lookup["("] = inc ()
-  lookup[")"] = inc ()
-  lookup["*"] = inc ()
-  lookup["+"] = inc ()
-  lookup[","] = inc ()
-  lookup["-"] = inc ()
-  #lookup["."] = inc ()
-  #lookup["/"] = inc ()
+  lookup[" "]   = inc ()
+  lookup["!"]   = inc ()
+  lookup["\""]  = inc ()
+  lookup["#"]   = inc ()
+  lookup["$"]   = inc ()
+  lookup["%"]   = inc ()
+  #lookup["&"]  = inc ()
+  lookup["'"]   = inc ()
+  lookup["("]   = inc ()
+  lookup[")"]   = inc ()
+  lookup["*"]   = inc ()
+  lookup["+"]   = inc ()
+  lookup[","]   = inc ()
+  lookup["-"]   = inc ()
+  #lookup["."]  = inc ()
+  #lookup["/"]  = inc ()
   n = 58
-  lookup[":"] = inc ()
-  lookup[";"] = inc ()
-  lookup["<"] = inc ()
-  #lookup["="] = inc ()
-  lookup[">"] = inc ()
-  #lookup["?"] = inc ()
-  lookup["@"] = inc ()
+  lookup[":"]   = inc ()
+  lookup[";"]   = inc ()
+  lookup["<"]   = inc ()
+  #lookup["="]  = inc ()
+  lookup[">"]   = inc ()
+  #lookup["?"]  = inc ()
+  lookup["@"]   = inc ()
   n = 91
-  lookup["["] = inc ()
-  lookup["\\"] = inc ()
-  lookup["]"] = inc ()
-  lookup["^"] = inc ()
-  lookup["_"] = inc ()
-  lookup["`"] = inc ()
+  lookup["["]   = inc ()
+  lookup["\\"]  = inc ()
+  lookup["]"]   = inc ()
+  lookup["^"]   = inc ()
+  lookup["_"]   = inc ()
+  lookup["`"]   = inc ()
   i = 0
   buf = ""
   while (i < len (url)) {
-    if (lookup.contains (url[i])) {
-      buf += "%" + lookup[url[i]]
-    }
+    if (lookup.contains (url[i]))
+      buf += sprintf ("%{}", lookup[url[i]])
     else
       buf += url[i]
     i = i + 1
@@ -144,27 +145,23 @@ func _opt_url_tail (url) {
 }
 
 func _build_url (protocol, base, tail) {
-  return protocol + "://" + base + "/" + tail
+  return sprintf ("{}://{}/{}", (protocol, base, tail))
 }
 
 func _parse_query (tail) {
   dict = hashMap ()
   skip = "?&="
   i = 0;
-  read_ident = lambda () => {
-    buffer = ""
-    while (skip.contains (tail[i]))
-      i = i + 1
-    while (i < len (tail) && !skip.contains (tail[i])) {
-      buffer += tail[i]
-      i = i + 1
+  if (tail[0] == "?")
+    tail = tail.substr (1)
+  lines = tail.split ("&")
+  foreach (line in lines) {
+    if (line.contains ("=")) {
+      index = line.indexOf ("=")
+      dict[line.substr (0, index)] = line.substr (index + 1)
     }
-    return buffer
-  }
-  while (i < len (tail)) {
-      ident = read_ident ()
-      value = read_ident ()
-      dict[ident] = value
+    else
+      dict[line] = null
   }
   return dict
 }
