@@ -36,6 +36,8 @@ namespace Iodine
 			if (str == null) {
 				if (rvalue is IodineChar) {
 					strVal = rvalue.ToString ();
+				} else if (rvalue is IodineNull) {
+					return base.PerformBinaryOperation (vm, binop, rvalue);
 				} else {
 					vm.RaiseException ("Right value must be of type string!");
 					return null;
