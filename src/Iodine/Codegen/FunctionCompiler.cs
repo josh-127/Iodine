@@ -77,21 +77,31 @@ namespace Iodine
 					binop.Left.Visit (this);
 				}
 			} else {
-				IodineLabel shortCircuitLabel = methodBuilder.CreateLabel ();
+				IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
+				IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
+				IodineLabel endLabel = methodBuilder.CreateLabel ();
 				binop.Left.Visit (this);
 				switch (binop.Operation) {
 				case BinaryOperation.BoolAnd:
 					methodBuilder.EmitInstruction (Opcode.Dup);
-					methodBuilder.EmitInstruction (Opcode.JumpIfFalse, shortCircuitLabel);
+					methodBuilder.EmitInstruction (Opcode.JumpIfFalse, shortCircuitFalseLabel);
 					break;
 				case BinaryOperation.BoolOr:
 					methodBuilder.EmitInstruction (Opcode.Dup);
-					methodBuilder.EmitInstruction (Opcode.JumpIfTrue, shortCircuitLabel);
+					methodBuilder.EmitInstruction (Opcode.JumpIfTrue, shortCircuitTrueLabel);
 					break;
 				}
 				binop.Right.Visit (this);
 				methodBuilder.EmitInstruction (Opcode.BinOp, (int)binop.Operation);
-				methodBuilder.MarkLabelPosition (shortCircuitLabel);
+				methodBuilder.EmitInstruction (Opcode.Jump, endLabel);
+				methodBuilder.MarkLabelPosition (shortCircuitTrueLabel);
+				methodBuilder.EmitInstruction (Opcode.Pop);
+				methodBuilder.EmitInstruction (Opcode.LoadTrue);
+				methodBuilder.EmitInstruction (Opcode.Jump, endLabel);
+				methodBuilder.MarkLabelPosition (shortCircuitFalseLabel);
+				methodBuilder.EmitInstruction (Opcode.Pop);
+				methodBuilder.EmitInstruction (Opcode.LoadFalse);
+				methodBuilder.MarkLabelPosition (endLabel);
 			}
 		}
 
