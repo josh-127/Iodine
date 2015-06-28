@@ -32,13 +32,9 @@ namespace Iodine
 				Stack.StoreLocal (method.Parameters[param], arguments[i++]);
 			}
 
-			StackFrame top = Stack.Top;
-			while (top.InstructionPointer < insCount && !top.AbortExecution) {
-				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
-				ExecuteInstruction (currInstruction);
-			}
+			executeBytecode (method);
 
-			if (top.AbortExecution) {
+			if (Stack.Top.AbortExecution) {
 				return null;
 			}
 
@@ -51,22 +47,13 @@ namespace Iodine
 			IodineObject[] arguments)
 		{
 			Stack.NewFrame (frame);
-			int insCount = method.Body.Count;
 
 			int i = 0;
 			foreach (string param in method.Parameters.Keys) {
 				Stack.StoreLocal (method.Parameters[param], arguments[i++]);
 			}
 
-			StackFrame top = Stack.Top;
-			while (top.InstructionPointer < insCount && !top.AbortExecution) {
-				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
-				ExecuteInstruction (currInstruction);
-			}
-
-			if (top.AbortExecution) {
-				return null;
-			}
+			executeBytecode (method);
 
 			IodineObject retVal = Stack.Pop ();
 			Stack.EndFrame ();
@@ -92,6 +79,16 @@ namespace Iodine
 				Stack.Unwind (Stack.Frames - handler.Frame);
 				lastException = ex;
 				Stack.InstructionPointer = handler.InstructionPointer;
+			}
+		}
+
+		private void executeBytecode (IodineMethod method)
+		{
+			StackFrame top = Stack.Top;
+			int insCount = method.Body.Count;
+			while (top.InstructionPointer < insCount && !top.AbortExecution) {
+				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
+				ExecuteInstruction (currInstruction);
 			}
 		}
 

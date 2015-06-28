@@ -305,10 +305,10 @@ namespace Iodine
 
 		public void Accept (NodeLambda lambda)
 		{
+			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, lambda.InstanceMethod, 
 				lambda.Parameters.Count, methodBuilder.LocalCount);
 			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
 			for (int i = 0; i < lambda.Parameters.Count; i++) {
 				anonMethod.Parameters[lambda.Parameters[i]] = symbolTable.GetSymbol
 					(lambda.Parameters [i]).Index;

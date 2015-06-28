@@ -47,6 +47,15 @@ namespace Iodine
 		}
 	}
 
+	public class IodineInternalErrorException : IodineException
+	{
+		public IodineInternalErrorException (Exception ex)
+			: base ("Internal exception: {0} has occurred", ex.Message) 
+		{
+
+		}
+	}
+
 	public class IodineArgumentException : IodineException
 	{
 		public IodineArgumentException (int argCount)
