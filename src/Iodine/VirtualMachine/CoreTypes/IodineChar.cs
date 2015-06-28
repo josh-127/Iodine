@@ -56,7 +56,7 @@ namespace Iodine
 
 		public override int GetHashCode ()
 		{
-			return Value.GetHashCode ();
+			return Value.ToString ().GetHashCode ();
 		}
 
 		private IodineObject isLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
