@@ -5,25 +5,45 @@
 # Please add yourself as author if you make changes
 ###
 
+###
+### printf, printr, sprintf
+###
+
 # format  : string
 # args    : object || tuple
 func printf (format, args) {
   print (sprintf (format, args))
 }
 
+# obj     : object
+func printr (obj) {
+  print (repr (obj))
+}
+
 # format  : string
-# args    : object || tuple
+# args    : object || list || tuple
 # returns : string
 func sprintf (format, args) {
-  if (args.typeDef.name != "Tuple")
+  if (type (args) != "Tuple" && type (args) != "List")
     args = (args,)
   buf = ""
   i = 0
   arg_pos = 0
   while (i < len (format)) {
     if (format[i] != "{") {
-      buf += format[i]
-      i = i + 1
+      if (format[i] == "}") {
+        i = i + 1
+        if (i < len (format) && format[i] == "}") {
+          buf += "}"
+          i = i + 1
+        }
+        else
+          raise ("Unexpected closing curly bracket")
+      }
+      else {
+        buf += format[i]
+        i = i + 1
+      }
     }
     else if (format[i] == "{") {
       i = i + 1
@@ -36,6 +56,10 @@ func sprintf (format, args) {
         else
           raise ("Index out of range: Requested element " +
             toStr (arg_pos) + " of " + toStr (len (args) - 1))
+      }
+      else if (i < len (format) && format[i] == "{") {
+        buf += "{"
+        i = i + 1
       }
       else {
         arg_index = ""
@@ -56,8 +80,164 @@ func sprintf (format, args) {
   return buf
 }
 
+###
+### Generic functions
+###
+
 # obj     : object
 # returns : int
 func len (obj) {
   return obj.getSize ()
+}
+
+# obj     : object
+# returns : string
+func type (obj) {
+  return obj.typeDef.name
+}
+
+###
+### Dec to hex conversion
+###
+
+# n       : int
+# returns : string
+func hex (n) {
+  buf = ""
+  lookup = "ABCDEF"
+  while (n > 0) {
+    rem = n % 16
+    if (rem < 10)
+      buf += toStr (rem)
+    else
+      buf += lookup[rem - 10]
+    n /= 16
+  }
+  return reverse (buf)
+}
+
+###
+### Reverse
+### Functions for reversing strings, lists and tuples
+###
+
+# obj     : object
+# returns : object
+### TODO  : Convert List back to Tuple
+func reverse (obj) {
+  _type = type (obj)
+  if (_type == "Str")
+    return reverseString (obj)
+  else if (_type == "List")
+    return reverseList (obj)
+  else if (_type == "Tuple")
+    return reverseList (obj)
+  else
+    raise (sprintf ("Can't reverse object of type {}", type))
+}
+
+# str     : string
+# returns : string
+func reverseString (str) {
+  i = len (str) - 1
+  buf = ""
+  while (i >= 0) {
+    buf += str[i]
+    i = i - 1
+  }
+  return buf
+}
+
+# lst     : list || tuple
+# returns : list
+func reverseList (lst) {
+  i = len (lst) - 1
+  buf = list ()
+  while (i >= 0) {
+    buf.add (lst[i])
+    i = i - 1
+  }
+  return buf
+}
+
+###
+### Repr
+### Functions for bringing objects into
+### a developer-friendly, printable state
+###
+
+# obj     : object
+# returns : string
+func repr (obj) {
+  _type = type (obj)
+  if (_type == "List")
+    return reprList (obj)
+  else if (_type == "Tuple")
+    return reprTuple (obj)
+  else if (_type == "HashMap")
+    return reprHashMap (obj)
+  else if (_type == "Str")
+    return reprStr (obj)
+  else
+    return toStr (obj)
+}
+
+# lst     : list
+# returns : string
+func reprList (lst) {
+  return sprintf ("[{}]", lambda () => {
+    buf = ""
+    i = 0
+    while (i < len (lst)) {
+      if (i == len (lst) - 1)
+        buf += sprintf ("{}", lst[i])
+      else
+        buf += sprintf ("{}, ", lst[i])
+      i = i + 1
+    }
+    return buf
+  }())
+}
+
+# lpl     : tuple
+# returns : string
+func reprTuple (tpl) {
+  return sprintf ("({})", lambda () => {
+    buf = ""
+    i = 0
+    while (i < len (tpl)) {
+      if (i == len (tpl) - 1)
+        buf += sprintf ("{}", repr (tpl[i]))
+      else
+        buf += sprintf ("{}, ", repr (tpl[i]))
+      i = i + 1
+    }
+    return buf
+  }())
+}
+
+# dict    : hashmap
+# returns : string
+func reprHashMap (dict) {
+  return sprintf ("{{{}}}", lambda () => {
+    buf = ""
+    i = 0
+    foreach (key in dict) {
+      _key = repr (key)
+      _val = repr (dict[key])
+      val = sprintf ("{0}: {1}", (_key, _val))
+      if (i == len (dict) - 1)
+        buf += sprintf ("{}", val)
+      else
+        buf += sprintf ("{}, ", val)
+      i = i + 1
+    }
+    return buf
+  }())
+}
+
+# str     : string
+# returns : string
+func reprStr (str) {
+  return sprintf ("\"{}\"", str)
 }
