@@ -4,6 +4,8 @@
 # Description : An easy to use module for working with urls
 ###
 
+use corelib;
+
 ###
 ### Public functions
 ###
@@ -165,36 +167,4 @@ func _parse_query (tail) {
       dict[ident] = value
   }
   return dict
-}
-
-###
-### Helper functions
-###
-
-func len (str) {
-  return str.getSize ()
-}
-
-func hex (n) {
-  buf = ""
-  lookup = "ABCDEF"
-  while (n > 0) {
-    rem = n % 16
-    if (rem < 10)
-      buf += toStr (rem)
-    else
-      buf += lookup[rem - 10]
-    n /= 16
-  }
-  return reverse (buf)
-}
-
-func reverse (str) {
-  i = len (str) - 1
-  buf = ""
-  while (i >= 0) {
-    buf += str[i]
-    i = i - 1
-  }
-  return buf
 }
