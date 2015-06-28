@@ -1,0 +1,200 @@
+###
+# Name  : urllib
+# Author: @SplittyDev
+# Description: An easy to use module for working with urls
+###
+
+###
+### Public functions
+###
+
+func normalize_url (url) {
+  input = url
+  lower_url = input.toLower ()
+  protocol = _get_url_protocol (lower_url)
+  base = _get_url_base (lower_url)
+  base = _opt_url_base (base)
+  tail = _get_url_tail (lower_url)
+  tail = _opt_url_tail (tail)
+  return _build_url (protocol, base, tail)
+}
+
+func get_url_protocol (url) {
+  url = normalize_url (url)
+  return _get_url_protocol (url)
+}
+
+func get_url_base (url) {
+  url = normalize_url (url)
+  return _get_url_base (url)
+}
+
+func get_url_tail (url) {
+  url = normalize_url (url)
+  return _get_url_tail (url)
+}
+
+func get_url_port (url) {
+  url = normalize_url (url)
+  return _get_url_port (url)
+}
+
+func parse_query (url) {
+  tail = get_url_tail (url)
+  return _parse_query (tail)
+}
+
+###
+### Private functions
+###
+
+func _get_url_protocol (url) {
+  return url.substr (0, url.indexOf ("://"))
+}
+
+func _get_url_base (url) {
+  start = url.indexOf ("://") + 3
+  middle = url.substr (start)
+  if (middle.contains ("/")) {
+    end = middle.indexOf ("/")
+    middle = middle.substr (0, end)
+  }
+  return middle
+}
+
+func _get_url_tail (url) {
+  start = url.substr (url.indexOf ("://") + 3)
+  if (start.contains ("/"))
+    return start.substr (start.indexOf ("/") + 1)
+  else
+    return ""
+}
+
+func _get_url_port (url) {
+  url = _get_url_base (url)
+  if (!url.contains (":"))
+    return 80
+  port = url.substr (url.indexOf (":") + 1)
+  return toInt (port)
+}
+
+func _opt_url_base (url) {
+  if (!url.contains (":"))
+    return url
+  base = url.substr (0, url.indexOf (":"))
+  port = url.substr (url.indexOf (":") + 1)
+  if (port == "80")
+    return base
+  return url
+}
+
+func _opt_url_tail (url) {
+  n = 0
+  inc = lambda () => {
+    prevn = n
+    n = n + 1
+    return hex (prevn)
+  }
+  lookup = hashMap ()
+  n = 32
+  lookup[" "] = inc ()
+  lookup["!"] = inc ()
+  lookup["\""] = inc ()
+  lookup["#"] = inc ()
+  lookup["$"] = inc ()
+  lookup["%"] = inc ()
+  #lookup["&"] = inc ()
+  lookup["'"] = inc ()
+  lookup["("] = inc ()
+  lookup[")"] = inc ()
+  lookup["*"] = inc ()
+  lookup["+"] = inc ()
+  lookup[","] = inc ()
+  lookup["-"] = inc ()
+  #lookup["."] = inc ()
+  #lookup["/"] = inc ()
+  n = 58
+  lookup[":"] = inc ()
+  lookup[";"] = inc ()
+  lookup["<"] = inc ()
+  #lookup["="] = inc ()
+  lookup[">"] = inc ()
+  #lookup["?"] = inc ()
+  lookup["@"] = inc ()
+  n = 91
+  lookup["["] = inc ()
+  lookup["\\"] = inc ()
+  lookup["]"] = inc ()
+  lookup["^"] = inc ()
+  lookup["_"] = inc ()
+  lookup["`"] = inc ()
+  i = 0
+  buf = ""
+  while (i < len (url)) {
+    if (lookup.contains (url[i])) {
+      buf += "%" + lookup[url[i]]
+    }
+    else
+      buf += url[i]
+    i = i + 1
+  }
+  return buf
+}
+
+func _build_url (protocol, base, tail) {
+  return protocol + "://" + base + "/" + tail
+}
+
+func _parse_query (tail) {
+  dict = hashMap ()
+  skip = "?&="
+  i = 0;
+  read_ident = lambda () => {
+    buffer = ""
+    while (skip.contains (tail[i]))
+      i = i + 1
+    while (i < len (tail) && !skip.contains (tail[i])) {
+      buffer += tail[i]
+      i = i + 1
+    }
+    return buffer
+  }
+  while (i < len (tail)) {
+      ident = read_ident ()
+      value = read_ident ()
+      dict[ident] = value
+  }
+  return dict
+}
+
+###
+### Helper functions
+###
+
+func len (str) {
+  return str.getSize ()
+}
+
+func hex (n) {
+  buf = ""
+  lookup = "ABCDEF"
+  while (n > 0) {
+    rem = n % 16
+    if (rem < 10)
+      buf += toStr (rem)
+    else
+      buf += lookup[rem - 10]
+    n /= 16
+  }
+  return reverse (buf)
+}
+
+func reverse (str) {
+  i = len (str) - 1
+  buf = ""
+  while (i >= 0) {
+    buf += str[i]
+    i = i - 1
+  }
+  return buf
+}
