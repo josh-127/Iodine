@@ -178,6 +178,8 @@ func repr (obj) {
     return reprHashMap (obj)
   else if (_type == "Str")
     return reprStr (obj)
+  else if (_type == "Null")
+    return reprNull (obj)
   else
     return toStr (obj)
 }
@@ -199,7 +201,7 @@ func reprList (lst) {
   }())
 }
 
-# lpl     : tuple
+# tpl     : tuple
 # returns : string
 func reprTuple (tpl) {
   return sprintf ("({})", lambda () => {
@@ -240,4 +242,10 @@ func reprHashMap (dict) {
 # returns : string
 func reprStr (str) {
   return sprintf ("\"{}\"", str)
+}
+
+# obj     : null
+# returns : string
+func reprNull (obj) {
+  return "NULL"
 }
