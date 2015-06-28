@@ -5,7 +5,7 @@
 # Please add yourself as author if you make changes
 ###
 
-use type, repr, len, printf from core
+use repr, len, printf from core
 
 class assert {
   func assert (self) {
@@ -14,6 +14,11 @@ class assert {
     self.history = list ()
     self.hooks = list ()
     self.last = null
+    self.lock = false
+    self.PASS = "PASS"
+    self.FAIL = "FAIL"
+    self.SKIP = "SKIP"
+    self.INDETERMINATE = "INDETERMINATE"
   }
 
   func add (self, action) {
@@ -34,15 +39,17 @@ class assert {
         self.last = self.history[len (self.history) - 1]
       if (last != self.last) {
         last = self.last
-        msg = "FAIL"
-        if (last.passed)
-          msg = "PASS"
+        msg = last.state
         printf ("Test {}: {}\n\t{}", (i, last.msg, msg))
-        if (!last.passed)
+        if (last.state == self.FAIL)
           printf ("\tExpect: {}\n\tActual: {}",
             (repr (last.expected), repr (last.result)))
-        i = i + 1
       }
+      else {
+        printf ("Test {}:\n\t{}", (i, self.INDETERMINATE))
+      }
+      i = i + 1
+      self.lock = false
     }
   }
 
@@ -51,27 +58,49 @@ class assert {
   ###
 
   func _eq (self, expected, actual, msg) {
-    if (self.use_list_compare (expected, actual)) {
+    if (self.should_list_compare (expected, actual)) {
       tmp = self.list_compare (expected, actual)
       expected = true
       actual = tmp
     }
     if (expected == actual)
       self.pass (expected, actual, msg)
-    else
-      self.fail (expected, actual, msg)
+    self.fail (expected, actual, msg)
   }
 
   func _neq (self, expected, actual, msg) {
-    if (self.use_list_compare (expected, actual)) {
+    if (self.should_list_compare (expected, actual)) {
       tmp = self.list_compare (expected, actual)
       expected = true
       actual = tmp
     }
     if (expected != actual)
       self.pass (expected, actual, msg)
-    else
-      self.fail (expected, actual, msg)
+    self.fail (expected, actual, msg)
+  }
+
+  func _gt (self, x, y, msg) {
+    if (x > y)
+      self.pass (true, true, msg)
+    self.fail (true, false, msg)
+  }
+
+  func _lt (self, x, y, msg) {
+    if (x < y)
+      self.pass (true, true, msg)
+    self.fail (true, false, msg)
+  }
+
+  func _instanceof (self, obj, tdef) {
+    if (core.type (obj) == tdef)
+      self.pass (true, true, msg)
+    self.fail (true, false, msg)
+  }
+
+  func _notinstanceof (self, obj, tdef) {
+    if (core.type (obj) != tdef)
+      self.pass (true, true, msg)
+    self.fail (true, false, msg)
   }
 
   ###
@@ -82,25 +111,74 @@ class assert {
     self._eq (expected, actual, msg)
   }
 
+  func equals (self, expected, actual, msg) {
+    self._eq (expected, actual, msg)
+  }
+
   func neq (self, expected, actual, msg) {
     self._neq (expected, actual, msg)
   }
 
+  func notEquals (self, expected, actual, msg) {
+    self._neq (expected, actual, msg)
+  }
+
+  func gt (self, x, y, msg)  {
+    self._gt (x, y, msg)
+  }
+
+  func greater (self, x, y, msg) {
+    self._gt (x, y, msg)
+  }
+
+  func lt (self, x, y, msg) {
+    self._lt (x, y, msg)
+  }
+
+  func less (self, x, y, msg) {
+    self._lt (x, y, msg)
+  }
+
+  func type (self, obj, tdef) {
+    self._instanceof (obj, tdef)
+  }
+
+  func instanceOf (self, obj, tdef) {
+    self._instanceof (obj, tdef)
+  }
+
+  func notInstanceOf (self, obj, tdef) {
+    self._notinstanceof (obj, tdef)
+  }
+
   func pass (self, expected, result, msg) {
-    self.history.add (testResult (expected, result, true, msg))
+    if (!self.lock) {
+      self.history.add (testResult (expected, result, self.PASS, msg))
+      self.lock = true
+    }
   }
 
   func fail (self, expected, result, msg) {
-    self.history.add (testResult (expected, result, false, msg))
+    if (!self.lock) {
+      self.history.add (testResult (expected, result, self.FAIL, msg))
+      self.lock = true
+    }
+  }
+
+  func skip (self, msg) {
+    if (!self.lock) {
+      self.history.add (testResult (null, null, self.SKIP, msg))
+      self.lock = true
+    }
   }
 
   ###
   ### Tricky bits
   ###
 
-  func use_list_compare (self, expected, actual) {
-    lookup = {"List", "Tuple"}
-    if (lookup.contains (expected) && lookup.contains (actual))
+  func should_list_compare (self, expected, actual) {
+    if ((core.type (expected) == "List" && core.type (actual) == "List")
+         || (core.type (expected) == "Tuple" && core.type (actual) == "Tuple"))
       return true
     return false
   }
@@ -119,10 +197,10 @@ class assert {
 }
 
 class testResult {
-  func testResult (self, expected, result, passed, msg) {
+  func testResult (self, expected, result, state, msg) {
     self.expected = expected
     self.result = result
-    self.passed = passed
+    self.state = state
     self.msg = msg
   }
 }
