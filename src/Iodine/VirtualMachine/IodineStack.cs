@@ -179,7 +179,6 @@ namespace Iodine
 
 		public void StoreLocal (int index, IodineObject obj)
 		{
-			Console.WriteLine ("Store {0} (Count {1}", index, this.LocalCount);
 			this.locals[index] = obj;
 		}
 
