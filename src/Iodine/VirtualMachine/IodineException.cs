@@ -29,6 +29,15 @@ namespace Iodine
 		}
 	}
 
+	public class IodineIndexException : IodineException
+	{
+		public IodineIndexException (string expectedType)
+			: base ("Expected type '{0}'", expectedType) 
+		{
+
+		}
+	}
+
 	public class IodineAttributeNotFoundException : IodineException
 	{
 		public IodineAttributeNotFoundException (string expectedType)

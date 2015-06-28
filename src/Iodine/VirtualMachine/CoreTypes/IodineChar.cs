@@ -16,6 +16,11 @@ namespace Iodine
 			: base (CharTypeDef)
 		{
 			this.Value = value;
+			this.SetAttribute ("isLetter", new InternalMethodCallback (isLetter, this));
+			this.SetAttribute ("isDigit", new InternalMethodCallback (isDigit, this));
+			this.SetAttribute ("isLetterOrDigit", new InternalMethodCallback (isLetterOrDigit, this));
+			this.SetAttribute ("isWhiteSpace", new InternalMethodCallback (isWhiteSpace, this));
+			this.SetAttribute ("isSymbol", new InternalMethodCallback (isSymbol, this));
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -52,6 +57,31 @@ namespace Iodine
 		public override int GetHashCode ()
 		{
 			return Value.GetHashCode ();
+		}
+
+		private IodineObject isLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineBool (char.IsLetter (this.Value));
+		}
+
+		private IodineObject isDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineBool (char.IsDigit (this.Value));
+		}
+
+		private IodineObject isLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineBool (char.IsLetterOrDigit (this.Value));
+		}
+
+		private IodineObject isWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineBool (char.IsWhiteSpace (this.Value));
+		}
+
+		private IodineObject isSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineBool (char.IsSymbol (this.Value));
 		}
 	}
 }

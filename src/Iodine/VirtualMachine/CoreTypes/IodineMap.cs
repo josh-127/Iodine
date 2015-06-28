@@ -7,11 +7,15 @@ namespace Iodine
 	{
 		private static readonly IodineTypeDefinition MapTypeDef = new IodineTypeDefinition ("HashMap"); 
 
+		private int iterIndex = 0;
+
 		public Dictionary <int, IodineObject> Dict
 		{
 			private set;
 			get;
 		}
+
+		private List <IodineObject> keys = new List<IodineObject>();
 
 		public IodineMap ()
 			: base (MapTypeDef)
@@ -28,6 +32,7 @@ namespace Iodine
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
 			this.Dict[key.GetHashCode ()] = value;
+			this.keys.Add (key);
 		}
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
@@ -38,6 +43,24 @@ namespace Iodine
 		public override int GetHashCode ()
 		{
 			return Dict.GetHashCode ();
+		}
+
+		public override IodineObject IterGetNext (VirtualMachine vm)
+		{
+			return this.keys[this.iterIndex - 1];
+		}
+
+		public override bool IterMoveNext (VirtualMachine vm)
+		{
+			if (this.iterIndex >= this.Dict.Keys.Count)
+				return false;
+			this.iterIndex++;
+			return true;
+		}
+
+		public override void IterReset (VirtualMachine vm)
+		{
+			this.iterIndex = 0;
 		}
 
 		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)

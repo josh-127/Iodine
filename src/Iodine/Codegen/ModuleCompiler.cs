@@ -57,6 +57,16 @@ namespace Iodine
 			IodineModule import = IodineModule.LoadModule (errorLog, useStmt.Module);
 			if (import != null) {
 				module.SetAttribute (useStmt.Module, import);
+				foreach (string item in useStmt.Imports) {
+					if (import.HasAttribute (item)) {
+						module.SetAttribute (item, import.GetAttribute (item));
+					} else {
+						errorLog.AddError (ErrorType.ParserError, "Could not import {0} from {1}", 
+							item, useStmt.Module);
+					}
+				}
+			} else {
+				errorLog.AddError (ErrorType.ParserError, "Could not import module {0}", useStmt.Module);
 			}
 		}
 
