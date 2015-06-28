@@ -86,6 +86,11 @@ namespace Iodine
 			errorLog.AddError (ErrorType.ParserError, "Unexpected foreach statement!");
 		}
 
+		public void Accept (NodeContinue cont)
+		{
+			errorLog.AddError (ErrorType.ParserError, "Unexpected continue statement!");
+		}
+
 		public void Accept (NodeFuncDecl funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);

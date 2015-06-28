@@ -31,6 +31,8 @@ namespace Iodine
 				return NodeTryExcept.Parse (stream);
 			} else if (stream.Accept (TokenClass.Keyword, "break")) {
 				return new NodeBreak ();
+			} else if (stream.Accept (TokenClass.Keyword, "continue")) {
+				return new NodeContinue ();
 			} else if (stream.Match (TokenClass.OpenBrace)) {
 				return NodeScope.Parse (stream);
 			} else if (stream.Accept (TokenClass.SemiColon)) {

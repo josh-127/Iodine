@@ -53,7 +53,7 @@ namespace Iodine
 					VirtualMachine vm = new VirtualMachine ();
 					module.GetAttribute ("main").Invoke (vm, new IodineObject[] {options.Arguments });
 				} catch (UnhandledIodineExceptionException ex) {
-					Console.WriteLine ("An unhandled exception has occured!");
+					Console.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);
 					Console.WriteLine ("\tMessage: {0}", ex.OriginalException.Message);
 					Console.WriteLine ();
 					ex.PrintStack ();

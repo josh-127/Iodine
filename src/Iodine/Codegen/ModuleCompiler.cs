@@ -41,6 +41,7 @@ namespace Iodine
 		public void Accept (NodeForStmt forStmt) { }
 		public void Accept (NodeForeach foreachStmt) { }
 		public void Accept (NodeTuple tuple) { }
+		public void Accept (NodeContinue cont) { }
 
 		public void Accept (NodeFuncDecl funcDecl)
 		{

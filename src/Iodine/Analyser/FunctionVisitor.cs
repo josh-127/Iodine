@@ -167,6 +167,10 @@ namespace Iodine
 		{
 		}
 
+		public void Accept (NodeContinue cont)
+		{
+		}
+
 		public void Accept (NodeTuple tuple)
 		{
 			visitSubnodes (tuple);

@@ -40,6 +40,7 @@ namespace Iodine
 				matchString (inputStream, "except") ||
 				matchString (inputStream, "break") ||
 				matchString (inputStream, "from") ||
+				matchString (inputStream, "continue") ||
 				matchString (inputStream, "return");
 		}
 

@@ -184,6 +184,11 @@ namespace Iodine
 			Write ("Break");
 		}
 
+		public void Accept (NodeContinue cont)
+		{
+			Write ("Continue");
+		}
+
 		public void Accept (NodeTuple tuple)
 		{
 			Write ("Tuple");
