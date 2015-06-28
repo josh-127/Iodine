@@ -26,13 +26,19 @@ namespace Iodine
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			IodineInteger index = key as IodineInteger;
-			return this.Objects[(int)index.Value];
+			if (index.Value < Objects.Count)
+				return this.Objects[(int)index.Value];
+			vm.RaiseException (new IodineIndexException ());
+			return null;
 		}
 
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
 			IodineInteger index = key as IodineInteger;
-			this.Objects[(int)index.Value] = value;
+			if (index.Value < Objects.Count)
+				this.Objects[(int)index.Value] = value;
+			else
+				vm.RaiseException (new IodineIndexException ());
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)

@@ -45,12 +45,12 @@ namespace Iodine
 		private IodineObject write (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (this.Closed) { 
-				vm.RaiseException ("Stream has been closed!");
+				vm.RaiseException (new IodineIOException ("Stream has been closed!"));
 				return null;
 			}
 
 			if (!this.CanWrite) {
-				vm.RaiseException ("Stream is not open for write!");
+				vm.RaiseException (new IodineIOException ("Can not write to stream!"));
 				return null;
 			}
 
@@ -61,7 +61,7 @@ namespace Iodine
 					IodineInteger intVal = obj as IodineInteger;
 					write ((byte)intVal.Value);
 				} else {
-					vm.RaiseException ("Type of integer or string expected!");
+					vm.RaiseException (new IodineTypeException (""));
 				}
 			}
 			return null;

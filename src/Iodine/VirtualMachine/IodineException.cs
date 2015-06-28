@@ -31,8 +31,8 @@ namespace Iodine
 
 	public class IodineIndexException : IodineException
 	{
-		public IodineIndexException (string expectedType)
-			: base ("Expected type '{0}'", expectedType) 
+		public IodineIndexException ()
+			: base ("Index out of range!") 
 		{
 
 		}

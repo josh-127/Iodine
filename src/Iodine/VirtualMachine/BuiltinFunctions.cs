@@ -78,7 +78,10 @@ namespace Iodine
 		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString str = args[0] as IodineString;
-			return new IodineString (Environment.GetEnvironmentVariable (str.Value));
+			if (Environment.GetEnvironmentVariable (str.Value) != null)
+				return new IodineString (Environment.GetEnvironmentVariable (str.Value));
+			else 
+				return null;
 		}
 
 		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
