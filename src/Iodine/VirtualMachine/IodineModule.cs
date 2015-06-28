@@ -137,7 +137,7 @@ namespace Iodine
 
 		private static string FindExtension (string name)
 		{
-			if (File.Exists (name)) {
+			if (File.Exists (name) && name.EndsWith (".dll")) {
 				return name;
 			}
 			if (File.Exists (name + ".dll")) {

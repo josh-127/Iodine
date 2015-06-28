@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Iodine;
 
 namespace ModuleReflection
@@ -10,6 +11,13 @@ namespace ModuleReflection
 			: base ("reflection")
 		{
 			this.SetAttribute ("getBytecode", new InternalMethodCallback (getBytecode, this));
+			this.SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
+		}
+
+		private IodineObject loadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString pathStr = args[0] as IodineString;
+			return IodineModule.LoadModule (new ErrorLog (), pathStr.Value);
 		}
 
 		private IodineObject getBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)

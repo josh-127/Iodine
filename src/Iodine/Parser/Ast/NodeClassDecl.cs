@@ -33,9 +33,9 @@ namespace Iodine
 		{
 			this.Name = name;
 			this.Base = baseClass;
-			//NodeFuncDecl dummyCtor = new NodeFuncDecl (name, true, new List<string> ());
-			//dummyCtor.Add (new Ast ());
-			this.Add (new NodeFuncDecl (name, true, new List<string> ()));
+			NodeFuncDecl dummyCtor = new NodeFuncDecl (name, true, new List<string> ());
+			dummyCtor.Add (new NodeStmt ());
+			this.Add (dummyCtor);
 		}
 
 		public override void Visit (IAstVisitor visitor)

@@ -20,7 +20,7 @@ namespace Iodine
 				this.handlers.Add (rvalue);
 				break;
 			case BinaryOperation.Sub:
-				this.handlers.Add (rvalue);
+				this.handlers.Remove (rvalue);
 				break;
 			default:
 				return base.PerformBinaryOperation (vm, binop, rvalue);

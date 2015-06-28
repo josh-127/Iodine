@@ -65,7 +65,11 @@ namespace Iodine
 			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor));
 
 			for (int i = 1; i < classDecl.Children.Count; i++) {
-				clazz.AddInstanceMethod (compileMethod ((NodeFuncDecl)classDecl.Children[i]));
+				NodeFuncDecl func = classDecl.Children [i] as NodeFuncDecl;
+				if (func.InstanceMethod)
+					clazz.AddInstanceMethod (compileMethod (func));
+				else
+					clazz.SetAttribute (func.Name, compileMethod (func));
 			}
 
 			module.SetAttribute (clazz.Name, clazz);

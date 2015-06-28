@@ -95,13 +95,6 @@ namespace Iodine
 			return null;
 		}
 
-		private IodineObject exec (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			IodineString str = args[0] as IodineString;
-			vm.RaiseException (str.Value);
-			return null;
-		}
-
 		private IodineObject input (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			foreach (IodineObject arg in args) {
