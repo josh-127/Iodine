@@ -88,9 +88,15 @@ namespace Iodine
 			case BinaryOperation.Mod:
 				return GetAttribute (vm, "_mod").Invoke (vm, arguments); 
 			case BinaryOperation.Equals:
-				return GetAttribute (vm, "_equals").Invoke (vm, arguments); 
+				if (HasAttribute ("_equals"))
+					return GetAttribute (vm, "_equals").Invoke (vm, arguments); 
+				else
+					return new IodineBool (this == rvalue);
 			case BinaryOperation.NotEquals:
-				return GetAttribute (vm, "_notEquals").Invoke (vm, arguments); 
+				if (HasAttribute ("_notEquals"))
+					return GetAttribute (vm, "_notEquals").Invoke (vm, arguments); 
+				else
+					return new IodineBool (this != rvalue);
 			case BinaryOperation.RightShift:
 				return GetAttribute (vm, "_rightShift").Invoke (vm, arguments); 
 			case BinaryOperation.LeftShift:

@@ -120,7 +120,7 @@ namespace Iodine
 					break;
 				}
 			case Opcode.LoadNull: {
-					Stack.Push (null);
+					Stack.Push (IodineNull.Instance);
 					break;
 				}
 			case Opcode.LoadSelf: {

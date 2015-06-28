@@ -189,7 +189,10 @@ namespace Iodine
 
 		public void Push (IodineObject obj)
 		{
-			this.stack.Push (obj);
+			if (obj != null) 
+				this.stack.Push (obj);
+			else
+				this.stack.Push (IodineNull.Instance);
 		}
 
 		public IodineObject Pop ()
