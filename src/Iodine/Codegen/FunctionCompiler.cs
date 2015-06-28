@@ -77,9 +77,21 @@ namespace Iodine
 					binop.Left.Visit (this);
 				}
 			} else {
-				binop.Right.Visit (this);
+				IodineLabel shortCircuitLabel = methodBuilder.CreateLabel ();
 				binop.Left.Visit (this);
+				switch (binop.Operation) {
+				case BinaryOperation.BoolAnd:
+					methodBuilder.EmitInstruction (Opcode.Dup);
+					methodBuilder.EmitInstruction (Opcode.JumpIfFalse, shortCircuitLabel);
+					break;
+				case BinaryOperation.BoolOr:
+					methodBuilder.EmitInstruction (Opcode.Dup);
+					methodBuilder.EmitInstruction (Opcode.JumpIfTrue, shortCircuitLabel);
+					break;
+				}
+				binop.Right.Visit (this);
 				methodBuilder.EmitInstruction (Opcode.BinOp, (int)binop.Operation);
+				methodBuilder.MarkLabelPosition (shortCircuitLabel);
 			}
 		}
 
