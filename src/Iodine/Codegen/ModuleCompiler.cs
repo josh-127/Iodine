@@ -58,7 +58,7 @@ namespace Iodine
 			module.Imports.Add (useStmt.Module);
 			IodineModule import = IodineModule.LoadModule (errorLog, useStmt.Module);
 			if (import != null) {
-				module.SetAttribute (useStmt.Module, import);
+				module.SetAttribute (System.IO.Path.GetFileNameWithoutExtension (useStmt.Module), import);
 				foreach (string item in useStmt.Imports) {
 					if (import.HasAttribute (item)) {
 						module.SetAttribute (item, import.GetAttribute (item));

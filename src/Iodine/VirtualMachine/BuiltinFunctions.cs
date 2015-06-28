@@ -49,19 +49,24 @@ namespace Iodine
 			globalDict["input"] = new InternalMethodCallback (input, null);
 			globalDict["toInt"] = new InternalMethodCallback (toInt, null);
 			globalDict["toStr"] = new InternalMethodCallback (toStr, null);
+			globalDict["Int"] = new InternalMethodCallback (toInt, null);
+			globalDict["Str"] = new InternalMethodCallback (toStr, null);
+			globalDict["Bool"] = new InternalMethodCallback (toBool, null);
+			globalDict["Char"] = new InternalMethodCallback (toChar, null);
 			globalDict["toBool"] = new InternalMethodCallback (toBool, null);
 			globalDict["toChar"] = new InternalMethodCallback (toChar, null);
 			globalDict["list"] = new InternalMethodCallback (list, null);
 			globalDict["event"] = new InternalMethodCallback (createEvent, null);
 			globalDict["object"] = new InternalMethodCallback (Object, null);
 			globalDict["hashMap"] = new InternalMethodCallback (hashMap, null);
+			globalDict["List"] = new InternalMethodCallback (list, null);
+			globalDict["Event"] = new InternalMethodCallback (createEvent, null);
+			globalDict["Object"] = new InternalMethodCallback (Object, null);
+			globalDict["HashMap"] = new InternalMethodCallback (hashMap, null);
 			globalDict["filter"] = new InternalMethodCallback (filter, null);
 			globalDict["map"] = new InternalMethodCallback (map, null);
 			globalDict["range"] = new InternalMethodCallback (range, null);
 			globalDict["open"] = new InternalMethodCallback (open, null);
-			globalDict["isWhiteSpace"] = new InternalMethodCallback (isWhiteSpace, null);
-			globalDict["isDigit"] = new InternalMethodCallback (isDigit, null);
-			globalDict["isLetter"] = new InternalMethodCallback (isLetter, null);
 		}
 
 		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -224,51 +229,6 @@ namespace Iodine
 			else if (canWrite) 
 				return new IodineFile (File.OpenWrite (filePath.Value), canWrite, canRead);
 			return null;
-		}
-
-		private IodineObject isDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			foreach (IodineObject arg in args) {
-				IodineChar ch = arg as IodineChar;
-				if (ch == null) {
-					vm.RaiseException ("Expected type char!");
-					return null;
-				}
-				if (!char.IsDigit (ch.Value)) {
-					return IodineBool.False;
-				}
-			}
-			return IodineBool.True;
-		}
-
-		private IodineObject isWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			foreach (IodineObject arg in args) {
-				IodineChar ch = arg as IodineChar;
-				if (ch == null) {
-					vm.RaiseException ("Expected type char!");
-					return null;
-				}
-				if (!char.IsWhiteSpace (ch.Value)) {
-					return IodineBool.False;
-				}
-			}
-			return IodineBool.True;
-		}
-
-		private IodineObject isLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			foreach (IodineObject arg in args) {
-				IodineChar ch = arg as IodineChar;
-				if (ch == null) {
-					vm.RaiseException ("Expected type char!");
-					return null;
-				}
-				if (!char.IsLetter (ch.Value)) {
-					return IodineBool.False;
-				}
-			}
-			return IodineBool.True;
 		}
 
 	}

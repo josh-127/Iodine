@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Iodine
@@ -37,10 +39,10 @@ namespace Iodine
 		public static NodeUseStatement Parse (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "use");
-			Token ident = stream.Expect (TokenClass.Identifier);
+			string ident = ParseModuleName (stream);
 			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma)) {
 				List<string> items = new List<string> ();
-				items.Add (ident.Value);
+				items.Add (ident);
 				stream.Accept (TokenClass.Comma);
 				while (!stream.Match (TokenClass.Keyword, "from")) {
 					Token item = stream.Expect (TokenClass.Identifier);
@@ -50,10 +52,30 @@ namespace Iodine
 					}
 				}
 				stream.Expect (TokenClass.Keyword, "from");
-				Token module = stream.Expect (TokenClass.Identifier);
-				return new NodeUseStatement (module.Value, items);
+				string module = ParseModuleName (stream);
+				return new NodeUseStatement (module, items);
 			}
-			return new NodeUseStatement (ident.Value);
+			return new NodeUseStatement (ident);
+		}
+
+		private static string ParseModuleName (TokenStream stream)
+		{
+			Token initIdent = stream.Expect (TokenClass.Identifier);
+
+			if (stream.Match (TokenClass.Dot)) {
+				stream.Expect (TokenClass.Dot);
+				StringBuilder accum = new StringBuilder ();
+				accum.Append (initIdent.Value);
+				while (stream.Match (TokenClass.Identifier)) {
+					Token ident = stream.Expect (TokenClass.Identifier);
+					accum.Append (Path.DirectorySeparatorChar);
+					accum.Append (ident.Value);
+				}
+				return accum.ToString ();
+
+			} else {
+				return initIdent.Value;
+			}
 		}
 	}
 }
