@@ -192,8 +192,8 @@ namespace Iodine
 					break;
 				}
 			case Opcode.BinOp: {
-					IodineObject op1 = Stack.Pop ();
 					IodineObject op2 = Stack.Pop ();
+					IodineObject op1 = Stack.Pop ();
 					Stack.Push (op1.PerformBinaryOperation (this, (BinaryOperation)ins.Argument,
 						op2 ));
 					break;
