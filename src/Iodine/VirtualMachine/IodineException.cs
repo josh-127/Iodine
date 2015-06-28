@@ -47,6 +47,15 @@ namespace Iodine
 		}
 	}
 
+	public class IodineArgumentException : IodineException
+	{
+		public IodineArgumentException (int argCount)
+			: base ("Expected {0} or more arguments!", argCount) 
+		{
+
+		}
+	}
+
 	public class IodineIOException : IodineException
 	{
 		public IodineIOException (string expectedType)

@@ -179,6 +179,7 @@ namespace Iodine
 
 		public void StoreLocal (int index, IodineObject obj)
 		{
+			Console.WriteLine ("Store {0} (Count {1}", index, this.LocalCount);
 			this.locals[index] = obj;
 		}
 
@@ -204,6 +205,21 @@ namespace Iodine
 		{
 			return new StackFrame (this.Method, top, this.Self, this.LocalCount,
 				this.locals);;
+		}
+	}
+
+	public class NativeStackFrame : StackFrame
+	{
+		public InternalMethodCallback NativeMethod
+		{
+			private set;
+			get;
+		}
+
+		public NativeStackFrame (InternalMethodCallback method, StackFrame parent)
+			: base (null, parent, null, 0)
+		{
+			this.NativeMethod = method;
 		}
 	}
 }

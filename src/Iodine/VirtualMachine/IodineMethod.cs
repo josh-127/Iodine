@@ -42,6 +42,7 @@ namespace Iodine
 
 		private Dictionary<int, IodineLabel> labelReferences = new Dictionary<int, IodineLabel> ();
 		protected List<Instruction> instructions = new List<Instruction> ();
+		private IodineMethod parent = null;
 
 		public IList<Instruction> Body
 		{
@@ -98,6 +99,12 @@ namespace Iodine
 			this.Parameters = new Dictionary<string, int> ();
 		}
 
+		public IodineMethod (IodineMethod parent, IodineModule module, string name, bool isInstance, int parameterCount,
+			int localCount) : this (module, name, isInstance, parameterCount, localCount)
+		{
+			this.parent = parent;
+		}
+
 		public void EmitInstruction (Opcode opcode)
 		{
 			this.instructions.Add (new Instruction (opcode));
@@ -117,6 +124,8 @@ namespace Iodine
 
 		public int CreateTemporary ()
 		{
+			if (this.parent != null) 
+				this.parent.CreateTemporary ();
 			return this.LocalCount++;
 		}
 

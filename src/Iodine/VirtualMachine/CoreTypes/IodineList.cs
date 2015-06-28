@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Iodine
@@ -71,6 +72,10 @@ namespace Iodine
 
 		private IodineObject add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
+			if (arguments.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
 			IodineList list = self as IodineList;
 			foreach (IodineObject obj in arguments) {
 				list.Add (obj);

@@ -305,7 +305,7 @@ namespace Iodine
 
 		public void Accept (NodeLambda lambda)
 		{
-			IodineMethod anonMethod = new IodineMethod (methodBuilder.Module, null, lambda.InstanceMethod, 
+			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, lambda.InstanceMethod, 
 				lambda.Parameters.Count, methodBuilder.LocalCount);
 			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];

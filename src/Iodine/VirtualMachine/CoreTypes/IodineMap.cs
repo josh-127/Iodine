@@ -65,6 +65,10 @@ namespace Iodine
 
 		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
 			return new IodineBool (Dict.ContainsKey (args[0].GetHashCode ()));
 		}
 	}

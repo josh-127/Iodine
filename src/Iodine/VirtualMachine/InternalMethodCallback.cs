@@ -22,7 +22,10 @@ namespace Iodine
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			return callback.Invoke (vm, self, arguments);
+			//vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
+			IodineObject ret = callback.Invoke (vm, self, arguments);
+			//vm.Stack.EndFrame ();
+			return ret;
 		}
 	}
 }

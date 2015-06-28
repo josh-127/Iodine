@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Iodine
 {
@@ -26,6 +27,7 @@ namespace Iodine
 			this.SetAttribute ("replace", new InternalMethodCallback (replace, this));
 			this.SetAttribute ("startsWith", new InternalMethodCallback (startsWith, this));
 			this.SetAttribute ("split", new InternalMethodCallback (split, this));
+			this.SetAttribute ("join", new InternalMethodCallback (join, this));
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -114,7 +116,7 @@ namespace Iodine
 		private IodineObject substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 1) {
-				vm.RaiseException ("Expected one or more arguments!");
+				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 			int start = 0;
@@ -148,7 +150,7 @@ namespace Iodine
 		private IodineObject indexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 1) {
-				vm.RaiseException ("Expected one or more arguments!");
+				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 
@@ -172,7 +174,7 @@ namespace Iodine
 		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 1) {
-				vm.RaiseException ("Expected one or more arguments!");
+				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 			IodineString selfStr = self as IodineString;
@@ -182,8 +184,8 @@ namespace Iodine
 
 		private IodineObject startsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (args.Length < 1) {
-				vm.RaiseException ("Expected one or more arguments!");
+			if (args.Length < 2) {
+				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 			IodineString selfStr = self as IodineString;
@@ -194,7 +196,7 @@ namespace Iodine
 		private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
-				vm.RaiseException ("Expected two or more arguments!");
+				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
 			IodineString selfStr = self as IodineString;
@@ -210,7 +212,7 @@ namespace Iodine
 		private IodineObject split (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 1) {
-				vm.RaiseException ("Expected one or more arguments!");
+				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 
@@ -232,6 +234,23 @@ namespace Iodine
 				list.Add (new IodineString (str));
 			}
 			return list;
+		}
+
+		private IodineObject join (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			StringBuilder accum = new StringBuilder ();
+			IodineObject collection = args[0];
+			collection.IterReset (vm);
+			string last = "";
+			string sep = "";
+			while (collection.IterMoveNext (vm)) {
+				IodineObject o = collection.IterGetNext (vm);
+				accum.AppendFormat ("{0}{1}", last, sep);
+				last = o.ToString ();
+				sep = this.Value;
+			}
+			accum.Append (last);
+			return new IodineString (accum.ToString ());
 		}
 	}
 }
