@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleSockets", "..\ModuleS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleDNS", "..\ModuleDNS.csproj", "{1229E42A-7B91-4A37-B769-D8390751AADE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleMySQL", "..\ModuleMySQL\ModuleMySQL.csproj", "{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -23,6 +25,10 @@ Global
 		{4DF6CA93-D9D5-44CC-B057-AF19844DEDCF}.Debug|x86.Build.0 = Debug|Any CPU
 		{4DF6CA93-D9D5-44CC-B057-AF19844DEDCF}.Release|x86.ActiveCfg = Release|Any CPU
 		{4DF6CA93-D9D5-44CC-B057-AF19844DEDCF}.Release|x86.Build.0 = Release|Any CPU
+		{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}.Debug|x86.Build.0 = Debug|Any CPU
+		{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}.Release|x86.Build.0 = Release|Any CPU
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Debug|x86.ActiveCfg = Debug|x86
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Debug|x86.Build.0 = Debug|x86
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Release|x86.ActiveCfg = Release|x86
