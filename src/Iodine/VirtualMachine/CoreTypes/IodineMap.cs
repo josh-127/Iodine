@@ -38,11 +38,6 @@ namespace Iodine
 
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
-			int hash = key.GetHashCode ();
-			if (!Dict.ContainsKey (hash)) {
-				vm.RaiseException (new IodineKeyNotFound ());
-				return;
-			}
 			this.Dict[key.GetHashCode ()] = value;
 			this.keys.Add (key);
 		}
