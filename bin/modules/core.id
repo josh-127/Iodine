@@ -10,7 +10,7 @@
 ### printf, printr, sprintf, sprintf_t
 ###
 
-# format  : string
+# format  : object || string
 # args    : object || tuple
 func printf (format, params args) {
   print (sprintf_t (format, args))
@@ -21,17 +21,19 @@ func printr (obj) {
   print (repr (obj))
 }
 
-# format  : string
+# format  : object || string
 # args    : additional arguments
 # returns : string
 func sprintf (format, params args) {
 	return sprintf_t (format, args)
 }
 
-# format  : string
+# format  : object || string
 # args    : object || list || tuple
 # returns : string
 func sprintf_t (format, args) {
+  if (type (format) != "Str")
+    format = Str (format)
   if (type (args) != "Tuple" && type (args) != "List")
     args = (args,)
   buf = ""
@@ -199,6 +201,8 @@ func repr (obj) {
     return reprStr (obj)
   else if (_type == "Null")
     return reprNull (obj)
+  else if (_type == "Stack")
+    return reprList (reverse (obj.store))
   else
     return Str (obj)
 }

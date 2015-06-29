@@ -1,0 +1,10 @@
+use * from core
+use * from stack
+
+func main () {
+  stack = Stack ()
+  stack.push (1)
+  stack.push (2)
+  stack.push (3)
+  printr (stack)
+}
