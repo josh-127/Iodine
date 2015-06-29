@@ -10,6 +10,7 @@ use * from core
 class Stack {
   func Stack (self) {
     self.store = List ()
+    self.iter_index = 0
   }
 
   func push (self, val) {
@@ -24,6 +25,19 @@ class Stack {
     tmp.removeAt (0)
     self.store = reverse (tmp)
     return val
+  }
+
+  func _iterReset (self) {
+    self.iter_index = len (self.store) - 1
+  }
+
+  func _iterMoveNext (self) {
+    self.iter_index -= 1
+    return self.iter_index >= 0
+  }
+
+  func _iterGetNext (self) {
+    return self.store[self.iter_index]
   }
 }
 
@@ -47,5 +61,17 @@ class TypedStack {
 
   func pop (self) {
     return self.store.pop ()
+  }
+
+  func _iterReset (self) {
+    self.store._iterReset ()
+  }
+
+  func _iterMoveNext (self) {
+    return self.store._iterMoveNext ()
+  }
+
+  func _iterGetNext (self) {
+    return self.store._iterGetnext ()
   }
 }
