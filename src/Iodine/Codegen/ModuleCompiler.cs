@@ -8,12 +8,14 @@ namespace Iodine
 		private SymbolTable symbolTable;
 		private int currentScope = 0;
 		private IodineModule module;
+		private FunctionCompiler functionCompiler;
 
 		public ModuleCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineModule module)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.module = module;
+			this.functionCompiler = new FunctionCompiler (errorLog, symbolTable, module.Initializer);
 		}
 
 		public void Accept (AstNode ast)
@@ -26,22 +28,85 @@ namespace Iodine
 			visitSubnodes (ast);
 		}
 
-		public void Accept (NodeExpr expr) { }
-		public void Accept (NodeStmt stmt) { }
-		public void Accept (NodeBinOp binop) { }
-		public void Accept (NodeUnaryOp unaryop) { }
-		public void Accept (NodeIdent ident) { }
-		public void Accept (NodeCall call) { }
-		public void Accept (NodeArgList arglist) { }
-		public void Accept (NodeGetAttr getAttr) { }
-		public void Accept (NodeInteger integer) { }
-		public void Accept (NodeString str) { }
-		public void Accept (NodeIfStmt ifStmt) { }
-		public void Accept (NodeWhileStmt whileStmt) { }
-		public void Accept (NodeForStmt forStmt) { }
-		public void Accept (NodeForeach foreachStmt) { }
-		public void Accept (NodeTuple tuple) { }
-		public void Accept (NodeContinue cont) { }
+		public void Accept (NodeExpr expr)
+		{
+			expr.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeStmt stmt)
+		{
+			stmt.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeBinOp binop)
+		{
+			binop.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeUnaryOp unaryop)
+		{
+			unaryop.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeIdent ident)
+		{
+			ident.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeCall call)
+		{
+			call.Visit (functionCompiler);
+		}
+			
+		public void Accept (NodeArgList arglist)
+		{
+			arglist.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeGetAttr getAttr)
+		{
+			getAttr.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeInteger integer)
+		{
+			integer.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeString str)
+		{
+			str.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeIfStmt ifStmt)
+		{
+			ifStmt.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeWhileStmt whileStmt)
+		{
+			whileStmt.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeForStmt forStmt) 
+		{
+			forStmt.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeForeach foreachStmt)
+		{
+			foreachStmt.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeTuple tuple)
+		{
+			tuple.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeContinue cont)
+		{
+			cont.Visit (functionCompiler);
+		}
 
 		public void Accept (NodeFuncDecl funcDecl)
 		{
@@ -97,16 +162,55 @@ namespace Iodine
 					).Value));
 		}
 
-		public void Accept (NodeReturnStmt returnStmt) { }
-		public void Accept (NodeIndexer indexer) { }
-		public void Accept (NodeList list) { }
-		public void Accept (NodeSelf self) { }
-		public void Accept (NodeTrue ntrue) { }
-		public void Accept (NodeFalse nfalse) { }
-		public void Accept (NodeNull nil) { }
-		public void Accept (NodeLambda lambda) { }
-		public void Accept (NodeTryExcept tryExcept) {}
-		public void Accept (NodeBreak brk) { }
+		public void Accept (NodeReturnStmt returnStmt)
+		{
+			returnStmt.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeIndexer indexer)
+		{
+			indexer.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeList list)
+		{
+			list.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeSelf self)
+		{
+			self.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeTrue ntrue)
+		{
+			ntrue.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeFalse nfalse) 
+		{
+			nfalse.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeNull nil)
+		{
+			nil.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeLambda lambda)
+		{
+			lambda.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeTryExcept tryExcept)
+		{
+			tryExcept.Visit (functionCompiler);
+		}
+
+		public void Accept (NodeBreak brk)
+		{
+			brk.Visit (functionCompiler);
+		}
 
 		private void visitSubnodes (AstNode root)
 		{

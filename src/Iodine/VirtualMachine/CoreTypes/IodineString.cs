@@ -184,7 +184,7 @@ namespace Iodine
 
 		private IodineObject startsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (args.Length < 2) {
+			if (args.Length < 1) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}

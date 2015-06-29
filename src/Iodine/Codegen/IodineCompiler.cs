@@ -18,6 +18,8 @@ namespace Iodine
 			IodineModule module = new IodineModule ("");
 			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module);
 			ast.Visit (compiler);
+			module.Initializer.EmitInstruction (Opcode.LoadNull);
+			module.Initializer.FinalizeLabels ();
 			return module;
 		}
 	}

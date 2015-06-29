@@ -25,50 +25,60 @@ namespace Iodine
 
 		public void Accept (NodeExpr expr)
 		{
+			visitSubnodes (expr);
 		}
 
 		public void Accept (NodeStmt stmt)
 		{
+			visitSubnodes (stmt);
 		}
 
 		public void Accept (NodeBinOp binop)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			if (binop.Operation == BinaryOperation.Assign) {
+				if (binop.Left is NodeIdent) {
+					NodeIdent ident = (NodeIdent)binop.Left;
+					if (!this.symbolTable.IsSymbolDefined (ident.Value)) {
+						this.symbolTable.AddSymbol (ident.Value);
+					}
+				}
+			}
+			this.visitSubnodes (binop);
 		}
 
 		public void Accept (NodeUnaryOp unaryop)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (unaryop);
 		}
 
 		public void Accept (NodeIdent ident)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (ident);
 		}
 
 		public void Accept (NodeCall call)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (call);
 		}
 
 		public void Accept (NodeArgList arglist)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (arglist);
 		}
 
 		public void Accept (NodeGetAttr getAttr)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (getAttr);
 		}
 
 		public void Accept (NodeInteger integer)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (integer);
 		}
 
 		public void Accept (NodeIfStmt ifStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Unexpected if statement!");
+			visitSubnodes (ifStmt);
 		}
 
 		public void Accept (NodeWhileStmt whileStmt)
@@ -112,7 +122,6 @@ namespace Iodine
 
 		public void Accept (NodeString str)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
 		}
 
 		public void Accept (NodeUseStatement useStmt)
@@ -126,47 +135,45 @@ namespace Iodine
 
 		public void Accept (NodeReturnStmt returnStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Unexpected return statement!");
+			visitSubnodes (returnStmt);
 		}
 
 		public void Accept (NodeIndexer indexer)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (indexer);
 		}
 
 		public void Accept (NodeList list)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Can not define list outside function!");
+			visitSubnodes (list);
 		}
 
 		public void Accept (NodeSelf self)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (self);
 		}
 
 		public void Accept (NodeTrue ntrue)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (ntrue);
 		}
 
 		public void Accept (NodeFalse nfalse)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
 		}
 
 		public void Accept (NodeNull nil)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
 		}
 
 		public void Accept (NodeLambda lambda)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (lambda);
 		}
 
 		public void Accept (NodeBreak brk)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (brk);
 		}
 
 		public void Accept (NodeTryExcept tryExcept)
@@ -175,7 +182,7 @@ namespace Iodine
 
 		public void Accept (NodeTuple tuple)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Expression not valid outside function body!");
+			visitSubnodes (tuple);
 		}
 
 		public void Accept (NodeConstant constant)

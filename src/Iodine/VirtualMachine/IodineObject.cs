@@ -51,7 +51,7 @@ namespace Iodine
 			return this.attributes[name];
 		}
 
-		public IodineObject GetAttribute (VirtualMachine vm, string name)
+		public virtual IodineObject GetAttribute (VirtualMachine vm, string name)
 		{
 			if (this.attributes.ContainsKey (name))
 				return this.attributes[name];

@@ -41,6 +41,7 @@ namespace Iodine
 
 		public static void Main (string[] args)
 		{
+			//System.Diagnostics.Debugger.Break();
 			IodineOptions options = IodineOptions.Parse (args);
 			ErrorLog errorLog = new ErrorLog ();
 			IodineModule module = IodineModule.CompileModule (errorLog, options.FileName);
@@ -51,6 +52,7 @@ namespace Iodine
 			} else {
 				try {
 					VirtualMachine vm = new VirtualMachine ();
+					module.Initializer.Invoke (vm, new IodineObject[] {});
 					module.GetAttribute ("main").Invoke (vm, new IodineObject[] {options.Arguments });
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);

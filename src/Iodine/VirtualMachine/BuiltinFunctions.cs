@@ -42,6 +42,7 @@ namespace Iodine
 
 		public void Initialize (Dictionary<string, IodineObject> globalDict)
 		{
+			globalDict["eval"] = new InternalMethodCallback (eval, null);
 			globalDict["system"] = new InternalMethodCallback (system, null);
 			globalDict["getEnv"] = new InternalMethodCallback (getEnv, null);
 			globalDict["setEnv"] = new InternalMethodCallback (setEnv, null);
@@ -67,6 +68,14 @@ namespace Iodine
 			globalDict["map"] = new InternalMethodCallback (map, null);
 			globalDict["range"] = new InternalMethodCallback (range, null);
 			globalDict["open"] = new InternalMethodCallback (open, null);
+		}
+
+
+		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString str = args[0] as IodineString;
+			IodineModule tmpModule = IodineModule.CompileSource (new ErrorLog (), "__eval__", str.Value);
+			return vm.InvokeMethod (tmpModule.Initializer, null, new IodineObject[]{});
 		}
 
 		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)

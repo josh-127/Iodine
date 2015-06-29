@@ -44,6 +44,13 @@ namespace Iodine
 			get;
 		}
 
+		public IodineMethod Initializer
+		{
+			private set;
+			get;
+		}
+
+		private bool initialized = false;
 		private List<IodineObject> constantPool = new List<IodineObject> ();
 
 		public IodineModule (string name)
@@ -51,6 +58,7 @@ namespace Iodine
 		{
 			this.Name = name;
 			this.Imports = new List<string> ();
+			this.Initializer = new IodineMethod (this, "__init__", false, 0, 0);
 		}
 
 		public void AddMethod (IodineMethod method)
@@ -62,6 +70,15 @@ namespace Iodine
 		{
 			constantPool.Add (obj);
 			return this.constantPool.Count - 1;
+		}
+
+		public override IodineObject GetAttribute (VirtualMachine vm, string name)
+		{
+			if (!this.initialized && this.Initializer.Body.Count > 0) {
+				this.initialized = true;
+				vm.InvokeMethod (this.Initializer, null, new IodineObject[]{});
+			}
+			return base.GetAttribute (vm, name);
 		}
 
 		public static IodineModule CompileModule (ErrorLog errorLog, string file)
@@ -85,6 +102,24 @@ namespace Iodine
 				errorLog.AddError (ErrorType.ParserError, "Could not find module {0}", file);
 				return null;
 			}
+		}
+
+		public static IodineModule CompileSource (ErrorLog errorLog, string name, string source)
+		{
+			Lexer lexer = new Lexer (errorLog, source);
+			TokenStream tokenStream = lexer.Scan ();
+			if (errorLog.ErrorCount > 0) return null;
+			Parser parser = new Parser (tokenStream);
+			Ast root = parser.Parse ();
+			if (errorLog.ErrorCount > 0) return null;
+			SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
+			SymbolTable symbolTable = analyser.Analyse (root);
+			if (errorLog.ErrorCount > 0) return null;
+			IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable);
+			IodineModule module = compiler.CompileAst (root);
+			module.Name = Path.GetFileNameWithoutExtension (name);
+			if (errorLog.ErrorCount > 0) return null;
+			return module;
 		}
 
 		public static IodineModule LoadModule (ErrorLog errLog, string path)
