@@ -1,14 +1,20 @@
-# Token constants
+###
+# Name			: json
+# Author		: @GruntTheDivine
+# Description	: Simpe JSON library
+####
 
-OPEN_BRACE 		: 0;
-CLOSE_BRACE 		: 1;
-OPEN_BRACKET		: 2;
-CLOSE_BRACKET		: 3;
-COLON			: 4;
-STRING			: 5;
-COMMA			: 6;
-NUMBER			: 7;
-BOOLEAN			: 8;
+# Constants used for the JSON lexer
+
+OPEN_BRACE = 0;
+CLOSE_BRACE = 1;
+OPEN_BRACKET = 2;
+CLOSE_BRACKET = 3;
+COLON = 4;
+STRING = 5;
+COMMA = 6;
+NUMBER = 7;
+BOOLEAN	= 8;
 
 class JSONInputStream {
 	func JSONInputStream (self, json) {
@@ -74,6 +80,30 @@ func parse (text) {
 	return parseJsonItem (tokens);
 }
 
+func load (file) {
+	fd = open (file, "r");
+	json = fd.readAllText ();
+	fd.close ();
+	return parse (json);
+}
+
+func dump (json) {
+        root = map (json, lambda (x) => {
+                item = json[x];
+                if (item.typeDef.name == "HashMap") {
+                        return "\"" + Str (x) + " : " + dump (item);
+                } else if (item.typeDef.name == "List") {
+                        list = map (item, lambda (y) => {
+                                return "\"" + Str(y) + "\"";
+                        });
+                        return "\"" + Str (x) + "\" : [" + ",".join (list) + "]";
+                }
+                return "\"" + Str (x) + " : \"" + Str (item) + "\"";
+ 
+        });
+ 
+        return "{" + ",\n".join (root) + "}";
+}
 func parseJsonItem (tokenStream) {
 	if (tokenStream.match (OPEN_BRACE)) {
 		return parseJsonMap (tokenStream);
@@ -153,15 +183,15 @@ func scanTokens (json) {
 			}
 			input.readChar ();
 			tokenStream.add (JSONToken (STRING, accum));
-		} else if (isDigit (input.peekChar ())) {
+		} else if (input.peekChar ().isDigit ()) {
 			accum = "";
- 			while (isDigit (input.peekChar ())) {
+ 			while (input.peekChar ().isDigit ()) {
 				accum += input.readChar ()
 			}
 			tokenStream.add (JSONToken (NUMBER, toInt (accum)));
-		} else if (isLetter (input.peekChar ())) {
+		} else if (input.peekChar ().isLetter ()) {
 			accum = "";
-			while (isLetter (input.peekChar ())) {
+			while (input.peekChar ().isLetter ()) {
 				accum += input.readChar ();
 			}
 			if (accum == "true") {
@@ -170,7 +200,7 @@ func scanTokens (json) {
 				tokenStream.add (JSONToken (BOOLEAN, false));
 			}
 
-		} else if (isWhiteSpace (input.peekChar ())) {
+		} else if (input.peekChar ().isWhiteSpace ()) {
 			input.readChar ();
 		} else {
 			return tokenStream;

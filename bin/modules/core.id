@@ -1,6 +1,7 @@
 ###
 # Name        : core
 # Author      : @SplittyDev
+#             : @GruntTheDivine
 # Description : Iodine core library
 # Please add yourself as author if you make changes
 ###
@@ -11,8 +12,8 @@
 
 # format  : string
 # args    : object || tuple
-func printf (format, args) {
-  print (sprintf (format, args))
+func printf (format, params args) {
+  print (sprintf_t (format, args))
 }
 
 # obj     : object
@@ -21,9 +22,16 @@ func printr (obj) {
 }
 
 # format  : string
+# args    : additional arguments 
+# returns : string
+func sprintf (format, params args) {
+	return sprintf_t (format, args)
+}
+
+# format  : string
 # args    : object || list || tuple
 # returns : string
-func sprintf (format, args) {
+func sprintf_t (format, args) {
   if (type (args) != "Tuple" && type (args) != "List")
     args = (args,)
   buf = ""
@@ -87,7 +95,17 @@ func sprintf (format, args) {
 # obj     : object
 # returns : int
 func len (obj) {
-  return obj.getSize ()
+  # Note: I edited this to iterate through
+  # what ever is passed to it, that way this
+  # will work for any iterable object that is
+  # passed to it, not just ones that have 
+  # getSize ()
+  #    - Grunt
+  i = 0
+  foreach (o in obj) {
+    i += 1
+  }
+  return i
 }
 
 # obj     : object
