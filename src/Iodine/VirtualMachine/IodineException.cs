@@ -38,6 +38,15 @@ namespace Iodine
 		}
 	}
 
+	public class IodineKeyNotFound : IodineException
+	{
+		public IodineKeyNotFound ()
+			: base ("Key not found in HashMap!") 
+		{
+
+		}
+	}
+
 	public class IodineAttributeNotFoundException : IodineException
 	{
 		public IodineAttributeNotFoundException (string expectedType)

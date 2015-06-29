@@ -23,15 +23,26 @@ namespace Iodine
 			Dict = new Dictionary<int, IodineObject> ();
 			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
+			this.SetAttribute ("clear", new InternalMethodCallback (clear, this));
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
+			int hash = key.GetHashCode ();
+			if (!Dict.ContainsKey (hash)) {
+				vm.RaiseException (new IodineKeyNotFound ());
+				return null;
+			}
 			return Dict[key.GetHashCode ()];
 		}
 
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
+			int hash = key.GetHashCode ();
+			if (!Dict.ContainsKey (hash)) {
+				vm.RaiseException (new IodineKeyNotFound ());
+				return;
+			}
 			this.Dict[key.GetHashCode ()] = value;
 			this.keys.Add (key);
 		}
@@ -71,6 +82,12 @@ namespace Iodine
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			return new IodineInteger (this.Dict.Count);
+		}
+
+		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			this.Dict.Clear ();
+			return null;
 		}
 	}
 }
