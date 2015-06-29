@@ -67,6 +67,16 @@ namespace Iodine
 			this.iterIndex = 0;
 		}
 
+		public void Set (IodineObject key, IodineObject val)
+		{
+			this.Dict[key.GetHashCode ()] = val;
+		}
+
+		public IodineObject Get (IodineObject key)
+		{
+			return this.Dict[key.GetHashCode ()];
+		}
+
 		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
@@ -100,11 +110,11 @@ namespace Iodine
 			vm.RaiseException (new IodineArgumentException (2));
 			return null;
 		}
+
 		private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			if (arguments.Length >= 2) {
+			if (arguments.Length >= 1) {
 				IodineObject key = arguments[0];
-				IodineObject val = arguments[1];
 				int hash = key.GetHashCode ();
 				if (!Dict.ContainsKey (hash)) {
 					vm.RaiseException (new IodineKeyNotFound ());
