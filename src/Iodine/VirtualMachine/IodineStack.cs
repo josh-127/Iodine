@@ -32,6 +32,11 @@ namespace Iodine
 			}
 		}
 
+		public IodineObject Last
+		{
+			private set; get;
+		}
+
 		public StackFrame Top
 		{
 			get
@@ -96,6 +101,7 @@ namespace Iodine
 		public void Push (IodineObject obj)
 		{
 			top.Push (obj);
+			this.Last = obj;
 		}
 
 		public IodineObject Pop ()
