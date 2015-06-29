@@ -149,10 +149,11 @@ func reverse (obj) {
     return reverseString (obj)
   else if (_type == "List")
     return reverseList (obj)
-  else if (_type == "Tuple")
+  else if (_type == "Tuple") {
     # Fixed the list to tuple conversion in this function
     # Unit tests regarding this issue pass now.
     return Tuple (reverseList (obj))
+  }
   else
     raise (sprintf ("Can't reverse object of type {}", type))
 }
