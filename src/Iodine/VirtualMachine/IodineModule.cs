@@ -22,7 +22,15 @@ namespace Iodine
 
 	public class IodineModule : IodineObject
 	{
+		public static readonly List<string> SearchPaths = new List<string> ();
 		private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
+
+		static IodineModule ()
+		{
+			SearchPaths.Add (Environment.CurrentDirectory);
+			SearchPaths.Add (String.Format ("{0}{1}modules", Path.GetDirectoryName (
+				Assembly.GetEntryAssembly ().Location), Path.DirectorySeparatorChar));
+		}
 
 		public string Name
 		{
@@ -128,6 +136,9 @@ namespace Iodine
 				return LoadExtensionModule (Path.GetFileNameWithoutExtension (path), 
 					FindExtension (path));
 			} else if (FindModule (path) != null) {
+				string fullPath = FindModule (path);
+				if (SearchPaths.Contains (Path.GetDirectoryName (fullPath)))
+					SearchPaths.Add (Path.GetDirectoryName (fullPath));
 				return CompileModule (errLog, FindModule (path));
 			} else if (BuiltInModules.Modules.ContainsKey (path)) {
 				return BuiltInModules.Modules [path];
@@ -160,12 +171,12 @@ namespace Iodine
 				return name + ".id";
 			}
 
-			string exePath = Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location) + "/modules";
-		
-			foreach (string file in Directory.GetFiles (exePath)) {
-				string fname = Path.GetFileName (file);
-				if (fname == name || fname == name + ".id") {
-					return file;
+			string rawName = Path.GetFileNameWithoutExtension (name);
+			foreach (string dir in SearchPaths) {
+				string expectedName = String.Format ("{0}{1}{2}.id", dir, Path.DirectorySeparatorChar,
+					rawName);
+				if (File.Exists (expectedName)) {
+					return expectedName;
 				}
 			}
 
