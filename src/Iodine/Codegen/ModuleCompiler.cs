@@ -124,12 +124,18 @@ namespace Iodine
 			IodineModule import = IodineModule.LoadModule (errorLog, useStmt.Module);
 			if (import != null) {
 				module.SetAttribute (System.IO.Path.GetFileNameWithoutExtension (useStmt.Module), import);
-				foreach (string item in useStmt.Imports) {
-					if (import.HasAttribute (item)) {
-						module.SetAttribute (item, import.GetAttribute (item));
-					} else {
-						errorLog.AddError (ErrorType.ParserError, "Could not import {0} from {1}", 
-							item, useStmt.Module);
+				if (useStmt.Wildcard) {
+					foreach (string attr in import.Attributes.Keys) {
+						module.SetAttribute (attr, import.GetAttribute (attr));
+					}
+				} else {
+					foreach (string item in useStmt.Imports) {
+						if (import.HasAttribute (item)) {
+							module.SetAttribute (item, import.GetAttribute (item));
+						} else {
+							errorLog.AddError (ErrorType.ParserError, "Could not import {0} from {1}", 
+								item, useStmt.Module);
+						}
 					}
 				}
 			} else {

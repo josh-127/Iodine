@@ -23,7 +23,7 @@ namespace Iodine
 			IodineInteger intVal = rvalue as IodineInteger;
 
 			if (intVal == null) {
-				vm.RaiseException ("Right value must be of type integer!");
+				vm.RaiseException (new IodineTypeException ("Int"));
 				return null;
 			}
 

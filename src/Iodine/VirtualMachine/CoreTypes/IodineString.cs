@@ -104,14 +104,12 @@ namespace Iodine
 
 		private IodineObject toUpper (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineString selfStr = self as IodineString;
-			return new IodineString (selfStr.Value.ToUpper ());
+			return new IodineString (this.Value.ToUpper ());
 		}
 
 		private IodineObject toLower (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineString selfStr = self as IodineString;
-			return new IodineString (selfStr.Value.ToLower ());
+			return new IodineString (this.Value.ToLower ());
 		}
 
 		private IodineObject substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -122,30 +120,33 @@ namespace Iodine
 			}
 			int start = 0;
 			int len = 0;
-			IodineString selfStr = self as IodineString;
 			IodineInteger startObj = args[0] as IodineInteger;
 			if (startObj == null) {
-				vm.RaiseException ("Parameter start must be of type Integer!");
+				vm.RaiseException (new IodineTypeException ("Int"));
 				return null;
 			}
 			start = (int)startObj.Value;
 			if (args.Length == 1) {
-				len = selfStr.Value.Length;
+				len = this.Value.Length;
 			} else {
 				IodineInteger endObj = args[1] as IodineInteger;
 				if (endObj == null) {
-					vm.RaiseException ("Parameter end must be of type Integer!");
+					vm.RaiseException (new IodineTypeException ("Int"));
 					return null;
 				}
 				len = (int)endObj.Value;
 			}
-			return new IodineString (selfStr.Value.Substring (start, len - start));
+
+			if (start < this.Value.Length && len <= this.Value.Length)  {
+				return new IodineString (this.Value.Substring (start, len - start));
+			}
+			vm.RaiseException (new IodineIndexException ());
+			return null;
 		}
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineString selfStr = self as IodineString;
-			return new IodineInteger (selfStr.Value.Length);
+			return new IodineInteger (this.Value.Length);
 		}
 
 		private IodineObject indexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -155,21 +156,20 @@ namespace Iodine
 				return null;
 			}
 
-			IodineString selfStr = self as IodineString;
 			IodineChar ch = args[0] as IodineChar;
 			char val;
 			if (ch == null) {
 				if (args[0] is IodineString) {
 					val = args[0].ToString ()[0];
 				} else {
-					vm.RaiseException ("Parameter must be of type char!");
+					vm.RaiseException (new IodineTypeException ("Char"));
 					return null;
 				}
 			} else {
 				val = ch.Value;
 			}
 
-			return new IodineInteger (selfStr.Value.IndexOf (val));
+			return new IodineInteger (this.Value.IndexOf (val));
 		}
 
 		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -178,9 +178,7 @@ namespace Iodine
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineString selfStr = self as IodineString;
-
-			return new IodineBool (selfStr.Value.Contains (args[0].ToString ()));
+			return new IodineBool (this.Value.Contains (args[0].ToString ()));
 		}
 
 		private IodineObject startsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -189,9 +187,7 @@ namespace Iodine
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineString selfStr = self as IodineString;
-
-			return new IodineBool (selfStr.Value.StartsWith (args[0].ToString ()));
+			return new IodineBool (this.Value.StartsWith (args[0].ToString ()));
 		}
 
 		private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -200,14 +196,13 @@ namespace Iodine
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineString selfStr = self as IodineString;
 			IodineString arg1 = args[0] as IodineString;
 			IodineString arg2 = args[1] as IodineString;
 			if (arg1 == null || arg2 == null) {
-				vm.RaiseException ("Expected argument of type string!");
+				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
-			return new IodineString (selfStr.Value.Replace (arg1.Value, arg2.Value));
+			return new IodineString (this.Value.Replace (arg1.Value, arg2.Value));
 		}
 
 		private IodineObject split (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -224,7 +219,7 @@ namespace Iodine
 				if (args[0] is IodineString) {
 					val = args[0].ToString ()[0];
 				} else {
-					vm.RaiseException ("Parameter must be of type char!");
+					vm.RaiseException (new IodineTypeException ("Char"));
 					return null;
 				}
 			} else {

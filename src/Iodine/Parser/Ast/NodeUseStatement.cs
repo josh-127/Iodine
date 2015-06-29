@@ -19,16 +19,23 @@ namespace Iodine
 			get;
 		}
 
+		public bool Wildcard
+		{
+			private set;
+			get;
+		}
+
 		public NodeUseStatement (string module)
 		{
 			this.Module = module;
 			this.Imports = new List<string> ();
 		}
 
-		public NodeUseStatement (string module, List<string> imports)
+		public NodeUseStatement (string module, List<string> imports, bool wildcard)
 		{
 			this.Module = module;
 			this.Imports = imports;
+			this.Wildcard = wildcard;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -39,21 +46,29 @@ namespace Iodine
 		public static NodeUseStatement Parse (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "use");
-			string ident = ParseModuleName (stream);
-			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma)) {
+			string ident = "";
+			if (!stream.Match (TokenClass.Operator, "*"))
+				ident = ParseModuleName (stream);
+			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma) ||
+				stream.Match (TokenClass.Operator, "*")) {
 				List<string> items = new List<string> ();
-				items.Add (ident);
-				stream.Accept (TokenClass.Comma);
-				while (!stream.Match (TokenClass.Keyword, "from")) {
-					Token item = stream.Expect (TokenClass.Identifier);
-					if (item != null) items.Add (item.Value);
-					if (!stream.Accept (TokenClass.Comma)) {
-						break;
+				bool wildcard = false;
+				if (!stream.Accept (TokenClass.Operator, "*")) {
+					items.Add (ident);
+					stream.Accept (TokenClass.Comma);
+					while (!stream.Match (TokenClass.Keyword, "from")) {
+						Token item = stream.Expect (TokenClass.Identifier);
+						if (item != null) items.Add (item.Value);
+						if (!stream.Accept (TokenClass.Comma)) {
+							break;
+						}
 					}
+				} else {
+					wildcard = true;
 				}
 				stream.Expect (TokenClass.Keyword, "from");
 				string module = ParseModuleName (stream);
-				return new NodeUseStatement (module, items);
+				return new NodeUseStatement (module, items, wildcard);
 			}
 			return new NodeUseStatement (ident);
 		}
