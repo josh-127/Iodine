@@ -79,7 +79,14 @@ namespace Iodine
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			IodineInteger index = key as IodineInteger;
-
+			if (index == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+			if (index.Value >= this.Value.Length) {
+				vm.RaiseException (new IodineIndexException ());
+				return null;
+			}
 			return new IodineChar (this.Value[(int)index.Value]);
 		}
 
