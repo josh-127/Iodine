@@ -27,6 +27,18 @@ class Stack {
     return val
   }
 
+  # So.. this is REALLY hacky.
+  # The lookahead parameter is optional.
+  func peek (self, params args) {
+    lookahead = 0
+    if (len (args) > 0 && type (args[0]) == "Int")
+      lookahead = args[0]
+    if (lookahead >= len (self.store))
+      raise (sprintf ("Index out of range: Can't peek item {} of {}",
+        lookahead + 1, len (self.store)))
+    return reverse (self.store)[lookahead]
+  }
+
   func _iterReset (self) {
     self.iter_index = len (self.store) - 1
   }
@@ -41,9 +53,13 @@ class Stack {
   }
 }
 
+# This is probably the hackiest iodine class
+# that currently exists
 class TypedStack {
   func TypedStack (self, t) {
-    self.store = Stack ()
+    self.typeDef.name = "Stack"
+    self.stack = Stack ()
+    self.store = self.stack.store
     t = Str(t).toLower()
     if (t == "str")
       self.t = Str
@@ -56,22 +72,28 @@ class TypedStack {
   }
 
   func push (self, val) {
-    self.store.push (self.t (val))
+    self.stack.push (self.t (val))
   }
 
   func pop (self) {
-    return self.store.pop ()
+    return self.stack.pop ()
+  }
+
+  func peek (self, params args) {
+    if (len (args) > 0)
+      return self.stack.peek (args[0])
+    return self.stack.peek ()
   }
 
   func _iterReset (self) {
-    self.store._iterReset ()
+    self.stack._iterReset ()
   }
 
   func _iterMoveNext (self) {
-    return self.store._iterMoveNext ()
+    return self.stack._iterMoveNext ()
   }
 
   func _iterGetNext (self) {
-    return self.store._iterGetnext ()
+    return self.stack._iterGetnext ()
   }
 }
