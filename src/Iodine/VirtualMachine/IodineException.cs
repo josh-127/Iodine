@@ -109,7 +109,13 @@ namespace Iodine
 			Console.WriteLine ("Stack trace:");
 			Console.WriteLine ("------------");
 			while (top != null) {
-				Console.WriteLine (" at {0} (Module: {1})", top.Method.Name, top.Module.Name);
+				if (top is NativeStackFrame) {
+					NativeStackFrame frame = top as NativeStackFrame;
+
+					Console.WriteLine (" at {0} (internal method)", frame.NativeMethod.Callback.Method.Name);
+				} else {
+					Console.WriteLine (" at {0} (Module: {1})", top.Method.Name, top.Module.Name);
+				}
 				top = top.Parent;
 			}
 		}

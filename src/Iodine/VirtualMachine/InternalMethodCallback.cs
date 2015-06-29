@@ -11,21 +11,33 @@ namespace Iodine
 			new IodineTypeDefinition ("InternalMethod"); 
 		
 		private IodineObject self;
-		private IodineMethodCallback callback;
+		public IodineMethodCallback Callback
+		{
+			private set;
+			get;
+		}
 
 		public InternalMethodCallback (IodineMethodCallback callback, IodineObject self) 
 			: base (InternalMethodTypeDef)
 		{
 			this.self = self;
-			this.callback = callback;
+			this.Callback = callback;
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-				//vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
-				IodineObject ret = callback.Invoke (vm, self, arguments);
-				//vm.Stack.EndFrame ();
-				return ret;
+			vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
+			try
+			{
+				IodineObject obj = Callback.Invoke (vm, self, arguments);
+				vm.Stack.EndFrame ();
+				return obj;
+			}
+			catch (Exception ex)
+			{
+				vm.RaiseException (new IodineInternalErrorException (ex));
+			}
+			return null;
 			
 		}
 	}

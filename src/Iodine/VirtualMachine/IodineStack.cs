@@ -133,7 +133,7 @@ namespace Iodine
 			set;
 			get;
 		}
-
+			
 		public IodineMethod Method
 		{
 			private set;
@@ -142,8 +142,10 @@ namespace Iodine
 
 		public IodineModule Module
 		{
-			private set;
-			get;
+			get
+			{
+				return Method.Module;
+			}
 		}
 
 		public IodineObject Self
@@ -172,7 +174,6 @@ namespace Iodine
 			this.LocalCount = localCount;
 			this.locals = new IodineObject[localCount];
 			this.Method = method;
-			this.Module = method.Module;
 			this.Self = self;
 			this.Parent = parent;
 		}
