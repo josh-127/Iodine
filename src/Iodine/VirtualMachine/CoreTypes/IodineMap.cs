@@ -70,6 +70,7 @@ namespace Iodine
 		public void Set (IodineObject key, IodineObject val)
 		{
 			this.Dict[key.GetHashCode ()] = val;
+			this.keys.Add (key);
 		}
 
 		public IodineObject Get (IodineObject key)
