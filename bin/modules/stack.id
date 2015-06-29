@@ -1,0 +1,51 @@
+###
+# Name        : stack
+# Author      : @SplittyDev
+# Description : Stack data structure
+# Please add yourself as author if you make changes
+###
+
+use * from core
+
+class Stack {
+  func Stack (self) {
+    self.store = List ()
+  }
+
+  func push (self, val) {
+    self.store.add (val)
+  }
+
+  func pop (self) {
+    if (len (self.store) == 0)
+      raise ("There are no elements on the stack!")
+    tmp = reverse (self.store)
+    val = tmp[0]
+    tmp.removeAt (0)
+    self.store = reverse (tmp)
+    return val
+  }
+}
+
+class TypedStack {
+  func TypedStack (self, t) {
+    self.store = Stack ()
+    t = Str(t).toLower()
+    if (t == "str")
+      self.t = Str
+    else if (t == "int")
+      self.t = Int
+    else if (t == "list")
+      self.t = List
+    else
+      raise (sprintf ("Unsupported type: {}", t))
+  }
+
+  func push (self, val) {
+    self.store.push (self.t (val))
+  }
+
+  func pop (self) {
+    return self.store.pop ()
+  }
+}
