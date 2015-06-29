@@ -7,6 +7,12 @@
 
 use repr, len, printf from core
 
+# Constants
+PASS = "PASS"
+FAIL = "FAIL"
+SKIP = "SKIP"
+INDETERMINATE = "INDETERMINATE"
+
 class assert {
   func assert (self) {
     self.passed = 0
@@ -15,10 +21,6 @@ class assert {
     self.hooks = list ()
     self.last = null
     self.lock = false
-    self.PASS = "PASS"
-    self.FAIL = "FAIL"
-    self.SKIP = "SKIP"
-    self.INDETERMINATE = "INDETERMINATE"
   }
 
   func add (self, action) {
@@ -30,7 +32,7 @@ class assert {
   ###
 
   func run (self) {
-    print ("============[ Running Unit tests ]============")
+    printf ("Running unit tests...\n")
     last = null
     i = 0
     foreach (hook in self.hooks) {
@@ -40,17 +42,19 @@ class assert {
       if (last != self.last) {
         last = self.last
         msg = last.state
-        printf ("Test {}: {}\n\t{}", (i, last.msg, msg))
-        if (last.state == self.FAIL)
+        printf ("Test {}: {}\n\t{}", i, last.msg, msg)
+        if (last.state == FAIL)
           printf ("\tExpect: {}\n\tActual: {}",
-            (repr (last.expected), repr (last.result)))
+            repr (last.expected), repr (last.result))
       }
       else {
-        printf ("Test {}:\n\t{}", (i, self.INDETERMINATE))
+        printf ("Test {}:\n\t{}", i, INDETERMINATE)
       }
       i = i + 1
       self.lock = false
     }
+    printf ("\nResult:\t{} total | {} passed | {} failed",
+      i, self.passed, self.failed)
   }
 
   ###
@@ -153,21 +157,23 @@ class assert {
 
   func pass (self, expected, result, msg) {
     if (!self.lock) {
-      self.history.add (testResult (expected, result, self.PASS, msg))
+      self.passed += 1
+      self.history.add (testResult (expected, result, PASS, msg))
       self.lock = true
     }
   }
 
   func fail (self, expected, result, msg) {
     if (!self.lock) {
-      self.history.add (testResult (expected, result, self.FAIL, msg))
+      self.failed += 1
+      self.history.add (testResult (expected, result, FAIL, msg))
       self.lock = true
     }
   }
 
   func skip (self, msg) {
     if (!self.lock) {
-      self.history.add (testResult (null, null, self.SKIP, msg))
+      self.history.add (testResult (null, null, SKIP, msg))
       self.lock = true
     }
   }

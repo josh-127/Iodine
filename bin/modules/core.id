@@ -7,7 +7,7 @@
 ###
 
 ###
-### printf, printr, sprintf
+### printf, printr, sprintf, sprintf_t
 ###
 
 # format  : string
@@ -22,7 +22,7 @@ func printr (obj) {
 }
 
 # format  : string
-# args    : additional arguments 
+# args    : additional arguments
 # returns : string
 func sprintf (format, params args) {
 	return sprintf_t (format, args)
@@ -57,13 +57,13 @@ func sprintf_t (format, args) {
       i = i + 1
       if (i < len (format) && format[i] == "}") {
         if (arg_pos < len (args)) {
-          buf += toStr (args[arg_pos])
+          buf += Str (args[arg_pos])
           arg_pos = arg_pos + 1
           i = i + 1
         }
         else
           raise ("Index out of range: Requested element " +
-            toStr (arg_pos) + " of " + toStr (len (args) - 1))
+            Str (arg_pos) + " of " + Str (len (args) - 1))
       }
       else if (i < len (format) && format[i] == "{") {
         buf += "{"
@@ -75,12 +75,12 @@ func sprintf_t (format, args) {
           arg_index += format[i]
           i = i + 1
         }
-        arg_index = toInt (arg_index)
+        arg_index = Int (arg_index)
         if (arg_index < len (args))
-          buf += toStr (args[arg_index])
+          buf += Str (args[arg_index])
         else
           raise ("Index out of range: Requested element " +
-            toStr (arg_index) + " of " + toStr (len (args) - 1))
+            Str (arg_index) + " of " + Str (len (args) - 1))
         i = i + 1
       }
     }
@@ -98,7 +98,7 @@ func len (obj) {
   # Note: I edited this to iterate through
   # what ever is passed to it, that way this
   # will work for any iterable object that is
-  # passed to it, not just ones that have 
+  # passed to it, not just ones that have
   # getSize ()
   #    - Grunt
   i = 0
@@ -126,7 +126,7 @@ func hex (n) {
   while (n > 0) {
     rem = n % 16
     if (rem < 10)
-      buf += toStr (rem)
+      buf += Str (rem)
     else
       buf += lookup[rem - 10]
     n /= 16
@@ -141,7 +141,6 @@ func hex (n) {
 
 # obj     : object
 # returns : object
-### TODO  : Convert List back to Tuple
 func reverse (obj) {
   _type = type (obj)
   if (_type == "Str")
@@ -149,7 +148,9 @@ func reverse (obj) {
   else if (_type == "List")
     return reverseList (obj)
   else if (_type == "Tuple")
-    return reverseList (obj)
+    # Fixed the list to tuple conversion in this function
+    # Unit tests regarding this issue pass now.
+    return Tuple (reverseList (obj))
   else
     raise (sprintf ("Can't reverse object of type {}", type))
 }
@@ -199,7 +200,7 @@ func repr (obj) {
   else if (_type == "Null")
     return reprNull (obj)
   else
-    return toStr (obj)
+    return Str (obj)
 }
 
 # lst     : list
