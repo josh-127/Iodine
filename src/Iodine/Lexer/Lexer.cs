@@ -44,8 +44,8 @@ namespace Iodine
 				}
 
 				if (!matchFound) {
-					errorLog.AddError (ErrorType.LexerError, "Unexpected '{0}'", 
-						(char)this.input.ReadChar ());
+					errorLog.AddError (ErrorType.LexerError, "Unexpected '{0}' at {1}:{2}", 
+						(char)this.input.ReadChar (), this.input.Line, this.input.Column);
 				}
 
 				this.input.EatWhiteSpaces ();

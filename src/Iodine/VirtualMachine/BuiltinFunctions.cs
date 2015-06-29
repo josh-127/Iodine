@@ -75,8 +75,8 @@ namespace Iodine
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString str = args[0] as IodineString;
-			IodineModule tmpModule = IodineModule.CompileSource (new ErrorLog (), "__eval__", str.Value);
-			return vm.InvokeMethod (tmpModule.Initializer, null, new IodineObject[]{});
+			//IodineModule tmpModule = IodineModule.CompileModule (new ErrorLog (), "__eval__", str.Value);
+			return vm.InvokeMethod (null, null, new IodineObject[]{});
 		}
 
 		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)

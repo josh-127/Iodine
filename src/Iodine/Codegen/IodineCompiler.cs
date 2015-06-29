@@ -13,9 +13,8 @@ namespace Iodine
 			this.symbolTable = symbolTable;
 		}
 
-		public IodineModule CompileAst (Ast ast)
+		public IodineModule CompileAst (IodineModule module, Ast ast)
 		{
-			IodineModule module = new IodineModule ("");
 			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module);
 			ast.Visit (compiler);
 			module.Initializer.FinalizeLabels ();

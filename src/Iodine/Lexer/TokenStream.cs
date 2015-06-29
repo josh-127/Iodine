@@ -87,10 +87,10 @@ namespace Iodine
 		
 			if (offender != null) {
 				errorLog.AddError (ErrorType.ParserError, "Unexpected '{0}' at {1}:{2} (Expected '{3}')",
-					offender.ToString (), offender.Column, offender.Line, clazz.ToString ());
+					offender.ToString (), offender.Column, offender.Line, Token.ClassToString (clazz));
 			} else {
 				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {0})",
-					clazz.ToString ());
+					Token.ClassToString (clazz));
 			}
 			return null;
 		}
@@ -106,17 +106,18 @@ namespace Iodine
 
 			if (offender != null) {
 				errorLog.AddError (ErrorType.ParserError, "Unexpected '{0}' at {1}:{2} (Expected '{3}')",
-					offender.ToString (), offender.Column, offender.Line, clazz.ToString ());
+					offender.ToString (), offender.Line, offender.Column, Token.ClassToString (clazz));
 			} else {
 				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {1})",
-					clazz.ToString ());
+					Token.ClassToString (clazz));
 			}
 			return null;
 		}
 
 		public void MakeError ()
 		{
-			this.errorLog.AddError (ErrorType.ParserError, "Unexpected {0}", readToken ().ToString ());
+			this.errorLog.AddError (ErrorType.ParserError, "Unexpected {0} at {1}:{2}", peekToken ().ToString (),
+				this.peekToken ().Line, this.readToken ().Column);
 		}
 
 		private Token peekToken () 

@@ -11,9 +11,40 @@ namespace ModuleReflection
 			: base ("reflection")
 		{
 			this.SetAttribute ("getBytecode", new InternalMethodCallback (getBytecode, this));
+			this.SetAttribute ("hasAttribute", new InternalMethodCallback (hasAttribute, this));
+			this.SetAttribute ("getAttributes", new InternalMethodCallback (getAttributes, this));
 			this.SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
 			this.SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
 			this.SetAttribute ("Opcode", IodineOpcode.OpcodeTypeDef);
+		}
+
+		private IodineObject hasAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length >= 2) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			IodineObject o1 = args[0];
+			IodineString str = args[1] as IodineString;
+			if (str != null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+			return new IodineBool (o1.HasAttribute (str.Value));
+		}
+
+		private IodineObject getAttributes (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length >= 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineObject o1 = args[0];
+			IodineMap map = new IodineMap ();
+			foreach (string key in o1.Attributes.Keys) {
+				map.Set (new IodineString (key), o1.Attributes[key]);
+			}
+			return map;
 		}
 
 		private IodineObject loadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -44,7 +44,7 @@ namespace Iodine
 			//System.Diagnostics.Debugger.Break();
 			IodineOptions options = IodineOptions.Parse (args);
 			ErrorLog errorLog = new ErrorLog ();
-			IodineModule module = IodineModule.CompileModule (errorLog, options.FileName);
+			IodineModule module = IodineModule.LoadModule (errorLog, options.FileName);
 
 			if (module == null) {
 				DisplayErrors (errorLog);

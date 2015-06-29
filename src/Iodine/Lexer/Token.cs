@@ -36,6 +36,39 @@ namespace Iodine
 			this.Column = Column;
 		}
 
+		public override string ToString ()
+		{
+			return this.Value.ToString ();
+		}
+
+		public static string ClassToString (TokenClass clazz)
+		{
+			switch (clazz) {
+			case TokenClass.CloseBrace:
+				return "}";
+			case TokenClass.OpenBrace:
+				return "{";
+			case TokenClass.CloseParan:
+				return ")";
+			case TokenClass.OpenParan:
+				return "(";
+			case TokenClass.Dot:
+				return ".";
+			case TokenClass.Comma:
+				return ",";
+			case TokenClass.OpenBracket:
+				return "[";
+			case TokenClass.CloseBracket:
+				return "]";
+			case TokenClass.SemiColon:
+				return ";";
+			case TokenClass.Colon:
+				return ":";
+			default:
+				return clazz.ToString ();
+			}
+		}
+
 		public static Token Create (TokenClass clazz, InputStream stream) 
 		{
 			return new Token (clazz, null, stream.Line, stream.Column);
