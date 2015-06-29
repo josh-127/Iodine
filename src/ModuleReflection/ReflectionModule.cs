@@ -12,6 +12,8 @@ namespace ModuleReflection
 		{
 			this.SetAttribute ("getBytecode", new InternalMethodCallback (getBytecode, this));
 			this.SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
+			this.SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
+			this.SetAttribute ("Opcode", IodineOpcode.OpcodeTypeDef);
 		}
 
 		private IodineObject loadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -31,6 +33,14 @@ namespace ModuleReflection
 			}
 
 			return ret;
+		}
+
+		private IodineObject methodBuilder (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString name = args[0] as IodineString;
+			//IodineMethod method = new IodineMethod (
+			//IodineMethodBuilder methBuilder = new IodineMethodBuilder (
+			return null;
 		}
 	}
 }

@@ -36,6 +36,7 @@ namespace Iodine
 		void Accept (NodeBreak brk);
 		void Accept (NodeContinue cont);
 		void Accept (NodeTuple tuple);
+		void Accept (NodeFloat dec);
 	}
 }
 

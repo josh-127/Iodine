@@ -218,6 +218,8 @@ namespace Iodine
 				return new NodeIdent (token.Value);
 			} else if (stream.Accept (TokenClass.IntLiteral, ref token)) {
 				return new NodeInteger (long.Parse (token.Value));
+			} else if (stream.Accept (TokenClass.FloatLiteral, ref token)) {
+				return new NodeFloat (double.Parse (token.Value));
 			} else if (stream.Accept (TokenClass.StringLiteral, ref token)) {
 				return new NodeString (token.Value);
 			} else if (stream.Match (TokenClass.OpenBrace)) {

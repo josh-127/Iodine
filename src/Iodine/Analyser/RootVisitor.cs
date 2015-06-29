@@ -180,6 +180,11 @@ namespace Iodine
 		{
 		}
 
+		public void Accept (NodeFloat num) 
+		{
+
+		}
+
 		public void Accept (NodeTuple tuple)
 		{
 			visitSubnodes (tuple);

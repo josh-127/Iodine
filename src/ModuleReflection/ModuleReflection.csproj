@@ -36,6 +36,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionModule.cs" />
     <Compile Include="IodineInstruction.cs" />
+    <Compile Include="IodineMethodBuilder.cs" />
+    <Compile Include="IodineOpcode.cs" />
+    <Compile Include="IodineModuleBuilder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

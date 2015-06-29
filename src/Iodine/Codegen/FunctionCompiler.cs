@@ -159,6 +159,12 @@ namespace Iodine
 				methodBuilder.Module.DefineConstant (new IodineInteger (integer.Value)));
 		}
 
+		public void Accept (NodeFloat num)
+		{
+			methodBuilder.EmitInstruction (Opcode.LoadConst, 
+				methodBuilder.Module.DefineConstant (new IodineFloat (num.Value)));
+		}
+
 		public void Accept (NodeIfStmt ifStmt)
 		{
 			IodineLabel elseLabel = methodBuilder.CreateLabel ();

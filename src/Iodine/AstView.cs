@@ -195,6 +195,11 @@ namespace Iodine
 			viewSubnodes (tuple);
 		}
 
+		public void Accept (NodeFloat num)
+		{
+			Write ("Float");
+		}
+
 		private void viewSubnodes (AstNode root)
 		{
 			ident++;

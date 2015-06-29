@@ -73,6 +73,11 @@ namespace Iodine
 			integer.Visit (functionCompiler);
 		}
 
+		public void Accept (NodeFloat num)
+		{
+			num.Visit (functionCompiler);
+		}
+
 		public void Accept (NodeString str)
 		{
 			str.Visit (functionCompiler);

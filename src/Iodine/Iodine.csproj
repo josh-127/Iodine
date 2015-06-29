@@ -127,6 +127,8 @@
     <Compile Include="Parser\Ast\NodeContinue.cs" />
     <Compile Include="VirtualMachine\CoreModules\RandomModule.cs" />
     <Compile Include="VirtualMachine\BuiltInModules.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineFloat.cs" />
+    <Compile Include="Parser\Ast\NodeFloat.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

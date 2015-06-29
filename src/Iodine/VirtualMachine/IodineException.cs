@@ -112,7 +112,7 @@ namespace Iodine
 				if (top is NativeStackFrame) {
 					NativeStackFrame frame = top as NativeStackFrame;
 
-					Console.WriteLine (" at {0} (internal method)", frame.NativeMethod.Callback.Method.Name);
+					Console.WriteLine (" at {0} <internal method>", frame.NativeMethod.Callback.Method.Name);
 				} else {
 					Console.WriteLine (" at {0} (Module: {1})", top.Method.Name, top.Module.Name);
 				}

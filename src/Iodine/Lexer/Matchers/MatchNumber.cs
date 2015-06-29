@@ -17,14 +17,21 @@ namespace Iodine
 				accum.Append ((char)inputStream.ReadChar ());
 			}
 
-			string val = accum.ToString ();
-
-			if (val.Contains (".")) {
-				return Token.Create (TokenClass.FloatLiteral, val, inputStream);
+			if (((char)inputStream.PeekChar ()) == '.') {
+				return scanFloat (accum, inputStream);
 			}
 
-			return Token.Create (TokenClass.IntLiteral, val, inputStream);
+			return Token.Create (TokenClass.IntLiteral, accum.ToString (), inputStream);
 
+		}
+
+		private Token scanFloat (StringBuilder accum, InputStream stream)
+		{
+			accum.Append ((char)stream.ReadChar ());
+			while (IsNum ((char)stream.PeekChar ())) {
+				accum.Append ((char)stream.ReadChar ());
+			}
+			return Token.Create (TokenClass.FloatLiteral, accum.ToString (), stream);
 		}
 
 		private static bool IsNum (char c)
