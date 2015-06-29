@@ -22,6 +22,7 @@ namespace Iodine
 			this.Objects.AddRange (items);
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			this.SetAttribute ("add", new InternalMethodCallback (add, this));
+			this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
@@ -80,6 +81,20 @@ namespace Iodine
 			foreach (IodineObject obj in arguments) {
 				list.Add (obj);
 			}
+			return null;
+		}
+
+		private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			if (arguments.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineInteger index = arguments[0] as IodineInteger;
+			if (index != null)
+				this.Objects.RemoveAt ((int)index.Value);
+			else
+				vm.RaiseException (new IodineTypeException ("Int"));
 			return null;
 		}
 
