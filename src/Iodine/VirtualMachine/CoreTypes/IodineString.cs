@@ -28,6 +28,7 @@ namespace Iodine
 			this.SetAttribute ("startsWith", new InternalMethodCallback (startsWith, this));
 			this.SetAttribute ("split", new InternalMethodCallback (split, this));
 			this.SetAttribute ("join", new InternalMethodCallback (join, this));
+			this.SetAttribute ("trim", new InternalMethodCallback (trim, this));
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -234,6 +235,11 @@ namespace Iodine
 				list.Add (new IodineString (str));
 			}
 			return list;
+		}
+
+		private IodineObject trim (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineString (this.Value.Trim ());
 		}
 
 		private IodineObject join (VirtualMachine vm, IodineObject self, IodineObject[] args)

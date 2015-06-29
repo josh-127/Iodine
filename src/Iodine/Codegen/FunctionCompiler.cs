@@ -314,6 +314,7 @@ namespace Iodine
 					(lambda.Parameters [i]).Index;
 			}
 			lambda.Children[0].Visit (compiler);
+			anonMethod.EmitInstruction (Opcode.LoadNull);
 			anonMethod.Variadic = lambda.Variadic;
 			anonMethod.FinalizeLabels ();
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;

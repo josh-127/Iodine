@@ -60,6 +60,7 @@ namespace Iodine
 			globalDict["event"] = new InternalMethodCallback (createEvent, null);
 			globalDict["object"] = new InternalMethodCallback (Object, null);
 			globalDict["hashMap"] = new InternalMethodCallback (hashMap, null);
+			globalDict["Tuple"] = new InternalMethodCallback (tuple, null);
 			globalDict["List"] = new InternalMethodCallback (list, null);
 			globalDict["Event"] = new InternalMethodCallback (createEvent, null);
 			globalDict["Object"] = new InternalMethodCallback (Object, null);
@@ -146,6 +147,17 @@ namespace Iodine
 			return new IodineList (args);
 		}
 
+		private IodineObject tuple (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length >= 1) {
+				IodineList inputList = args[0] as IodineList;
+
+				return new IodineTuple (inputList.Objects.ToArray ());
+
+			}
+			return null;
+		}
+
 		private IodineObject createEvent (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineEvent ();
@@ -158,6 +170,19 @@ namespace Iodine
 
 		private IodineObject hashMap (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length >= 1) {
+				IodineList inputList = args[0] as IodineList;
+				IodineMap ret = new IodineMap ();
+				if (inputList != null) {
+					foreach (IodineObject item in inputList.Objects) {
+						IodineTuple kv = item as IodineTuple;
+						if (kv != null) {
+							ret.Dict.Add (kv.Objects[0].GetHashCode (), kv.Objects[1]);
+						}
+					}
+				} 
+				return ret;
+			}
 			return new IodineMap ();
 		}
 
