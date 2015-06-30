@@ -26,6 +26,7 @@ namespace Iodine
 				obj.SetAttribute (method.Name, method);
 			}
 			vm.InvokeMethod (constructor, obj, arguments);
+
 			return obj;
 		}
 	}

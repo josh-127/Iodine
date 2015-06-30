@@ -69,6 +69,7 @@ namespace Iodine
 			globalDict["map"] = new InternalMethodCallback (map, null);
 			globalDict["range"] = new InternalMethodCallback (range, null);
 			globalDict["open"] = new InternalMethodCallback (open, null);
+			globalDict["sleep"] = new InternalMethodCallback (sleep, null);
 		}
 
 
@@ -92,7 +93,7 @@ namespace Iodine
 
 		private IodineObject sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (args.Length < 0) {
+			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 			}
 			IodineInteger time = args[0] as IodineInteger;
