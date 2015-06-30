@@ -1,5 +1,4 @@
 use * from core
-use * from reflection
 
 class Parent {
    func Parent (self) {
