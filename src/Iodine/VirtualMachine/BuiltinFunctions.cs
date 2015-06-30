@@ -51,6 +51,7 @@ namespace Iodine
 			globalDict["toInt"] = new InternalMethodCallback (toInt, null);
 			globalDict["toStr"] = new InternalMethodCallback (toStr, null);
 			globalDict["Int"] = new InternalMethodCallback (toInt, null);
+			globalDict["Float"] = new InternalMethodCallback (toFloat, null);
 			globalDict["Str"] = new InternalMethodCallback (toStr, null);
 			globalDict["Bool"] = new InternalMethodCallback (toBool, null);
 			globalDict["Char"] = new InternalMethodCallback (toChar, null);
@@ -135,6 +136,11 @@ namespace Iodine
 		private IodineObject toInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineInteger (Int64.Parse (args[0].ToString ()));
+		}
+
+		private IodineObject toFloat (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineFloat (Double.Parse (args[0].ToString ()));
 		}
 
 		private IodineObject toStr (VirtualMachine vm, IodineObject self, IodineObject[] args)
