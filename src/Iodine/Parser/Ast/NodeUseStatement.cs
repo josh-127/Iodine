@@ -77,6 +77,8 @@ namespace Iodine
 					wildcard = true;
 				}
 				stream.Expect (TokenClass.Keyword, "from");
+
+				relative = stream.Accept (TokenClass.Dot);
 				string module = ParseModuleName (stream);
 				return new NodeUseStatement (module, items, wildcard, relative);
 			}
