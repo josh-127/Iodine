@@ -13,7 +13,7 @@ x64/
 x86/
 build/
 bld/
-*.npl
+*.nlp
 *.suo
 *.user
 *.userosscache
