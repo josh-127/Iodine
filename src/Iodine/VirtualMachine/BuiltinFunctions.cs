@@ -155,7 +155,7 @@ namespace Iodine
 			}
 			if (args[0] is IodineInteger)
 				return new IodineChar ((char)((IodineInteger)args[0]).Value);
-			if (args[0] is IodineString)
+			else if (args[0] is IodineString)
 				return new IodineChar ((char)args[0].ToString()[0]);
 			return null;
 		}
