@@ -1,0 +1,193 @@
+###
+# Name        : webserver
+# Author      : @SplittyDev
+# Description : Basic webserver
+# Please add yourself as author if you make changes
+###
+
+use * from socket
+use * from core
+
+class WebServer {
+   func WebServer (self) {
+      self.sock = socket (SOCK_STREAM, PROTO_TCP)
+      self.
+      self.setPlatform ("linux")
+   }
+
+   ### host    : Str
+   ### port    : Int
+   func listen (self, host, port) {
+      self.host = host
+      self.address = host
+      self.port = port
+      printf ("Binding socket to {}:{}", self.address, self.port)
+      self.sock.bind (self.address, self.port)
+      self.sock.listen (100)
+      while (true) {
+         client = self.sock.accept ()
+         printf ("Accepted connection.")
+         self.handleClient (client)
+      }
+   }
+
+   ### root    : Str
+   func setRoot (self, root) {
+      self.root = root
+   }
+
+   ### indices : List
+   func setIndices (self, indices) {
+      self.indices = indices
+   }
+
+   ### platform   : Str
+   func setPlatform (self, platform) {
+      self.platform = platform
+   }
+
+   # We don't have threads yet
+   ### client  : socket
+   func handleClient (self, client) {
+      header = ""
+      while (client.getBytesAvailable () > 0) {
+         header += client.readLine ()
+      }
+      try {
+         header = self.parseHeader (header)
+      } except (e) {
+         printf ("Malformed request")
+         return null
+      }
+      response = self.prepareResponse (header)
+      self.sendResponse (client, response[0], response[1])
+   }
+
+   ### client  : socket
+   ### data    : Str
+   func sendResponse (self, client, header, data) {
+      version = header["version"]
+      status = header["status"]
+      content_type = header["content-type"]
+      encoding = header["encoding"]
+      header = sprintf ("{} {}\r\nContent-Type:{};encoding={}\r\n",
+         version, status, content_type, encoding)
+      content = sprintf ("{}\r\n{}", header, data)
+      client.send (content)
+   }
+
+   ### header  : HashMap
+   ### returns : List
+   func prepareResponse (self, header) {
+      path = (sprintf ("{}{}", self.root, header["path"]))
+      path = self.normalizePath (path)
+      contents = ""
+      response_header = HashMap ()
+      response_header["version"] = "HTTP/1.1"
+      response_header["content-type"] = "text/html"
+      response_header["encoding"] = "utf-8"
+      success = false
+      i = 0
+      is_dir = false
+      if (len (header["path"]) > 0)
+         if (reverse (header["path"])[0] == "/")
+            is_dir = true
+      if (!is_dir) {
+         try {
+            current_path = path
+            current_path = self.platformizePath (current_path)
+            printf ("Trying to open {}", current_path)
+            f = open (current_path, "r")
+            contents = f.readAllText ()
+            f.close ()
+            response_header["status"] = "200 OK"
+            success = true
+         } except (e) {
+            contents = self.defaultPage404 (header)
+            response_header["status"] = "404 Not Found"
+            return {response_header, contents}
+         }
+      }
+      if (is_dir && !success) {
+         while (i < len (self.indices)) {
+            if (!success) {
+               try {
+                  current_path = path + "/" + self.indices[i]
+                  current_path = self.platformizePath (current_path)
+                  printf ("Trying to open {}", current_path)
+                  f = open (current_path, "r")
+                  contents = f.readAllText ()
+                  f.close ()
+                  response_header["status"] = "200 OK"
+                  success = true
+               } except (e) {
+                  contents = self.defaultPage404 ()
+                  response_header["status"] = "404 Not Found"
+               }
+            }
+            i = i + 1
+         }
+      }
+      return {response_header, contents}
+   }
+
+   ### path    : Str
+   func normalizePath (self, path) {
+      path = path.replace ("\\", "/")
+      if (reverse (path)[0] == "/")
+         path = reverse (reverse (path).substr (1))
+      return path
+   }
+
+   ### path    : Str
+   func platformizePath (self, path) {
+      path = self.normalizePath (path)
+      if (self.platform == "windows")
+         path = path.replace ("/", "\\")
+      return path
+   }
+
+   ### header  : Str
+   ### returns : HashMap
+   func parseHeader (self, header) {
+      parsed = HashMap ()
+      header = header.split ("\r\n")
+      parsed.set ("method", self.parseHeaderMethod (header[0]))
+      parsed.set ("path", self.parseHeaderPath (header[0]))
+      parsed.set ("version", self.parseHeaderVersion (header[0]))
+      header.removeAt (0)
+      foreach (line in header) {
+         if (line.indexOf (":") != -1) {
+            key = line.substr (0, line.indexOf (":"))
+            val = line.substr (line.indexOf (":") + 1)
+            parsed.set (key, val)
+         }
+      }
+      return parsed
+   }
+
+   ### headerStr  : Str
+   func parseHeaderMethod (self, headerStr) {
+      return headerStr.split (" ")[0]
+   }
+
+   ### headerStr  : Str
+   func parseHeaderPath (self, headerStr) {
+      return headerStr.split (" ")[1].split (" ")[0]
+   }
+
+   ### headerStr  : Str
+   func parseHeaderVersion (self, headerStr) {
+      return headerStr.split (" ")[2]
+   }
+
+   ### header  : HashMap
+   func defaultPage404 (self, header) {
+      return sprintf (
+         "<h1>404 - File not found</h1>" +
+         "<br>The requested URL {} was not found on this server.<br>" +
+         "<hr>" +
+         "iodinium server at {} Port {}",
+         header["path"], self.host, self.port)
+   }
+}

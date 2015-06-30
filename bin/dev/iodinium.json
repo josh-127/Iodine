@@ -1,0 +1,20 @@
+{
+   "root": "C:/Users/Splitty/Documents/iodinium",
+   "host": "127.0.0.1",
+   "port": 8080,
+   "indices": [
+      "index.html",
+      "index.htm"
+   ],
+   "platform": "windows",
+   "default_mime": "text/plain",
+   "mimes": {
+      "html": "text/html",
+      "htm": "text/html",
+      "exe": "application/octet-stream",
+      "bin": "application/octet-stream",
+      "jpg": "image/jpeg",
+      "png": "image/png",
+      "gif": "image/gif"
+   }
+}
