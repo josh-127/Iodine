@@ -25,17 +25,26 @@ namespace Iodine
 			get;
 		}
 
-		public NodeUseStatement (string module)
+		public bool Relative
+		{
+			private set;
+			get;
+		}
+
+		public NodeUseStatement (string module, bool relative = false)
 		{
 			this.Module = module;
+			this.Relative = relative;
 			this.Imports = new List<string> ();
 		}
 
-		public NodeUseStatement (string module, List<string> imports, bool wildcard)
+		public NodeUseStatement (string module, List<string> imports, bool wildcard,
+			bool relative = false)
 		{
 			this.Module = module;
 			this.Imports = imports;
 			this.Wildcard = wildcard;
+			this.Relative = relative;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -46,6 +55,7 @@ namespace Iodine
 		public static NodeUseStatement Parse (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "use");
+			bool relative = stream.Accept (TokenClass.Dot);
 			string ident = "";
 			if (!stream.Match (TokenClass.Operator, "*"))
 				ident = ParseModuleName (stream);
@@ -68,9 +78,9 @@ namespace Iodine
 				}
 				stream.Expect (TokenClass.Keyword, "from");
 				string module = ParseModuleName (stream);
-				return new NodeUseStatement (module, items, wildcard);
+				return new NodeUseStatement (module, items, wildcard, relative);
 			}
-			return new NodeUseStatement (ident);
+			return new NodeUseStatement (ident, relative);
 		}
 
 		private static string ParseModuleName (TokenStream stream)

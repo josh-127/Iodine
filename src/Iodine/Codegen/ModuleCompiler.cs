@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.IO;
 namespace Iodine
 {
 	public class ModuleCompiler : IAstVisitor
@@ -9,12 +9,15 @@ namespace Iodine
 		private int currentScope = 0;
 		private IodineModule module;
 		private FunctionCompiler functionCompiler;
+		private string file;
 
-		public ModuleCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineModule module)
+		public ModuleCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineModule module,
+			string file)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.module = module;
+			this.file = file;
 			this.functionCompiler = new FunctionCompiler (errorLog, symbolTable, module.Initializer);
 		}
 
@@ -126,7 +129,9 @@ namespace Iodine
 		public void Accept (NodeUseStatement useStmt)
 		{
 			module.Imports.Add (useStmt.Module);
-			IodineModule import = IodineModule.LoadModule (errorLog, useStmt.Module);
+			IodineModule import = !useStmt.Relative ? IodineModule.LoadModule (errorLog, useStmt.Module) :
+				IodineModule.LoadModule (errorLog, String.Format ("{0}{1}{2}", Path.GetDirectoryName (this.file),
+					Path.DirectorySeparatorChar, useStmt.Module));
 			if (import != null) {
 				module.SetAttribute (System.IO.Path.GetFileNameWithoutExtension (useStmt.Module), import);
 				if (useStmt.Wildcard) {
