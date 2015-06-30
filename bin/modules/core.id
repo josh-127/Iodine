@@ -6,6 +6,8 @@
 # Please add yourself as author if you make changes
 ###
 
+use * from reflection
+
 ### This is an extremely hacky class that allows inheritance.
 class _ {
    # this   : object
