@@ -57,6 +57,8 @@ class Stack {
 # that currently exists
 class TypedStack {
   func TypedStack (self, t) {
+    # This is pretty interesting
+    # I call it the pseudo-inheritance hack.
     self.typeDef.name = "Stack"
     self.stack = Stack ()
     self.store = self.stack.store

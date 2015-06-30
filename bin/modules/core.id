@@ -6,6 +6,21 @@
 # Please add yourself as author if you make changes
 ###
 
+### This is an extremely hacky class that allows inheritance.
+class _ {
+   # this   : object
+   # parent : object
+   func inherit (this, parent) {
+      super = parent
+      typedef = this.typeDef
+      attrs = getAttributes (super)
+      foreach (attr in attrs)
+         setAttribute (this, attr, attrs[attr])
+      this.__super__ = super
+      this.typeDef = typedef
+   }
+}
+
 ###
 ### printf, printr, sprintf, sprintf_t
 ###

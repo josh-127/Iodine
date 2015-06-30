@@ -1,0 +1,7 @@
+use * from stack
+
+func main() {
+  test = Stack ()
+  test.push (2)
+  test.pop ()
+}
