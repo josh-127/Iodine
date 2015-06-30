@@ -10,6 +10,7 @@ namespace Iodine
 		static BuiltInModules ()
 		{
 			Modules["random"] = new RandomModule ();
+			Modules["regex"] = new RegexModule ();
 		}
 	}
 }

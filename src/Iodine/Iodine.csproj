@@ -129,6 +129,8 @@
     <Compile Include="VirtualMachine\BuiltInModules.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineFloat.cs" />
     <Compile Include="Parser\Ast\NodeFloat.cs" />
+    <Compile Include="VirtualMachine\CoreModules\IOModule.cs" />
+    <Compile Include="VirtualMachine\CoreModules\RegexModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -141,5 +143,6 @@
     <Folder Include="VirtualMachine\CoreTypes\" />
     <Folder Include="Codegen\" />
     <Folder Include="VirtualMachine\CoreModules\" />
+    <Folder Include="VirtualMachine\CoreModules\IOTypes\" />
   </ItemGroup>
 </Project>
