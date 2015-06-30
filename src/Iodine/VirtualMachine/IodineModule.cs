@@ -92,8 +92,8 @@ namespace Iodine
 
 		public static IodineModule CompileModule (ErrorLog errorLog, string file)
 		{
-			if (ModuleCache.ContainsKey (file))
-				return ModuleCache [file];
+			if (ModuleCache.ContainsKey (Path.GetFullPath (file)))
+				return ModuleCache [Path.GetFullPath (file)];
 			
 			if (FindModule (file) != null) {
 				Lexer lexer = new Lexer (errorLog, File.ReadAllText (file));
