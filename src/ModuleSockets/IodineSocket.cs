@@ -27,6 +27,7 @@ namespace ModuleSockets
 			this.SetAttribute ("receive", new InternalMethodCallback (receive ,this));
 			this.SetAttribute ("getBytesAvailable", new InternalMethodCallback (getBytesAvailable ,this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine ,this));
+			this.SetAttribute ("getStream", new InternalMethodCallback (getStream ,this));
 		}
 
 		public IodineSocket (SocketType sockType, ProtocolType protoType)
@@ -92,6 +93,11 @@ namespace ModuleSockets
 				return null;
 			}
 			return null;
+		}
+
+		private IodineObject getStream (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineFile (new NetworkStream (this.Socket), true, true);
 		}
 
 		private IodineObject getBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args)

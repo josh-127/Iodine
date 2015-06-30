@@ -35,7 +35,9 @@ namespace Iodine
 			this.CanRead = canRead;
 			this.CanWrite = canWrite;
 			this.SetAttribute ("write", new InternalMethodCallback (write, this));
+			this.SetAttribute ("writeBytes", new InternalMethodCallback (writeBytes, this));
 			this.SetAttribute ("read", new InternalMethodCallback (read, this));
+			this.SetAttribute ("readBytes", new InternalMethodCallback (readBytes, this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine, this));
 			this.SetAttribute ("tell", new InternalMethodCallback (readLine, this));
 			this.SetAttribute ("close", new InternalMethodCallback (close, this));
@@ -67,6 +69,24 @@ namespace Iodine
 			return null;
 		}
 
+		private IodineObject writeBytes (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (this.Closed) { 
+				vm.RaiseException (new IodineIOException ("Stream has been closed!"));
+				return null;
+			}
+
+			if (!this.CanWrite) {
+				vm.RaiseException (new IodineIOException ("Can not write to stream!"));
+				return null;
+			}
+
+			IodineByteArray arr = args[0] as IodineByteArray;
+			this.File.Write (arr.Array, 0, arr.Array.Length);
+
+			return null;
+		}
+
 		private IodineObject read (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (this.Closed) { 
@@ -80,6 +100,28 @@ namespace Iodine
 			}
 
 			return new IodineInteger (File.ReadByte ());
+		}
+
+		private IodineObject readBytes (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (this.Closed) { 
+				vm.RaiseException ("Stream has been closed!");
+				return null;
+			}
+
+			if (!this.CanRead) {
+				vm.RaiseException ("Stream is not open for reading!");
+				return null;
+			}
+
+			if (args[0] is IodineInteger) {
+				IodineInteger intv = args[0] as IodineInteger;
+				byte[] buf = new byte[(int)intv.Value];
+				this.File.Read (buf, 0, buf.Length);
+				return new IodineByteArray (buf);
+			}
+			vm.RaiseException (new IodineTypeException ("Int"));
+			return null;
 		}
 
 		private IodineObject readLine (VirtualMachine vm, IodineObject self, IodineObject[] args)
