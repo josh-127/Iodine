@@ -1,1 +1,13 @@
+# Binaries
+*.exe
+*.dll
+*.mdb
+*.pdb
+
+# Useless VS/MonoDevelop crap
+obj/
+[dD]ebug/
+[rR]elease/
+
+# @SplittyDev's personal files
 bin/splitty/
