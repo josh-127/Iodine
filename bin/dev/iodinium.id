@@ -14,5 +14,7 @@ func main (args) {
    server.setRoot (config["root"])
    server.setIndices (config["indices"])
    server.setPlatform (config["platform"])
+   server.setDefaultMime (config["default_mime"])
+   server.setMimes (config["mimes"])
    server.listen (config["host"], config["port"])
 }

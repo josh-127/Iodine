@@ -33,6 +33,12 @@ func printf (format, params args) {
   print (sprintf_t (format, args))
 }
 
+# format  : object || string
+# args    : object || tuple
+func sprintf (format, params args) {
+  return sprintf_t (format, args)
+}
+
 # obj     : object
 func printr (obj) {
   print (repr (obj))
@@ -245,14 +251,14 @@ func reprList (lst) {
 # tpl     : tuple
 # returns : string
 func reprTuple (tpl) {
-  return sprintf ("({})", lambda () => {
+  return format ("({})", lambda () => {
     buf = ""
     i = 0
     while (i < len (tpl)) {
       if (i == len (tpl) - 1)
-        buf += sprintf ("{}", repr (tpl[i]))
+        buf += format ("{}", repr (tpl[i]))
       else
-        buf += sprintf ("{}, ", repr (tpl[i]))
+        buf += format ("{}, ", repr (tpl[i]))
       i = i + 1
     }
     return buf
@@ -262,17 +268,17 @@ func reprTuple (tpl) {
 # dict    : hashmap
 # returns : string
 func reprHashMap (dict) {
-  return sprintf ("{{{}}}", lambda () => {
+  return format ("{{{}}}", lambda () => {
     buf = ""
     i = 0
     foreach (key in dict) {
       _key = repr (key)
       _val = repr (dict[key])
-      val = sprintf ("{0}: {1}", (_key, _val))
+      val = format ("{0}: {1}", (_key, _val))
       if (i == len (dict) - 1)
-        buf += sprintf ("{}", val)
+        buf += format ("{}", val)
       else
-        buf += sprintf ("{}, ", val)
+        buf += format ("{}, ", val)
       i = i + 1
     }
     return buf
@@ -282,7 +288,7 @@ func reprHashMap (dict) {
 # str     : string
 # returns : string
 func reprStr (str) {
-  return sprintf ("\"{}\"", str)
+  return format ("\"{}\"", str)
 }
 
 # obj     : null

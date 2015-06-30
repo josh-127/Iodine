@@ -11,7 +11,7 @@ use * from core
 class WebServer {
    func WebServer (self) {
       self.sock = socket (SOCK_STREAM, PROTO_TCP)
-      self.
+      self.setIndices ({"index.html", "index.htm"})
       self.setPlatform ("linux")
    }
 
@@ -46,6 +46,16 @@ class WebServer {
       self.platform = platform
    }
 
+   ### mime    : string
+   func setDefaultMime (self, mime) {
+      self.default_mime = mime
+   }
+
+   ### mimes   : HashMap
+   func setMimes (self, mimes) {
+      self.mimes = mimes
+   }
+
    # We don't have threads yet
    ### client  : socket
    func handleClient (self, client) {
@@ -56,11 +66,21 @@ class WebServer {
       try {
          header = self.parseHeader (header)
       } except (e) {
+         printf (e.message)
          printf ("Malformed request")
          return null
       }
-      response = self.prepareResponse (header)
-      self.sendResponse (client, response[0], response[1])
+      try {
+         response = self.prepareResponse (header)
+         self.sendResponse (client, response[0], response[1])
+      } except (e) {
+         _header = HashMap ()
+         _header["version"] = "HTTP/1.1"
+         _header["status"] = "500 Internal Server Error"
+         _header["content-type"] = "text/plain";
+         _header["encoding"] = "utf-8"
+         self.sendResponse (client, _header, self.defaultPage500 (header))
+      }
    }
 
    ### client  : socket
@@ -84,7 +104,6 @@ class WebServer {
       contents = ""
       response_header = HashMap ()
       response_header["version"] = "HTTP/1.1"
-      response_header["content-type"] = "text/html"
       response_header["encoding"] = "utf-8"
       success = false
       i = 0
@@ -94,9 +113,17 @@ class WebServer {
             is_dir = true
       if (!is_dir) {
          try {
-            current_path = path
-            current_path = self.platformizePath (current_path)
-            printf ("Trying to open {}", current_path)
+            normalized_path = self.normalizePath (path)
+            current_path = self.platformizePath (path)
+            mime = self.default_mime
+            ext = ""
+            if (normalized_path.contains (".")) {
+               ext = reverse (normalized_path)
+               ext = reverse (ext.substr (0, ext.indexOf (".")))
+            }
+            if (ext != "" && self.mimes.contains (ext))
+               mime = self.mimes[ext]
+            response_header["content-type"] = mime
             f = open (current_path, "r")
             contents = f.readAllText ()
             f.close ()
@@ -113,8 +140,23 @@ class WebServer {
             if (!success) {
                try {
                   current_path = path + "/" + self.indices[i]
+                  normalized_path = self.normalizePath (current_path)
                   current_path = self.platformizePath (current_path)
-                  printf ("Trying to open {}", current_path)
+                  mime = self.default_mime
+                  ext = ""
+                  try {
+                     if (normalized_path.contains (".")) {
+                           ext = reverse (normalized_path)
+                           if (len (ext) > 0) {
+                              ext = reverse (ext.substr (0, ext.indexOf (".")))
+                           }
+                     }
+                     if (ext != "" && self.mimes.contains (ext))
+                        mime = self.mimes[ext]
+                  } except (e) {
+                     printf ("Error while retrieving MIME type")
+                  }
+                  response_header["content-type"] = mime
                   f = open (current_path, "r")
                   contents = f.readAllText ()
                   f.close ()
@@ -152,15 +194,16 @@ class WebServer {
    func parseHeader (self, header) {
       parsed = HashMap ()
       header = header.split ("\r\n")
-      parsed.set ("method", self.parseHeaderMethod (header[0]))
-      parsed.set ("path", self.parseHeaderPath (header[0]))
-      parsed.set ("version", self.parseHeaderVersion (header[0]))
+      printr (header)
+      parsed["method"] = self.parseHeaderMethod (header[0])
+      parsed["path"] = self.parseHeaderPath (header[0])
+      parsed["version"] = self.parseHeaderVersion (header[0])
       header.removeAt (0)
       foreach (line in header) {
          if (line.indexOf (":") != -1) {
             key = line.substr (0, line.indexOf (":"))
             val = line.substr (line.indexOf (":") + 1)
-            parsed.set (key, val)
+            parsed[key] = val
          }
       }
       return parsed
@@ -186,6 +229,16 @@ class WebServer {
       return sprintf (
          "<h1>404 - File not found</h1>" +
          "<br>The requested URL {} was not found on this server.<br>" +
+         "<hr>" +
+         "iodinium server at {} Port {}",
+         header["path"], self.host, self.port)
+   }
+
+   ### header  : HashMap
+   func defaultPage500 (self, header) {
+      return sprintf (
+         "<h1>500 - Internal Server Error</h1>" +
+         "<br>Something went wrong.<br>" +
          "<hr>" +
          "iodinium server at {} Port {}",
          header["path"], self.host, self.port)
