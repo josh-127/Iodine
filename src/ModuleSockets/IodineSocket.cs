@@ -17,15 +17,60 @@ namespace ModuleSockets
 		}
 		private NetworkStream stream;
 
-		public IodineSocket (SocketType sockType, ProtocolType protoType)
-			: base (SocketTypeDef)
-		{
-			this.Socket = new Socket (sockType, protoType);
+		public IodineSocket (Socket sock) : base (SocketTypeDef) {
+			this.Socket = sock;
 			this.SetAttribute ("connect", new InternalMethodCallback (connect ,this));
 			this.SetAttribute ("send", new InternalMethodCallback (send ,this));
+			this.SetAttribute ("bind", new InternalMethodCallback (bind, this));
+			this.SetAttribute ("accept", new InternalMethodCallback (accept, this));
+			this.SetAttribute ("listen", new InternalMethodCallback (listen, this));
 			this.SetAttribute ("receive", new InternalMethodCallback (receive ,this));
 			this.SetAttribute ("getBytesAvailable", new InternalMethodCallback (getBytesAvailable ,this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine ,this));
+		}
+
+		public IodineSocket (SocketType sockType, ProtocolType protoType)
+			: this (new Socket (sockType, protoType))
+		{
+		}
+
+		private IodineObject bind (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString ipAddrStr = args[0] as IodineString;
+			IodineInteger portObj = args[1] as IodineInteger;
+			IPAddress ipAddr;
+			int port = (int)portObj.Value;
+			if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
+				vm.RaiseException ("Invalid IP address!");
+				return null;
+			}
+			try {
+				this.Socket.Bind (new IPEndPoint (ipAddr, port));
+			} catch {
+				vm.RaiseException ("Could not bind to socket!");
+				return null;
+			}
+			return null;
+		}
+
+		private IodineObject listen (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineInteger backlogObj = args[0] as IodineInteger;
+			try {
+				int backlog = (int)backlogObj.Value;
+				this.Socket.Listen (backlog);
+			} catch {
+				vm.RaiseException ("Could not listen to socket!");
+				return null;
+			}
+			return null;
+		}
+
+		private IodineSocket accept (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineSocket sock = new IodineSocket (this.Socket.Accept ());
+			sock.stream = new NetworkStream (sock.Socket);
+			return sock;
 		}
 
 		private IodineObject connect (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -37,7 +82,7 @@ namespace ModuleSockets
 			if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
 				vm.RaiseException ("Invalid IP address!");
 				return null;
-			} 
+			}
 
 			try {
 				this.Socket.Connect (ipAddr, port);
@@ -49,12 +94,12 @@ namespace ModuleSockets
 			return null;
 		}
 
-		private IodineObject getBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		private IodineObject getBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineInteger (this.Socket.Available);
 		}
 
-		private IodineObject send (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		private IodineObject send (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			foreach (IodineObject obj in args) {
 				if (obj is IodineInteger) {
@@ -66,7 +111,7 @@ namespace ModuleSockets
 			return null;
 		}
 
-		private IodineObject receive (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		private IodineObject receive (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineInteger n = args[0] as IodineInteger;
 			StringBuilder accum = new StringBuilder ();
@@ -78,7 +123,7 @@ namespace ModuleSockets
 			return new IodineString (accum.ToString ());
 		}
 
-		private IodineObject readLine (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		private IodineObject readLine (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			StringBuilder accum = new StringBuilder ();
 			int b = this.stream.ReadByte ();
@@ -90,4 +135,3 @@ namespace ModuleSockets
 		}
 	}
 }
-
