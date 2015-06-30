@@ -26,12 +26,16 @@ namespace Iodine
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
+			//vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
 			try
 			{
 				IodineObject obj = Callback.Invoke (vm, self, arguments);
-				vm.Stack.EndFrame ();
+				//vm.Stack.EndFrame ();
 				return obj;
+			}
+			catch (UnhandledIodineExceptionException e)
+			{
+				throw e;
 			}
 			catch (Exception ex)
 			{
