@@ -108,6 +108,7 @@ namespace Iodine
 				IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable);
 				IodineModule module = new IodineModule (Path.GetFileNameWithoutExtension (file));
 				ModuleCache [file] = module;
+				SearchPaths.Add (Path.GetDirectoryName (Path.GetFullPath (file)));
 				compiler.CompileAst (module, root);
 				if (errorLog.ErrorCount > 0) return null;
 				return module;
