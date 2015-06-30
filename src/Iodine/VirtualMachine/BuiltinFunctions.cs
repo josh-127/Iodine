@@ -139,7 +139,13 @@ namespace Iodine
 
 		private IodineObject toChar (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineChar ((char)((IodineInteger)args[0]).Value);
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			if (args[0] is IodineInteger)
+				return new IodineChar ((char)((IodineInteger)args[0]).Value);
+			return null;
 		}
 
 		private IodineObject list (VirtualMachine vm, IodineObject self, IodineObject[] args)

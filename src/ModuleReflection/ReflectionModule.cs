@@ -12,6 +12,7 @@ namespace ModuleReflection
 		{
 			this.SetAttribute ("getBytecode", new InternalMethodCallback (getBytecode, this));
 			this.SetAttribute ("hasAttribute", new InternalMethodCallback (hasAttribute, this));
+			this.SetAttribute ("setAttribute", new InternalMethodCallback (setAttribute, this));
 			this.SetAttribute ("getAttributes", new InternalMethodCallback (getAttributes, this));
 			this.SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
 			this.SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
@@ -45,6 +46,22 @@ namespace ModuleReflection
 				map.Set (new IodineString (key), o1.Attributes[key]);
 			}
 			return map;
+		}
+
+		private IodineObject setAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length >= 3) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			IodineObject o1 = args[0];
+			IodineString str = args[1] as IodineString;
+			if (str != null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+			o1.SetAttribute (str.Value, args[2]);
+			return null;
 		}
 
 		private IodineObject loadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
