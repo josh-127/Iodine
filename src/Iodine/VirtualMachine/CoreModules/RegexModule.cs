@@ -16,9 +16,11 @@ namespace Iodine
 			}
 
 			public IodineRegex (Regex val)
-				: base (RegexTypeDef) {
+				: base (RegexTypeDef)
+			{
 				this.Value = val;
 				this.SetAttribute ("match", new InternalMethodCallback (match, this));
+				this.SetAttribute ("isMatch", new InternalMethodCallback (isMatch, this));
 			}
 
 			private IodineObject match (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -35,6 +37,22 @@ namespace Iodine
 				}
 
 				return new IodineMatch (this.Value.Match (expr.ToString ()));
+			}
+
+			private IodineObject isMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
+				IodineString expr = args[0] as IodineString;
+
+				if (expr == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+
+				return new IodineBool (this.Value.IsMatch (expr.ToString ()));
 			}
 		}
 
