@@ -7,14 +7,12 @@ func main () {
   stack.push (2)
   stack.push (3)
   printr (stack)
-  printr (stack.peek ())
-  printr (stack.peek (1))
+  stack.pop ()
 
   stack = TypedStack ("int")
   stack.push ("1")
   stack.push ("2")
   stack.push ("3")
   printr (stack)
-  printr (stack.peek ())
-  printr (stack.peek (1))
+  stack.pop ()
 }

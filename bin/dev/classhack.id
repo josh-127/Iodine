@@ -1,0 +1,28 @@
+use * from core
+use * from reflection
+
+class Parent {
+   func Parent (self) {
+      self.setName ("Bob")
+   }
+
+   func setName (self, name) {
+      self.name = name
+   }
+}
+
+class Child {
+   func Child (self) {
+      _.inherit (self, Parent ())
+      self.setName ("Alice")
+   }
+}
+
+func main () {
+   parent = Parent ("Bob")
+   printf ("Type of Parent: {}", type (parent))
+   printf ("Name of Parent: {}", parent.name)
+   child = Child ()
+   printf ("Type of Child: {}", type (child))
+   printf ("Name of Child: {}", child.name)
+}
