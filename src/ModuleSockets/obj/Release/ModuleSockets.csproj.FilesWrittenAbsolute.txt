@@ -1,5 +1,0 @@
-/home/grunt/Iodine/src/ModuleSockets/obj/Release/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/grunt/Iodine/bin/extensions/socket.dll.mdb
-/home/grunt/Iodine/bin/extensions/socket.dll
-/home/grunt/Iodine/src/ModuleSockets/obj/Release/socket.dll
-/home/grunt/Iodine/src/ModuleSockets/obj/Release/socket.dll.mdb

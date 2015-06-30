@@ -1,1 +1,25 @@
+# Binaries
+*.exe
+*.dll
+*.mdb
+*.pdb
+
+# Useless VS/MonoDevelop crap
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+*.nlp
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.usertasks
+
+# @SplittyDev's personal files
 bin/splitty/

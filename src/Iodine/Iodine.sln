@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleReflection", "..\Modu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleSockets", "..\ModuleSockets\ModuleSockets.csproj", "{E0ADC874-B580-4B05-8B8D-60CA1F96CBF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleDNS", "..\ModuleDNS.csproj", "{1229E42A-7B91-4A37-B769-D8390751AADE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleMySQL", "..\ModuleMySQL\ModuleMySQL.csproj", "{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleDNS", "..\ModuleDNS\ModuleDNS.csproj", "{1229E42A-7B91-4A37-B769-D8390751AADE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
