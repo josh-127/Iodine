@@ -41,7 +41,7 @@ func printr (obj) {
 # format  : object || string
 # args    : additional arguments
 # returns : string
-func sprintf (format, params args) {
+func format (format, params args) {
 	return sprintf_t (format, args)
 }
 
@@ -172,7 +172,7 @@ func reverse (obj) {
     return Tuple (reverseList (obj))
   }
   else
-    raise (sprintf ("Can't reverse object of type {}", type))
+    raise (format ("Can't reverse object of type {}", type))
 }
 
 # str     : string
@@ -228,14 +228,14 @@ func repr (obj) {
 # lst     : list
 # returns : string
 func reprList (lst) {
-  return sprintf ("[{}]", lambda () => {
+  return format ("[{}]", lambda () => {
     buf = ""
     i = 0
     while (i < len (lst)) {
       if (i == len (lst) - 1)
-        buf += sprintf ("{}", lst[i])
+        buf += format ("{}", lst[i])
       else
-        buf += sprintf ("{}, ", lst[i])
+        buf += format ("{}, ", lst[i])
       i = i + 1
     }
     return buf
