@@ -71,7 +71,7 @@ namespace Iodine
 
 		public static Token Create (TokenClass clazz, InputStream stream) 
 		{
-			return new Token (clazz, null, stream.Line, stream.Column);
+			return new Token (clazz, ClassToString (clazz), stream.Line, stream.Column);
 		}
 
 		public static Token Create (TokenClass clazz, string value, InputStream stream) 
