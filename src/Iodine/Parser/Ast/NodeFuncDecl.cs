@@ -49,7 +49,8 @@ namespace Iodine
 			bool isVariadic;
 			Token ident = stream.Expect (TokenClass.Identifier);
 			List<string> parameters = ParseFuncParameters (stream, out isInstanceMethod, out isVariadic);
-			NodeFuncDecl decl = new NodeFuncDecl (ident.Value, isInstanceMethod, isVariadic, parameters);
+			NodeFuncDecl decl = new NodeFuncDecl (ident != null ? ident.Value : "", isInstanceMethod,
+				isVariadic, parameters);
 			decl.Add (NodeStmt.Parse (stream));
 			return decl;
 		}
@@ -73,13 +74,12 @@ namespace Iodine
 				if (stream.Accept (TokenClass.Keyword, "params")) {
 					isVariadic = true;
 					Token ident = stream.Expect (TokenClass.Identifier);
-					if (ident != null)
-						ret.Add (ident.Value);
+					if (ident != null) ret.Add (ident.Value);
 					stream.Expect (TokenClass.CloseParan);
 					return ret;
 				}
 				Token param = stream.Expect (TokenClass.Identifier);
-				ret.Add (param.Value);
+				if (param != null) ret.Add (param.Value);
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
