@@ -40,6 +40,7 @@ namespace Iodine
 			this.SetAttribute ("readBytes", new InternalMethodCallback (readBytes, this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine, this));
 			this.SetAttribute ("tell", new InternalMethodCallback (readLine, this));
+			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			this.SetAttribute ("close", new InternalMethodCallback (close, this));
 			this.SetAttribute ("readAllText", new InternalMethodCallback (readAllText, this));
 		}
@@ -145,6 +146,14 @@ namespace Iodine
 				vm.RaiseException ("Stream has been closed!");
 			}
 			return new IodineInteger (File.Position);
+		}
+
+		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (this.Closed) { 
+				vm.RaiseException ("Stream has been closed!");
+			}
+			return new IodineInteger (File.Length);
 		}
 
 		private IodineObject close (VirtualMachine vm, IodineObject self, IodineObject[] args)
