@@ -26,7 +26,7 @@ namespace Iodine
 		{
 			stream.Expect (TokenClass.Keyword, "return");
 			if (stream.Accept (TokenClass.SemiColon)) {
-				return new NodeReturnStmt (null);
+				return new NodeReturnStmt (new Ast ());
 			} else {
 				return new NodeReturnStmt (NodeExpr.Parse (stream));
 			}
