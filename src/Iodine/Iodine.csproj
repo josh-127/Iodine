@@ -131,6 +131,8 @@
     <Compile Include="Parser\Ast\NodeFloat.cs" />
     <Compile Include="VirtualMachine\CoreModules\IOModule.cs" />
     <Compile Include="VirtualMachine\CoreModules\RegexModule.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineByteArray.cs" />
+    <Compile Include="VirtualMachine\CoreModules\HashModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
