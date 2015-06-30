@@ -107,6 +107,8 @@ namespace Iodine
 			: base ("regex")
 		{
 			this.SetAttribute ("compile", new InternalMethodCallback (compile, this));
+			this.SetAttribute ("match", new InternalMethodCallback (match, this));
+			this.SetAttribute ("isMatch", new InternalMethodCallback (isMatch, this));
 		}
 
 		private IodineObject compile (VirtualMachine vm, IodineObject self, IodineObject[] args) 
@@ -125,6 +127,39 @@ namespace Iodine
 			return new IodineRegex (new Regex (expr.ToString ()));
 		}
 
+		private IodineObject match (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			IodineString data = args[0] as IodineString;
+			IodineString pattern = args[1] as IodineString;
+
+			if (pattern == null || data == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			return new IodineMatch (Regex.Match (data.ToString (), pattern.ToString ()));
+		}
+
+		private IodineObject isMatch (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			IodineString data = args[0] as IodineString;
+			IodineString pattern = args[1] as IodineString;
+
+			if (pattern == null || data == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			return new IodineBool (Regex.IsMatch (data.ToString (), pattern.ToString ()));
+		}
 
 	}
 }
