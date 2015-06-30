@@ -51,6 +51,7 @@ namespace Iodine
 			globalDict["toInt"] = new InternalMethodCallback (toInt, null);
 			globalDict["toStr"] = new InternalMethodCallback (toStr, null);
 			globalDict["Int"] = new InternalMethodCallback (toInt, null);
+			globalDict["Float"] = new InternalMethodCallback (toFloat, null);
 			globalDict["Str"] = new InternalMethodCallback (toStr, null);
 			globalDict["Bool"] = new InternalMethodCallback (toBool, null);
 			globalDict["Char"] = new InternalMethodCallback (toChar, null);
@@ -102,7 +103,15 @@ namespace Iodine
 		}
 		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
 			IodineString str = args[0] as IodineString;
+
+			if (str == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
 			if (Environment.GetEnvironmentVariable (str.Value) != null)
 				return new IodineString (Environment.GetEnvironmentVariable (str.Value));
 			else 
@@ -111,6 +120,9 @@ namespace Iodine
 
 		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
 			IodineString str = args[0] as IodineString;
 			Environment.SetEnvironmentVariable (str.Value, args[1].ToString ());
 			return null;
@@ -118,6 +130,9 @@ namespace Iodine
 
 		private IodineObject raise (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
 			IodineString str = args[0] as IodineString;
 			vm.RaiseException (str.Value);
 			return null;
@@ -134,16 +149,37 @@ namespace Iodine
 
 		private IodineObject toInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+
 			return new IodineInteger (Int64.Parse (args[0].ToString ()));
+		}
+
+		private IodineObject toFloat (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+
+			return new IodineFloat (Double.Parse (args[0].ToString ()));
 		}
 
 		private IodineObject toStr (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+
 			return new IodineString (args[0].ToString ());
 		}
 
 		private IodineObject toBool (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+
 			return new IodineBool (Boolean.Parse (args[0].ToString ()));
 		}
 

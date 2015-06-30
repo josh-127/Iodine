@@ -24,6 +24,12 @@ namespace Iodine
 
 		public IodineObject InvokeMethod (IodineMethod method, IodineObject self, IodineObject[] arguments)
 		{
+			if ((method.Variadic && arguments.Length + 1 < method.ParameterCount) ||
+				(!method.Variadic && arguments.Length < method.ParameterCount)) {
+				RaiseException (new IodineArgumentException (method.ParameterCount));
+				return null;
+			}
+
 			Stack.NewFrame (method, self, method.LocalCount);
 			int insCount = method.Body.Count;
 
@@ -56,6 +62,13 @@ namespace Iodine
 		public IodineObject InvokeMethod (IodineMethod method, StackFrame frame, IodineObject self,
 			IodineObject[] arguments)
 		{
+
+			if ((method.Variadic && arguments.Length + 1 < method.ParameterCount) || 
+				(!method.Variadic && arguments.Length < method.ParameterCount)) {
+				RaiseException (new IodineArgumentException (method.ParameterCount));
+				return null;
+			}
+
 			Stack.NewFrame (frame);
 			int insCount = method.Body.Count;
 
