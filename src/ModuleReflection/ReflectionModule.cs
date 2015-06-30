@@ -21,7 +21,7 @@ namespace ModuleReflection
 
 		private IodineObject hasAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (args.Length >= 2) {
+			if (args.Length < 2) {
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
@@ -36,13 +36,14 @@ namespace ModuleReflection
 
 		private IodineObject getAttributes (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (args.Length >= 1) {
+			if (args.Length < 1) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 			IodineObject o1 = args[0];
 			IodineMap map = new IodineMap ();
 			foreach (string key in o1.Attributes.Keys) {
+				Console.WriteLine (key);
 				map.Set (new IodineString (key), o1.Attributes[key]);
 			}
 			return map;
@@ -50,7 +51,7 @@ namespace ModuleReflection
 
 		private IodineObject setAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (args.Length >= 3) {
+			if (args.Length < 3) {
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
