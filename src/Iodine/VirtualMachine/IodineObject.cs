@@ -42,6 +42,10 @@ namespace Iodine
 					this.attributes[name] = new IodineInstanceMethodWrapper (this, method);
 					return;
 				}
+			} else if (value is IodineInstanceMethodWrapper) {
+				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
+				this.attributes[name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
+				return;
 			}
 			this.attributes[name] = value;
 		}

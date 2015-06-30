@@ -19,19 +19,24 @@ namespace Iodine
 	{
 		private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("InstanceMethod");
 
-		private IodineMethod method;
+		public IodineMethod Method
+		{
+			private set;
+			get;
+		}
+
 		private IodineObject self;
 
 		public IodineInstanceMethodWrapper (IodineObject self, IodineMethod method)
 			: base (InstanceTypeDef)
 		{
-			this.method = method;
+			this.Method = method;
 			this.self = self;
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			return vm.InvokeMethod (method, self, arguments);
+			return vm.InvokeMethod (Method, self, arguments);
 		}
 	}
 
