@@ -1,5 +1,0 @@
-/home/grunt/Iodine/src/ModuleReflection/obj/Release/.NETFramework,Version=v4.5.AssemblyAttribute.cs
-/home/grunt/Iodine/bin/extensions/reflection.dll.mdb
-/home/grunt/Iodine/bin/extensions/reflection.dll
-/home/grunt/Iodine/src/ModuleReflection/obj/Release/reflection.dll
-/home/grunt/Iodine/src/ModuleReflection/obj/Release/reflection.dll.mdb
