@@ -28,11 +28,19 @@ namespace ModuleSockets
 			this.SetAttribute ("getBytesAvailable", new InternalMethodCallback (getBytesAvailable ,this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine ,this));
 			this.SetAttribute ("getStream", new InternalMethodCallback (getStream ,this));
+			this.SetAttribute ("close", new InternalMethodCallback (close, this));
 		}
 
 		public IodineSocket (SocketType sockType, ProtocolType protoType)
 			: this (new Socket (sockType, protoType))
 		{
+		}
+
+		private IodineObject close (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			this.Socket.Shutdown (SocketShutdown.Both);
+			this.Socket.Close ();
+			return null;
 		}
 
 		private IodineObject bind (VirtualMachine vm, IodineObject self, IodineObject[] args)

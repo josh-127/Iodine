@@ -81,6 +81,7 @@ class WebServer {
          _header["encoding"] = "utf-8"
          self.sendResponse (client, _header, self.defaultPage500 (header))
       }
+      client.close ()
    }
 
    ### client  : socket
