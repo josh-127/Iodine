@@ -5,9 +5,20 @@
 *.pdb
 
 # Useless VS/MonoDevelop crap
-obj/
-[dD]ebug/
-[rR]elease/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.usertasks
 
 # @SplittyDev's personal files
 bin/splitty/
