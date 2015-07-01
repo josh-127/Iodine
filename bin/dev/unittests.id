@@ -3,13 +3,30 @@ use testing
 
 func main (args) {
   assert = testing.assert ()
+
+  # core.len
   assert.add (core_test_len_string)
   assert.add (core_test_len_list)
   assert.add (core_test_len_tuple)
   assert.add (core_test_len_hashmap)
+
+  # core.reverse
   assert.add (core_test_reverse_string)
   assert.add (core_test_reverse_list)
   assert.add (core_test_reverse_tuple)
+
+  # core.format
+  assert.add (core_test_format_int)
+  assert.add (core_test_format_strings)
+  assert.add (core_test_format_string_tuple)
+
+  # core.repr
+  assert.add (core_test_repr_string)
+  assert.add (core_test_repr_list)
+  assert.add (core_test_repr_tuple)
+  assert.add (core_test_repr_hashmap)
+  assert.add (core_test_repr_bool)
+
   assert.run ()
 }
 
@@ -55,4 +72,57 @@ func core_test_reverse_tuple (assert) {
   tpl = core.reverse ((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
   exp = (9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
   assert.eq (exp, tpl, "Reverse function on tuple")
+}
+
+func core_test_format_int (assert) {
+   assert.eq ("1234", core.format (1234), "Format function on int")
+}
+
+func core_test_format_strings (assert) {
+   tst = core.format ("{} {}!", "Hello", "World")
+   exp = "Hello World!"
+   assert.eq (exp, tst, "Format function on string, string, string")
+}
+
+func core_test_format_string_tuple (assert) {
+   tst = core.format ("Tuple: {}", (1, 2))
+   exp = "Tuple: (1, 2)"
+   assert.eq (exp, tst, "Format function on string, tuple")
+}
+
+func core_test_repr_string (assert) {
+   tst = "Hello"
+   exp = "Hello"
+   assert.eq (exp, core.repr (tst), "Repr function on string")
+}
+
+func core_test_repr_list (assert) {
+   tst = { 1, 2, "a", "b" }
+   exp = "[1, 2, a, b]"
+   assert.eq (exp, core.repr (tst), "Repr function on list")
+}
+
+func core_test_repr_tuple (assert) {
+   tst = ( 1, 2, "a", "b" )
+   exp = "(1, 2, a, b)"
+   assert.eq (exp, core.repr (tst), "Repr function on tuple")
+}
+
+func core_test_repr_hashmap (assert) {
+   tst = HashMap ()
+   tst[1] = "a"
+   tst[2] = "b"
+   tst["a"] = 1
+   tst["b"] = 2
+   exp = "{1: a, 2: b, a: 1, b: 2}"
+   assert.eq (exp, core.repr (tst), "Repr function on hashmap")
+}
+
+func core_test_repr_bool (assert) {
+   tst = false
+   exp = "false"
+   assert.eq (exp, core.repr (tst), "Repr functon on false bool")
+   tst = true
+   exp = "true"
+   assert.eq (exp, core.repr (tst), "Repr function on true bool")
 }

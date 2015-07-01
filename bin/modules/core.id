@@ -8,21 +8,6 @@
 
 use * from reflection
 
-### This is an extremely hacky class that allows inheritance.
-class _ {
-   # this   : object
-   # parent : object
-   func inherit (this, parent) {
-      super = parent
-      typedef = this.typeDef
-      attrs = getAttributes (super)
-      foreach (attr in attrs)
-         setAttribute (this, attr, attrs[attr])
-      this.__super__ = super
-      this.typeDef = typedef
-   }
-}
-
 ###
 ### printf, printr, sprintf, sprintf_t
 ###
@@ -31,6 +16,13 @@ class _ {
 # args    : object || tuple
 func printf (format, params args) {
   print (sprintf_t (format, args))
+}
+
+# format    : Object || Str
+# args      : Object || Tuple
+# returns   : Str
+func sprintf (format, params args) {
+  return sprintf_t (format, args)
 }
 
 # obj     : object
@@ -76,7 +68,7 @@ func sprintf_t (format, args) {
       i = i + 1
       if (i < len (format) && format[i] == "}") {
         if (arg_pos < len (args)) {
-          buf += Str (args[arg_pos])
+          buf += repr (args[arg_pos])
           arg_pos = arg_pos + 1
           i = i + 1
         }
@@ -96,7 +88,7 @@ func sprintf_t (format, args) {
         }
         arg_index = Int (arg_index)
         if (arg_index < len (args))
-          buf += Str (args[arg_index])
+          buf += repr (args[arg_index])
         else
           raise ("Index out of range: Requested element " +
             Str (arg_index) + " of " + Str (len (args) - 1))
@@ -122,7 +114,7 @@ func len (obj) {
   #    - Grunt
   i = 0
   foreach (o in obj) {
-    i += 1
+     i += 1
   }
   return i
 }
@@ -215,12 +207,12 @@ func repr (obj) {
     return reprTuple (obj)
   else if (_type == "HashMap")
     return reprHashMap (obj)
-  else if (_type == "Str")
-    return reprStr (obj)
   else if (_type == "Null")
     return reprNull (obj)
   else if (_type == "Stack")
     return reprList (reverse (obj.store))
+  else if (_type == "Bool")
+    return reprBool (obj)
   else
     return Str (obj)
 }
@@ -245,14 +237,14 @@ func reprList (lst) {
 # tpl     : tuple
 # returns : string
 func reprTuple (tpl) {
-  return sprintf ("({})", lambda () => {
+  return format ("({})", lambda () => {
     buf = ""
     i = 0
     while (i < len (tpl)) {
       if (i == len (tpl) - 1)
-        buf += sprintf ("{}", repr (tpl[i]))
+        buf += format ("{}", repr (tpl[i]))
       else
-        buf += sprintf ("{}, ", repr (tpl[i]))
+        buf += format ("{}, ", repr (tpl[i]))
       i = i + 1
     }
     return buf
@@ -262,31 +254,33 @@ func reprTuple (tpl) {
 # dict    : hashmap
 # returns : string
 func reprHashMap (dict) {
-  return sprintf ("{{{}}}", lambda () => {
+  return format ("{{{}}}", lambda () => {
     buf = ""
     i = 0
     foreach (key in dict) {
       _key = repr (key)
       _val = repr (dict[key])
-      val = sprintf ("{0}: {1}", (_key, _val))
+      val = format ("{0}: {1}", _key, _val)
       if (i == len (dict) - 1)
-        buf += sprintf ("{}", val)
+        buf += format ("{}", val)
       else
-        buf += sprintf ("{}, ", val)
+        buf += format ("{}, ", val)
       i = i + 1
     }
     return buf
   }())
 }
 
-# str     : string
-# returns : string
-func reprStr (str) {
-  return sprintf ("\"{}\"", str)
-}
-
 # obj     : null
 # returns : string
 func reprNull (obj) {
   return "NULL"
+}
+
+# obj     : bool
+# returns : string
+func reprBool (obj) {
+  if (obj)
+    return "true"
+  return "false"
 }

@@ -6,7 +6,7 @@ namespace Iodine
 {
 	public class IodineList : IodineObject
 	{
-		private static readonly IodineTypeDefinition ListTypeDef = new IodineTypeDefinition ("List"); 
+		private static readonly IodineTypeDefinition ListTypeDef = new IodineTypeDefinition ("List");
 
 		private int iterIndex = 0;
 		public List<IodineObject> Objects
@@ -119,4 +119,3 @@ namespace Iodine
 		}
 	}
 }
-
