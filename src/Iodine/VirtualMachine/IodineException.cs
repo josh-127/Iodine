@@ -59,7 +59,7 @@ namespace Iodine
 	public class IodineInternalErrorException : IodineException
 	{
 		public IodineInternalErrorException (Exception ex)
-			: base ("Internal exception: {0} has occurred", ex.Message) 
+			: base ("Internal exception: {0}\n Inner Exception: ", ex.Message, ex.InnerException.Message) 
 		{
 
 		}
