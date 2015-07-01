@@ -184,10 +184,10 @@ namespace Iodine
 				}
 			case Opcode.StoreGlobal: {
 					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
-					if (Stack.CurrentModule.HasAttribute (name)) {
-						Stack.CurrentModule.SetAttribute (name, Stack.Pop ());
-					} else {
+					if (globalDict.ContainsKey (name)) {
 						globalDict[name] = Stack.Pop ();
+					} else {
+						Stack.CurrentModule.SetAttribute (name, Stack.Pop ());
 					}
 					break;
 				}
