@@ -37,6 +37,7 @@ namespace Iodine
 			this.SetAttribute ("write", new InternalMethodCallback (write, this));
 			this.SetAttribute ("writeBytes", new InternalMethodCallback (writeBytes, this));
 			this.SetAttribute ("read", new InternalMethodCallback (read, this));
+			this.SetAttribute ("readByte", new InternalMethodCallback (readByte, this));
 			this.SetAttribute ("readBytes", new InternalMethodCallback (readBytes, this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine, this));
 			this.SetAttribute ("tell", new InternalMethodCallback (readLine, this));
@@ -89,6 +90,28 @@ namespace Iodine
 		}
 
 		private IodineObject read (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (this.Closed) { 
+				vm.RaiseException ("Stream has been closed!");
+				return null;
+			}
+
+			if (!this.CanRead) {
+				vm.RaiseException ("Stream is not open for reading!");
+				return null;
+			}
+
+			if (args[0] is IodineInteger) {
+				IodineInteger intv = args[0] as IodineInteger;
+				byte[] buf = new byte[(int)intv.Value];
+				this.File.Read (buf, 0, buf.Length);
+				return new IodineString (Encoding.UTF8.GetString (buf));
+			}
+			vm.RaiseException (new IodineTypeException ("Int"));
+			return null;
+		}
+
+		private IodineObject readByte (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (this.Closed) { 
 				vm.RaiseException ("Stream has been closed!");
