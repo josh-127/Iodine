@@ -159,7 +159,7 @@ func reverse (obj) {
   else if (_type == "List")
     return reverseList (obj)
   else if (_type == "Tuple") {
-    # Fixed the list to tuple conversion in this function
+    # Fixed the list to tuple conversion in this function.
     # Unit tests regarding this issue pass now.
     return Tuple (reverseList (obj))
   }
