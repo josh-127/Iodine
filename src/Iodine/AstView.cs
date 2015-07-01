@@ -118,8 +118,6 @@ namespace Iodine
 
 		public void Accept (NodeClassDecl classDecl)
 		{
-			Write ("Class {0} : {1}", classDecl.Name, classDecl.Base == null ? "Object" :
-				classDecl.Base);
 			viewSubnodes (classDecl);
 		}
 

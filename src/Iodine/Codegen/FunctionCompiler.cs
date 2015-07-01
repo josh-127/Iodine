@@ -358,6 +358,18 @@ namespace Iodine
 		{
 		}
 
+		public void Accept (NodeSuperCall super)
+		{
+			List<string> parent = super.Parent.Base;
+			super.Arguments.Visit (this);
+			methodBuilder.EmitInstruction (Opcode.LoadGlobal, methodBuilder.Module.DefineConstant (
+				new IodineName (parent[0])));
+			for (int i = 1; i < parent.Count; i++) {
+				methodBuilder.EmitInstruction (Opcode.LoadAttribute, methodBuilder.Module.DefineConstant (
+					new IodineName (parent[0])));
+			}
+			methodBuilder.EmitInstruction (Opcode.InvokeSuper, super.Arguments.Children.Count);
+		}
 
 		public void Accept (NodeBreak brk) 
 		{

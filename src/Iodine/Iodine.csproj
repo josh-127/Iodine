@@ -65,7 +65,6 @@
     <Compile Include="Parser\Ast\NodeCall.cs" />
     <Compile Include="Parser\Ast\NodeArgList.cs" />
     <Compile Include="Parser\Ast\NodeGetAttr.cs" />
-    <Compile Include="AstView.cs" />
     <Compile Include="Parser\Ast\NodeInteger.cs" />
     <Compile Include="Parser\Ast\NodeIfStmt.cs" />
     <Compile Include="Parser\Ast\NodeWhileStmt.cs" />
@@ -133,6 +132,7 @@
     <Compile Include="VirtualMachine\CoreModules\RegexModule.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineByteArray.cs" />
     <Compile Include="VirtualMachine\CoreModules\HashModule.cs" />
+    <Compile Include="Parser\Ast\NodeSuperCall.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

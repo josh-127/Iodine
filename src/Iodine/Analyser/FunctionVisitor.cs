@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Iodine
 {
@@ -120,6 +121,11 @@ namespace Iodine
 
 		public void Accept (NodeString str)
 		{
+		}
+
+		public void Accept (NodeSuperCall super)
+		{
+			visitSubnodes (super);
 		}
 
 		public void Accept (NodeUseStatement useStmt)

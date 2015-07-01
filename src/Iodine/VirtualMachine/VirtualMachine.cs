@@ -246,7 +246,16 @@ namespace Iodine
 					}
 					Stack.Push (target.Invoke (this, arguments));
 					break;
-			}
+				}
+			case Opcode.InvokeSuper: {
+					IodineTypeDefinition target = (IodineTypeDefinition)Stack.Pop ();
+					IodineObject[] arguments = new IodineObject[ins.Argument];
+					for (int i = 1; i <= ins.Argument; i++ ){
+						arguments[ins.Argument - i] = Stack.Pop ();
+					}
+					target.Inherit (this, Stack.Self, arguments);
+					break;
+				}
 			case Opcode.Return: {
 					this.Stack.InstructionPointer = int.MaxValue;
 					break;

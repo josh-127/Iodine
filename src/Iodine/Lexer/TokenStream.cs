@@ -21,7 +21,15 @@ namespace Iodine
 			private set;
 			get;
 		}
-			
+
+		public ErrorLog ErrorLog
+		{
+			get
+			{
+				return this.errorLog;
+			}
+		}
+
 		public TokenStream (ErrorLog errorLog)
 		{
 			this.errorLog = errorLog;

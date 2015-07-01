@@ -29,6 +29,14 @@ namespace Iodine
 
 			return obj;
 		}
+
+		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			IodineObject obj = Invoke (vm, arguments);
+			self.SetAttribute ("_super", obj);
+			self.Base = obj;
+			Console.WriteLine (self.ToString () + " Inherit " + this.Name);
+		}
 	}
 }
 

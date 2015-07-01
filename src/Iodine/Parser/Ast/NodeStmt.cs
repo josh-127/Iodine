@@ -33,6 +33,9 @@ namespace Iodine
 				return new NodeBreak ();
 			} else if (stream.Accept (TokenClass.Keyword, "continue")) {
 				return new NodeContinue ();
+			} else if (stream.Accept (TokenClass.Keyword, "super")) {
+				stream.ErrorLog.AddError (ErrorType.ParserError, "super () constructor must be called first!");
+				return NodeSuperCall.Parse (stream, new NodeClassDecl ("", null));
 			} else if (stream.Match (TokenClass.OpenBrace)) {
 				return NodeScope.Parse (stream);
 			} else if (stream.Accept (TokenClass.SemiColon)) {

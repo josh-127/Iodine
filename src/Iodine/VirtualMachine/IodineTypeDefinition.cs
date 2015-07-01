@@ -17,6 +17,10 @@ namespace Iodine
 			this.Name = name;
 			this.attributes["name"] = new IodineString (name);
 		}
+
+		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+		}
 	}
 }
 
