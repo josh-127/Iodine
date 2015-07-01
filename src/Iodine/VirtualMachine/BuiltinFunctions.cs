@@ -42,6 +42,9 @@ namespace Iodine
 
 		public void Initialize (Dictionary<string, IodineObject> globalDict)
 		{
+			globalDict["stdin"] = new IodineFile (Console.OpenStandardInput (), false, true);
+			globalDict["stdout"] = new IodineFile (Console.OpenStandardOutput (), true, false);
+			globalDict["stderr"] = new IodineFile (Console.OpenStandardError (), true, false);
 			globalDict["eval"] = new InternalMethodCallback (eval, null);
 			globalDict["system"] = new InternalMethodCallback (system, null);
 			globalDict["getEnv"] = new InternalMethodCallback (getEnv, null);
@@ -170,7 +173,11 @@ namespace Iodine
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 			}
-
+			if (args[0].HasAttribute ("_toStr")) {
+				IodineString ret = args[0].GetAttribute ("_toStr").Invoke (vm, new IodineObject[]{})
+					as IodineString;
+				return ret;
+			}
 			return new IodineString (args[0].ToString ());
 		}
 
