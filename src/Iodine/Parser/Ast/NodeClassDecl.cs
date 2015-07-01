@@ -11,7 +11,7 @@ namespace Iodine
 			get;
 		}
 
-		public string Base
+		public List<string> Base
 		{
 			private set;
 			get;
@@ -29,7 +29,7 @@ namespace Iodine
 			}
 		}
 			
-		public NodeClassDecl (string name, string baseClass)
+		public NodeClassDecl (string name, List<string> baseClass)
 		{
 			this.Name = name;
 			this.Base = baseClass;
@@ -47,9 +47,12 @@ namespace Iodine
 		{
 			stream.Expect (TokenClass.Keyword, "class");
 			string name = stream.Expect (TokenClass.Identifier).Value;
-			string baseClass = null;
+			List<string> baseClass = new List<string> ();
 			if (stream.Accept (TokenClass.Colon)) {
-				baseClass = stream.Expect (TokenClass.Identifier).Value;
+				do {
+					string attr = stream.Expect (TokenClass.Identifier).Value;
+					if (attr != null) baseClass.Add (attr);
+				} while (stream.Accept (TokenClass.Dot));
 			}
 
 			NodeClassDecl clazz = new NodeClassDecl (name, baseClass);
@@ -58,11 +61,12 @@ namespace Iodine
 
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				if (stream.Match (TokenClass.Keyword, "func")) {
-					NodeFuncDecl func = NodeFuncDecl.Parse (stream) as NodeFuncDecl;
+					NodeFuncDecl func = NodeFuncDecl.Parse (stream, clazz) as NodeFuncDecl;
 					if (func.Name == name) {
 						clazz.Constructor = func;
+					} else {
+						clazz.Add (func);
 					}
-					clazz.Add (func);
 				} else {
 					stream.Expect (TokenClass.Keyword, "func");
 				}

@@ -22,12 +22,20 @@ namespace Iodine
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			IodineObject obj = new IodineObject (this);
+			Console.WriteLine ("New " + this.Name);
 			foreach (IodineMethod method in this.instanceMethods) {
 				obj.SetAttribute (method.Name, method);
 			}
 			vm.InvokeMethod (constructor, obj, arguments);
 
 			return obj;
+		}
+
+		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			IodineObject obj = Invoke (vm, arguments);
+			self.SetAttribute ("_super", obj);
+			self.Base = obj;
 		}
 	}
 }

@@ -42,7 +42,7 @@ namespace Iodine
 			visitor.Accept (this);
 		}
 
-		public static AstNode Parse (TokenStream stream)
+		public static AstNode Parse (TokenStream stream, NodeClassDecl cdecl = null)
 		{
 			stream.Expect (TokenClass.Keyword, "func");
 			bool isInstanceMethod;
@@ -51,7 +51,19 @@ namespace Iodine
 			List<string> parameters = ParseFuncParameters (stream, out isInstanceMethod, out isVariadic);
 			NodeFuncDecl decl = new NodeFuncDecl (ident != null ? ident.Value : "", isInstanceMethod,
 				isVariadic, parameters);
-			decl.Add (NodeStmt.Parse (stream));
+			stream.Expect (TokenClass.OpenBrace);
+			NodeScope scope = new NodeScope ();
+
+			if (stream.Match (TokenClass.Keyword, "super")) {
+				scope.Add (NodeSuperCall.Parse (stream, cdecl));
+			}
+
+			while (!stream.Match (TokenClass.CloseBrace)) {
+				scope.Add (NodeStmt.Parse (stream));
+			}
+
+			decl.Add (scope);
+			stream.Expect (TokenClass.CloseBrace);
 			return decl;
 		}
 

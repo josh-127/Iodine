@@ -33,6 +33,11 @@ namespace Iodine
 			visitSubnodes (stmt);
 		}
 
+		public void Accept (NodeSuperCall super)
+		{
+			visitSubnodes (super);
+		}
+
 		public void Accept (NodeBinOp binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
@@ -111,7 +116,7 @@ namespace Iodine
 				symbolTable.AddSymbol (param);
 			}
 
-			visitor.Accept (funcDecl.Children[0]);
+			funcDecl.Children[0].Visit (visitor);
 			symbolTable.EndScope ();
 		}
 

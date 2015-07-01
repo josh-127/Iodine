@@ -34,8 +34,23 @@ namespace Iodine
 			this.attributes["typeDef"] = typeDef;
 		}
 
+		public bool HasAttribute (string name)
+		{
+			bool res = this.attributes.ContainsKey (name);
+			if (!res && this.Base != null) 
+				return this.Base.HasAttribute (name);
+			return res;
+		}
+
 		public void SetAttribute (string name, IodineObject value)
 		{
+			if (this.Base != null && !this.attributes.ContainsKey (name)) {
+				if (this.Base.HasAttribute (name)) {
+					this.Base.SetAttribute (name, value);
+					return;
+				}
+			}
+
 			if (value is IodineMethod) {
 				IodineMethod method = (IodineMethod)value;
 				if (method.InstanceMethod) {
@@ -50,23 +65,24 @@ namespace Iodine
 			this.attributes[name] = value;
 		}
 
+
 		public IodineObject GetAttribute (string name)
 		{
-			return this.attributes[name];
+			if (this.attributes.ContainsKey (name))
+				return this.attributes[name];
+			else if (this.Base != null && this.Base.Attributes.ContainsKey (name))
+				return this.Base.GetAttribute (name);
+			return null;
 		}
 
 		public virtual IodineObject GetAttribute (VirtualMachine vm, string name)
 		{
 			if (this.attributes.ContainsKey (name))
 				return this.attributes[name];
-			else 
-				vm.RaiseException (new IodineAttributeNotFoundException (name));
+			else if (this.Base != null && this.Base.Attributes.ContainsKey (name))
+				return this.Base.GetAttribute (name);
+			vm.RaiseException (new IodineAttributeNotFoundException (name));
 			return null;
-		}
-
-		public bool HasAttribute (string name)
-		{
-			return this.attributes.ContainsKey (name);
 		}
 
 		public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)

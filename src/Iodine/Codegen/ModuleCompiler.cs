@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
+
 namespace Iodine
 {
 	public class ModuleCompiler : IAstVisitor
@@ -235,6 +237,10 @@ namespace Iodine
 			}
 		}
 
+		public void Accept (NodeSuperCall super)
+		{
+		}
+
 		private IodineMethod compileMethod (NodeFuncDecl funcDecl) 
 		{
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
@@ -247,7 +253,7 @@ namespace Iodine
 				methodBuilder.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
 					(funcDecl.Parameters[i]).Index;
 			}
-			compiler.Accept (funcDecl.Children[0]);
+			funcDecl.Children[0].Visit (compiler);
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
