@@ -116,7 +116,7 @@ namespace Iodine
 				errorLog.AddError (ErrorType.ParserError, "Unexpected '{0}' at {1}:{2} (Expected '{3}')",
 					offender.ToString (), offender.Line, offender.Column, Token.ClassToString (clazz));
 			} else {
-				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {1})",
+				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {0})",
 					Token.ClassToString (clazz));
 			}
 			return null;
