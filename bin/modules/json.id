@@ -98,7 +98,7 @@ func dump (json) {
                         });
                         return "\"" + Str (x) + "\" : [" + ",".join (list) + "]";
                 }
-                return "\"" + Str (x) + " : \"" + Str (item) + "\"";
+                return "\"" + Str (x) + "\" : \"" + Str (item) + "\"";
  
         });
  
