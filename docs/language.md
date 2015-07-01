@@ -13,7 +13,7 @@ The first phase of running an iodine program is lexical analysis which brakes th
 - [Operators](#Operators)
 
 #### 1.1 Identifier <a id="Identifier"></a>
-In iodine an identifier is string of alphanumeric characters use to identify a structure in code
+In iodine an identifier is string of alphanumeric characters used to identify a structure in code
 ```bnf
 <identifier> ::= <ident-char> { <ident-char> | <digit> }
 <ident-char> ::= <letter> | "_"
