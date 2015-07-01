@@ -9,7 +9,7 @@ func main () {
   printr (stack)
   stack.pop ()
 
-  stack = TypedStack ("int")
+  stack = TypedStack (Int)
   stack.push ("1")
   stack.push ("2")
   stack.push ("3")

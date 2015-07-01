@@ -91,10 +91,26 @@ class WebServer {
       status = header["status"]
       content_type = header["content-type"]
       encoding = header["encoding"]
-      header = sprintf ("{} {}\r\nContent-Type:{};encoding={}\r\n",
+      header = sprintf ("{} {}\r\nContent-Type:{};encoding={}\r\n\r\n",
          version, status, content_type, encoding)
-      content = sprintf ("{}\r\n{}", header, data)
-      client.send (content)
+      client.send (header)
+      if (self.isTextMime (header["content-type"]))
+         client.send (content)
+      else {
+         i = 0
+         while (i < data.getSize ()) {
+            b = Int (data[i])
+            printf (type (b))
+            client.send (b)
+         }
+      }
+   }
+
+   ### mime    : Str
+   func isTextMime (self, mime) {
+      if (mime.startsWith ("text/"))
+         return true
+      return false
    }
 
    ### header  : HashMap
@@ -102,7 +118,6 @@ class WebServer {
    func prepareResponse (self, header) {
       path = (sprintf ("{}{}", self.root, header["path"]))
       path = self.normalizePath (path)
-      contents = ""
       response_header = HashMap ()
       response_header["version"] = "HTTP/1.1"
       response_header["encoding"] = "utf-8"
@@ -126,7 +141,10 @@ class WebServer {
                mime = self.mimes[ext]
             response_header["content-type"] = mime
             f = open (current_path, "r")
-            contents = f.readAllText ()
+            if (self.isTextMime (mime))
+               contents = f.readBytes (f.getSize ())
+            else
+               contents = f.readAllText ()
             f.close ()
             response_header["status"] = "200 OK"
             success = true
@@ -159,7 +177,10 @@ class WebServer {
                   }
                   response_header["content-type"] = mime
                   f = open (current_path, "r")
-                  contents = f.readAllText ()
+                  if (self.isTextMime (mime))
+                     contents = f.readBytes (f.getSize ())
+                  else
+                     contents = f.readAllText ()
                   f.close ()
                   response_header["status"] = "200 OK"
                   success = true

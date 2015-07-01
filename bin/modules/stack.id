@@ -53,49 +53,14 @@ class Stack {
   }
 }
 
-# This is probably the hackiest iodine class
-# that currently exists
-class TypedStack {
+class TypedStack : Stack {
   func TypedStack (self, t) {
-    # This is pretty interesting
-    # I call it the pseudo-inheritance hack.
+    super ()
     self.typeDef.name = "Stack"
-    self.stack = Stack ()
-    self.store = self.stack.store
-    t = Str(t).toLower()
-    if (t == "str")
-      self.t = Str
-    else if (t == "int")
-      self.t = Int
-    else if (t == "list")
-      self.t = List
-    else
-      raise (sprintf ("Unsupported type: {}", t))
+    self.t = t
   }
 
   func push (self, val) {
-    self.stack.push (self.t (val))
-  }
-
-  func pop (self) {
-    return self.stack.pop ()
-  }
-
-  func peek (self, params args) {
-    if (len (args) > 0)
-      return self.stack.peek (args[0])
-    return self.stack.peek ()
-  }
-
-  func _iterReset (self) {
-    self.stack._iterReset ()
-  }
-
-  func _iterMoveNext (self) {
-    return self.stack._iterMoveNext ()
-  }
-
-  func _iterGetNext (self) {
-    return self.stack._iterGetnext ()
+    self._super.push (self.t (val))
   }
 }

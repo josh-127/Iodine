@@ -36,7 +36,11 @@ class assert {
     last = null
     i = 0
     foreach (hook in self.hooks) {
-      hook (self)
+      try {
+         hook (self)
+      } except (e) {
+         self.fail (null, null, e.message)
+      }
       if (len (self.history) != 0)
         self.last = self.history[len (self.history) - 1]
       if (last != self.last) {
@@ -61,7 +65,7 @@ class assert {
   ### Assertion functions
   ###
 
-  func _eq (self, expected, actual, msg) {
+  func internal_eq (self, expected, actual, msg) {
     if (self.should_list_compare (expected, actual)) {
       tmp = self.list_compare (expected, actual)
       expected = true
@@ -72,7 +76,7 @@ class assert {
     self.fail (expected, actual, msg)
   }
 
-  func _neq (self, expected, actual, msg) {
+  func internal_neq (self, expected, actual, msg) {
     if (self.should_list_compare (expected, actual)) {
       tmp = self.list_compare (expected, actual)
       expected = true
@@ -83,25 +87,25 @@ class assert {
     self.fail (expected, actual, msg)
   }
 
-  func _gt (self, x, y, msg) {
+  func internal_gt (self, x, y, msg) {
     if (x > y)
       self.pass (true, true, msg)
     self.fail (true, false, msg)
   }
 
-  func _lt (self, x, y, msg) {
+  func internal_lt (self, x, y, msg) {
     if (x < y)
       self.pass (true, true, msg)
     self.fail (true, false, msg)
   }
 
-  func _instanceof (self, obj, tdef) {
+  func internal_instanceof (self, obj, tdef) {
     if (core.type (obj) == tdef)
       self.pass (true, true, msg)
     self.fail (true, false, msg)
   }
 
-  func _notinstanceof (self, obj, tdef) {
+  func internal_notinstanceof (self, obj, tdef) {
     if (core.type (obj) != tdef)
       self.pass (true, true, msg)
     self.fail (true, false, msg)
@@ -112,47 +116,47 @@ class assert {
   ###
 
   func eq (self, expected, actual, msg) {
-    self._eq (expected, actual, msg)
+    self.internal_eq (expected, actual, msg)
   }
 
   func equals (self, expected, actual, msg) {
-    self._eq (expected, actual, msg)
+    self.internal_eq (expected, actual, msg)
   }
 
   func neq (self, expected, actual, msg) {
-    self._neq (expected, actual, msg)
+    self.internal_neq (expected, actual, msg)
   }
 
   func notEquals (self, expected, actual, msg) {
-    self._neq (expected, actual, msg)
+    self.internal_neq (expected, actual, msg)
   }
 
   func gt (self, x, y, msg)  {
-    self._gt (x, y, msg)
+    self.internal_gt (x, y, msg)
   }
 
   func greater (self, x, y, msg) {
-    self._gt (x, y, msg)
+    self.internal_gt (x, y, msg)
   }
 
   func lt (self, x, y, msg) {
-    self._lt (x, y, msg)
+    self.internal_lt (x, y, msg)
   }
 
   func less (self, x, y, msg) {
-    self._lt (x, y, msg)
+    self.internal_lt (x, y, msg)
   }
 
   func type (self, obj, tdef) {
-    self._instanceof (obj, tdef)
+    self.internal_instanceof (obj, tdef)
   }
 
   func instanceOf (self, obj, tdef) {
-    self._instanceof (obj, tdef)
+    self.internal_instanceof (obj, tdef)
   }
 
   func notInstanceOf (self, obj, tdef) {
-    self._notinstanceof (obj, tdef)
+    self.internal_notinstanceof (obj, tdef)
   }
 
   func pass (self, expected, result, msg) {
