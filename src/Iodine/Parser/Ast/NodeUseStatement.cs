@@ -90,10 +90,9 @@ namespace Iodine
 			Token initIdent = stream.Expect (TokenClass.Identifier);
 
 			if (stream.Match (TokenClass.Dot)) {
-				stream.Expect (TokenClass.Dot);
 				StringBuilder accum = new StringBuilder ();
 				accum.Append (initIdent.Value);
-				while (stream.Match (TokenClass.Identifier)) {
+				while (stream.Accept (TokenClass.Dot)) {
 					Token ident = stream.Expect (TokenClass.Identifier);
 					accum.Append (Path.DirectorySeparatorChar);
 					accum.Append (ident.Value);
