@@ -257,7 +257,6 @@ namespace Iodine
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
-
 			return methodBuilder;
 		}
 	}

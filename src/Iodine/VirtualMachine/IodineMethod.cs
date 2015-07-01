@@ -49,7 +49,7 @@ namespace Iodine
 		protected List<Instruction> instructions = new List<Instruction> ();
 		private IodineMethod parent = null;
 
-		public IList<Instruction> Body
+		public List<Instruction> Body
 		{
 			get
 			{
