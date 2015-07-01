@@ -13,7 +13,12 @@ namespace Iodine
 
 		public Ast Parse ()
 		{
-			return (Ast)Ast.Parse (this.tokenStream);
+			try {
+				return (Ast)Ast.Parse (this.tokenStream);
+			} catch (Exception) {
+				this.tokenStream.ErrorLog.AddError (ErrorType.ParserError, "");
+				return new Ast ();
+			}
 		}
 	}
 }
