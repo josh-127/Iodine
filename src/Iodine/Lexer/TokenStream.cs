@@ -99,6 +99,7 @@ namespace Iodine
 			} else {
 				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {0})",
 					Token.ClassToString (clazz));
+				throw new Exception ("");
 			}
 			return null;
 		}
@@ -118,6 +119,7 @@ namespace Iodine
 			} else {
 				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {0})",
 					Token.ClassToString (clazz));
+				throw new Exception ("");
 			}
 			return null;
 		}
