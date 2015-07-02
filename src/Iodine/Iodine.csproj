@@ -133,6 +133,7 @@
     <Compile Include="VirtualMachine\CoreTypes\IodineByteArray.cs" />
     <Compile Include="VirtualMachine\CoreModules\HashModule.cs" />
     <Compile Include="Parser\Ast\NodeSuperCall.cs" />
+    <Compile Include="VirtualMachine\CoreModules\ThreadingModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

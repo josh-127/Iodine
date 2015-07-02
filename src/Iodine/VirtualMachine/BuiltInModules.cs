@@ -12,6 +12,7 @@ namespace Iodine
 			Modules["random"] = new RandomModule ();
 			Modules["regex"] = new RegexModule ();
 			Modules["hash"] = new HashModule ();
+			Modules["threading"] = new ThreadingModule ();
 		}
 	}
 }

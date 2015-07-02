@@ -15,12 +15,25 @@ namespace Iodine
 			get;
 		}
 
+		public Dictionary <string, IodineObject> Globals
+		{
+			get
+			{
+				return this.globalDict;
+			}
+		}
+
 		public VirtualMachine ()
 		{
 			this.Stack = new IodineStack ();
 			LoadExtension (new BuiltinFunctions ());
 		}
-			
+
+		public VirtualMachine (Dictionary<string, IodineObject> globals)
+		{
+			this.Stack = new IodineStack ();
+			this.globalDict = globals;
+		}
 
 		public IodineObject InvokeMethod (IodineMethod method, IodineObject self, IodineObject[] arguments)
 		{
