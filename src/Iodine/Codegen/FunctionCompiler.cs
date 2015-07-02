@@ -257,8 +257,14 @@ namespace Iodine
 
 		public void Accept (NodeString str)
 		{
+			visitSubnodes (str);
 			methodBuilder.EmitInstruction (Opcode.LoadConst, 
 				methodBuilder.Module.DefineConstant (new IodineString (str.Value)));
+			if (str.Children.Count != 0) {
+				methodBuilder.EmitInstruction (Opcode.LoadAttribute, methodBuilder.Module.DefineConstant (
+					new IodineName ("format")));
+				methodBuilder.EmitInstruction (Opcode.Invoke, str.Children.Count);
+			}
 		}
 
 		public void Accept (NodeUseStatement useStmt)

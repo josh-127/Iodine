@@ -80,8 +80,24 @@ namespace Iodine
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString str = args[0] as IodineString;
-			//IodineModule tmpModule = IodineModule.CompileModule (new ErrorLog (), "__eval__", str.Value);
-			return vm.InvokeMethod (null, null, new IodineObject[]{});
+			ErrorLog log = new ErrorLog ();
+			Lexer iLexer = new Lexer (log, str.ToString ());
+			TokenStream tokens = iLexer.Scan ();
+			if (log.ErrorCount > 0) 
+				return null;
+			Parser iParser = new Parser (tokens);
+			AstNode root = iParser.Parse ();
+			if (log.ErrorCount > 0) 
+				return null;
+			SemanticAnalyser iAnalyser = new SemanticAnalyser (log);
+			SymbolTable sym = iAnalyser.Analyse ((Ast)root);
+			if (log.ErrorCount > 0) 
+				return null;
+			IodineMethod tmpMethod = new IodineMethod (vm.Stack.CurrentModule, "eval", false, 0, 0);
+			FunctionCompiler compiler = new FunctionCompiler (log, sym, tmpMethod);
+			root.Visit (compiler);
+			tmpMethod.FinalizeLabels ();
+			return vm.InvokeMethod (tmpMethod, null, new IodineObject[]{});
 		}
 
 		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)

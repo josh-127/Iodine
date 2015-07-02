@@ -6,6 +6,7 @@ namespace Iodine
 	{
 		Identifier,
 		StringLiteral,
+		InterpolatedStringLiteral,
 		IntLiteral,
 		FloatLiteral,
 		Keyword,

@@ -35,8 +35,8 @@ namespace Iodine
 			NodeConstant node = new NodeConstant (ident.Value);
 			if (stream.Match (TokenClass.IntLiteral)) {
 				node.Add (new NodeInteger (Int64.Parse (stream.Expect (TokenClass.IntLiteral).Value)));
-			} else if (stream.Match (TokenClass.StringLiteral)) {
-				node.Add (new NodeString (stream.Expect (TokenClass.StringLiteral).Value));
+			} else if (stream.Match (TokenClass.InterpolatedStringLiteral)) {
+				node.Add (new NodeString (stream.Expect (TokenClass.InterpolatedStringLiteral).Value));
 			}
 			return node;
 		}

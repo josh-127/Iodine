@@ -7,14 +7,27 @@ namespace Iodine
 	{
 		public bool IsMatchImpl (InputStream inputStream)
 		{
-			return inputStream.PeekChar () == '\"';
+			return inputStream.PeekChar () == '\"' || inputStream.PeekChar () == '\'';
 		}
 
 		public Token ScanToken (ErrorLog errLog, InputStream inputStream)
 		{
+			char quote = (char)inputStream.ReadChar ();
+			TokenClass type = quote == '\"' ? TokenClass.InterpolatedStringLiteral : TokenClass.StringLiteral;
+			string accum = scanUntil (quote, inputStream);
+			if (inputStream.ReadChar () == -1) {
+				errLog.AddError (ErrorType.LexerError, "Unterminated string literal!");
+				return null;
+			} else {
+				return Token.Create (type, accum, inputStream);
+			}
+
+		}
+
+		private string scanUntil (char terminator, InputStream inputStream)
+		{
 			StringBuilder accum = new StringBuilder ();
-			inputStream.ReadChar ();
-			while (inputStream.PeekChar () != -1 && inputStream.PeekChar () != '\"') {
+			while (inputStream.PeekChar () != -1 && inputStream.PeekChar () != terminator) {
 				if (inputStream.PeekChar () == '\\') {
 					inputStream.ReadChar ();
 					accum.Append (scanEscapeChar ((char)inputStream.ReadChar ()));
@@ -22,14 +35,7 @@ namespace Iodine
 					accum.Append ((char)inputStream.ReadChar ());
 				}
 			}
-
-			if (inputStream.ReadChar () == -1) {
-				errLog.AddError (ErrorType.LexerError, "Unterminated string literal!");
-				return null;
-			} else {
-				return Token.Create (TokenClass.StringLiteral, accum.ToString (), inputStream);
-			}
-
+			return accum.ToString ();
 		}
 
 		private static char scanEscapeChar (char c)

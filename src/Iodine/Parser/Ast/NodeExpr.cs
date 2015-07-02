@@ -220,6 +220,13 @@ namespace Iodine
 				return new NodeInteger (long.Parse (token.Value));
 			} else if (stream.Accept (TokenClass.FloatLiteral, ref token)) {
 				return new NodeFloat (double.Parse (token.Value));
+			} else if (stream.Accept (TokenClass.InterpolatedStringLiteral, ref token)) {
+				AstNode val = NodeString.Parse (token.Value);
+				if (val == null) {
+					stream.MakeError ();
+					return new NodeString ("");
+				}
+				return val;
 			} else if (stream.Accept (TokenClass.StringLiteral, ref token)) {
 				return new NodeString (token.Value);
 			} else if (stream.Match (TokenClass.OpenBrace)) {

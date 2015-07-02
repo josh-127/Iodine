@@ -29,6 +29,7 @@ namespace Iodine
 			this.SetAttribute ("split", new InternalMethodCallback (split, this));
 			this.SetAttribute ("join", new InternalMethodCallback (join, this));
 			this.SetAttribute ("trim", new InternalMethodCallback (trim, this));
+			this.SetAttribute ("format", new InternalMethodCallback (format, this));
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -259,6 +260,13 @@ namespace Iodine
 			}
 			accum.Append (last);
 			return new IodineString (accum.ToString ());
+		}
+
+		private IodineObject format (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			string format = this.Value;
+			IodineFormatter formatter = new IodineFormatter ();
+			return new IodineString (formatter.Format (vm, format, args));
 		}
 	}
 }
