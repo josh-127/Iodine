@@ -94,7 +94,7 @@ namespace Iodine
 		{
 			if (ModuleCache.ContainsKey (Path.GetFullPath (file)))
 				return ModuleCache [Path.GetFullPath (file)];
-			
+
 			if (FindModule (file) != null) {
 				Lexer lexer = new Lexer (errorLog, File.ReadAllText (file));
 				TokenStream tokenStream = lexer.Scan ();
@@ -192,4 +192,3 @@ namespace Iodine
 		}
 	}
 }
-
