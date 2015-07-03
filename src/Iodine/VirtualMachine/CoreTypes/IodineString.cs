@@ -25,6 +25,7 @@ namespace Iodine
 			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			this.SetAttribute ("replace", new InternalMethodCallback (replace, this));
 			this.SetAttribute ("startsWith", new InternalMethodCallback (startsWith, this));
+			this.SetAttribute ("endsWith", new InternalMethodCallback (endsWith, this));
 			this.SetAttribute ("split", new InternalMethodCallback (split, this));
 			this.SetAttribute ("join", new InternalMethodCallback (join, this));
 			this.SetAttribute ("trim", new InternalMethodCallback (trim, this));
@@ -195,6 +196,15 @@ namespace Iodine
 				return null;
 			}
 			return new IodineBool (this.Value.StartsWith (args[0].ToString ()));
+		}
+
+		private IodineObject endsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			return new IodineBool (this.Value.EndsWith (args[0].ToString ()));
 		}
 
 		private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
