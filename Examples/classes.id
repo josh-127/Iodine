@@ -23,6 +23,18 @@ class Dog {
 
 }
 
+# This class derives dog
+class BigDog : Dog {
+	func BigDog () {
+		super ("Big Dog");	# In order to inherit everything from dog, we must
+					# explicitly invoke its constructor
+	}
+
+	func bark (self) {
+		print ("Bark! Bark!");
+	}
+}
+
 func main (args) {
 
 	# Classes are instantiating by invoking the class as if it
@@ -30,4 +42,7 @@ func main (args) {
 	fido = Dog ("Fiddo");
 	fido.showName ();
 	fido.bark ();
+	bigDog = BigDog ();
+	bigDog.showName ();
+	bigDog.bark ();
 }

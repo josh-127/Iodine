@@ -2,8 +2,8 @@
 func main (args) {
 	foo = startAt (1);
 	bar = startAt (2);
-	print (foo (3));
-	print (bar (3));
+	print (foo (3)); # 3 + 1
+	print (bar (3)); # 3 + 2
 }
 
 func startAt (x) {
