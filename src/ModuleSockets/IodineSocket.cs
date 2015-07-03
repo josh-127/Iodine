@@ -105,7 +105,7 @@ namespace ModuleSockets
 
 		private IodineObject getStream (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineFile (new NetworkStream (this.Socket), true, true);
+			return new IodineStream (new NetworkStream (this.Socket), true, true);
 		}
 
 		private IodineObject getBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args)

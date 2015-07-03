@@ -46,9 +46,9 @@ namespace Iodine
 
 		public void Initialize (Dictionary<string, IodineObject> globalDict)
 		{
-			globalDict["stdin"] = new IodineFile (Console.OpenStandardInput (), false, true);
-			globalDict["stdout"] = new IodineFile (Console.OpenStandardOutput (), true, false);
-			globalDict["stderr"] = new IodineFile (Console.OpenStandardError (), true, false);
+			globalDict["stdin"] = new IodineStream (Console.OpenStandardInput (), false, true);
+			globalDict["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
+			globalDict["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
 			globalDict["eval"] = new InternalMethodCallback (eval, null);
 			globalDict["system"] = new InternalMethodCallback (system, null);
 			globalDict["getEnv"] = new InternalMethodCallback (getEnv, null);
@@ -372,11 +372,11 @@ namespace Iodine
 			}
 
 			if (canRead && canWrite)
-				return new IodineFile (File.Open (filePath.Value, FileMode.OpenOrCreate), canWrite, canRead);
+				return new IodineStream (File.Open (filePath.Value, FileMode.OpenOrCreate), canWrite, canRead);
 			else if (canRead) 
-				return new IodineFile (File.OpenRead (filePath.Value), canWrite, canRead);
+				return new IodineStream (File.OpenRead (filePath.Value), canWrite, canRead);
 			else if (canWrite) 
-				return new IodineFile (File.OpenWrite (filePath.Value), canWrite, canRead);
+				return new IodineStream (File.OpenWrite (filePath.Value), canWrite, canRead);
 			return null;
 		}
 

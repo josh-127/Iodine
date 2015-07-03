@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Iodine
 {
-	public class IodineFile : IodineObject
+	public class IodineStream : IodineObject
 	{
 		private static readonly IodineTypeDefinition FileTypeDef = new IodineTypeDefinition ("File"); 
 
@@ -25,7 +25,7 @@ namespace Iodine
 			get;
 		}
 
-		public IodineFile (Stream file, bool canWrite, bool canRead)
+		public IodineStream (Stream file, bool canWrite, bool canRead)
 			: base (FileTypeDef)
 		{
 			this.File = file;
