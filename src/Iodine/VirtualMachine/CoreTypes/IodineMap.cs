@@ -14,7 +14,7 @@ namespace Iodine
 			get;
 		}
 
-		private List <IodineObject> keys = new List<IodineObject>();
+		private Dictionary <int, IodineObject> keys = new Dictionary<int, IodineObject>();
 
 		public IodineMap ()
 			: base (MapTypeDef)
@@ -40,7 +40,7 @@ namespace Iodine
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
 			this.Dict[key.GetHashCode ()] = value;
-			this.keys.Add (key);
+			this.keys[key.GetHashCode ()] = key;
 		}
 
 		public override int GetHashCode ()
@@ -50,7 +50,9 @@ namespace Iodine
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return this.keys[this.iterIndex - 1];
+			IodineObject[] keys = new IodineObject[this.keys.Count];
+			this.keys.Values.CopyTo (keys, 0);
+			return keys[this.iterIndex - 1];
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
@@ -69,7 +71,7 @@ namespace Iodine
 		public void Set (IodineObject key, IodineObject val)
 		{
 			this.Dict[key.GetHashCode ()] = val;
-			this.keys.Add (key);
+			this.keys[key.GetHashCode ()] = key;
 		}
 
 		public IodineObject Get (IodineObject key)
@@ -104,7 +106,7 @@ namespace Iodine
 				IodineObject key = arguments[0];
 				IodineObject val = arguments[1];
 				this.Dict[key.GetHashCode ()] = val;
-				this.keys.Add (key);
+				this.keys[key.GetHashCode ()] = key;
 				return null;
 			}
 			vm.RaiseException (new IodineArgumentException (2));
@@ -120,6 +122,7 @@ namespace Iodine
 					vm.RaiseException (new IodineKeyNotFound ());
 					return null;
 				}
+				this.keys.Remove (hash);
 				this.Dict.Remove (hash);
 				return null;
 			}

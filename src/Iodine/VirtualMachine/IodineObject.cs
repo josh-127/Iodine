@@ -183,7 +183,7 @@ namespace Iodine
 			unchecked
 			{
 				foreach (IodineObject obj in this.attributes.Values) {
-					accum += 23 * obj.GetHashCode ();
+					accum += 529 * obj.GetHashCode ();
 				}
 			}
 			return accum;
