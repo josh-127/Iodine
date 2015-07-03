@@ -4,16 +4,13 @@ namespace Iodine
 {
 	public class NodeGetAttr : AstNode
 	{
-		public AstNode Target
-		{
-			get
-			{
+		public AstNode Target {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public string Field
-		{
+		public string Field {
 			private set;
 			get;
 		}

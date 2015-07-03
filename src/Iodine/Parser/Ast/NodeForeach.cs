@@ -4,24 +4,19 @@ namespace Iodine
 {
 	public class NodeForeach : AstNode
 	{
-		public string Item
-		{
+		public string Item {
 			private set;
 			get;
 		}
 
-		public AstNode Iterator
-		{
-			get
-			{
+		public AstNode Iterator {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public AstNode Body
-		{
-			get
-			{
+		public AstNode Body {
+			get {
 				return this.Children[1];
 			}
 		}

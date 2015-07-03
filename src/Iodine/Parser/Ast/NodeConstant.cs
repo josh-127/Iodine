@@ -4,16 +4,13 @@ namespace Iodine
 {
 	public class NodeConstant : AstNode
 	{
-		public string Name
-		{
+		public string Name {
 			private set;
 			get;
 		}
 
-		public AstNode Value
-		{
-			get 
-			{
+		public AstNode Value {
+			get {
 				return this.Children[0];
 			}
 		}

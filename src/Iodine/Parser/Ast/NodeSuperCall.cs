@@ -5,18 +5,14 @@ namespace Iodine
 	public class NodeSuperCall : AstNode
 	{
 
-		public AstNode Arguments
-		{
-			get
-			{
+		public AstNode Arguments {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public NodeClassDecl Parent
-		{
-			set;
-			get;
+		public NodeClassDecl Parent {
+			set; get;
 		}
 
 		public override void Visit (IAstVisitor visitor)

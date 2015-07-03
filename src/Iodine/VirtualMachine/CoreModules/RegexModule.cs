@@ -9,8 +9,7 @@ namespace Iodine
 		{
 			public static readonly IodineTypeDefinition RegexTypeDef = new IodineTypeDefinition ("Regex");
 
-			public Regex Value
-			{
+			public Regex Value {
 				private set;
 				get;
 			}
@@ -60,8 +59,7 @@ namespace Iodine
 		{
 			public static readonly IodineTypeDefinition MatchTypeDef = new IodineTypeDefinition ("Match");
 
-			public Match Value
-			{
+			public Match Value {
 				private set;
 				get;
 			}

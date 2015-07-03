@@ -8,8 +8,7 @@ namespace Iodine
 	[AttributeUsage(AttributeTargets.Class)]
 	public class IodineExtensionAttribute : System.Attribute 
 	{
-		public string Name
-		{
+		public string Name {
 			private set;
 			get;
 		}
@@ -33,28 +32,23 @@ namespace Iodine
 				Assembly.GetEntryAssembly ().Location), Path.DirectorySeparatorChar));
 		}
 
-		public string Name
-		{
+		public string Name {
 			set;
 			get;
 		}
 
-		public IList<IodineObject> ConstantPool
-		{
-			get
-			{
+		public IList<IodineObject> ConstantPool {
+			get {
 				return this.constantPool;
 			}
 		}
 
-		public IList<string> Imports
-		{
+		public IList<string> Imports {
 			private set;
 			get;
 		}
 
-		public IodineMethod Initializer
-		{
+		public IodineMethod Initializer {
 			private set;
 			get;
 		}
@@ -79,6 +73,15 @@ namespace Iodine
 		{
 			constantPool.Add (obj);
 			return this.constantPool.Count - 1;
+		}
+
+		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+		{
+			if (!this.initialized) {
+				this.Initializer.Invoke (vm, arguments);
+				this.initialized = true;
+			}
+			return null;
 		}
 
 		public override IodineObject GetAttribute (VirtualMachine vm, string name)

@@ -4,10 +4,8 @@ namespace Iodine
 {
 	public class NodeReturnStmt : AstNode
 	{
-		public AstNode Value
-		{
-			get
-			{
+		public AstNode Value {
+			get {
 				return this.Children[0];
 			}
 		}

@@ -4,14 +4,12 @@ namespace Iodine
 {
 	public class IodineExceptionHandler
 	{
-		public int Frame
-		{
+		public int Frame {
 			private set;
 			get;
 		}
 
-		public int InstructionPointer
-		{
+		public int InstructionPointer {
 			private set;
 			get;
 		}

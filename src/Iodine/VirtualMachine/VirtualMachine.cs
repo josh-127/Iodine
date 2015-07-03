@@ -9,16 +9,13 @@ namespace Iodine
 		private Stack<IodineExceptionHandler> exceptionHandlers = new Stack<IodineExceptionHandler> ();
 		private IodineException lastException = null;
 
-		public IodineStack Stack
-		{
+		public IodineStack Stack {
 			private set;
 			get;
 		}
 
-		public Dictionary <string, IodineObject> Globals
-		{
-			get
-			{
+		public Dictionary <string, IodineObject> Globals {
+			get {
 				return this.globalDict;
 			}
 		}
@@ -152,13 +149,6 @@ namespace Iodine
 				}
 			case Opcode.Dup: {
 					IodineObject val = Stack.Pop ();
-					Stack.Push (val);
-					Stack.Push (val);
-					break;
-				}
-			case Opcode.Dup3: {
-					IodineObject val = Stack.Pop ();
-					Stack.Push (val);
 					Stack.Push (val);
 					Stack.Push (val);
 					break;

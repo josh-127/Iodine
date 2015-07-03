@@ -5,27 +5,22 @@ namespace Iodine
 {
 	public class NodeClassDecl : AstNode
 	{
-		public string Name
-		{
+		public string Name {
 			private set;
 			get;
 		}
 
-		public List<string> Base
-		{
+		public List<string> Base {
 			private set;
 			get;
 		}
 
-		public NodeFuncDecl Constructor
-		{
-		    set
-			{
-				this.Children[0] = value;
-			}
-			get
-			{
+		public NodeFuncDecl Constructor {
+			get {
 				return (NodeFuncDecl)this.Children[0];
+			}
+			set {
+				this.Children[0] = value;
 			}
 		}
 			

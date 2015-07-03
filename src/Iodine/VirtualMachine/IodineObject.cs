@@ -7,21 +7,17 @@ namespace Iodine
 	{
 		public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object"); 
 		
-		public IodineObject Base
-		{
+		public IodineObject Base {
 			set; get;
 		}
 
-		public IodineTypeDefinition TypeDef
-		{
+		public IodineTypeDefinition TypeDef {
 			private set;
 			get;
 		}
 
-		public Dictionary<string, IodineObject> Attributes
-		{
-			get
-			{
+		public Dictionary<string, IodineObject> Attributes {
+			get {
 				return this.attributes;
 			}
 		}

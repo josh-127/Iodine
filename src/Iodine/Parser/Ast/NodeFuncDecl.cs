@@ -5,26 +5,22 @@ namespace Iodine
 {
 	public class NodeFuncDecl : AstNode
 	{
-		public string Name
-		{
+		public string Name {
 			private set;
 			get;
 		}
 
-		public IList<string> Parameters
-		{
+		public IList<string> Parameters {
 			private set;
 			get;
 		}
 
-		public bool InstanceMethod
-		{
+		public bool InstanceMethod {
 			private set;
 			get;
 		}
 
-		public bool Variadic
-		{
+		public bool Variadic {
 			private set;
 			get;
 		}

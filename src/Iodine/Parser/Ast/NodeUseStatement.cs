@@ -7,26 +7,22 @@ namespace Iodine
 {
 	public class NodeUseStatement : AstNode
 	{
-		public string Module
-		{
+		public string Module {
 			private set;
 			get;
 		}
 
-		public List<string> Imports
-		{
+		public List<string> Imports {
 			private set;
 			get;
 		}
 
-		public bool Wildcard
-		{
+		public bool Wildcard {
 			private set;
 			get;
 		}
 
-		public bool Relative
-		{
+		public bool Relative {
 			private set;
 			get;
 		}

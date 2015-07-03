@@ -8,8 +8,7 @@ namespace Iodine
 		private static readonly IodineTypeDefinition StringTypeDef = new IodineTypeDefinition ("Str"); 
 		private int iterIndex = 0;
 
-		public string Value
-		{
+		public string Value {
 			private set;
 			get;
 		}

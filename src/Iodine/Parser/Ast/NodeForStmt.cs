@@ -4,35 +4,27 @@ namespace Iodine
 {
 	public class NodeForStmt : AstNode
 	{
-		public AstNode Initializer
-		{
-			get
-			{
+		public AstNode Initializer {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public AstNode Condition
-		{
-			get
-			{
+		public AstNode Condition {
+			get {
 				return this.Children[1];
 			}
 		}
 
-		public AstNode AfterThought
-		{
-			get
-			{
+		public AstNode AfterThought {
+			get {
 				return this.Children[2];
 			}
 
 		}
 
-		public AstNode Body
-		{
-			get
-			{
+		public AstNode Body {
+			get {
 				return this.Children[3];
 			}
 		}

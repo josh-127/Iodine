@@ -8,14 +8,12 @@ namespace Iodine
 		private int sourceLen;
 		private string source;
 
-		public int Line
-		{
-			private set;
+		public int Line {
+			private set; 
 			get;
 		}
 
-		public int Column
-		{
+		public int Column {
 			private set;
 			get;
 		}

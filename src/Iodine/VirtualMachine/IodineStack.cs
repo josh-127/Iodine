@@ -8,57 +8,43 @@ namespace Iodine
 		private Stack<StackFrame> frames = new Stack<StackFrame>( );
 		private StackFrame top = null;
 
-		public IodineMethod CurrentMethod
-		{
-			get
-			{
+		public IodineMethod CurrentMethod {
+			get {
 				return top.Method;
 			}
 		}
 
-		public IodineModule CurrentModule
-		{
-			get
-			{
+		public IodineModule CurrentModule {
+			get {
 				return top.Module;
 			}
 		}
 
-		public IodineObject Self
-		{
-			get
-			{
+		public IodineObject Self {
+			get {
 				return this.top.Self;
 			}
 		}
 
-		public IodineObject Last
-		{
+		public IodineObject Last {
 			private set; get;
 		}
 
-		public StackFrame Top
-		{
-			get
-			{
+		public StackFrame Top {
+			get {
 				return top;
 			}
 		}
 
-		public int Frames
-		{
+		public int Frames {
 			private set;
 			get;
 		}
 
-		public int InstructionPointer
-		{
-			get
-			{
+		public int InstructionPointer {
+			get {
 				return top.InstructionPointer;
-			}
-			set
-			{
+			} set {
 				top.InstructionPointer = value;
 			}
 		}
@@ -122,46 +108,38 @@ namespace Iodine
 
 	public class StackFrame
 	{
-		public int LocalCount
-		{
+		public int LocalCount {
 			private set;
 			get;
 		}
 
-		public bool AbortExecution
-		{
+		public bool AbortExecution {
 			set;
 			get;
 		}
 			
-		public IodineMethod Method
-		{
+		public IodineMethod Method {
 			private set;
 			get;
 		}
 
-		public IodineModule Module
-		{
-			get
-			{
+		public IodineModule Module {
+			get {
 				return Method.Module;
 			}
 		}
 
-		public IodineObject Self
-		{
+		public IodineObject Self {
 			private set;
 			get;
 		}
 
-		public int InstructionPointer
-		{
+		public int InstructionPointer {
 			get;
 			set;
 		}
 
-		public StackFrame Parent
-		{
+		public StackFrame Parent {
 			private set;
 			get;
 		}

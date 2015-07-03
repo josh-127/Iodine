@@ -4,8 +4,7 @@ namespace Iodine
 {
 	public class NodeInteger : AstNode
 	{
-		public long Value
-		{
+		public long Value {
 			private set;
 			get;
 		}

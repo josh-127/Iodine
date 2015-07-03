@@ -10,20 +10,17 @@ namespace Iodine
 
 		public bool Closed { set; get;}
 
-		public Stream File
-		{
+		public Stream File {
 			private set;
 			get;
 		}
 
-		public bool CanRead
-		{
+		public bool CanRead {
 			private set;
 			get;
 		}
 
-		public bool CanWrite
-		{
+		public bool CanWrite {
 			private set;
 			get;
 		}

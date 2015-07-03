@@ -5,20 +5,17 @@ namespace Iodine
 {
 	public class NodeLambda : AstNode
 	{
-		public IList<string> Parameters
-		{
+		public IList<string> Parameters {
 			private set;
 			get;
 		}
 
-		public bool InstanceMethod
-		{
+		public bool InstanceMethod {
 			private set;
 			get;
 		}
 
-		public bool Variadic
-		{
+		public bool Variadic {
 			private set;
 			get;
 		}

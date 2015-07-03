@@ -90,7 +90,6 @@
     <Compile Include="VirtualMachine\IodineModule.cs" />
     <Compile Include="VirtualMachine\IodineStack.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineInteger.cs" />
-    <Compile Include="VirtualMachine\IodinePackage.cs" />
     <Compile Include="Codegen\IodineCompiler.cs" />
     <Compile Include="Codegen\FunctionCompiler.cs" />
     <Compile Include="Codegen\ModuleCompiler.cs" />

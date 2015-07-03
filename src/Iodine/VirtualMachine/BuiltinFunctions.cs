@@ -10,12 +10,16 @@ namespace Iodine
 		class RangeIterator : IodineObject
 		{
 			private static IodineTypeDefinition RangeIteratorTypeDef  = new IodineTypeDefinition ("RangeIterator");
-			private long iterMax = 0;
 			private long iterIndex = 0;
-			public RangeIterator (long max) 
+			private long end;
+			private long step;
+
+			public RangeIterator (long min, long max, long step) 
 				: base (RangeIteratorTypeDef)
 			{
-				this.iterMax = max;
+				this.end = max;
+				this.step = step;
+				this.iterIndex = min;
 			}
 
 
@@ -26,10 +30,10 @@ namespace Iodine
 
 			public override bool IterMoveNext (VirtualMachine vm)
 			{
-				if (iterIndex >= iterMax) {
+				if (iterIndex >= this.end) {
 					return false;
 				}
-				iterIndex++;
+				iterIndex += this.step;
 				return true;
 			}
 
@@ -293,14 +297,48 @@ namespace Iodine
 
 		private IodineObject range (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineInteger n = args[0] as IodineInteger;
-			return new RangeIterator (n.Value);
+			long start = 0;
+			long end = 0;
+			long step = 1;
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			if (args.Length == 1) {
+				IodineInteger stepObj = args[0] as IodineInteger;
+				if (stepObj == null) {
+					vm.RaiseException (new IodineTypeException ("Int"));
+					return null;
+				}
+				end = stepObj.Value;
+			} else if (args.Length == 2) {
+				IodineInteger startObj = args[0] as IodineInteger;
+				IodineInteger endObj = args[0] as IodineInteger;
+				if (startObj == null || endObj == null) {
+					vm.RaiseException (new IodineTypeException ("Int"));
+					return null;
+				}
+				start = startObj.Value;
+				end = endObj.Value;
+			} else {
+				IodineInteger startObj = args[0] as IodineInteger;
+				IodineInteger endObj = args[1] as IodineInteger;
+				IodineInteger stepObj = args[2] as IodineInteger;
+				if (startObj == null || endObj == null || stepObj == null) {
+					vm.RaiseException (new IodineTypeException ("Int"));
+					return null;
+				}
+				start = startObj.Value;
+				end = endObj.Value;
+				step = stepObj.Value;
+			}
+			return new RangeIterator (start, end, step);
 		}
 
 		private IodineObject open (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
-				vm.RaiseException ("Expected two or morw argumetns!");
+				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
 			IodineString filePath = args[0] as IodineString;

@@ -4,18 +4,14 @@ namespace Iodine
 {
 	public class NodeIndexer : AstNode
 	{
-		public AstNode Target
-		{
-			get
-			{
+		public AstNode Target {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public AstNode Index
-		{
-			get
-			{
+		public AstNode Index {
+			get {
 				return this.Children[1];
 			}
 		}

@@ -9,8 +9,7 @@ namespace Iodine
 
 		private int iterIndex = 0;
 
-		public IodineObject[] Objects
-		{
+		public IodineObject[] Objects {
 			private set;
 			get;
 		}

@@ -8,24 +8,19 @@ namespace Iodine
 		private ErrorLog errorLog;
 		private List<Token> tokens = new List<Token> ();
 
-		public bool EndOfStream
-		{
-			get
-			{
+		public bool EndOfStream {
+			get {
 				return this.tokens.Count <= Position;
 			}
 		}
 
-		public int Position
-		{
+		public int Position {
 			private set;
 			get;
 		}
 
-		public ErrorLog ErrorLog
-		{
-			get
-			{
+		public ErrorLog ErrorLog {
+			get {
 				return this.errorLog;
 			}
 		}

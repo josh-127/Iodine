@@ -8,10 +8,8 @@ namespace Iodine
 	{
 		private List<AstNode> children = new List<AstNode> ();
 
-		public IList<AstNode> Children
-		{
-			get
-			{
+		public IList<AstNode> Children {
+			get {
 				return this.children;
 			}
 		}

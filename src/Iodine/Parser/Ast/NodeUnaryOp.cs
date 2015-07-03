@@ -4,16 +4,13 @@ namespace Iodine
 {
 	public class NodeUnaryOp : AstNode
 	{
-		public UnaryOperation Operation
-		{
+		public UnaryOperation Operation {
 			private set;
 			get;
 		}
 
-		public AstNode Value
-		{
-			get
-			{
+		public AstNode Value {
+			get {
 				return this.Children[0];
 			}
 		}

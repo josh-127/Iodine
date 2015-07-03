@@ -7,8 +7,7 @@ namespace Iodine
 	{
 		public static readonly IodineTypeDefinition ByteArrayTypeDef = new IodineTypeDefinition ("ByteArray");
 
-		public byte[] Array
-		{
+		public byte[] Array {
 			private set;
 			get;
 		}

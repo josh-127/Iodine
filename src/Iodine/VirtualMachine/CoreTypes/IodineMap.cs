@@ -9,8 +9,7 @@ namespace Iodine
 
 		private int iterIndex = 0;
 
-		public Dictionary <int, IodineObject> Dict
-		{
+		public Dictionary <int, IodineObject> Dict {
 			private set;
 			get;
 		}

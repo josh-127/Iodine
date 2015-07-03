@@ -4,25 +4,19 @@ namespace Iodine
 {
 	public class NodeBinOp : AstNode
 	{
-
-		public BinaryOperation Operation
-		{
+		public BinaryOperation Operation {
 			private set;
 			get;
 		}
 
-		public AstNode Left
-		{
-			get
-			{
+		public AstNode Left {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public AstNode Right
-		{
-			get
-			{
+		public AstNode Right {
+			get {
 				return this.Children[1];
 			}
 		}

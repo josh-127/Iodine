@@ -6,8 +6,7 @@ namespace Iodine
 	{
 		private static readonly IodineTypeDefinition ExceptionTypeDef = new IodineTypeDefinition ("Exception");
 
-		public string Message
-		{
+		public string Message {
 			private set;
 			get;
 		}

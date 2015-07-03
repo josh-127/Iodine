@@ -7,12 +7,12 @@ namespace Iodine
 
 	public class InternalMethodCallback : IodineObject
 	{
-		private static readonly IodineTypeDefinition InternalMethodTypeDef =
-			new IodineTypeDefinition ("InternalMethod"); 
+		private static readonly IodineTypeDefinition InternalMethodTypeDef = new
+			IodineTypeDefinition ("InternalMethod"); 
 		
 		private IodineObject self;
-		public IodineMethodCallback Callback
-		{
+
+		public IodineMethodCallback Callback {
 			private set;
 			get;
 		}

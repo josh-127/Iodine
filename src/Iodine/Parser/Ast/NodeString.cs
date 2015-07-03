@@ -5,8 +5,7 @@ namespace Iodine
 {
 	public class NodeString : AstNode
 	{
-		public string Value
-		{
+		public string Value {
 			private set;
 			get;
 		}

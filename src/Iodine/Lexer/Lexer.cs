@@ -10,7 +10,8 @@ namespace Iodine
 
 		static List<IMatcher> matchers = new List<IMatcher> ();
 
-		static Lexer () {
+		static Lexer ()
+		{
 			matchers.Add (new MatchKeyword ());
 			matchers.Add (new MatchNumber ());
 			matchers.Add (new MatchStringLit ());

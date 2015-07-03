@@ -4,18 +4,15 @@ namespace Iodine
 {
 	public class NodeExpr : AstNode
 	{
-		public NodeExpr (AstNode child)
-		{
+		public NodeExpr (AstNode child) {
 			this.Add (child);
 		}
 
-		public override void Visit (IAstVisitor visitor)
-		{
+		public override void Visit (IAstVisitor visitor) {
 			visitor.Accept (this);
 		}
 
-		public static AstNode Parse (TokenStream stream)
-		{
+		public static AstNode Parse (TokenStream stream) {
 			return ParseAssign (stream);
 		}
 

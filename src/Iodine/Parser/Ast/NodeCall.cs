@@ -4,19 +4,14 @@ namespace Iodine
 {
 	public class NodeCall : AstNode
 	{
-
-		public AstNode Target
-		{
-			get
-			{
+		public AstNode Target {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public AstNode Arguments
-		{
-			get
-			{
+		public AstNode Arguments {
+			get {
 				return this.Children[1];
 			}
 		}

@@ -4,8 +4,7 @@ namespace Iodine
 {
 	public class NodeFloat : AstNode
 	{
-		public double Value
-		{
+		public double Value {
 			private set;
 			get;
 		}

@@ -5,8 +5,7 @@ namespace Iodine
 	public class IodineTypeDefinition : IodineObject
 	{
 		private static IodineTypeDefinition TypeDefTypeDef = new IodineTypeDefinition ("TypeDef");
-		public string Name
-		{
+		public string Name {
 			private set;
 			get;
 		}

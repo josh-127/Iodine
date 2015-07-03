@@ -6,8 +6,7 @@ namespace Iodine
 	{
 		private static readonly IodineTypeDefinition IntTypeDef = new IodineTypeDefinition ("Int"); 
 
-		public long Value
-		{
+		public long Value {
 			private set;
 			get;
 		}

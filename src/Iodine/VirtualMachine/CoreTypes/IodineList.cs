@@ -9,8 +9,7 @@ namespace Iodine
 		private static readonly IodineTypeDefinition ListTypeDef = new IodineTypeDefinition ("List");
 
 		private int iterIndex = 0;
-		public List<IodineObject> Objects
-		{
+		public List<IodineObject> Objects {
 			private set;
 			get;
 		}

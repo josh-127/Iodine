@@ -6,8 +6,7 @@ namespace Iodine
 	{
 		private static readonly IodineTypeDefinition FloatTypeDef = new IodineTypeDefinition ("Float"); 
 
-		public double Value
-		{
+		public double Value {
 			private set;
 			get;
 		}

@@ -4,26 +4,22 @@ namespace Iodine
 {
 	public class Token
 	{
-		public TokenClass Class
-		{
+		public TokenClass Class {
 			private set;
 			get;
 		}
 
-		public string Value
-		{
+		public string Value {
 			private set;
 			get;
 		}
 
-		public int Line
-		{
+		public int Line {
 			private set;
 			get;
 		}
 
-		public int Column
-		{
+		public int Column {
 			private set;
 			get;
 		}

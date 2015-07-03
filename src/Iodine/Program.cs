@@ -26,6 +26,9 @@ namespace Iodine
 						}
 					} else {
 						ret.FileName = args[i++];
+						if (!System.IO.File.Exists (ret.FileName)) {
+							Panic ("Could not find file {0}!", ret.FileName);
+						}
 						break;
 					}
 				}
@@ -41,7 +44,6 @@ namespace Iodine
 
 		public static void Main (string[] args)
 		{
-			//System.Diagnostics.Debugger.Break();
 			IodineOptions options = IodineOptions.Parse (args);
 			ErrorLog errorLog = new ErrorLog ();
 			IodineModule module = IodineModule.LoadModule (errorLog, options.FileName);
@@ -52,14 +54,20 @@ namespace Iodine
 			} else {
 				try {
 					VirtualMachine vm = new VirtualMachine ();
-					module.Initializer.Invoke (vm, new IodineObject[] {});
-					module.GetAttribute ("main").Invoke (vm, new IodineObject[] {options.Arguments });
+					module.Invoke (vm, new IodineObject[] {});
+					if (module.HasAttribute ("main")) {
+						module.GetAttribute ("main").Invoke (vm, new IodineObject[] {options.Arguments });
+					}
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);
 					Console.WriteLine ("\tMessage: {0}", ex.OriginalException.Message);
 					Console.WriteLine ();
 					ex.PrintStack ();
 					Console.WriteLine ();
+					Panic ("Program terminated.");
+				} catch (Exception e) {
+					Console.Error.WriteLine ("Fatal exception has occured!");
+					Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
 					Panic ("Program terminated.");
 				}
 
@@ -70,7 +78,7 @@ namespace Iodine
 		public static void DisplayErrors (ErrorLog errorLog)
 		{
 			foreach (Error err in errorLog) {
-				Console.Error.WriteLine (err.Text);
+				Console.Error.WriteLine ("Error: {0}", err.Text);
 			}
 		}
 

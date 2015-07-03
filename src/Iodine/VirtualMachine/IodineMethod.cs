@@ -49,52 +49,43 @@ namespace Iodine
 		protected List<Instruction> instructions = new List<Instruction> ();
 		private IodineMethod parent = null;
 
-		public List<Instruction> Body
-		{
-			get
-			{
+		public List<Instruction> Body {
+			get {
 				return this.instructions;
 			}
 		}
 
-		public string Name
-		{
+		public string Name {
 			private set;
 			get;
 		}
 
-		public Dictionary <string, int> Parameters
-		{
+		public Dictionary <string, int> Parameters {
 			private set;
 			get;
 		}
 
-		public int ParameterCount
-		{
+		public int ParameterCount {
 			private set;
 			get;
 		}
 
-		public int LocalCount
-		{
+		public int LocalCount {
 			private set;
 			get;
 		}
 
-		public bool Variadic
-		{
+		public bool Variadic {
 			set;
 			get;
 		}
 
-		public IodineModule Module
-		{
+		public IodineModule Module {
 			private set;
 			get;
 		}
 
-		public bool InstanceMethod
-		{
+		public bool InstanceMethod {
 			private set;
 			get;
 		}

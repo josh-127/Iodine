@@ -4,24 +4,19 @@ namespace Iodine
 {
 	public class NodeTryExcept : AstNode
 	{
-		public string ExceptionIdentifier
-		{
+		public string ExceptionIdentifier {
 			private set;
 			get;
 		}
 
-		public AstNode TryBody
-		{
-			get
-			{
+		public AstNode TryBody {
+			get {
 				return this.Children[0];
 			}
 		}
 
-		public AstNode ExceptBody
-		{
-			get
-			{
+		public AstNode ExceptBody {
+			get {
 				return this.Children[1];
 			}
 		}

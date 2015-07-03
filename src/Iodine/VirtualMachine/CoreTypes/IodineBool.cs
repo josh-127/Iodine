@@ -9,8 +9,7 @@ namespace Iodine
 
 		private static readonly IodineTypeDefinition BoolTypeDef = new IodineTypeDefinition ("Bool"); 
 
-		public bool Value
-		{
+		public bool Value {
 			private set;
 			get;
 		}

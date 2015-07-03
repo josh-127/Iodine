@@ -6,8 +6,7 @@ namespace Iodine
 	{
 		private static readonly IodineTypeDefinition CharTypeDef = new IodineTypeDefinition ("Char"); 
 
-		public char Value
-		{
+		public char Value {
 			private set;
 			get;
 		}
