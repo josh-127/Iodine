@@ -15,6 +15,7 @@ namespace ModuleReflection
 			this.SetAttribute ("setAttribute", new InternalMethodCallback (setAttribute, this));
 			this.SetAttribute ("getAttributes", new InternalMethodCallback (getAttributes, this));
 			this.SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
+			this.SetAttribute ("compileModule", new InternalMethodCallback (compileModule, this));
 			this.SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
 			this.SetAttribute ("Opcode", IodineOpcode.OpcodeTypeDef);
 		}
@@ -68,6 +69,12 @@ namespace ModuleReflection
 		{
 			IodineString pathStr = args[0] as IodineString;
 			return IodineModule.LoadModule (new ErrorLog (), pathStr.Value);
+		}
+
+		private IodineObject compileModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString pathStr = args[0] as IodineString;
+			return IodineModule.CompileModuleFromSource (new ErrorLog (), pathStr.Value);
 		}
 
 		private IodineObject getBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)

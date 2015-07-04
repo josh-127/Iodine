@@ -125,7 +125,7 @@ namespace Iodine
 
 		public void Accept (NodeScope scope)
 		{
-			visitSubnodes (scope);
+			scope.Visit (functionCompiler);
 		}
 
 		public void Accept (NodeUseStatement useStmt)

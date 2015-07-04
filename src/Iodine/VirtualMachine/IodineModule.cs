@@ -120,6 +120,25 @@ namespace Iodine
 			}
 		}
 
+		public static IodineModule CompileModuleFromSource (ErrorLog errorLog, string source)
+		{
+			Lexer lexer = new Lexer (errorLog, source);
+			TokenStream tokenStream = lexer.Scan ();
+			if (errorLog.ErrorCount > 0) return null;
+			Parser parser = new Parser (tokenStream);
+			Ast root = parser.Parse ();
+			if (errorLog.ErrorCount > 0) return null;
+			SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
+			SymbolTable symbolTable = analyser.Analyse (root);
+			if (errorLog.ErrorCount > 0) return null;
+			IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable, "");
+			IodineModule module = new IodineModule ("");
+
+			compiler.CompileAst (module, root);
+			if (errorLog.ErrorCount > 0) return null;
+			return module;
+		}
+
 		public static IodineModule LoadModule (ErrorLog errLog, string path)
 		{
 			if (FindExtension (path) != null) {

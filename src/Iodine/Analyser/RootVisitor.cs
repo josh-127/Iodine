@@ -88,22 +88,23 @@ namespace Iodine
 
 		public void Accept (NodeWhileStmt whileStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Unexpected while statement!");
+			visitSubnodes (whileStmt);
 		}
 
 		public void Accept (NodeForStmt forStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Unexpected for statement!");
+			visitSubnodes (forStmt);
 		}
 
 		public void Accept (NodeForeach foreachStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Unexpected foreach statement!");
+			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
+			foreachStmt.Visit (visitor);
 		}
 
 		public void Accept (NodeContinue cont)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Unexpected continue statement!");
+			visitSubnodes (cont);
 		}
 
 		public void Accept (NodeFuncDecl funcDecl)
