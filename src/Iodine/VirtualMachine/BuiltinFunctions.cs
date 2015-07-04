@@ -84,8 +84,22 @@ namespace Iodine
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString str = args[0] as IodineString;
+			IodineMap map = args[1] as IodineMap;
+			IodineBool restrict = args[2] as IodineBool;
+			return eval (vm, str.ToString (), map, restrict.Value);
+		}
+
+		private IodineObject eval (VirtualMachine vm, string source, IodineMap dict, bool restricted)
+		{
+			if (restricted) {
+				vm = new VirtualMachine (new Dictionary<string, IodineObject> ());
+			}
+			foreach (IodineObject key in dict.Keys.Values) {
+				vm.Globals[key.ToString ()] = dict.Dict[key.GetHashCode ()];
+			}
+
 			ErrorLog log = new ErrorLog ();
-			Lexer iLexer = new Lexer (log, str.ToString ());
+			Lexer iLexer = new Lexer (log, source);
 			TokenStream tokens = iLexer.Scan ();
 			if (log.ErrorCount > 0) 
 				return null;

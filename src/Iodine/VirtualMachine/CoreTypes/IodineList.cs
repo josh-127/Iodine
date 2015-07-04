@@ -14,6 +14,7 @@ namespace Iodine
 			get;
 		}
 
+
 		public IodineList (IodineObject[] items)
 			: base (ListTypeDef)
 		{
@@ -23,6 +24,7 @@ namespace Iodine
 			this.SetAttribute ("add", new InternalMethodCallback (add, this));
 			this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
 			this.SetAttribute ("removeAt", new InternalMethodCallback (removeAt, this));
+			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
@@ -110,6 +112,24 @@ namespace Iodine
 			else
 				vm.RaiseException (new IodineTypeException ("Int"));
 			return null;
+		}
+
+		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			if (arguments.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineObject key = arguments[0];
+			int hashCode = key.GetHashCode ();
+			bool found = false;
+			foreach (IodineObject obj in this.Objects) {
+				if (obj.GetHashCode () == hashCode) {
+					found = true;
+				}
+			}
+
+			return new IodineBool (found);
 		}
 
 		public override int GetHashCode ()

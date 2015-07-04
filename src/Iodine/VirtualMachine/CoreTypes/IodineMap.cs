@@ -14,12 +14,16 @@ namespace Iodine
 			get;
 		}
 
-		private Dictionary <int, IodineObject> keys = new Dictionary<int, IodineObject>();
+		public Dictionary <int, IodineObject> Keys {
+			private set;
+			get;
+		}
 
 		public IodineMap ()
 			: base (MapTypeDef)
 		{
 			Dict = new Dictionary<int, IodineObject> ();
+			Keys = new Dictionary<int, IodineObject> ();
 			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			this.SetAttribute ("clear", new InternalMethodCallback (clear, this));
@@ -40,7 +44,7 @@ namespace Iodine
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
 			this.Dict[key.GetHashCode ()] = value;
-			this.keys[key.GetHashCode ()] = key;
+			this.Keys[key.GetHashCode ()] = key;
 		}
 
 		public override int GetHashCode ()
@@ -50,9 +54,9 @@ namespace Iodine
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			IodineObject[] keys = new IodineObject[this.keys.Count];
-			this.keys.Values.CopyTo (keys, 0);
-			return keys[this.iterIndex - 1];
+			IodineObject[] Keys = new IodineObject[this.Keys.Count];
+			this.Keys.Values.CopyTo (Keys, 0);
+			return Keys[this.iterIndex - 1];
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
@@ -71,7 +75,7 @@ namespace Iodine
 		public void Set (IodineObject key, IodineObject val)
 		{
 			this.Dict[key.GetHashCode ()] = val;
-			this.keys[key.GetHashCode ()] = key;
+			this.Keys[key.GetHashCode ()] = key;
 		}
 
 		public IodineObject Get (IodineObject key)
@@ -96,7 +100,7 @@ namespace Iodine
 		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			this.Dict.Clear ();
-			this.keys.Clear ();
+			this.Keys.Clear ();
 			return null;
 		}
 
@@ -106,7 +110,7 @@ namespace Iodine
 				IodineObject key = arguments[0];
 				IodineObject val = arguments[1];
 				this.Dict[key.GetHashCode ()] = val;
-				this.keys[key.GetHashCode ()] = key;
+				this.Keys[key.GetHashCode ()] = key;
 				return null;
 			}
 			vm.RaiseException (new IodineArgumentException (2));
@@ -122,7 +126,7 @@ namespace Iodine
 					vm.RaiseException (new IodineKeyNotFound ());
 					return null;
 				}
-				this.keys.Remove (hash);
+				this.Keys.Remove (hash);
 				this.Dict.Remove (hash);
 				return null;
 			}
