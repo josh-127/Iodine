@@ -325,6 +325,12 @@ namespace Iodine
 					exceptionHandlers.Pop ();
 					break;
 				}
+			case Opcode.InstanceOf: {
+					IodineObject o = Stack.Pop ();
+					IodineTypeDefinition type = Stack.Pop() as IodineTypeDefinition;
+					Stack.Push (new IodineBool (o.InstanceOf (type)));
+					break;
+				}
 			}
 		}
 	}

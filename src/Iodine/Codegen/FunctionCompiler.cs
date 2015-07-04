@@ -78,6 +78,10 @@ namespace Iodine
 					methodBuilder.EmitInstruction (Opcode.StoreIndex);
 					binop.Left.Visit (this);
 				}
+			} else if (binop.Operation == BinaryOperation.InstanceOf) {
+				binop.Right.Visit (this);
+				binop.Left.Visit (this);
+				methodBuilder.EmitInstruction (Opcode.InstanceOf);
 			} else {
 				IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
 				IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();

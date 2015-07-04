@@ -38,7 +38,8 @@ namespace Iodine
 		IterReset,
 		PushExceptionHandler,
 		PopExceptionHandler,
-		LoadException
+		LoadException,
+		InstanceOf
 	}
 }
 

@@ -78,6 +78,14 @@ namespace Iodine
 			globalDict["range"] = new InternalMethodCallback (range, null);
 			globalDict["open"] = new InternalMethodCallback (open, null);
 			globalDict["sleep"] = new InternalMethodCallback (sleep, null);
+			globalDict["Exception"] = IodineException.TypeDefinition;
+			globalDict["TypeException"] = IodineTypeException.TypeDefinition;
+			globalDict["ArgumentException"] = IodineArgumentException.TypeDefinition;
+			globalDict["InternalException"] = IodineInternalErrorException.TypeDefinition;
+			globalDict["IndexException"] = IodineIndexException.TypeDefinition;
+			globalDict["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
+			globalDict["AttributeException"] = IodineAttributeNotFoundException.TypeDefinition;
+			globalDict["SynaxErrorException"] = IodineSyntaxException.TypeDefinition;
 		}
 
 
@@ -187,24 +195,6 @@ namespace Iodine
 		private IodineObject Object (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineObject (IodineObject.ObjectTypeDef);
-		}
-
-		private IodineObject hashMap (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length >= 1) {
-				IodineList inputList = args[0] as IodineList;
-				IodineMap ret = new IodineMap ();
-				if (inputList != null) {
-					foreach (IodineObject item in inputList.Objects) {
-						IodineTuple kv = item as IodineTuple;
-						if (kv != null) {
-							ret.Dict.Add (kv.Objects[0].GetHashCode (), kv.Objects[1]);
-						}
-					}
-				} 
-				return ret;
-			}
-			return new IodineMap ();
 		}
 
 		private IodineObject filter (VirtualMachine vm, IodineObject self, IodineObject[] args)

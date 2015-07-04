@@ -177,6 +177,18 @@ namespace Iodine
 		{
 		}
 
+		public bool InstanceOf (IodineTypeDefinition def)
+		{
+			IodineObject i = this;
+			while (i != null) {
+				if (i.TypeDef == def) {
+					return true;
+				}
+				i = i.Base;
+			}
+			return false;
+		}
+
 		public override int GetHashCode ()
 		{
 			int accum = 17;
