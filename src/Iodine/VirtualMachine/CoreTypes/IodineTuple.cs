@@ -5,7 +5,24 @@ namespace Iodine
 {
 	public class IodineTuple : IodineObject
 	{
-		private static readonly IodineTypeDefinition TupleTypeDef = new IodineTypeDefinition ("Tuple"); 
+		public static readonly IodineTypeDefinition TypeDefinition = new TupleTypeDef ();
+
+		class TupleTypeDef : IodineTypeDefinition
+		{
+			public TupleTypeDef () 
+				: base ("Tuple")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length >= 1) {
+					IodineList inputList = args[0] as IodineList;
+					return new IodineTuple (inputList.Objects.ToArray ());
+				}
+				return null;
+			}
+		}
 
 		private int iterIndex = 0;
 
@@ -15,7 +32,7 @@ namespace Iodine
 		}
 
 		public IodineTuple (IodineObject[] items)
-			: base (TupleTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Objects = items;
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));

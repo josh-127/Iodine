@@ -4,7 +4,28 @@ namespace Iodine
 {
 	public class IodineChar : IodineObject
 	{
-		private static readonly IodineTypeDefinition CharTypeDef = new IodineTypeDefinition ("Char"); 
+		public static readonly IodineTypeDefinition TypeDefinition = new CharTypeDef ();
+
+		class CharTypeDef : IodineTypeDefinition
+		{
+			public CharTypeDef () 
+				: base ("Char")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
+				if (args[0] is IodineInteger)
+					return new IodineChar ((char)((IodineInteger)args[0]).Value);
+				else if (args[0] is IodineString)
+					return new IodineChar ((char)args[0].ToString()[0]);
+				return null;
+			}
+		}
 
 		public char Value {
 			private set;
@@ -12,7 +33,7 @@ namespace Iodine
 		}
 
 		public IodineChar (char value)
-			: base (CharTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Value = value;
 			this.SetAttribute ("isLetter", new InternalMethodCallback (isLetter, this));

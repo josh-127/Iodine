@@ -5,7 +5,20 @@ namespace Iodine
 {
 	public class IodineByteArray : IodineObject
 	{
-		public static readonly IodineTypeDefinition ByteArrayTypeDef = new IodineTypeDefinition ("ByteArray");
+		public static readonly IodineTypeDefinition TypeDefinition = new ByteArrayTypeDef ();
+
+		class ByteArrayTypeDef : IodineTypeDefinition
+		{
+			public ByteArrayTypeDef () 
+				: base ("Char")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				return null;
+			}
+		}
 
 		public byte[] Array {
 			private set;
@@ -15,7 +28,7 @@ namespace Iodine
 		private int iterIndex = 0;
 
 		public IodineByteArray (byte[] bytes)
-			: base (ByteArrayTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Array = bytes;
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));

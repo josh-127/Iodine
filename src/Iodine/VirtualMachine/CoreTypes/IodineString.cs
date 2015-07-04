@@ -5,7 +5,29 @@ namespace Iodine
 {
 	public class IodineString : IodineObject
 	{
-		private static readonly IodineTypeDefinition StringTypeDef = new IodineTypeDefinition ("Str"); 
+		public static readonly IodineTypeDefinition TypeDefinition = new StringTypeDef ();
+
+		class StringTypeDef : IodineTypeDefinition
+		{
+			public StringTypeDef () 
+				: base ("Str")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+				}
+				if (args[0].HasAttribute ("_toStr")) {
+					IodineString ret = args[0].GetAttribute ("_toStr").Invoke (vm, new IodineObject[]{})
+						as IodineString;
+					return ret;
+				}
+				return new IodineString (args[0].ToString ());
+			}
+		}
+
 		private int iterIndex = 0;
 
 		public string Value {
@@ -14,7 +36,7 @@ namespace Iodine
 		}
 
 		public IodineString (string val)
-			: base (StringTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Value = val;
 			this.SetAttribute ("toLower", new InternalMethodCallback (toLower, this));

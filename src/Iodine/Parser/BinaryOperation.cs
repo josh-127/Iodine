@@ -22,7 +22,8 @@ namespace Iodine
 		Sub,
 		Mul,
 		Div,
-		Mod
+		Mod,
+		InstanceOf
 	}
 }
 

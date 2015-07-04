@@ -7,7 +7,23 @@ namespace Iodine
 		public static readonly IodineBool True = new IodineBool (true);
 		public static readonly IodineBool False = new IodineBool (false);
 
-		private static readonly IodineTypeDefinition BoolTypeDef = new IodineTypeDefinition ("Bool"); 
+		public static readonly IodineTypeDefinition TypeDefinition = new BoolTypeDef ();
+
+		class BoolTypeDef : IodineTypeDefinition
+		{
+			public BoolTypeDef () 
+				: base ("Bool")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+				}
+				return new IodineBool (Boolean.Parse (args[0].ToString ()));
+			}
+		}
 
 		public bool Value {
 			private set;
@@ -15,7 +31,7 @@ namespace Iodine
 		}
 
 		public IodineBool (bool val)
-			: base (BoolTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Value = val;
 		}

@@ -55,24 +55,24 @@ namespace Iodine
 			globalDict["setEnv"] = new InternalMethodCallback (setEnv, null);
 			globalDict["raise"] = new InternalMethodCallback (raise, null);
 			globalDict["input"] = new InternalMethodCallback (input, null);
-			globalDict["toInt"] = new InternalMethodCallback (toInt, null);
-			globalDict["toStr"] = new InternalMethodCallback (toStr, null);
-			globalDict["Int"] = new InternalMethodCallback (toInt, null);
-			globalDict["Float"] = new InternalMethodCallback (toFloat, null);
-			globalDict["Str"] = new InternalMethodCallback (toStr, null);
-			globalDict["Bool"] = new InternalMethodCallback (toBool, null);
-			globalDict["Char"] = new InternalMethodCallback (toChar, null);
-			globalDict["toBool"] = new InternalMethodCallback (toBool, null);
-			globalDict["toChar"] = new InternalMethodCallback (toChar, null);
-			globalDict["list"] = new InternalMethodCallback (list, null);
-			globalDict["event"] = new InternalMethodCallback (createEvent, null);
+			globalDict["toInt"] = IodineInteger.TypeDefinition;
+			globalDict["toStr"] = IodineString.TypeDefinition;
+			globalDict["Int"] = IodineInteger.TypeDefinition;
+			globalDict["Float"] = IodineFloat.TypeDefinition;
+			globalDict["Str"] = IodineString.TypeDefinition;
+			globalDict["Bool"] = IodineBool.TypeDefinition;
+			globalDict["Char"] = IodineChar.TypeDefinition;
+			globalDict["toBool"] = IodineBool.TypeDefinition;
+			globalDict["toChar"] = IodineChar.TypeDefinition;
+			globalDict["list"] = IodineList.TypeDefinition;
+			globalDict["event"] = IodineEvent.TypeDefinition;
 			globalDict["object"] = new InternalMethodCallback (Object, null);
-			globalDict["hashMap"] = new InternalMethodCallback (hashMap, null);
-			globalDict["Tuple"] = new InternalMethodCallback (tuple, null);
-			globalDict["List"] = new InternalMethodCallback (list, null);
-			globalDict["Event"] = new InternalMethodCallback (createEvent, null);
+			globalDict["hashMap"] = IodineMap.TypeDefinition;
+			globalDict["Tuple"] = IodineTuple.TypeDefinition;
+			globalDict["List"] = IodineList.TypeDefinition;
+			globalDict["Event"] = IodineEvent.TypeDefinition;
 			globalDict["Object"] = new InternalMethodCallback (Object, null);
-			globalDict["HashMap"] = new InternalMethodCallback (hashMap, null);
+			globalDict["HashMap"] = IodineMap.TypeDefinition;
 			globalDict["filter"] = new InternalMethodCallback (filter, null);
 			globalDict["map"] = new InternalMethodCallback (map, null);
 			globalDict["range"] = new InternalMethodCallback (range, null);
@@ -182,80 +182,6 @@ namespace Iodine
 			}
 
 			return new IodineString (Console.ReadLine ());
-		}
-
-		private IodineObject toInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-
-			return new IodineInteger (Int64.Parse (args[0].ToString ()));
-		}
-
-		private IodineObject toFloat (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-
-			return new IodineFloat (Double.Parse (args[0].ToString ()));
-		}
-
-		private IodineObject toStr (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-			if (args[0].HasAttribute ("_toStr")) {
-				IodineString ret = args[0].GetAttribute ("_toStr").Invoke (vm, new IodineObject[]{})
-					as IodineString;
-				return ret;
-			}
-			return new IodineString (args[0].ToString ());
-		}
-
-		private IodineObject toBool (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-
-			return new IodineBool (Boolean.Parse (args[0].ToString ()));
-		}
-
-		private IodineObject toChar (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
-			if (args[0] is IodineInteger)
-				return new IodineChar ((char)((IodineInteger)args[0]).Value);
-			else if (args[0] is IodineString)
-				return new IodineChar ((char)args[0].ToString()[0]);
-			return null;
-		}
-
-		private IodineObject list (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			return new IodineList (args);
-		}
-
-		private IodineObject tuple (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length >= 1) {
-				IodineList inputList = args[0] as IodineList;
-
-				return new IodineTuple (inputList.Objects.ToArray ());
-
-			}
-			return null;
-		}
-
-		private IodineObject createEvent (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			return new IodineEvent ();
 		}
 
 		private IodineObject Object (VirtualMachine vm, IodineObject self, IodineObject[] args)

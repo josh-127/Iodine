@@ -6,7 +6,20 @@ namespace Iodine
 {
 	public class IodineList : IodineObject
 	{
-		private static readonly IodineTypeDefinition ListTypeDef = new IodineTypeDefinition ("List");
+		public static readonly IodineTypeDefinition TypeDefinition = new ListTypeDef ();
+
+		class ListTypeDef : IodineTypeDefinition
+		{
+			public ListTypeDef () 
+				: base ("List")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				return new IodineList (args);
+			}
+		}
 
 		private int iterIndex = 0;
 		public List<IodineObject> Objects {
@@ -16,7 +29,7 @@ namespace Iodine
 
 
 		public IodineList (IodineObject[] items)
-			: base (ListTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Objects = new List<IodineObject> ();
 			this.Objects.AddRange (items);

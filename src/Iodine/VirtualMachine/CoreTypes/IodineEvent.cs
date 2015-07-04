@@ -5,11 +5,25 @@ namespace Iodine
 {
 	public class IodineEvent : IodineObject
 	{
-		private static readonly IodineTypeDefinition EventTypeDef = new IodineTypeDefinition ("Event");
+		public static readonly IodineTypeDefinition TypeDefinition = new EventTypeDef ();
+
+		class EventTypeDef : IodineTypeDefinition
+		{
+			public EventTypeDef () 
+				: base ("Event")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				return new IodineEvent ();
+			}
+		}
+
 		private List<IodineObject> handlers = new List<IodineObject> ();
 
 		public IodineEvent ()
-			: base (EventTypeDef)
+			: base (TypeDefinition)
 		{
 		}
 

@@ -124,6 +124,9 @@ namespace Iodine
 			} else if (stream.Accept (TokenClass.Operator, "<=")) {
 				return new NodeBinOp (BinaryOperation.LessThanOrEqu, left,
 					ParseRelationalOp (stream));
+			} else if (stream.Accept (TokenClass.Keyword, "is")) {
+				return new NodeBinOp (BinaryOperation.InstanceOf, left,
+					ParseRelationalOp (stream));
 			}
 			return left;
 		}

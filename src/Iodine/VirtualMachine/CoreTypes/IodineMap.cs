@@ -5,7 +5,33 @@ namespace Iodine
 {
 	public class IodineMap : IodineObject
 	{
-		private static readonly IodineTypeDefinition MapTypeDef = new IodineTypeDefinition ("HashMap"); 
+		public static readonly IodineTypeDefinition TypeDefinition = new MapTypeDef ();
+
+		class MapTypeDef : IodineTypeDefinition
+		{
+			public MapTypeDef () 
+				: base ("HashMap")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length >= 1) {
+					IodineList inputList = args[0] as IodineList;
+					IodineMap ret = new IodineMap ();
+					if (inputList != null) {
+						foreach (IodineObject item in inputList.Objects) {
+							IodineTuple kv = item as IodineTuple;
+							if (kv != null) {
+								ret.Dict.Add (kv.Objects[0].GetHashCode (), kv.Objects[1]);
+							}
+						}
+					} 
+					return ret;
+				}
+				return new IodineMap ();
+			}
+		}
 
 		private int iterIndex = 0;
 
@@ -20,7 +46,7 @@ namespace Iodine
 		}
 
 		public IodineMap ()
-			: base (MapTypeDef)
+			: base (TypeDefinition)
 		{
 			Dict = new Dictionary<int, IodineObject> ();
 			Keys = new Dictionary<int, IodineObject> ();

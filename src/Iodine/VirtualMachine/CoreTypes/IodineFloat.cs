@@ -4,7 +4,24 @@ namespace Iodine
 {
 	public class IodineFloat : IodineObject
 	{
-		private static readonly IodineTypeDefinition FloatTypeDef = new IodineTypeDefinition ("Float"); 
+		public static readonly IodineTypeDefinition TypeDefinition = new FloatTypeDef ();
+
+		class FloatTypeDef : IodineTypeDefinition
+		{
+			public FloatTypeDef () 
+				: base ("Float")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+				}
+
+				return new IodineFloat (Double.Parse (args[0].ToString ()));
+			}
+		}
 
 		public double Value {
 			private set;
@@ -12,7 +29,7 @@ namespace Iodine
 		}
 
 		public IodineFloat (double val)
-			: base (FloatTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Value = val;
 		}

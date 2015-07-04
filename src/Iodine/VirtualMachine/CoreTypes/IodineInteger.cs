@@ -4,7 +4,28 @@ namespace Iodine
 {
 	public class IodineInteger : IodineObject
 	{
-		private static readonly IodineTypeDefinition IntTypeDef = new IodineTypeDefinition ("Int"); 
+		public static readonly IodineTypeDefinition TypeDefinition = new IntTypeDef ();
+
+		class IntTypeDef : IodineTypeDefinition
+		{
+			public IntTypeDef () 
+				: base ("Int")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+				}
+				if (args[0].HasAttribute ("_toStr")) {
+					IodineString ret = args[0].GetAttribute ("_toStr").Invoke (vm, new IodineObject[]{})
+						as IodineString;
+					return ret;
+				}
+				return new IodineString (args[0].ToString ());
+			}
+		}
 
 		public long Value {
 			private set;
@@ -12,7 +33,7 @@ namespace Iodine
 		}
 
 		public IodineInteger (long val)
-			: base (IntTypeDef)
+			: base (TypeDefinition)
 		{
 			this.Value = val;
 		}
