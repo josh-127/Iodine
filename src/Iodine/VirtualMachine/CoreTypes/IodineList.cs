@@ -25,6 +25,7 @@ namespace Iodine
 			this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
 			this.SetAttribute ("removeAt", new InternalMethodCallback (removeAt, this));
 			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
+			this.SetAttribute ("splice", new InternalMethodCallback (splice, this));
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
@@ -130,6 +131,48 @@ namespace Iodine
 			}
 
 			return new IodineBool (found);
+		}
+
+		private IodineObject splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			if (arguments.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			int start = 0;
+			int end = this.Objects.Count;
+
+			IodineInteger startInt = arguments[0] as IodineInteger;
+			if (startInt == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+			start = (int)startInt.Value;
+
+			if (arguments.Length >= 2) {
+				IodineInteger endInt = arguments[1] as IodineInteger;
+				if (endInt == null) {
+					vm.RaiseException (new IodineTypeException ("Int"));
+					return null;
+				}
+				end = (int)endInt.Value;
+			}
+
+			if (start < 0) start = this.Objects.Count - start;
+			if (end < 0) end = this.Objects.Count  - end;
+
+			IodineList retList = new IodineList (new IodineObject[]{});
+
+			for (int i = start; i < end; i++) {
+				if (i < 0 || i > this.Objects.Count) {
+					vm.RaiseException (new IodineIndexException ());
+					return null;
+				}
+				retList.Add (this.Objects[i]);
+			}
+
+			return retList;
 		}
 
 		public override int GetHashCode ()

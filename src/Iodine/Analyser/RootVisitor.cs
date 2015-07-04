@@ -83,28 +83,27 @@ namespace Iodine
 
 		public void Accept (NodeIfStmt ifStmt)
 		{
-			visitSubnodes (ifStmt);
+			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeWhileStmt whileStmt)
 		{
-			visitSubnodes (whileStmt);
+			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeForStmt forStmt)
 		{
-			visitSubnodes (forStmt);
+			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeForeach foreachStmt)
 		{
-			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
-			foreachStmt.Visit (visitor);
+			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeContinue cont)
 		{
-			visitSubnodes (cont);
+			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeFuncDecl funcDecl)
@@ -184,6 +183,7 @@ namespace Iodine
 
 		public void Accept (NodeTryExcept tryExcept)
 		{
+			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeFloat num) 

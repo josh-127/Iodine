@@ -82,6 +82,14 @@ namespace Iodine
 		}
 	}
 
+	public class IodineSyntaxException : IodineException
+	{
+		public IodineSyntaxException (ErrorLog errorLog)
+			: base ("Syntax error") 
+		{
+		}
+	}
+
 	public class UnhandledIodineExceptionException : Exception
 	{
 		public IodineException OriginalException
