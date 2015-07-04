@@ -14,6 +14,7 @@ namespace Iodine
 			Modules["hash"] = new HashModule ();
 			Modules["threading"] = new ThreadingModule ();
 			Modules["io"] = new IOModule ();
+			Modules["os"] = new OSModule ();
 		}
 	}
 }

@@ -30,6 +30,13 @@ namespace Iodine
 			SearchPaths.Add (Environment.CurrentDirectory);
 			SearchPaths.Add (String.Format ("{0}{1}modules", Path.GetDirectoryName (
 				Assembly.GetEntryAssembly ().Location), Path.DirectorySeparatorChar));
+			if (Environment.GetEnvironmentVariable ("IODINE_PATH") != null) {
+				SearchPaths.Add (Environment.CurrentDirectory);
+				foreach (string path in Environment.GetEnvironmentVariable ("IODINE_PATH").Split (
+					Path.PathSeparator)) {
+					SearchPaths.Add (path);
+				}
+			}
 		}
 
 		public string Name {

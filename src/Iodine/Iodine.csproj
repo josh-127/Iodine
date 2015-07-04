@@ -134,6 +134,7 @@
     <Compile Include="VirtualMachine\CoreModules\ThreadingModule.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineFormatter.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineStream.cs" />
+    <Compile Include="VirtualMachine\CoreModules\OSModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

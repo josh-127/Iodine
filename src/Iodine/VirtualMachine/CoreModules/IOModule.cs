@@ -17,6 +17,7 @@ namespace Iodine
 				this.SetAttribute ("listDirectories", new InternalMethodCallback (listDirectories, this));
 				this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
 				this.SetAttribute ("exists", new InternalMethodCallback (exists, this));
+				this.SetAttribute ("create", new InternalMethodCallback (create, this));
 			}
 				
 			private IodineObject listFiles (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -107,6 +108,21 @@ namespace Iodine
 				}
 
 				return new IodineBool (Directory.Exists (args[0].ToString ()));
+			}
+
+			private IodineObject create (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
+
+				if (!(args[0] is IodineString)) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+				Directory.CreateDirectory (args[0].ToString ());
+				return null;
 			}
 
 		}
