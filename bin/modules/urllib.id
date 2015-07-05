@@ -117,8 +117,8 @@ func _get_url_base (url) {
   start = url.indexOf ("://") + 3
   middle = url.substr (start)
   if (middle.contains ("/")) {
-    last_slash = len(middle) - reverse (middle).indexOf ("/")
-    middle = middle.substr (0, last_slash - 1)
+    next_slash = middle.indexOf("/")
+    middle = middle.substr (0, next_slash);
   }
   return middle
 }
