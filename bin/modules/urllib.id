@@ -53,7 +53,7 @@ class HTTPConnection {
       self.sock.close ();
       return rCon.read ();
     }
-    response = self.sock.receive (contentLength);
+    response = self.sock.readAllText ();
     self.sock.close ();
     return response;
   }
