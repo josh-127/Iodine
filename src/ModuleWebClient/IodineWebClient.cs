@@ -19,6 +19,7 @@ namespace ModuleWebClient
 		}
 
 		private IodineObject downloadString (VirtualMachine vm, IodineObject self, IodineObject[] args) {
+			ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
 			IodineString uri = args [0] as IodineString;
 			string data;
 			try {
