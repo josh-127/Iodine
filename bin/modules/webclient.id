@@ -7,21 +7,26 @@
 use socket
 use urllib
 use dns
-use sprintf from core
+use len, printf, sprintf from core
 
 class WebClient {
   func downloadString (uri) {
     ip = dns.getHostEntry (urllib.getUrlBase (uri)).addressList [0]
-    sock = socket (socket.SOCK_STREAM, socket.PROTO_TCP)
+    sock = socket.socket (socket.SOCK_STREAM, socket.PROTO_TCP)
     proto = urllib.getUrlProtocol (uri)
     if (proto == "http")
       sock.connect (ip, urllib.getUrlPort (uri))
-    else if (proto == "https")
-      sock.connectSsl (ip, urllib.getUrlPort (uri))
+    else if (proto == "https") {
+      sock.setHost (urllib.getUrlBase (uri))
+      sock.connectSsl (ip, 443)
+    }
     else
       raise ("Unknown protocol: {}".format (proto))
-    request = ("GET {} + HTTP/1.1\r\n" +
+    request = ("GET {} HTTP/1.1\r\n" +
                "Host: {}\r\n" +
+               "Accept-Charset: ISO-8859-1,UTF-8;q=0.7,*;q=0.7\r\n" +
+               "Cache-Control: no-cache\r\n" +
+               "Accept-Language: en;q=0.7,en-us;q=0.3\r\n" +
                "Connection: close\r\n\r\n").format (
                urllib.getUrlTail (uri),
                urllib.getUrlBase (uri))
@@ -29,12 +34,13 @@ class WebClient {
     accum = ""
     while (sock.getBytesAvailable () > 0)
       accum += sock.readLine ()
-    header = WebClient.parseResponseHeader (accum)
-    code = header["Code"]
-    if (Int (code) != 200)
-      raise ("Server returned HTTP {} {}".format (code, header["Reason"]))
-    contentLength = Int (header["Content-Length"])
-    content = socket.receive (contentLength)
+    printf (accum)
+    #header = WebClient.parseResponseHeader (accum)
+    #code = header["Code"]
+    #if (Int (code) != 200)
+    #  raise ("Server returned HTTP {} {}".format (code, header["Reason"]))
+    #contentLength = Int (header["Content-Length"])
+    #content = socket.receive (contentLength)
   }
 
   func parseResponseHeader (header_str) {
