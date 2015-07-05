@@ -18,4 +18,5 @@ if [ -d "$prefix" ]; then
 	cp -r ./bin/extensions $prefix/extensions
 	cat ./iodine_run.sh > /usr/bin/iodine
 	chmod a+x /usr/bin/iodine
+	cat "export IODINE_PATH=$prefix" > /etc/profile.d/iodine.sh
 fi
