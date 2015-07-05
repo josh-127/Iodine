@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -135,6 +135,7 @@
     <Compile Include="VirtualMachine\CoreTypes\IodineFormatter.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineStream.cs" />
     <Compile Include="VirtualMachine\CoreModules\OSModule.cs" />
+    <Compile Include="Codegen\Optimizations\ControlFlowOptimization.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -148,5 +149,6 @@
     <Folder Include="Codegen\" />
     <Folder Include="VirtualMachine\CoreModules\" />
     <Folder Include="VirtualMachine\CoreModules\IOTypes\" />
+    <Folder Include="Codegen\Optimizations\" />
   </ItemGroup>
 </Project>

@@ -234,6 +234,8 @@ namespace Iodine
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
+			ControlFlowOptimization optimizations = new ControlFlowOptimization (methodBuilder);
+			optimizations.Optimize ();
 			return methodBuilder;
 		}
 	}
