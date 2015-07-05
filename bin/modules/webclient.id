@@ -29,7 +29,12 @@ class WebClient {
     accum = ""
     while (sock.getBytesAvailable () > 0)
       accum += sock.readLine ()
-    header = WebClient.parseHeader (accum)
+    header = WebClient.parseResponseHeader (accum)
+    code = header["Code"]
+    if (Int (code) != 200)
+      raise ("Server returned HTTP {} {}".format (code, header["Reason"]))
+    contentLength = Int (header["Content-Length"])
+    content = socket.receive (contentLength)
   }
 
   func parseResponseHeader (header_str) {
@@ -38,7 +43,38 @@ class WebClient {
     lines = header_str.split ("\r\n")
     while (i < len (lines)) {
       line = lines [i].trim ()
+      if (i == 0) {
+        version = line.substr (0, line.indexOf (" "))
+        code = line.substr (line.indexOf (" ") + 1)
+        reason = reverse (line)
+        reason = reverse (reason.substr (0, reason.indexOf (" ")))
+        header["Version"] = version
+        header["Code"] = code
+        header["Reason"] = reason
+      } else if (line == "") {
+        i = i + 1
+        line = lines [i].trim ()
+        if (i < len (lines)) {
+          args = HashMap ()
+          foreach (arg in line.split ("&")) {
+            if (arg.contains ("=")) {
+              key = arg.substr (0, arg.indexOf ("=")).trim ()
+              val = arg.substr (arg.indexOf ("=") + 1).trim ()
+              args[key] = val
+            }
+          }
+          header["args"] = args
+        }
+      } else {
+        if (line.contains (":")) {
+          key = line.substr (0, line.indexOf (":")).trim ()
+          val = line.substr (line.indexOf (":") + 1).trim ()
+          header[key] = val
+        }
+      }
+      i = i + 1
     }
+    return header
   }
 
   func parseRequestHeader (header_str) {
