@@ -4,7 +4,7 @@ if [ "$(id -u)" != "0" ]; then
 	echo "WARNING: Not running as root, default installation directory WILL FAIL!"
 fi
 
-prefix="/usr/lib"
+prefix="/usr/lib/iodine"
 
 if [ "$#" -ge 1 ]; then
 	prefix=$1
