@@ -2,7 +2,7 @@
 
 namespace Iodine
 {
-	public class NodeWhileStmt : NodeStmt
+	public class NodeWhileStmt : AstNode
 	{
 		public AstNode Condition {
 			get {

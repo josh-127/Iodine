@@ -39,6 +39,7 @@ namespace Iodine
 		PushExceptionHandler,
 		PopExceptionHandler,
 		LoadException,
+		BeginExcept,
 		InstanceOf
 	}
 }

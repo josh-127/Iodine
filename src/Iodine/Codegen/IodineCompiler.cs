@@ -18,7 +18,7 @@ namespace Iodine
 
 		public IodineModule CompileAst (IodineModule module, Ast ast)
 		{
-			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module, file);
+			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module);
 			ast.Visit (compiler);
 			module.Initializer.FinalizeLabels ();
 

@@ -335,6 +335,25 @@ namespace Iodine
 					Stack.Push (new IodineBool (o.InstanceOf (type)));
 					break;
 				}
+			case Opcode.BeginExcept: {
+					bool rethrow = true;
+					for (int i = 1; i <= ins.Argument; i++ ){
+						IodineTypeDefinition type = Stack.Pop() as IodineTypeDefinition;
+						if (type == null) {
+							RaiseException (new IodineTypeException ("TypeDef"));
+							break;
+						}
+
+						if (lastException.InstanceOf (type)) {
+							rethrow = false;
+							break;
+						}
+					}
+					if (rethrow) {
+						RaiseException (lastException);
+					}
+					break;
+				}
 			}
 		}
 	}

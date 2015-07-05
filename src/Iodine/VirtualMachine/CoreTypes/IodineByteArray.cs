@@ -10,7 +10,7 @@ namespace Iodine
 		class ByteArrayTypeDef : IodineTypeDefinition
 		{
 			public ByteArrayTypeDef () 
-				: base ("Char")
+				: base ("ByteArray")
 			{
 			}
 

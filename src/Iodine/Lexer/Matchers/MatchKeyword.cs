@@ -44,6 +44,7 @@ namespace Iodine
 				matchString (inputStream, "params") ||
 				matchString (inputStream, "super") ||
 				matchString (inputStream, "is") ||
+				matchString (inputStream, "as") ||
 				matchString (inputStream, "return");
 		}
 

@@ -11,15 +11,12 @@ namespace Iodine
 		private int currentScope = 0;
 		private IodineModule module;
 		private FunctionCompiler functionCompiler;
-		private string file;
 
-		public ModuleCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineModule module,
-			string file)
+		public ModuleCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineModule module)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.module = module;
-			this.file = file;
 			this.functionCompiler = new FunctionCompiler (errorLog, symbolTable, module.Initializer);
 		}
 
@@ -234,6 +231,8 @@ namespace Iodine
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
+			ControlFlowOptimization optimizations = new ControlFlowOptimization (methodBuilder);
+			//optimizations.Optimize ();
 			return methodBuilder;
 		}
 	}

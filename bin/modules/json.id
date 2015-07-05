@@ -91,7 +91,7 @@ func dump (json) {
         root = map (json, lambda (x) => {
                 item = json[x];
                 if (item.typeDef.name == "HashMap") {
-                        return "\"" + Str (x) + " : " + dump (item);
+                        return "\"" + Str (x) + "\" : " + dump (item);
                 } else if (item.typeDef.name == "List") {
                         list = map (item, lambda (y) => {
                                 return "\"" + Str(y) + "\"";

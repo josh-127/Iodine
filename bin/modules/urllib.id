@@ -6,14 +6,71 @@
 ###
 
 use reverse, hex, len, printf, sprintf from core
+use dns;
+use socket;
+
+### 
+### Class definitions
+###
+
+class HTTPConnection {
+  func HTTPConnection (self, url) {
+    self.proto = _get_url_protocol (url);
+    self.base = _get_url_base (url);
+    self.tail = _get_url_tail (url);
+    self.port = _get_url_port (url);
+  }
+
+  func read (self) {
+    ip = dns.getHostEntry (self.base).addressList [0];
+    self.sock = socket.socket (socket.SOCK_STREAM, socket.PROTO_TCP);
+    self.sock.connect (ip, self.port);
+    request = "GET " + self.tail + " HTTP/1.1\r\n" +
+              "User-Agent: \r\n" + 
+              "Host: " + self.base + "\r\n" + 
+              "Connection: close\r\n\r\n"
+    self.sock.send (request);
+    contentLength = 0;
+    redirect = null;
+    code = Int (self.sock.readLine ().trim ().split (" ")[1]);
+    if (code != 200 && code != 301) {
+      raise ("Server returned HTTP {}".format (code));
+    } 
+    while ((line = self.sock.readLine ()).trim () != "") {
+      if (line.contains (":")) {
+        param = line.substr (0, line.indexOf (":"));
+        arg = line.substr (line.indexOf (":") + 1).trim ();
+        if (param.toLower () == "content-length") {
+          contentLength = Int (arg);
+        } else if (param.toLower () == "location") {
+          redirect = arg;
+        }
+      }
+    }
+    if (redirect != null) {
+      rCon = HTTPConnection (redirect);
+      self.sock.close ();
+      return rCon.read ();
+    }
+    response = self.sock.receive (contentLength);
+    self.sock.close ();
+    return response;
+  }
+}
 
 ###
 ### Public functions
 ###
 
+# Aurora's style guide calls for camelCase :P
+
+func openUrl (url) {
+  return HTTPConnection (url);
+}
+
 func normalize_url (url) {
   input = url
-  lower_url = input.toLower ()
+  lower_url = input
   protocol = _get_url_protocol (lower_url)
   base = _get_url_base (lower_url)
   base = _opt_url_base (base)
@@ -59,8 +116,8 @@ func _get_url_base (url) {
   start = url.indexOf ("://") + 3
   middle = url.substr (start)
   if (middle.contains ("/")) {
-    last_slash = len(middle) - reverse (middle).indexOf ("/")
-    middle = middle.substr (0, last_slash - 1)
+    next_slash = middle.indexOf("/")
+    middle = middle.substr (0, next_slash);
   }
   return middle
 }
@@ -68,11 +125,11 @@ func _get_url_base (url) {
 func _get_url_tail (url) {
   start = url.substr (url.indexOf ("://") + 3)
   if (start.contains ("/")) {
-    last_slash = len(start) - reverse (start).indexOf ("/")
-    return start.substr (last_slash)
+    next_slash = start.indexOf ("/")
+    return start.substr (next_slash)
   }
   else
-    return ""
+    return "/"
 }
 
 func _get_url_port (url) {

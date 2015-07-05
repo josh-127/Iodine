@@ -349,6 +349,10 @@ namespace Iodine
 			methodBuilder.EmitInstruction (Opcode.PopExceptionHandler);
 			methodBuilder.EmitInstruction (Opcode.Jump, endLabel);
 			methodBuilder.MarkLabelPosition (exceptLabel);
+			tryExcept.TypeList.Visit (this);
+			if (tryExcept.TypeList.Children.Count > 0) {
+				methodBuilder.EmitInstruction (Opcode.BeginExcept, tryExcept.TypeList.Children.Count);
+			}
 			if (tryExcept.ExceptionIdentifier != null) {
 				methodBuilder.EmitInstruction (Opcode.LoadException);
 				methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (

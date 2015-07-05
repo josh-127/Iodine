@@ -21,6 +21,12 @@ namespace Iodine
 			}
 		}
 
+		public AstNode TypeList {
+			get {
+				return this.Children[2];
+			}
+		}
+
 		public NodeTryExcept (string ident)
 		{
 			this.ExceptionIdentifier = ident;
@@ -36,9 +42,13 @@ namespace Iodine
 			NodeTryExcept retVal = null;
 			stream.Expect (TokenClass.Keyword, "try");
 			AstNode tryBody = NodeStmt.Parse (stream);
+			AstNode typeList = new NodeArgList ();
 			stream.Expect (TokenClass.Keyword, "except");
 			if (stream.Accept (TokenClass.OpenParan)) {
 				Token ident = stream.Expect (TokenClass.Identifier);
+				if (stream.Accept (TokenClass.Keyword, "as")) {
+					typeList = ParseTypeList (stream);
+				}
 				stream.Expect (TokenClass.CloseParan);
 				if (ident == null) retVal = new NodeTryExcept (null);
 				retVal = new NodeTryExcept (ident.Value);
@@ -47,7 +57,20 @@ namespace Iodine
 			}
 			retVal.Add (tryBody);
 			retVal.Add (NodeStmt.Parse (stream));
+			retVal.Add (typeList);
 			return retVal;
+		}
+
+		private static NodeArgList ParseTypeList (TokenStream stream)
+		{
+			NodeArgList argList = new NodeArgList ();
+			while (!stream.Match (TokenClass.CloseParan)) {
+				argList.Add (NodeExpr.Parse (stream));
+				if (!stream.Accept (TokenClass.Comma)) {
+					break;
+				}
+			}
+			return argList;
 		}
 	}
 }
