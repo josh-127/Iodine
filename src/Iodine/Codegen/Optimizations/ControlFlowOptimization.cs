@@ -57,7 +57,6 @@ namespace Iodine
 				if (isReachable (i)) {
 					newInstructions[next++] = oldInstructions[i];
 				} else {
-					newInstructions[next++] = new Instruction (Opcode.Nop);
 					shiftLabels (next, oldInstructions);
 					shiftLabels (next, newInstructions);
 				}
