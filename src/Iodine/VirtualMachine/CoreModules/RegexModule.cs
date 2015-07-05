@@ -20,6 +20,7 @@ namespace Iodine
 				this.Value = val;
 				this.SetAttribute ("match", new InternalMethodCallback (match, this));
 				this.SetAttribute ("isMatch", new InternalMethodCallback (isMatch, this));
+
 			}
 
 			private IodineObject match (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -52,6 +53,24 @@ namespace Iodine
 				}
 
 				return new IodineBool (this.Value.IsMatch (expr.ToString ()));
+			}
+
+			private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				if (args.Length <= 1) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
+				IodineString input = args[0] as IodineString;
+				IodineString val = args[0] as IodineString;
+
+				if (input == null || val == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+
+				this.Value.Replace (args[0].ToString (), args[1].ToString ());
+				return null;
 			}
 		}
 
