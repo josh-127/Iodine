@@ -1,0 +1,7 @@
+use WebClient from webclient
+use printf from core
+
+func main () {
+  x = WebClient.downloadString ("https://github.com/SplittyDev/Iodine/")
+  printf (x)
+}
