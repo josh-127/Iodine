@@ -12,6 +12,7 @@ namespace ModuleWebClient
 		private WebClient client;
 
 		public IodineWebClient () : base (WebClientTypeDef) {
+			this.SetAttribute ("downloadString", new InternalMethodCallback (downloadString, this));
 			WebProxy proxy = new WebProxy ();
 			this.client = new WebClient ();
 			this.client.Proxy = proxy;
