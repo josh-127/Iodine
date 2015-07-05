@@ -10,11 +10,11 @@ namespace ModuleSockets
 	{
 		private static IodineTypeDefinition SocketTypeDef = new IodineTypeDefinition ("Socket");
 
-		public Socket Socket
-		{
+		public Socket Socket {
 			private set;
 			get;
 		}
+
 		private NetworkStream stream;
 
 		public IodineSocket (Socket sock) : base (SocketTypeDef) {

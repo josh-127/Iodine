@@ -18,12 +18,7 @@ namespace Iodine
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				if (args[0].HasAttribute ("_toStr")) {
-					IodineString ret = args[0].GetAttribute ("_toStr").Invoke (vm, new IodineObject[]{})
-						as IodineString;
-					return ret;
-				}
-				return new IodineString (args[0].ToString ());
+				return new IodineInteger (Int64.Parse (args[0].ToString ()));
 			}
 		}
 

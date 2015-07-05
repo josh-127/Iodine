@@ -93,15 +93,17 @@ namespace Iodine
 		{
 			IodineString str = args[0] as IodineString;
 			IodineMap map = args[1] as IodineMap;
-			IodineBool restrict = args[2] as IodineBool;
-			return eval (vm, str.ToString (), map, restrict.Value);
+			return eval (vm, str.ToString (), map);
 		}
 
-		private IodineObject eval (VirtualMachine vm, string source, IodineMap dict, bool restricted)
+		private IodineObject eval (VirtualMachine host, string source, IodineMap dict)
 		{
-			if (restricted) {
-				vm = new VirtualMachine (new Dictionary<string, IodineObject> ());
+			VirtualMachine vm = new VirtualMachine (new Dictionary<string, IodineObject> ());
+
+			foreach (string glob in host.Globals.Keys) {
+				vm.Globals[glob] = host.Globals[glob];
 			}
+
 			foreach (IodineObject key in dict.Keys.Values) {
 				vm.Globals[key.ToString ()] = dict.Dict[key.GetHashCode ()];
 			}

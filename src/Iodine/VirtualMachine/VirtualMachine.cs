@@ -328,6 +328,10 @@ namespace Iodine
 			case Opcode.InstanceOf: {
 					IodineObject o = Stack.Pop ();
 					IodineTypeDefinition type = Stack.Pop() as IodineTypeDefinition;
+					if (type == null) {
+						RaiseException (new IodineTypeException ("TypeDef"));
+						break;
+					}
 					Stack.Push (new IodineBool (o.InstanceOf (type)));
 					break;
 				}
