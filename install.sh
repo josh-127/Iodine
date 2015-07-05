@@ -14,8 +14,8 @@ echo "Using prefix $prefix"
 
 if [ -d "$prefix" ]; then
 	cp ./bin/iodine.exe $prefix/iodine.exe
-	cp -r ./bin/modules $prefix/modules
-	cp -r ./bin/extensions $prefix/extensions
+	cp -r ./bin/modules $prefix
+	cp -r ./bin/extensions $prefix
 	cat ./iodine_run.sh > /usr/bin/iodine
 	chmod a+x /usr/bin/iodine
 	cp ./iodine_env.sh /etc/profile.d/iodine.sh

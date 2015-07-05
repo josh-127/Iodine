@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CCF0D936-52B7-4C91-B22E-C6FA8A65BDC3}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>ModuleMySQL</RootNamespace>
-    <AssemblyName>mysql</AssemblyName>
+    <RootNamespace>ModuleZip</RootNamespace>
+    <AssemblyName>ziplib</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
