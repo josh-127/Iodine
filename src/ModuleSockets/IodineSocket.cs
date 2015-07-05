@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Iodine;
 
@@ -15,7 +18,14 @@ namespace ModuleSockets
 			get;
 		}
 
-		private NetworkStream stream;
+		private System.IO.Stream stream;
+
+		private static bool ValidateServerCertificate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+		{
+			if (sslPolicyErrors == SslPolicyErrors.None)
+				return true;
+			throw new Exception ("Invalid certificate: " + sslPolicyErrors.ToString ());
+		}
 
 		public IodineSocket (Socket sock) : base (SocketTypeDef) {
 			this.Socket = sock;
@@ -82,6 +92,13 @@ namespace ModuleSockets
 			return sock;
 		}
 
+		private IodineSocket acceptSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineSocket sock = new IodineSocket (this.Socket.Accept ());
+			sock.stream = new SslStream (new NetworkStream (this.Socket), false);
+			return sock;
+		}
+
 		private IodineObject connect (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString ipAddrStr = args[0] as IodineString;
@@ -103,9 +120,37 @@ namespace ModuleSockets
 			return null;
 		}
 
+		private IodineObject connectSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString ipAddrStr = args [0] as IodineString;
+			IodineInteger portObj = args [1] as IodineInteger;
+			IPAddress ipAddr;
+			int port = (int)portObj.Value;
+			if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
+				vm.RaiseException ("Invalid IP address!");
+				return null;
+			}
+
+			try {
+				this.Socket.Connect (ipAddr, port);
+			} catch {
+				vm.RaiseException ("Could not connect to socket!");
+				return null;
+			}
+
+			try {
+				this.stream = new SslStream (new NetworkStream (this.Socket), false);
+			} catch (Exception e) {
+				vm.RaiseException (e.Message);
+				return null;
+			}
+
+			return null;
+		}
+
 		private IodineObject getStream (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineStream (new NetworkStream (this.Socket), true, true);
+			return new IodineStream (this.stream, true, true);
 		}
 
 		private IodineObject getBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -117,12 +162,24 @@ namespace ModuleSockets
 		{
 			foreach (IodineObject obj in args) {
 				if (obj is IodineInteger) {
-					this.Socket.Send (new byte[] { (byte)((IodineInteger)obj).Value });
+					this.stream.WriteByte ((byte)((IodineInteger)obj).Value);
+					this.stream.Flush ();
 				} else if (obj is IodineString) {
-					this.Socket.Send (Encoding.UTF8.GetBytes (obj.ToString ()));
+					var buf = Encoding.UTF8.GetBytes (obj.ToString ());
+					this.stream.Write (buf, 0, buf.Length);
+					this.stream.Flush ();
 				}
 			}
 			return null;
+		}
+
+		private IodineByteArray receiveRaw (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineInteger n = args [0] as IodineInteger;
+			byte[] buf = new byte[n.Value];
+			for (int i = 0; i < n.Value; i++)
+				buf [i] = (byte)stream.ReadByte ();
+			return new IodineByteArray (buf);
 		}
 
 		private IodineObject receive (VirtualMachine vm, IodineObject self, IodineObject[] args)
