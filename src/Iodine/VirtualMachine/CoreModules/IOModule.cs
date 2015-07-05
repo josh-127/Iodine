@@ -18,8 +18,9 @@ namespace Iodine
 				this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
 				this.SetAttribute ("exists", new InternalMethodCallback (exists, this));
 				this.SetAttribute ("create", new InternalMethodCallback (create, this));
+				this.SetAttribute ("copy", new InternalMethodCallback (copy, this));
 			}
-				
+
 			private IodineObject listFiles (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
@@ -125,6 +126,59 @@ namespace Iodine
 				return null;
 			}
 
+			private IodineObject copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				if (args.Length <= 1) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
+
+				if (!(args[0] is IodineString) || !(args[1] is IodineString)) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+				bool recurse = false;
+				if (args.Length >= 3) {
+					if (!(args[2] is IodineBool)) {
+						vm.RaiseException (new IodineTypeException ("Bool"));
+						return null;
+					}
+					recurse = ((IodineBool)args[2]).Value;
+				}
+				bool res = copyDir (args[0].ToString (), args[1].ToString (), recurse);
+				if (!res) {
+					vm.RaiseException (new IodineIOException ("Could not find directory " + args[0].ToString () ));
+				}
+				return null;
+			}
+
+			private static bool copyDir (string src, string dest, bool recurse)
+			{
+				DirectoryInfo dir = new DirectoryInfo(src);
+				DirectoryInfo[] dirs = dir.GetDirectories();
+
+				if (!dir.Exists) {
+					return false;
+				}
+
+				if (!Directory.Exists(dest)) {
+					Directory.CreateDirectory(dest);
+				}
+
+				FileInfo[] files = dir.GetFiles();
+				foreach (FileInfo file in files) {
+					string temppath = Path.Combine(dest, file.Name);
+					file.CopyTo(temppath, false);
+				}
+
+				if (recurse) {
+					foreach (DirectoryInfo subdir in dirs) {
+						string temppath = Path.Combine(dest, subdir.Name);
+						copyDir(subdir.FullName, temppath, recurse);
+					}
+				}
+				return true;
+			}
 		}
 
 
@@ -139,6 +193,7 @@ namespace Iodine
 				this.SetAttribute ("exists", new InternalMethodCallback (exists, this));
 				this.SetAttribute ("getNameWithoutExt", new InternalMethodCallback (getNameWithoutExt, this));
 				this.SetAttribute ("getName", new InternalMethodCallback (getName, this));
+				this.SetAttribute ("copy", new InternalMethodCallback (copy, this));
 			}
 
 			private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -158,7 +213,7 @@ namespace Iodine
 						"' does not exist!"));
 					return null;
 				}
-			
+
 				File.Delete (args[0].ToString ());
 
 				return null;
@@ -205,6 +260,28 @@ namespace Iodine
 					return null;
 				}
 				return new IodineString (Path.GetFileName (args[0].ToString ()));
+			}
+
+			private IodineObject copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
+
+				if (!(args[0] is IodineString) || !(args[1] is IodineString)) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+
+				if (!File.Exists (args[0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
+						"' does not exist!"));
+					return null;
+				}
+
+				File.Copy (args[0].ToString (), args[1].ToString (), true);
+				return null;
 			}
 		}
 
