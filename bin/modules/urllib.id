@@ -15,7 +15,6 @@ use socket;
 
 class HTTPConnection {
   func HTTPConnection (self, url) {
-    url = url.toLower ();
     self.proto = _get_url_protocol (url);
     self.base = _get_url_base (url);
     self.tail = _get_url_tail (url);
@@ -71,7 +70,7 @@ func openUrl (url) {
 
 func normalize_url (url) {
   input = url
-  lower_url = input.toLower ()
+  lower_url = input
   protocol = _get_url_protocol (lower_url)
   base = _get_url_base (lower_url)
   base = _opt_url_base (base)
