@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 // Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle ("ModuleMySQL")]
+[assembly: AssemblyTitle ("ModuleZip")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("")]
 [assembly: AssemblyProduct ("")]
-[assembly: AssemblyCopyright ("grunt")]
+[assembly: AssemblyCopyright ("aurora01")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 
