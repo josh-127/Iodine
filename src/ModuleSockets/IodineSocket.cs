@@ -30,11 +30,14 @@ namespace ModuleSockets
 		public IodineSocket (Socket sock) : base (SocketTypeDef) {
 			this.Socket = sock;
 			this.SetAttribute ("connect", new InternalMethodCallback (connect ,this));
+			this.SetAttribute ("connectSsl", new InternalMethodCallback (connectSsl, this));
 			this.SetAttribute ("send", new InternalMethodCallback (send ,this));
 			this.SetAttribute ("bind", new InternalMethodCallback (bind, this));
 			this.SetAttribute ("accept", new InternalMethodCallback (accept, this));
+			this.SetAttribute ("acceptSsl", new InternalMethodCallback (acceptSsl, this));
 			this.SetAttribute ("listen", new InternalMethodCallback (listen, this));
 			this.SetAttribute ("receive", new InternalMethodCallback (receive ,this));
+			this.SetAttribute ("receiveRaw", new InternalMethodCallback (receiveRaw, this));
 			this.SetAttribute ("getBytesAvailable", new InternalMethodCallback (getBytesAvailable ,this));
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine ,this));
 			this.SetAttribute ("getStream", new InternalMethodCallback (getStream ,this));
