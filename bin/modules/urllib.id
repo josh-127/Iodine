@@ -9,16 +9,16 @@ use reverse, hex, len, printf, sprintf from core
 use dns;
 use socket;
 
-### 
+###
 ### Class definitions
 ###
 
 class HTTPConnection {
   func HTTPConnection (self, url) {
-    self.proto = _get_url_protocol (url);
-    self.base = _get_url_base (url);
-    self.tail = _get_url_tail (url);
-    self.port = _get_url_port (url);
+    self.proto = _getUrlProtocol (url);
+    self.base = _getUrlBase (url);
+    self.tail = _getUrlTail (url);
+    self.port = _getUrlPort (url);
   }
 
   func read (self) {
@@ -26,8 +26,8 @@ class HTTPConnection {
     self.sock = socket.socket (socket.SOCK_STREAM, socket.PROTO_TCP);
     self.sock.connect (ip, self.port);
     request = "GET " + self.tail + " HTTP/1.1\r\n" +
-              "User-Agent: \r\n" + 
-              "Host: " + self.base + "\r\n" + 
+              "User-Agent: \r\n" +
+              "Host: " + self.base + "\r\n" +
               "Connection: close\r\n\r\n"
     self.sock.send (request);
     contentLength = 0;
@@ -35,7 +35,7 @@ class HTTPConnection {
     code = Int (self.sock.readLine ().trim ().split (" ")[1]);
     if (code != 200 && code != 301) {
       raise ("Server returned HTTP {}".format (code));
-    } 
+    }
     while ((line = self.sock.readLine ()).trim () != "") {
       if (line.contains (":")) {
         param = line.substr (0, line.indexOf (":"));
@@ -62,57 +62,57 @@ class HTTPConnection {
 ### Public functions
 ###
 
-# Aurora's style guide calls for camelCase :P
+# Auroras style guide calls for camelCase :P
 
 func openUrl (url) {
   return HTTPConnection (url);
 }
 
-func normalize_url (url) {
+func normalizeUrl (url) {
   input = url
   lower_url = input
-  protocol = _get_url_protocol (lower_url)
-  base = _get_url_base (lower_url)
-  base = _opt_url_base (base)
-  tail = _get_url_tail (lower_url)
-  tail = _opt_url_tail (tail)
-  return _build_url (protocol, base, tail)
+  protocol = _getUrlProtocol (lower_url)
+  base = _getUrlBase (lower_url)
+  base = _optUrlBase (base)
+  tail = _getUrlTail (lower_url)
+  tail = _optUrlTail (tail)
+  return _buildUrl (protocol, base, tail)
 }
 
-func get_url_protocol (url) {
-  url = normalize_url (url)
-  return _get_url_protocol (url)
+func getUrlProtocol (url) {
+  url = normalizeUrl (url)
+  return _getUrlProtocol (url)
 }
 
-func get_url_base (url) {
-  url = normalize_url (url)
-  return _get_url_base (url)
+func getUrlBase (url) {
+  url = normalizeUrl (url)
+  return _getUrlBase (url)
 }
 
-func get_url_tail (url) {
-  url = normalize_url (url)
-  return _get_url_tail (url)
+func getUrlTail (url) {
+  url = normalizeUrl (url)
+  return _getUrlTail (url)
 }
 
-func get_url_port (url) {
-  url = normalize_url (url)
-  return _get_url_port (url)
+func getUrlPort (url) {
+  url = normalizeUrl (url)
+  return _getUrlPort (url)
 }
 
-func parse_query (url) {
-  tail = get_url_tail (url)
-  return _parse_query (tail)
+func parseQuery (url) {
+  tail = getUrlTail (url)
+  return _parseQuery (tail)
 }
 
 ###
 ### Private functions
 ###
 
-func _get_url_protocol (url) {
+func _getUrlProtocol (url) {
   return url.substr (0, url.indexOf ("://"))
 }
 
-func _get_url_base (url) {
+func _getUrlBase (url) {
   start = url.indexOf ("://") + 3
   middle = url.substr (start)
   if (middle.contains ("/")) {
@@ -122,7 +122,7 @@ func _get_url_base (url) {
   return middle
 }
 
-func _get_url_tail (url) {
+func _getUrlTail (url) {
   start = url.substr (url.indexOf ("://") + 3)
   if (start.contains ("/")) {
     next_slash = start.indexOf ("/")
@@ -132,15 +132,15 @@ func _get_url_tail (url) {
     return "/"
 }
 
-func _get_url_port (url) {
-  url = _get_url_base (url)
+func _getUrlPort (url) {
+  url = _getUrlBase (url)
   if (!url.contains (":"))
     return 80
   port = url.substr (url.indexOf (":") + 1)
   return toInt (port)
 }
 
-func _opt_url_base (url) {
+func _optUrlBase (url) {
   if (!url.contains (":"))
     return url
   base = url.substr (0, url.indexOf (":"))
@@ -150,7 +150,7 @@ func _opt_url_base (url) {
   return url
 }
 
-func _opt_url_tail (url) {
+func _optUrlTail (url) {
   n = 0
   inc = lambda () => {
     prevn = n
@@ -159,42 +159,42 @@ func _opt_url_tail (url) {
   }
   lookup = hashMap ()
   n = 32
-  lookup[" "]   = inc ()
-  lookup["!"]   = inc ()
-  lookup["\""]  = inc ()
-  lookup["#"]   = inc ()
-  lookup["$"]   = inc ()
-  lookup["%"]   = inc ()
-  #lookup["&"]  = inc ()
-  lookup["'"]   = inc ()
-  lookup["("]   = inc ()
-  lookup[")"]   = inc ()
-  lookup["*"]   = inc ()
-  lookup["+"]   = inc ()
-  lookup[","]   = inc ()
-  lookup["-"]   = inc ()
-  #lookup["."]  = inc ()
-  #lookup["/"]  = inc ()
+  lookup [" "]   = inc ()
+  lookup ["!"]   = inc ()
+  lookup ["\""]  = inc ()
+  lookup ["#"]   = inc ()
+  lookup ["$"]   = inc ()
+  lookup ["%"]   = inc ()
+  inc () # &
+  lookup ["'"]   = inc ()
+  lookup ["("]   = inc ()
+  lookup [")"]   = inc ()
+  lookup ["*"]   = inc ()
+  lookup ["+"]   = inc ()
+  lookup [","]   = inc ()
+  lookup ["-"]   = inc ()
+  inc () # .
+  inc () # /
   n = 58
-  lookup[":"]   = inc ()
-  lookup[";"]   = inc ()
-  lookup["<"]   = inc ()
-  #lookup["="]  = inc ()
-  lookup[">"]   = inc ()
-  #lookup["?"]  = inc ()
-  lookup["@"]   = inc ()
+  lookup [":"]   = inc ()
+  lookup [";"]   = inc ()
+  lookup ["<"]   = inc ()
+  inc () # =
+  lookup [">"]   = inc ()
+  inc () # ?
+  lookup ["@"]   = inc ()
   n = 91
-  lookup["["]   = inc ()
-  lookup["\\"]  = inc ()
-  lookup["]"]   = inc ()
-  lookup["^"]   = inc ()
-  lookup["_"]   = inc ()
-  lookup["`"]   = inc ()
+  lookup ["["]   = inc ()
+  lookup ["\\"]  = inc ()
+  lookup ["]"]   = inc ()
+  lookup ["^"]   = inc ()
+  lookup ["_"]   = inc ()
+  lookup ["`"]   = inc ()
   i = 0
   buf = ""
   while (i < len (url)) {
-    if (lookup.contains (url[i]))
-      buf += sprintf ("%{}", lookup[url[i]])
+    if (lookup.contains (url [i]))
+      buf += sprintf ("%{}", lookup [url [i]])
     else
       buf += url[i]
     i = i + 1
@@ -202,11 +202,11 @@ func _opt_url_tail (url) {
   return buf
 }
 
-func _build_url (protocol, base, tail) {
-  return sprintf ("{}://{}/{}", (protocol, base, tail))
+func _buildUrl (protocol, base, tail) {
+  return sprintf ("{}://{}{}", protocol, base, tail)
 }
 
-func _parse_query (tail) {
+func _parseQuery (tail) {
   dict = hashMap ()
   skip = "?&="
   i = 0;
