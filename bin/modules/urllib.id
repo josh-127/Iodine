@@ -26,7 +26,7 @@ class HTTPConnection {
     ip = dns.getHostEntry (self.base).addressList [0];
     self.sock = socket.socket (socket.SOCK_STREAM, socket.PROTO_TCP);
     self.sock.connect (ip, self.port);
-    request = "GET " + self.tail + " HTTP/1.1\r\n" +
+    request = "GET " + self.tail + " HTTP/1.0\r\n" +
               "User-Agent: \r\n" + 
               "Host: " + self.base + "\r\n" + 
               "Connection: close\r\n\r\n"
