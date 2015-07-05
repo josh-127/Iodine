@@ -51,12 +51,13 @@ namespace Iodine
 				reachableSize += region.Size +1;
 			}
 			Instruction[] oldInstructions = method.Body.ToArray ();
-			Instruction[] newInstructions = new Instruction[reachableSize];
+			Instruction[] newInstructions = new Instruction[method.Body.Count];
 			int next = 0;
 			for (int i = 0; i < method.Body.Count; i++) {
 				if (isReachable (i)) {
 					newInstructions[next++] = oldInstructions[i];
 				} else {
+					newInstructions[next++] = new Instruction (Opcode.Nop);
 					shiftLabels (next, oldInstructions);
 					shiftLabels (next, newInstructions);
 				}
@@ -92,8 +93,8 @@ namespace Iodine
 			for (int i = 0; i < instructions.Length; i++) {
 				Instruction ins = instructions[i];
 				if (ins.OperationCode == Opcode.Jump || ins.OperationCode == Opcode.JumpIfFalse ||
-					ins.OperationCode == Opcode.JumpIfTrue) {
-					if (ins.Argument > start) {
+					ins.OperationCode == Opcode.JumpIfTrue || ins.OperationCode == Opcode.PushExceptionHandler) {
+					if (ins.Argument >= start) {
 						instructions[i] = new Instruction (ins.OperationCode, ins.Argument - 1);
 					}
 				}

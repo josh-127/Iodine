@@ -84,7 +84,7 @@ namespace Iodine
 			globalDict["InternalException"] = IodineInternalErrorException.TypeDefinition;
 			globalDict["IndexException"] = IodineIndexException.TypeDefinition;
 			globalDict["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
-			globalDict["AttributeException"] = IodineAttributeNotFoundException.TypeDefinition;
+			globalDict["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
 			globalDict["SynaxErrorException"] = IodineSyntaxException.TypeDefinition;
 		}
 
