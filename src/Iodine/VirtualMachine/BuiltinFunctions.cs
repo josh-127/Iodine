@@ -131,8 +131,14 @@ namespace Iodine
 		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString str = args[0] as IodineString;
-			IodineString cmdArgs = args[1] as IodineString;
-			ProcessStartInfo info = new ProcessStartInfo (str.Value, cmdArgs.Value);
+			IodineString cmdArgs = new IodineString ("");
+			if (args.Length == 2)
+				cmdArgs = args[1] as IodineString;
+			ProcessStartInfo info = new ProcessStartInfo {
+				FileName = str.Value,
+				Arguments = cmdArgs.Value,
+				RedirectStandardOutput = true,
+			};
 			info.UseShellExecute = false;
 			Process proc = Process.Start (info);
 			proc.WaitForExit ();

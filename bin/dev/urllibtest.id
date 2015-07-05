@@ -1,0 +1,10 @@
+use urllib
+use * from core
+
+func main () {
+  uri = input ("URI: ")
+  printf ("Normalized: {}", urllib.normalizeUrl (uri))
+  printf ("Protocol: {}", urllib.getUrlProtocol (uri))
+  printf ("Base: {}", urllib.getUrlBase (uri))
+  printf ("Tail: {}", urllib.getUrlTail (uri))
+}
