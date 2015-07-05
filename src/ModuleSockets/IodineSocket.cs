@@ -19,6 +19,7 @@ namespace ModuleSockets
 		}
 
 		private System.IO.Stream stream;
+		private string host;
 
 		private static bool ValidateServerCertificate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
 		{
@@ -42,11 +43,20 @@ namespace ModuleSockets
 			this.SetAttribute ("readLine", new InternalMethodCallback (readLine ,this));
 			this.SetAttribute ("getStream", new InternalMethodCallback (getStream ,this));
 			this.SetAttribute ("close", new InternalMethodCallback (close, this));
+			this.SetAttribute ("setHost", new InternalMethodCallback (setHost, this));
+			this.host = string.Empty;
 		}
 
 		public IodineSocket (SocketType sockType, ProtocolType protoType)
 			: this (new Socket (sockType, protoType))
 		{
+		}
+
+		private IodineObject setHost (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			IodineString hostObj = args [0] as IodineString;
+			this.host = hostObj.ToString ();
+			return null;
 		}
 
 		private IodineObject close (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -98,7 +108,9 @@ namespace ModuleSockets
 		private IodineSocket acceptSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineSocket sock = new IodineSocket (this.Socket.Accept ());
-			sock.stream = new SslStream (new NetworkStream (this.Socket), false);
+			sock.stream = new SslStream (new NetworkStream (this.Socket), false, ValidateServerCertificate, null);
+			// I have no idea what I'm doing lol
+			((SslStream)sock.stream).AuthenticateAsClient (this.host);
 			return sock;
 		}
 
@@ -120,6 +132,7 @@ namespace ModuleSockets
 				vm.RaiseException ("Could not connect to socket!");
 				return null;
 			}
+
 			return null;
 		}
 
@@ -142,7 +155,14 @@ namespace ModuleSockets
 			}
 
 			try {
-				this.stream = new SslStream (new NetworkStream (this.Socket), false);
+				this.stream = new SslStream (new NetworkStream (this.Socket), false, ValidateServerCertificate, null);
+			} catch (Exception e) {
+				vm.RaiseException (e.Message);
+				return null;
+			}
+
+			try {
+				((SslStream)this.stream).AuthenticateAsClient (this.host);
 			} catch (Exception e) {
 				vm.RaiseException (e.Message);
 				return null;
