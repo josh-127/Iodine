@@ -12,12 +12,12 @@ fi
 
 echo "Using prefix $prefix"
 
-if [ -d "$prefix" ]; then
-	cp ./bin/iodine.exe $prefix/iodine.exe
-	cp -r ./bin/modules $prefix
-	cp -r ./bin/extensions $prefix
-	cat ./iodine_run.sh > /usr/bin/iodine
-	chmod a+x /usr/bin/iodine
-	cp ./iodine_env.sh /etc/profile.d/iodine.sh
-        echo "$prefix" >> /etc/profile.d/iodine.sh
-fi
+mkdir -p /usr/lib/iodine
+cp ./bin/iodine.exe $prefix/iodine.exe
+cp -r ./bin/modules $prefix
+cp -r ./bin/extensions $prefix
+cat ./iodine_run.sh > /usr/bin/iodine
+chmod a+x /usr/bin/iodine
+cp ./iodine_env.sh /etc/profile.d/iodine.sh
+echo "$prefix" >> /etc/profile.d/iodine.sh
+
