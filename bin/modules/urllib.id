@@ -126,8 +126,8 @@ func _get_url_base (url) {
 func _get_url_tail (url) {
   start = url.substr (url.indexOf ("://") + 3)
   if (start.contains ("/")) {
-    last_slash = len(start) - reverse (start).indexOf ("/")
-    return start.substr (last_slash)
+    next_slash = start.indexOf ("/")
+    return start.substr (next_slash)
   }
   else
     return ""
