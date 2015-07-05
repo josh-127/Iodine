@@ -16,7 +16,6 @@ if [ -d "$prefix" ]; then
 	cp ./bin/iodine.exe $prefix/iodine.exe
 	cp -r ./bin/modules $prefix/modules
 	cp -r ./bin/extensions $prefix/extensions
-	cat "#!/bin/sh
-	/usr/bin/mono /usr/lib/APPLICATION/myprogram.exe \"$@\"" > /usr/bin/iodine
+	cat ./iodine_run.sh > /usr/bin/iodine
 	chmod a+x /usr/bin/iodine
 fi
