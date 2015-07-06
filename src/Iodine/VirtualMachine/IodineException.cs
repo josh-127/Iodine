@@ -254,8 +254,8 @@ namespace Iodine
 
 					Console.WriteLine (" at {0} <internal method>", frame.NativeMethod.Callback.Method.Name);
 				} else {
-					Console.WriteLine (" at {0} (Module: {1} ({2}:{3}))", top.Method.Name, top.Module.Name,
-						top.Location.Line, top.Location.Column);
+					Console.WriteLine (" at {0} (Module: {1} Line: {2})", top.Method.Name, top.Module.Name,
+						top.Location.Line);
 				}
 				top = top.Parent;
 			}
