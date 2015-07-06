@@ -24,7 +24,6 @@ namespace ModuleZip
 		public IodineObject extractTo (VirtualMachine vm, IodineObject self, IodineObject[] args) {
 			var dir = args [0] as IodineString;
 			var unzipper = self as IodineUnzipper;
-
 			unzipper.Unzipper.ExtractToDirectory (dir.Value);
 			return null;
 		}
