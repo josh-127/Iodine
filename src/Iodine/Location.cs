@@ -20,6 +20,7 @@ namespace Iodine
 		}
 
 		public Location (int line, int column, string file)
+			: this ()
 		{
 			this.Line = line;
 			this.Column = column;

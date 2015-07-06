@@ -20,6 +20,7 @@ namespace Iodine
 		}
 
 		public Instruction (Location location, Opcode opcode)
+			: this ()
 		{
 			this.OperationCode = opcode;
 			this.Argument = 0;
@@ -27,6 +28,7 @@ namespace Iodine
 		}
 
 		public Instruction (Location location, Opcode opcode, int arg)
+			: this ()
 		{
 			this.OperationCode = opcode;
 			this.Argument = arg;
