@@ -188,10 +188,9 @@ namespace Iodine
 				return name + ".id";
 			}
 
-			string rawName = Path.GetFileNameWithoutExtension (name);
 			foreach (string dir in SearchPaths) {
 				string expectedName = String.Format ("{0}{1}{2}.id", dir, Path.DirectorySeparatorChar,
-					rawName);
+					name);
 				if (File.Exists (expectedName)) {
 					return expectedName;
 				}
