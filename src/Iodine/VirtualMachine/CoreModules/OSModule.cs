@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Iodine
 {
@@ -9,6 +10,7 @@ namespace Iodine
 		{
 			this.SetAttribute ("userDir", new IodineString (Environment.GetFolderPath (
 				Environment.SpecialFolder.UserProfile)));
+			this.SetAttribute ("envSep", new IodineChar (Path.PathSeparator));
 		}
 
 	}
