@@ -61,6 +61,9 @@ namespace Iodine
 				} else if (obj is IodineInteger) {
 					IodineInteger intVal = obj as IodineInteger;
 					write ((byte)intVal.Value);
+				} else if (obj is IodineByteArray) {
+					IodineByteArray arr = obj as IodineByteArray;
+					this.File.Write (arr.Array, 0, arr.Array.Length);
 				} else {
 					vm.RaiseException (new IodineTypeException (""));
 				}
