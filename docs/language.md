@@ -60,9 +60,34 @@ Operators are used in expressions and are either unary or binary. The following 
 ```
 ### 2. Semantic Units
 
-#### 2.1 Expression
-An iodine expression is defined as
+#### 2.1 Expressions
+An iodine expression is a sequence of operators, operands and constants.
+##### 2.1.1 Operator Precedence 
+| Precedence   |      Operator      |  Associativity |
+|----------|:-------------|------:|
+| 0 |()<br>[]<br>.        | Left to right|
+| 1 |!<br>-<br>~          | Right to left|
+| 2 |!<br>-<br>~          | Right to left|
+| 3 |*<br>/<br>%          | Left to right|
+| 5 |+<br>-               | Left to right|
+| 6 |<<<br>>>             | Left to right|
+| 7 |<<br>><br><=<br>>=<br>is | Left to right|
+| 8 |==<br>!=             | Left to right|
+| 9 |&                    | Left to right|
+| 10 |^                   | Left to right|
+| 11 |&#124;              | Left to right|
+| 12 |&&                  | Left to right|
+| 13 |&#124;&#124;        |Left to right|
+| 14 |=<br>+=<br>-=<br>*=<br>/=<br>%=<br><<=<br>>>=<br>&#124;=<br>&=<br>^=   |Left to right|
+
+#### 2.2 Statements
+
+#### 2.2.1 Class definitions
 ```bnf
-<call> ::= <term> | 
-<term> ::= <identifier> | <string-literal> | <int-literal> | <float-literal> | "(" <expression> ")"
+ class_def ::= "class" <ident> "{" { <statement> } "}"
+```
+#### 2.2.2 Function definitions
+```bnf
+ func_def ::= "func" <ident> ( "()" | "(" <param-list> ")" ) "{" { <statement> } "}"
+ <param-list> ::= <ident> | <ident> "," <param-list>
 ```
