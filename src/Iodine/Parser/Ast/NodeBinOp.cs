@@ -21,7 +21,8 @@ namespace Iodine
 			}
 		}
 
-		public NodeBinOp (BinaryOperation op, AstNode left, AstNode right)
+		public NodeBinOp (Location location, BinaryOperation op, AstNode left, AstNode right)
+			: base (location)
 		{
 			this.Operation = op;
 			this.Add (left);

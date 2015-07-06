@@ -9,7 +9,8 @@ namespace Iodine
 			get;
 		}
 
-		public NodeFloat (double value)
+		public NodeFloat (Location location, double value)
+			: base (location)
 		{
 			this.Value = value;
 		}

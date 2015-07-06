@@ -15,6 +15,11 @@ namespace Iodine
 			set; get;
 		}
 
+		public NodeSuperCall (Location location)
+			: base (location)
+		{
+		}
+
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
@@ -22,7 +27,7 @@ namespace Iodine
 
 		public static NodeSuperCall Parse (TokenStream stream, NodeClassDecl parent)
 		{
-			NodeSuperCall ret = new NodeSuperCall ();
+			NodeSuperCall ret = new NodeSuperCall (stream.Location);
 			stream.Expect (TokenClass.Keyword, "super");
 			ret.Parent = parent;
 			ret.Add (NodeArgList.Parse (stream));

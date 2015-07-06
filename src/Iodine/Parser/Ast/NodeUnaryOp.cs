@@ -15,7 +15,8 @@ namespace Iodine
 			}
 		}
 
-		public NodeUnaryOp (UnaryOperation op, AstNode val)
+		public NodeUnaryOp (Location location, UnaryOperation op, AstNode val)
+			: base (location)
 		{
 			this.Operation = op;
 			this.Add (val);

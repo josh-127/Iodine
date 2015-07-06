@@ -29,6 +29,11 @@ namespace Iodine
 			}
 		}
 
+		public NodeForStmt (Location location)
+			: base (location)
+		{
+		}
+
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
@@ -36,7 +41,7 @@ namespace Iodine
 
 		public static AstNode Parse (TokenStream stream)
 		{
-			NodeForStmt ret = new NodeForStmt();
+			NodeForStmt ret = new NodeForStmt (stream.Location);
 			stream.Expect (TokenClass.Keyword, "for");
 			stream.Expect (TokenClass.OpenParan);
 			ret.Add (NodeExpr.Parse (stream));

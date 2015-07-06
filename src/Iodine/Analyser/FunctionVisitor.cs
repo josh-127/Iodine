@@ -98,7 +98,8 @@ namespace Iodine
 
 		public void Accept (NodeFuncDecl funcDecl)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Closures not supported at this time!");
+			errorLog.AddError (ErrorType.ParserError, funcDecl.Location,
+				"Closures not supported at this time!");
 		}
 
 		public void Accept (NodeLambda lambda)
@@ -130,12 +131,14 @@ namespace Iodine
 
 		public void Accept (NodeUseStatement useStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "use statement not valid inside function body!");
+			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
+				"use statement not valid inside function body!");
 		}
 
 		public void Accept (NodeClassDecl classDecl)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Can not define a class inside a function!");
+			errorLog.AddError (ErrorType.ParserError, classDecl.Location,
+				"Can not define a class inside a function!");
 		}
 
 		public void Accept (NodeReturnStmt returnStmt)
@@ -189,7 +192,8 @@ namespace Iodine
 
 		public void Accept (NodeConstant constant)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Can not define constant in function!");
+			errorLog.AddError (ErrorType.ParserError, constant.Location,
+				"Can not define constant in function!");
 		}
 
 		public void Accept (NodeTryExcept tryExcept)

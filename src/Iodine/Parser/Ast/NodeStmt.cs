@@ -4,6 +4,11 @@ namespace Iodine
 {
 	public class NodeStmt : AstNode
 	{
+		public NodeStmt (Location location)
+			: base (location)
+		{
+		}
+
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
@@ -30,16 +35,17 @@ namespace Iodine
 			} else if (stream.Match (TokenClass.Keyword, "try")) {
 				return NodeTryExcept.Parse (stream);
 			} else if (stream.Accept (TokenClass.Keyword, "break")) {
-				return new NodeBreak ();
+				return new NodeBreak (stream.Location);
 			} else if (stream.Accept (TokenClass.Keyword, "continue")) {
-				return new NodeContinue ();
+				return new NodeContinue (stream.Location);
 			} else if (stream.Accept (TokenClass.Keyword, "super")) {
-				stream.ErrorLog.AddError (ErrorType.ParserError, "super () constructor must be called first!");
-				return NodeSuperCall.Parse (stream, new NodeClassDecl ("", null));
+				stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
+					"super () constructor must be called first!");
+				return NodeSuperCall.Parse (stream, new NodeClassDecl (stream.Location, "", null));
 			} else if (stream.Match (TokenClass.OpenBrace)) {
 				return NodeScope.Parse (stream);
 			} else if (stream.Accept (TokenClass.SemiColon)) {
-				return new NodeStmt ();
+				return new NodeStmt (stream.Location);
 			} else if (stream.Match (TokenClass.Identifier, TokenClass.Colon)) {
 				return NodeConstant.Parse (stream);
 			} else {
@@ -47,7 +53,7 @@ namespace Iodine
 				if (node == null) {
 					stream.MakeError ();
 				}
-				return new NodeExpr (node);
+				return new NodeExpr (stream.Location, node);
 			}
 		}
 	}

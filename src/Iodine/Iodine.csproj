@@ -136,6 +136,7 @@
     <Compile Include="VirtualMachine\CoreTypes\IodineStream.cs" />
     <Compile Include="VirtualMachine\CoreModules\OSModule.cs" />
     <Compile Include="Codegen\Optimizations\ControlFlowOptimization.cs" />
+    <Compile Include="Location.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

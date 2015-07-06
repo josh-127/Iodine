@@ -21,10 +21,10 @@ namespace Iodine
 			matchers.Add (new MatchIdent ());
 		}
 
-		public Lexer (ErrorLog errorLog, string source) 
+		public Lexer (ErrorLog errorLog, string source, string file = "") 
 		{
 			this.errorLog = errorLog;
-			this.input = new InputStream (source);
+			this.input = new InputStream (source, file);
 		}
 
 		public TokenStream Scan ()
@@ -45,8 +45,8 @@ namespace Iodine
 				}
 
 				if (!matchFound) {
-					errorLog.AddError (ErrorType.LexerError, "Unexpected '{0}' at {1}:{2}", 
-						(char)this.input.ReadChar (), this.input.Line, this.input.Column);
+					errorLog.AddError (ErrorType.LexerError, this.input.Location, "Unexpected '{0}'", 
+						(char)this.input.ReadChar ());
 				}
 
 				this.input.EatWhiteSpaces ();

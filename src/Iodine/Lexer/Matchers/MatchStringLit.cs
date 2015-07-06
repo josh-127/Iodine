@@ -16,7 +16,8 @@ namespace Iodine
 			TokenClass type = quote == '\"' ? TokenClass.InterpolatedStringLiteral : TokenClass.StringLiteral;
 			string accum = scanUntil (quote, inputStream);
 			if (inputStream.ReadChar () == -1) {
-				errLog.AddError (ErrorType.LexerError, "Unterminated string literal!");
+				errLog.AddError (ErrorType.LexerError, inputStream.Location, 
+					"Unterminated string literal!");
 				return null;
 			} else {
 				return Token.Create (type, accum, inputStream);

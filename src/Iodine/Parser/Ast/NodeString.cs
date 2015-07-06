@@ -10,7 +10,8 @@ namespace Iodine
 			get;
 		}
 
-		public NodeString (string value)
+		public NodeString (Location location, string value)
+			: base (location)
 		{
 			this.Value = value;
 		}
@@ -20,7 +21,7 @@ namespace Iodine
 			visitor.Accept (this);
 		}
 
-		public static AstNode Parse (string str)
+		public static AstNode Parse (Location loc, string str)
 		{
 			int pos = 0;
 			string accum = "";
@@ -38,10 +39,10 @@ namespace Iodine
 					accum += str[pos++];
 				}
 			}
-			NodeString ret = new NodeString (accum);
+			NodeString ret = new NodeString (loc, accum);
 
 			foreach (string name in vars) {
-				ret.Add (new NodeIdent (name));
+				ret.Add (new NodeIdent (loc, name));
 			}
 			return ret;
 		}

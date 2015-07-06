@@ -27,7 +27,8 @@ namespace Iodine
 			}
 		}
 
-		public NodeTryExcept (string ident)
+		public NodeTryExcept (Location location, string ident)
+			: base (location)
 		{
 			this.ExceptionIdentifier = ident;
 		}
@@ -42,7 +43,7 @@ namespace Iodine
 			NodeTryExcept retVal = null;
 			stream.Expect (TokenClass.Keyword, "try");
 			AstNode tryBody = NodeStmt.Parse (stream);
-			AstNode typeList = new NodeArgList ();
+			AstNode typeList = new NodeArgList (stream.Location);
 			stream.Expect (TokenClass.Keyword, "except");
 			if (stream.Accept (TokenClass.OpenParan)) {
 				Token ident = stream.Expect (TokenClass.Identifier);
@@ -50,10 +51,9 @@ namespace Iodine
 					typeList = ParseTypeList (stream);
 				}
 				stream.Expect (TokenClass.CloseParan);
-				if (ident == null) retVal = new NodeTryExcept (null);
-				retVal = new NodeTryExcept (ident.Value);
+				retVal = new NodeTryExcept (stream.Location, ident.Value);
 			} else {
-				retVal = new NodeTryExcept (null);
+				retVal = new NodeTryExcept (stream.Location, null);
 			}
 			retVal.Add (tryBody);
 			retVal.Add (NodeStmt.Parse (stream));
@@ -63,7 +63,7 @@ namespace Iodine
 
 		private static NodeArgList ParseTypeList (TokenStream stream)
 		{
-			NodeArgList argList = new NodeArgList ();
+			NodeArgList argList = new NodeArgList (stream.Location);
 			while (!stream.Match (TokenClass.CloseParan)) {
 				argList.Add (NodeExpr.Parse (stream));
 				if (!stream.Accept (TokenClass.Comma)) {

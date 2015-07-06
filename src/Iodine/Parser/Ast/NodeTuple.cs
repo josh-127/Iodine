@@ -4,6 +4,10 @@ namespace Iodine
 {
 	public class NodeTuple : AstNode
 	{
+		public NodeTuple (Location location)
+			: base (location)
+		{
+		}
 
 		public override void Visit (IAstVisitor visitor)
 		{
@@ -12,7 +16,7 @@ namespace Iodine
 
 		public static AstNode Parse (AstNode firstVal, TokenStream stream)
 		{
-			NodeTuple tuple = new NodeTuple ();
+			NodeTuple tuple = new NodeTuple (stream.Location);
 			tuple.Add (firstVal);
 			while (!stream.Match (TokenClass.CloseParan)) {
 				tuple.Add (NodeExpr.Parse (stream));

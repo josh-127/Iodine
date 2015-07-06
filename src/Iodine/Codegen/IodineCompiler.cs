@@ -48,13 +48,14 @@ namespace Iodine
 						if (import.HasAttribute (item)) {
 							module.SetAttribute (item, import.GetAttribute (item));
 						} else {
-							errorLog.AddError (ErrorType.ParserError, "Could not import {0} from {1}", 
-								item, useStmt.Module);
+							errorLog.AddError (ErrorType.ParserError, useStmt.Location,
+								"Could not import {0} from {1}", item, useStmt.Module);
 						}
 					}
 				}
 			} else {
-				errorLog.AddError (ErrorType.ParserError, "Could not import module {0}", useStmt.Module);
+				errorLog.AddError (ErrorType.ParserError, useStmt.Location,
+					"Could not import module {0}", useStmt.Module);
 			}
 		}
 	}

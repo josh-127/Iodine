@@ -8,6 +8,11 @@ namespace Iodine
 	{
 		private List<AstNode> children = new List<AstNode> ();
 
+		public Location Location {
+			private set;
+			get;
+		}
+
 		public IList<AstNode> Children {
 			get {
 				return this.children;
@@ -15,6 +20,10 @@ namespace Iodine
 		}
 			
 		public abstract void Visit (IAstVisitor visitor);
+
+		public AstNode (Location location) {
+			this.Location = location;
+		}
 
 		public void Add (AstNode node)
 		{
@@ -36,6 +45,11 @@ namespace Iodine
 
 	public class Ast : AstNode
 	{
+		public Ast (Location location)
+			: base (location)
+		{
+		}
+
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
@@ -43,7 +57,7 @@ namespace Iodine
 
 		public static Ast Parse (TokenStream inputStream)
 		{
-			Ast root = new Ast ();
+			Ast root = new Ast (inputStream.Location);
 			while (!inputStream.EndOfStream) {
 				root.Add (NodeStmt.Parse (inputStream));
 			}

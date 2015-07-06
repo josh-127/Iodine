@@ -22,6 +22,11 @@ namespace Iodine
 			}
 		}
 
+		public NodeIfStmt (Location location)
+			: base (location)
+		{
+		}
+
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
@@ -29,7 +34,7 @@ namespace Iodine
 
 		public static AstNode Parse (TokenStream stream)
 		{
-			NodeIfStmt ifStmt = new NodeIfStmt ();
+			NodeIfStmt ifStmt = new NodeIfStmt (stream.Location);
 			stream.Expect (TokenClass.Keyword, "if");
 			stream.Expect (TokenClass.OpenParan);
 			ifStmt.Add (NodeExpr.Parse (stream));
@@ -38,7 +43,7 @@ namespace Iodine
 			if (stream.Accept (TokenClass.Keyword, "else")) {
 				ifStmt.Add (NodeStmt.Parse (stream));
 			} else {
-				ifStmt.Add (new Ast ());
+				ifStmt.Add (new Ast (stream.Location));
 			}
 			return ifStmt;
 		}

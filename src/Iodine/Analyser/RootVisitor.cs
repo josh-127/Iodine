@@ -83,27 +83,32 @@ namespace Iodine
 
 		public void Accept (NodeIfStmt ifStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
+			errorLog.AddError (ErrorType.ParserError, ifStmt.Location, 
+				"Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeWhileStmt whileStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
+			errorLog.AddError (ErrorType.ParserError, whileStmt.Location,
+				"Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeForStmt forStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
+			errorLog.AddError (ErrorType.ParserError, forStmt.Location,
+				"Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeForeach foreachStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
+			errorLog.AddError (ErrorType.ParserError, foreachStmt.Location,
+				"Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeContinue cont)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
+			errorLog.AddError (ErrorType.ParserError, cont.Location,
+				"Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeFuncDecl funcDecl)
@@ -183,7 +188,8 @@ namespace Iodine
 
 		public void Accept (NodeTryExcept tryExcept)
 		{
-			errorLog.AddError (ErrorType.ParserError, "Statement not allowed outside function body!");
+			errorLog.AddError (ErrorType.ParserError, tryExcept.Location,
+				"Statement not allowed outside function body!");
 		}
 
 		public void Accept (NodeFloat num) 

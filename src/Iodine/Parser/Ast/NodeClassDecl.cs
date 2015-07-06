@@ -24,12 +24,13 @@ namespace Iodine
 			}
 		}
 			
-		public NodeClassDecl (string name, List<string> baseClass)
+		public NodeClassDecl (Location location, string name, List<string> baseClass)
+			: base (location)
 		{
 			this.Name = name;
 			this.Base = baseClass;
-			NodeFuncDecl dummyCtor = new NodeFuncDecl (name, true, false, new List<string> ());
-			dummyCtor.Add (new NodeStmt ());
+			NodeFuncDecl dummyCtor = new NodeFuncDecl (location, name, true, false, new List<string> ());
+			dummyCtor.Add (new NodeStmt (location));
 			this.Add (dummyCtor);
 		}
 
@@ -47,11 +48,11 @@ namespace Iodine
 			if (stream.Accept (TokenClass.Colon)) {
 				do {
 					string attr = stream.Expect (TokenClass.Identifier).Value;
-					if (attr != null) baseClass.Add (attr);
+					baseClass.Add (attr);
 				} while (stream.Accept (TokenClass.Dot));
 			}
 
-			NodeClassDecl clazz = new NodeClassDecl (name, baseClass);
+			NodeClassDecl clazz = new NodeClassDecl (stream.Location, name, baseClass);
 
 			stream.Expect (TokenClass.OpenBrace);
 

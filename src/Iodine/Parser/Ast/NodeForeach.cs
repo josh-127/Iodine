@@ -21,7 +21,8 @@ namespace Iodine
 			}
 		}
 
-		public NodeForeach (string item, AstNode iterator, AstNode body)
+		public NodeForeach (Location location, string item, AstNode iterator, AstNode body)
+			: base (location)
 		{
 			this.Item = item;
 			this.Add (iterator);
@@ -43,11 +44,8 @@ namespace Iodine
 			stream.Expect (TokenClass.CloseParan);
 			AstNode body = NodeStmt.Parse (stream);
 
-			if (identifier == null) {
-				return new NodeForeach (null, expr, body);
-			} else {
-				return new NodeForeach (identifier.Value, expr, body);
-			}
+			return new NodeForeach (stream.Location, identifier.Value, expr, body);
+
 		}
 	}
 }

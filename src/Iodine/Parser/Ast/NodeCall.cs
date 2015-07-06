@@ -16,7 +16,8 @@ namespace Iodine
 			}
 		}
 
-		public NodeCall (AstNode target, AstNode args)
+		public NodeCall (Location location, AstNode target, AstNode args)
+			: base (location)
 		{
 			this.Add (target);
 			this.Add (args);

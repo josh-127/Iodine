@@ -16,6 +16,11 @@ namespace Iodine
 			}
 		}
 
+		public NodeWhileStmt (Location location)
+			: base (location)
+		{
+		}
+
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
@@ -23,7 +28,7 @@ namespace Iodine
 
 		public static AstNode Parse (TokenStream stream)
 		{
-			NodeWhileStmt ret = new NodeWhileStmt ();
+			NodeWhileStmt ret = new NodeWhileStmt (stream.Location);
 			stream.Expect (TokenClass.Keyword, "while");
 			stream.Expect (TokenClass.OpenParan);
 			ret.Add (NodeExpr.Parse (stream));

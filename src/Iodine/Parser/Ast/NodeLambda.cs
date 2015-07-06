@@ -20,7 +20,8 @@ namespace Iodine
 			get;
 		}
 
-		public NodeLambda (bool isInstanceMethod, IList<string> parameters)
+		public NodeLambda (Location location, bool isInstanceMethod, IList<string> parameters)
+			: base (location)
 		{
 			this.Parameters = parameters;
 			this.InstanceMethod = isInstanceMethod;
@@ -38,7 +39,7 @@ namespace Iodine
 			bool isVariadic;
 			List<string> parameters = ParseFuncParameters (stream, out isInstanceMethod, out isVariadic);
 			stream.Expect (TokenClass.Operator, "=>");
-			NodeLambda decl = new NodeLambda (isInstanceMethod, parameters);
+			NodeLambda decl = new NodeLambda (stream.Location, isInstanceMethod, parameters);
 			decl.Variadic = isVariadic;
 			decl.Add (NodeStmt.Parse (stream));
 			return decl;
@@ -64,8 +65,7 @@ namespace Iodine
 				if (stream.Accept (TokenClass.Keyword, "params")) {
 					isVariadic = true;
 					Token ident = stream.Expect (TokenClass.Identifier);
-					if (ident != null)
-						ret.Add (ident.Value);
+					ret.Add (ident.Value);
 					stream.Expect (TokenClass.CloseParan);
 					return ret;
 				}

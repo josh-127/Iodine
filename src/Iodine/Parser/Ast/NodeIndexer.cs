@@ -16,7 +16,8 @@ namespace Iodine
 			}
 		}
 
-		public NodeIndexer (AstNode lvalue, AstNode index)
+		public NodeIndexer (Location location, AstNode lvalue, AstNode index)
+			: base (location)
 		{
 			this.Add (lvalue);
 			this.Add (index);
@@ -32,7 +33,7 @@ namespace Iodine
 			stream.Expect (TokenClass.OpenBracket);
 			AstNode index = NodeExpr.Parse (stream);
 			stream.Expect (TokenClass.CloseBracket);
-			return new NodeIndexer (lvalue, index);
+			return new NodeIndexer (stream.Location, lvalue, index);
 		}
 	}
 }

@@ -19,6 +19,16 @@ namespace Iodine
 			get;
 		}
 
+		public Location Location {
+			get {
+				if (this.peekToken () != null)
+					return this.peekToken ().Location;
+				else {
+					return this.peekToken (-1).Location;
+				}
+			}
+		}
+
 		public ErrorLog ErrorLog {
 			get {
 				return this.errorLog;
@@ -89,14 +99,14 @@ namespace Iodine
 			Token offender = readToken ();
 		
 			if (offender != null) {
-				errorLog.AddError (ErrorType.ParserError, "Unexpected '{0}' at {1}:{2} (Expected '{3}')",
-					offender.ToString (), offender.Column, offender.Line, Token.ClassToString (clazz));
+				errorLog.AddError (ErrorType.ParserError, offender.Location, "Unexpected '{0}' (Expected '{1}')",
+					offender.ToString (), Token.ClassToString (clazz));
 			} else {
-				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {0})",
+				errorLog.AddError (ErrorType.ParserError, offender.Location, "Unexpected end of file (Expected {0})",
 					Token.ClassToString (clazz));
 				throw new Exception ("");
 			}
-			return null;
+			return new Token (clazz, "", Location);
 		}
 
 		public Token Expect (TokenClass clazz, string val)
@@ -109,20 +119,21 @@ namespace Iodine
 			Token offender = readToken ();
 
 			if (offender != null) {
-				errorLog.AddError (ErrorType.ParserError, "Unexpected '{0}' at {1}:{2} (Expected '{3}')",
-					offender.ToString (), offender.Line, offender.Column, Token.ClassToString (clazz));
+				errorLog.AddError (ErrorType.ParserError, offender.Location, 
+					"Unexpected '{0}' (Expected '{1}')", offender.ToString (), Token.ClassToString (
+						clazz));
 			} else {
-				errorLog.AddError (ErrorType.ParserError, "Unexpected end of file (Expected {0})",
-					Token.ClassToString (clazz));
+				errorLog.AddError (ErrorType.ParserError, offender.Location, 
+					"Unexpected end of file (Expected {0})", Token.ClassToString (clazz));
 				throw new Exception ("");
 			}
-			return null;
+			return new Token (clazz, "", Location);
 		}
 
 		public void MakeError ()
 		{
-			this.errorLog.AddError (ErrorType.ParserError, "Unexpected {0} at {1}:{2}", peekToken ().ToString (),
-				this.peekToken ().Line, this.readToken ().Column);
+			this.errorLog.AddError (ErrorType.ParserError, peekToken ().Location, "Unexpected {0}",
+				readToken ().ToString ());
 		}
 
 		private Token peekToken () 

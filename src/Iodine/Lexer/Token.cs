@@ -14,22 +14,16 @@ namespace Iodine
 			get;
 		}
 
-		public int Line {
+		public Location Location {
 			private set;
 			get;
 		}
 
-		public int Column {
-			private set;
-			get;
-		}
-
-		public Token (TokenClass clazz, string value, int line, int col)
+		public Token (TokenClass clazz, string value, Location location)
 		{
 			this.Class = clazz;
 			this.Value = value;
-			this.Line = line;
-			this.Column = Column;
+			this.Location = location;
 		}
 
 		public override string ToString ()
@@ -67,12 +61,12 @@ namespace Iodine
 
 		public static Token Create (TokenClass clazz, InputStream stream) 
 		{
-			return new Token (clazz, ClassToString (clazz), stream.Line, stream.Column);
+			return new Token (clazz, ClassToString (clazz), stream.Location);
 		}
 
 		public static Token Create (TokenClass clazz, string value, InputStream stream) 
 		{
-			return new Token (clazz, value, stream.Line, stream.Column);
+			return new Token (clazz, value, stream.Location);
 		}
 	}
 }

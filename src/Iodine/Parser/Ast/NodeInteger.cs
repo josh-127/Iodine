@@ -9,7 +9,8 @@ namespace Iodine
 			get;
 		}
 
-		public NodeInteger (long value)
+		public NodeInteger (Location location, long value)
+			: base (location)
 		{
 			this.Value = value;
 		}

@@ -10,7 +10,8 @@ namespace Iodine
 			}
 		}
 
-		public NodeReturnStmt (AstNode val)
+		public NodeReturnStmt (Location location, AstNode val)
+			: base (location)
 		{
 			this.Add (val);
 		}
@@ -24,9 +25,9 @@ namespace Iodine
 		{
 			stream.Expect (TokenClass.Keyword, "return");
 			if (stream.Accept (TokenClass.SemiColon)) {
-				return new NodeReturnStmt (new Ast ());
+				return new NodeReturnStmt (stream.Location, new Ast (stream.Location));
 			} else {
-				return new NodeReturnStmt (NodeExpr.Parse (stream));
+				return new NodeReturnStmt (stream.Location, NodeExpr.Parse (stream));
 			}
 		}
 	}

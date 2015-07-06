@@ -4,7 +4,9 @@ namespace Iodine
 {
 	public class NodeExpr : AstNode
 	{
-		public NodeExpr (AstNode child) {
+		public NodeExpr (Location location, AstNode child)
+			: base (location)
+		{
 			this.Add (child);
 		}
 
@@ -20,37 +22,37 @@ namespace Iodine
 		{
 			AstNode left = ParseBoolOr (stream);
 			if (stream.Accept (TokenClass.Operator, "=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, ParseAssign (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left, ParseAssign (stream));
 			} else if (stream.Accept (TokenClass.Operator, "+=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.Add, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.Add, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "-=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.Sub, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.Sub, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "*=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.Mul, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.Mul, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "/=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.Div, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.Div, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "%=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.Mod, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.Mod, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "^=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.Xor, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.Xor, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "&=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.And, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.And, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "|=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.Or, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.Or, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, "<<=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.LeftShift, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.LeftShift, left, ParseAssign (stream)));
 			} else if (stream.Accept (TokenClass.Operator, ">>=")) {
-				return new NodeBinOp (BinaryOperation.Assign, left, new NodeBinOp (
-					BinaryOperation.RightShift, left, ParseAssign (stream)));
+				return new NodeBinOp (stream.Location, BinaryOperation.Assign, left,
+					new NodeBinOp (stream.Location, BinaryOperation.RightShift, left, ParseAssign (stream)));
 			}
 			return left;
 		}
@@ -59,7 +61,7 @@ namespace Iodine
 		{
 			AstNode left = ParseBoolAnd (stream);
 			if (stream.Accept (TokenClass.Operator, "||")) {
-				return new NodeBinOp (BinaryOperation.BoolOr, left, ParseBoolOr (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.BoolOr, left, ParseBoolOr (stream));
 			}
 			return left;
 		}
@@ -68,7 +70,7 @@ namespace Iodine
 		{
 			AstNode left = ParseOr (stream);
 			if (stream.Accept (TokenClass.Operator, "&&")) {
-				return new NodeBinOp (BinaryOperation.BoolAnd, left, ParseBoolAnd (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.BoolAnd, left, ParseBoolAnd (stream));
 			}
 			return left;
 		}
@@ -77,7 +79,7 @@ namespace Iodine
 		{
 			AstNode left = ParseXor (stream);
 			if (stream.Accept (TokenClass.Operator, "|")) {
-				return new NodeBinOp (BinaryOperation.Or, left, ParseOr (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Or, left, ParseOr (stream));
 			}
 			return left;
 		}
@@ -86,7 +88,7 @@ namespace Iodine
 		{
 			AstNode left = ParseAnd (stream);
 			if (stream.Accept (TokenClass.Operator, "^")) {
-				return new NodeBinOp (BinaryOperation.Xor, left, ParseXor (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Xor, left, ParseXor (stream));
 			}
 			return left;
 		}
@@ -95,7 +97,7 @@ namespace Iodine
 		{
 			AstNode left = ParseEquals (stream);
 			if (stream.Accept (TokenClass.Operator, "&")) {
-				return new NodeBinOp (BinaryOperation.And, left, ParseAnd (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.And, left, ParseAnd (stream));
 			}
 			return left;
 		}
@@ -104,9 +106,9 @@ namespace Iodine
 		{
 			AstNode left = ParseRelationalOp (stream);
 			if (stream.Accept (TokenClass.Operator, "==")) {
-				return new NodeBinOp (BinaryOperation.Equals, left, ParseEquals (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Equals, left, ParseEquals (stream));
 			} else if (stream.Accept (TokenClass.Operator, "!=")) {
-				return new NodeBinOp (BinaryOperation.NotEquals, left, ParseEquals (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.NotEquals, left, ParseEquals (stream));
 			}
 			return left;
 		}
@@ -115,17 +117,17 @@ namespace Iodine
 		{
 			AstNode left = ParseBitshift (stream);
 			if (stream.Accept (TokenClass.Operator, ">")) {
-				return new NodeBinOp (BinaryOperation.GreaterThan, left, ParseRelationalOp (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.GreaterThan, left, ParseRelationalOp (stream));
 			} else if (stream.Accept (TokenClass.Operator, "<")) {
-				return new NodeBinOp (BinaryOperation.LessThan, left, ParseRelationalOp (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.LessThan, left, ParseRelationalOp (stream));
 			} else if (stream.Accept (TokenClass.Operator, ">=")) {
-				return new NodeBinOp (BinaryOperation.GreaterThanOrEqu, left,
+				return new NodeBinOp (stream.Location, BinaryOperation.GreaterThanOrEqu, left,
 					ParseRelationalOp (stream));
 			} else if (stream.Accept (TokenClass.Operator, "<=")) {
-				return new NodeBinOp (BinaryOperation.LessThanOrEqu, left,
+				return new NodeBinOp (stream.Location, BinaryOperation.LessThanOrEqu, left,
 					ParseRelationalOp (stream));
 			} else if (stream.Accept (TokenClass.Keyword, "is")) {
-				return new NodeBinOp (BinaryOperation.InstanceOf, left,
+				return new NodeBinOp (stream.Location, BinaryOperation.InstanceOf, left,
 					ParseRelationalOp (stream));
 			}
 			return left;
@@ -135,9 +137,11 @@ namespace Iodine
 		{
 			AstNode left = ParseAddSub (stream);
 			if (stream.Accept (TokenClass.Operator, "<<")) {
-				return new NodeBinOp (BinaryOperation.LeftShift, left, ParseBitshift (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.LeftShift, left, ParseBitshift (
+					stream));
 			} else  if (stream.Accept (TokenClass.Operator, ">>")) {
-				return new NodeBinOp (BinaryOperation.RightShift, left, ParseBitshift (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.RightShift, left, ParseBitshift (
+					stream));
 			}
 			return left;
 		}
@@ -146,9 +150,9 @@ namespace Iodine
 		{
 			AstNode left = ParseMulDivMod (stream);
 			if (stream.Accept (TokenClass.Operator, "+")) {
-				return new NodeBinOp (BinaryOperation.Add, left, ParseAddSub (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Add, left, ParseAddSub (stream));
 			} else if (stream.Accept (TokenClass.Operator, "-")) {
-				return new NodeBinOp (BinaryOperation.Sub, left, ParseAddSub (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Sub, left, ParseAddSub (stream));
 			}
 			return left;
 		}
@@ -157,11 +161,11 @@ namespace Iodine
 		{
 			AstNode left = ParseIncDecNot (stream);
 			if (stream.Accept (TokenClass.Operator, "*")) {
-				return new NodeBinOp (BinaryOperation.Mul, left, ParseMulDivMod (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Mul, left, ParseMulDivMod (stream));
 			} else  if (stream.Accept (TokenClass.Operator, "/")) {
-				return new NodeBinOp (BinaryOperation.Div, left, ParseMulDivMod (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Div, left, ParseMulDivMod (stream));
 			} else  if (stream.Accept (TokenClass.Operator, "%")) {
-				return new NodeBinOp (BinaryOperation.Mod, left, ParseMulDivMod (stream));
+				return new NodeBinOp (stream.Location, BinaryOperation.Mod, left, ParseMulDivMod (stream));
 			}
 			return left;
 		}
@@ -169,15 +173,17 @@ namespace Iodine
 		public static AstNode ParseIncDecNot (TokenStream stream)
 		{
 			if (stream.Accept (TokenClass.Operator, "++")) {
-				return new NodeUnaryOp (UnaryOperation.PrefixIncrement, ParseIncDecNot (stream));
+				return new NodeUnaryOp (stream.Location, UnaryOperation.PrefixIncrement, ParseIncDecNot (
+					stream));
 			} else if (stream.Accept (TokenClass.Operator, "--")) {
-				return new NodeUnaryOp (UnaryOperation.PrefixDecrement, ParseIncDecNot (stream));
+				return new NodeUnaryOp (stream.Location, UnaryOperation.PrefixDecrement, ParseIncDecNot (
+					stream));
 			} else if (stream.Accept (TokenClass.Operator, "-")) {
-				return new NodeUnaryOp (UnaryOperation.Negate, ParseIncDecNot (stream));
+				return new NodeUnaryOp (stream.Location, UnaryOperation.Negate, ParseIncDecNot (stream));
 			} else if (stream.Accept (TokenClass.Operator, "~")) {
-				return new NodeUnaryOp (UnaryOperation.Not, ParseIncDecNot (stream));
+				return new NodeUnaryOp (stream.Location, UnaryOperation.Not, ParseIncDecNot (stream));
 			} else if (stream.Accept (TokenClass.Operator, "!")) {
-				return new NodeUnaryOp (UnaryOperation.BoolNot, ParseIncDecNot (stream));
+				return new NodeUnaryOp (stream.Location, UnaryOperation.BoolNot, ParseIncDecNot (stream));
 			}
 			return ParsePostIncDec (stream);
 		}
@@ -186,9 +192,9 @@ namespace Iodine
 		{
 			AstNode value = ParseCallSubscriptAccess (stream);
 			if (stream.Accept (TokenClass.Operator, "++")) {
-				return new NodeUnaryOp (UnaryOperation.PostfixIncrement, value);
+				return new NodeUnaryOp (stream.Location, UnaryOperation.PostfixIncrement, value);
 			} else if (stream.Accept (TokenClass.Operator, "--")) {
-				return new NodeUnaryOp (UnaryOperation.PostfixDecrement, value);
+				return new NodeUnaryOp (stream.Location, UnaryOperation.PostfixDecrement, value);
 			}
 			return value;
 		}
@@ -201,7 +207,7 @@ namespace Iodine
 		public static AstNode ParseCallSubscriptAccess (TokenStream stream, AstNode lvalue)
 		{
 			if (stream.Match (TokenClass.OpenParan)) {
-				return ParseCallSubscriptAccess (stream, new NodeCall (lvalue,
+				return ParseCallSubscriptAccess (stream, new NodeCall (stream.Location, lvalue,
 					NodeArgList.Parse (stream)));
 			} else if (stream.Match (TokenClass.OpenBracket)) {
 				return ParseCallSubscriptAccess (stream, NodeIndexer.Parse (lvalue, stream));
@@ -215,20 +221,20 @@ namespace Iodine
 		{
 			Token token = null;
 			if (stream.Accept (TokenClass.Identifier, ref token)) {
-				return new NodeIdent (token.Value);
+				return new NodeIdent (stream.Location, token.Value);
 			} else if (stream.Accept (TokenClass.IntLiteral, ref token)) {
-				return new NodeInteger (long.Parse (token.Value));
+				return new NodeInteger (stream.Location, long.Parse (token.Value));
 			} else if (stream.Accept (TokenClass.FloatLiteral, ref token)) {
-				return new NodeFloat (double.Parse (token.Value));
+				return new NodeFloat (stream.Location, double.Parse (token.Value));
 			} else if (stream.Accept (TokenClass.InterpolatedStringLiteral, ref token)) {
-				AstNode val = NodeString.Parse (token.Value);
+				AstNode val = NodeString.Parse (stream.Location, token.Value);
 				if (val == null) {
 					stream.MakeError ();
-					return new NodeString ("");
+					return new NodeString (stream.Location, "");
 				}
 				return val;
 			} else if (stream.Accept (TokenClass.StringLiteral, ref token)) {
-				return new NodeString (token.Value);
+				return new NodeString (stream.Location, token.Value);
 			} else if (stream.Match (TokenClass.OpenBrace)) {
 				return NodeList.Parse (stream);
 			} else if (stream.Accept (TokenClass.OpenParan)) {
@@ -239,13 +245,13 @@ namespace Iodine
 				stream.Expect (TokenClass.CloseParan);
 				return expr;
 			} else if (stream.Accept (TokenClass.Keyword, "self")) {
-				return new NodeSelf ();
+				return new NodeSelf (stream.Location);
 			} else if (stream.Accept (TokenClass.Keyword, "true")) {
-				return new NodeTrue ();
+				return new NodeTrue (stream.Location);
 			} else if (stream.Accept (TokenClass.Keyword, "false")) {
-				return new NodeFalse ();
+				return new NodeFalse (stream.Location);
 			} else if (stream.Accept (TokenClass.Keyword, "null")) {
-				return new NodeNull ();
+				return new NodeNull (stream.Location);
 			} else if (stream.Match (TokenClass.Keyword, "lambda")) {
 				return NodeLambda.Parse (stream);
 			}

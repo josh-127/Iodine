@@ -15,7 +15,8 @@ namespace Iodine
 			get;
 		}
 
-		public NodeGetAttr (AstNode target, string field)
+		public NodeGetAttr (Location location, AstNode target, string field)
+			: base (location)
 		{
 			this.Add(target);
 			this.Field = field;
@@ -30,7 +31,7 @@ namespace Iodine
 		{
 			stream.Expect (TokenClass.Dot);
 			Token ident = stream.Expect (TokenClass.Identifier);
-			return new NodeGetAttr (lvalue, ident.Value);
+			return new NodeGetAttr (stream.Location, lvalue, ident.Value);
 		}
 	}
 }

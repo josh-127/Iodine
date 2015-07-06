@@ -6,22 +6,26 @@ namespace Iodine
 {
 	public class Error
 	{
-		public string Text
-		{
+		public string Text {
 			private set;
 			get;
 		}
 
-		public ErrorType EType
-		{
+		public ErrorType EType {
 			private set;
 			get;
 		}
 
-		public Error (ErrorType etype, string text)
+		public Location Location {
+			private set;
+			get;
+		}
+
+		public Error (ErrorType etype, Location location, string text)
 		{
 			this.EType = etype;
 			this.Text = text;
+			this.Location = location;
 		}
 	}
 
@@ -49,9 +53,9 @@ namespace Iodine
 			}
 		}
 
-		public void AddError (ErrorType etype, string format, params object[] args)
+		public void AddError (ErrorType etype, Location location, string format, params object[] args)
 		{
-			this.errors.Add (new Error (etype, String.Format (format, args)));
+			this.errors.Add (new Error (etype, location, String.Format (format, args)));
 			ErrorCount++;
 		}
 

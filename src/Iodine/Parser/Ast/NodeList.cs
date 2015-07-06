@@ -4,6 +4,11 @@ namespace Iodine
 {
 	public class NodeList : AstNode
 	{
+		public NodeList (Location location)
+			: base (location)
+		{
+		}
+
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
@@ -12,7 +17,7 @@ namespace Iodine
 		public static AstNode Parse (TokenStream stream)
 		{
 			stream.Expect (TokenClass.OpenBrace);
-			NodeList ret = new NodeList ();
+			NodeList ret = new NodeList (stream.Location);
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				ret.Add (NodeExpr.Parse (stream));
 				if (!stream.Accept (TokenClass.Comma)) {

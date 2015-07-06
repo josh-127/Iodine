@@ -106,7 +106,7 @@ namespace Iodine
 				return ModuleCache [Path.GetFullPath (file)];
 
 			if (FindModule (file) != null) {
-				Lexer lexer = new Lexer (errorLog, File.ReadAllText (file));
+				Lexer lexer = new Lexer (errorLog, File.ReadAllText (file), file);
 				TokenStream tokenStream = lexer.Scan ();
 				if (errorLog.ErrorCount > 0) return null;
 				Parser parser = new Parser (tokenStream);
@@ -122,7 +122,8 @@ namespace Iodine
 				if (errorLog.ErrorCount > 0) return null;
 				return module;
 			} else {
-				errorLog.AddError (ErrorType.ParserError, "Could not find module {0}", file);
+				errorLog.AddError (ErrorType.ParserError, new Location (0, 0, file), 
+					"Could not find module {0}", file);
 				return null;
 			}
 		}

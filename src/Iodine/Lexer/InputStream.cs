@@ -7,22 +7,19 @@ namespace Iodine
 		private int position;
 		private int sourceLen;
 		private string source;
+		private string file;
 
-		public int Line {
-			private set; 
-			get;
-		}
-
-		public int Column {
+		public Location Location {
 			private set;
 			get;
 		}
 
-		public InputStream (string source)
+		public InputStream (string source, string file)
 		{
 			this.source = source;
 			this.position = 0;
 			this.sourceLen = source.Length;
+			this.file = file;
 		}
 
 		public void EatWhiteSpaces ()
@@ -56,10 +53,10 @@ namespace Iodine
 			}
 
 			if (source[position] == '\n') {
-				this.Line++;
-				this.Column = 0;
+				this.Location = new Location (this.Location.Line + 1, 0, this.file); 
 			} else {
-				this.Column++;
+				this.Location = new Location (this.Location.Line, this.Location.Column + 1,
+					this.file); 
 			}
 			return source[position++];
 		}

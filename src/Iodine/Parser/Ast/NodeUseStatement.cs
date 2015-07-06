@@ -27,15 +27,17 @@ namespace Iodine
 			get;
 		}
 
-		public NodeUseStatement (string module, bool relative = false)
+		public NodeUseStatement (Location location, string module, bool relative = false)
+			: base (location)
 		{
 			this.Module = module;
 			this.Relative = relative;
 			this.Imports = new List<string> ();
 		}
 
-		public NodeUseStatement (string module, List<string> imports, bool wildcard,
+		public NodeUseStatement (Location location, string module, List<string> imports, bool wildcard,
 			bool relative = false)
+			: base (location)
 		{
 			this.Module = module;
 			this.Imports = imports;
@@ -64,7 +66,7 @@ namespace Iodine
 					stream.Accept (TokenClass.Comma);
 					while (!stream.Match (TokenClass.Keyword, "from")) {
 						Token item = stream.Expect (TokenClass.Identifier);
-						if (item != null) items.Add (item.Value);
+						items.Add (item.Value);
 						if (!stream.Accept (TokenClass.Comma)) {
 							break;
 						}
@@ -76,9 +78,9 @@ namespace Iodine
 
 				relative = stream.Accept (TokenClass.Dot);
 				string module = ParseModuleName (stream);
-				return new NodeUseStatement (module, items, wildcard, relative);
+				return new NodeUseStatement (stream.Location, module, items, wildcard, relative);
 			}
-			return new NodeUseStatement (ident, relative);
+			return new NodeUseStatement (stream.Location, ident, relative);
 		}
 
 		private static string ParseModuleName (TokenStream stream)

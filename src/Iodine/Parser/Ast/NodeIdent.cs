@@ -9,7 +9,8 @@ namespace Iodine
 			get;
 		}
 
-		public NodeIdent (string value)
+		public NodeIdent (Location location, string value)
+			: base (location)
 		{
 			this.Value = value;
 		}
