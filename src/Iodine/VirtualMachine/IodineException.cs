@@ -197,10 +197,10 @@ namespace Iodine
 			}
 		}
 
-		public IodineIOException (string expectedType)
-			: base (TypeDefinition, "Attribute '{0}' not found!", expectedType) 
+		public IodineIOException (string msg)
+			: base (TypeDefinition, msg) 
 		{
-
+			this.Base = new IodineException ();
 		}
 	}
 
@@ -254,8 +254,8 @@ namespace Iodine
 
 					Console.WriteLine (" at {0} <internal method>", frame.NativeMethod.Callback.Method.Name);
 				} else {
-					Console.WriteLine (" at {0} (Module: {1} Line: {2})", top.Method.Name, top.Module.Name,
-						top.Location.Line);
+					Console.WriteLine (" at {0} (Module: {1}, Line: {2})", top.Method.Name, top.Module.Name,
+						top.Location.Line + 1);
 				}
 				top = top.Parent;
 			}

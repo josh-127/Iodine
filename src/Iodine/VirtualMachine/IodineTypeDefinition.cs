@@ -19,6 +19,14 @@ namespace Iodine
 
 		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
+			IodineObject obj = new IodineObject (this);
+			foreach (string attr in this.attributes.Keys) {
+				if (!self.HasAttribute (attr))
+					self.SetAttribute (attr, this.attributes[attr]);
+				obj.SetAttribute (attr, this.attributes[attr]);
+			}
+			self.SetAttribute ("_super", obj);
+			self.Base = obj;
 		}
 	}
 }

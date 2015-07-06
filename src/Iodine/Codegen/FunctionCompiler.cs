@@ -145,7 +145,7 @@ namespace Iodine
 					call.Arguments.Children.Count);
 			} else {
 				call.Target.Visit (this);
-				methodBuilder.EmitInstruction (call.Location, Opcode.Invoke, 
+				methodBuilder.EmitInstruction (call.Target.Location, Opcode.Invoke, 
 					call.Arguments.Children.Count);
 			}
 		}

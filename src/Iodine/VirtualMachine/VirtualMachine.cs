@@ -42,6 +42,11 @@ namespace Iodine
 			}
 
 			Stack.NewFrame (currLoc, method, self, method.LocalCount);
+
+			if (method.Body.Count > 0) {
+				currLoc = method.Body[0].Location;
+			}
+
 			int insCount = method.Body.Count;
 
 			int i = 0;
@@ -81,8 +86,13 @@ namespace Iodine
 			}
 
 			Stack.NewFrame (frame);
-			int insCount = method.Body.Count;
 
+			if (method.Body.Count > 0) {
+				currLoc = method.Body[0].Location;
+			}
+
+			int insCount = method.Body.Count;
+		
 			int i = 0;
 			foreach (string param in method.Parameters.Keys) {
 				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {
