@@ -178,7 +178,7 @@ namespace Iodine
 				vm.RaiseException (new IodineArgumentException (1));
 			}
 			IodineString str = args[0] as IodineString;
-			Environment.SetEnvironmentVariable (str.Value, args[1].ToString ());
+			Environment.SetEnvironmentVariable (str.Value, args[1].ToString (), EnvironmentVariableTarget.User);
 			return null;
 		}
 
