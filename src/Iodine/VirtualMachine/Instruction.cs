@@ -4,19 +4,33 @@ namespace Iodine
 {
 	public struct Instruction
 	{
-		public Opcode OperationCode;
-		public int Argument;
+		public Location Location {
+			set;
+			get;
+		}
 
-		public Instruction (Opcode opcode)
+		public Opcode OperationCode {
+			private set;
+			get;
+		}
+
+		public int Argument {
+			private set;
+			get;
+		}
+
+		public Instruction (Location location, Opcode opcode)
 		{
 			this.OperationCode = opcode;
 			this.Argument = 0;
+			this.Location = location;
 		}
 
-		public Instruction (Opcode opcode, int arg)
+		public Instruction (Location location, Opcode opcode, int arg)
 		{
 			this.OperationCode = opcode;
 			this.Argument = arg;
+			this.Location = location;
 		}
 	}
 }

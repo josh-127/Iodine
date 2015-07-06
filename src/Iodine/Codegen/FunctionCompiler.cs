@@ -58,30 +58,32 @@ namespace Iodine
 					NodeIdent ident = (NodeIdent)binop.Left;
 					Symbol sym = symbolTable.GetSymbol (ident.Value);
 					if (sym.Type == SymbolType.Local) {
-						methodBuilder.EmitInstruction (Opcode.StoreLocal, sym.Index);
-						methodBuilder.EmitInstruction (Opcode.LoadLocal, sym.Index);
+						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreLocal, sym.Index);
+						methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, sym.Index);
 					} else {
 						int globalIndex = methodBuilder.Module.DefineConstant (new IodineName
 							(ident.Value));
-						methodBuilder.EmitInstruction (Opcode.StoreGlobal, globalIndex);
-						methodBuilder.EmitInstruction (Opcode.LoadGlobal, globalIndex);
+						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreGlobal, globalIndex);
+						methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalIndex);
 					}
 				} else if (binop.Left is NodeGetAttr) {
-					((NodeGetAttr)binop.Left).Target.Visit (this);
-					int attrIndex = methodBuilder.Module.DefineConstant (new IodineName(((NodeGetAttr)binop.Left).Field));
-					methodBuilder.EmitInstruction (Opcode.StoreAttribute, attrIndex);
-					((NodeGetAttr)binop.Left).Target.Visit (this);
-					methodBuilder.EmitInstruction (Opcode.LoadAttribute, attrIndex);
+					NodeGetAttr getattr = binop.Left as NodeGetAttr;
+					getattr.Target.Visit (this);
+					int attrIndex = methodBuilder.Module.DefineConstant (new IodineName(getattr.Field));
+					methodBuilder.EmitInstruction (getattr.Location, Opcode.StoreAttribute, attrIndex);
+					getattr.Target.Visit (this);
+					methodBuilder.EmitInstruction (getattr.Location, Opcode.LoadAttribute, attrIndex);
 				} else if (binop.Left is NodeIndexer) {
-					((NodeIndexer)binop.Left).Target.Visit (this);
-					((NodeIndexer)binop.Left).Index.Visit (this);
-					methodBuilder.EmitInstruction (Opcode.StoreIndex);
+					NodeIndexer indexer = binop.Left as NodeIndexer;
+					indexer.Target.Visit (this);
+					indexer.Index.Visit (this);
+					methodBuilder.EmitInstruction (indexer.Location, Opcode.StoreIndex);
 					binop.Left.Visit (this);
 				}
 			} else if (binop.Operation == BinaryOperation.InstanceOf) {
 				binop.Right.Visit (this);
 				binop.Left.Visit (this);
-				methodBuilder.EmitInstruction (Opcode.InstanceOf);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.InstanceOf);
 			} else {
 				IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
 				IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
@@ -89,24 +91,26 @@ namespace Iodine
 				binop.Left.Visit (this);
 				switch (binop.Operation) {
 				case BinaryOperation.BoolAnd:
-					methodBuilder.EmitInstruction (Opcode.Dup);
-					methodBuilder.EmitInstruction (Opcode.JumpIfFalse, shortCircuitFalseLabel);
+					methodBuilder.EmitInstruction (binop.Location, Opcode.Dup);
+					methodBuilder.EmitInstruction (binop.Location, Opcode.JumpIfFalse,
+						shortCircuitFalseLabel);
 					break;
 				case BinaryOperation.BoolOr:
-					methodBuilder.EmitInstruction (Opcode.Dup);
-					methodBuilder.EmitInstruction (Opcode.JumpIfTrue, shortCircuitTrueLabel);
+					methodBuilder.EmitInstruction (binop.Location, Opcode.Dup);
+					methodBuilder.EmitInstruction (binop.Location, Opcode.JumpIfTrue,
+						shortCircuitTrueLabel);
 					break;
 				}
 				binop.Right.Visit (this);
-				methodBuilder.EmitInstruction (Opcode.BinOp, (int)binop.Operation);
-				methodBuilder.EmitInstruction (Opcode.Jump, endLabel);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.BinOp, (int)binop.Operation);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
 				methodBuilder.MarkLabelPosition (shortCircuitTrueLabel);
-				methodBuilder.EmitInstruction (Opcode.Pop);
-				methodBuilder.EmitInstruction (Opcode.LoadTrue);
-				methodBuilder.EmitInstruction (Opcode.Jump, endLabel);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.Pop);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.LoadTrue);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
 				methodBuilder.MarkLabelPosition (shortCircuitFalseLabel);
-				methodBuilder.EmitInstruction (Opcode.Pop);
-				methodBuilder.EmitInstruction (Opcode.LoadFalse);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.Pop);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.LoadFalse);
 				methodBuilder.MarkLabelPosition (endLabel);
 			}
 		}
@@ -114,7 +118,7 @@ namespace Iodine
 		public void Accept (NodeUnaryOp unaryop)
 		{
 			visitSubnodes (unaryop);
-			methodBuilder.EmitInstruction (Opcode.UnaryOp, (int)unaryop.Operation);
+			methodBuilder.EmitInstruction (unaryop.Location, Opcode.UnaryOp, (int)unaryop.Operation);
 		}
 
 		public void Accept (NodeIdent ident)
@@ -122,13 +126,13 @@ namespace Iodine
 			if (symbolTable.IsSymbolDefined (ident.Value)) {
 				Symbol sym = symbolTable.GetSymbol (ident.Value);
 				if (sym.Type == SymbolType.Local) {
-					methodBuilder.EmitInstruction (Opcode.LoadLocal, sym.Index);
+					methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, sym.Index);
 				} else {
-					methodBuilder.EmitInstruction (Opcode.LoadGlobal,
+					methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal,
 						methodBuilder.Module.DefineConstant (new IodineName (ident.Value)));
 				}
 			} else {
-				methodBuilder.EmitInstruction (Opcode.LoadGlobal,
+				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal,
 					methodBuilder.Module.DefineConstant (new IodineName (ident.Value)));
 			}
 		}
@@ -137,10 +141,12 @@ namespace Iodine
 		{
 			call.Arguments.Visit (this);
 			if (call.Target is NodeIdent && ((NodeIdent)call.Target).Value == "print") {
-				methodBuilder.EmitInstruction (Opcode.Print, call.Arguments.Children.Count);
+				methodBuilder.EmitInstruction (call.Location, Opcode.Print,
+					call.Arguments.Children.Count);
 			} else {
 				call.Target.Visit (this);
-				methodBuilder.EmitInstruction (Opcode.Invoke, call.Arguments.Children.Count);
+				methodBuilder.EmitInstruction (call.Location, Opcode.Invoke, 
+					call.Arguments.Children.Count);
 			}
 		}
 
@@ -152,20 +158,19 @@ namespace Iodine
 		public void Accept (NodeGetAttr getAttr)
 		{
 			getAttr.Target.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.LoadAttribute, methodBuilder.Module.DefineConstant (
-				new IodineName (getAttr.Field)
-			));
+			methodBuilder.EmitInstruction (getAttr.Location, Opcode.LoadAttribute,
+				methodBuilder.Module.DefineConstant (new IodineName (getAttr.Field)));
 		}
 
 		public void Accept (NodeInteger integer)
 		{
-			methodBuilder.EmitInstruction (Opcode.LoadConst, 
+			methodBuilder.EmitInstruction (integer.Location, Opcode.LoadConst, 
 				methodBuilder.Module.DefineConstant (new IodineInteger (integer.Value)));
 		}
 
 		public void Accept (NodeFloat num)
 		{
-			methodBuilder.EmitInstruction (Opcode.LoadConst, 
+			methodBuilder.EmitInstruction (num.Location, Opcode.LoadConst, 
 				methodBuilder.Module.DefineConstant (new IodineFloat (num.Value)));
 		}
 
@@ -174,9 +179,9 @@ namespace Iodine
 			IodineLabel elseLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
 			ifStmt.Condition.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.JumpIfFalse, elseLabel);
+			methodBuilder.EmitInstruction (ifStmt.Body.Location, Opcode.JumpIfFalse, elseLabel);
 			ifStmt.Body.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.Jump, endLabel);
+			methodBuilder.EmitInstruction (ifStmt.ElseBody.Location, Opcode.Jump, endLabel);
 			methodBuilder.MarkLabelPosition (elseLabel);
 			ifStmt.ElseBody.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
@@ -190,9 +195,10 @@ namespace Iodine
 			continueLabels.Push (whileLabel);
 			methodBuilder.MarkLabelPosition (whileLabel);
 			whileStmt.Condition.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.JumpIfFalse, breakLabel);
+			methodBuilder.EmitInstruction (whileStmt.Condition.Location, Opcode.JumpIfFalse,
+				breakLabel);
 			whileStmt.Body.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.Jump, whileLabel);
+			methodBuilder.EmitInstruction (whileStmt.Body.Location, Opcode.Jump, whileLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
 			breakLabels.Pop ();
 			continueLabels.Pop ();
@@ -207,10 +213,10 @@ namespace Iodine
 			forStmt.Initializer.Visit (this);
 			methodBuilder.MarkLabelPosition (forLabel);
 			forStmt.Condition.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.JumpIfFalse, breakLabel);
+			methodBuilder.EmitInstruction (forStmt.Condition.Location, Opcode.JumpIfFalse, breakLabel);
 			forStmt.Body.Visit (this);
 			forStmt.AfterThought.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.Jump, forLabel);
+			methodBuilder.EmitInstruction (forStmt.AfterThought.Location, Opcode.Jump, forLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
 			breakLabels.Pop ();
 			continueLabels.Pop ();
@@ -224,19 +230,21 @@ namespace Iodine
 			continueLabels.Push (foreachLabel);
 			foreachStmt.Iterator.Visit (this);
 			int tmp = methodBuilder.CreateTemporary ();
-			methodBuilder.EmitInstruction (Opcode.Dup);
-			methodBuilder.EmitInstruction (Opcode.StoreLocal, tmp);
-			methodBuilder.EmitInstruction (Opcode.IterReset);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.Dup);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.StoreLocal, tmp);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterReset);
 			methodBuilder.MarkLabelPosition (foreachLabel);
-			methodBuilder.EmitInstruction (Opcode.LoadLocal, tmp);
-			methodBuilder.EmitInstruction (Opcode.IterMoveNext);
-			methodBuilder.EmitInstruction (Opcode.JumpIfFalse, breakLabel);
-			methodBuilder.EmitInstruction (Opcode.LoadLocal, tmp);
-			methodBuilder.EmitInstruction (Opcode.IterGetNext);
-			methodBuilder.EmitInstruction (Opcode.StoreLocal,  symbolTable.GetSymbol
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterMoveNext);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.JumpIfFalse,
+				breakLabel);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterGetNext);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.StoreLocal,
+				symbolTable.GetSymbol
 				(foreachStmt.Item).Index);
 			foreachStmt.Body.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.Jump, foreachLabel);
+			methodBuilder.EmitInstruction (foreachStmt.Body.Location, Opcode.Jump, foreachLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
 			breakLabels.Pop ();
 			continueLabels.Pop ();
@@ -262,12 +270,12 @@ namespace Iodine
 		public void Accept (NodeString str)
 		{
 			visitSubnodes (str);
-			methodBuilder.EmitInstruction (Opcode.LoadConst, 
+			methodBuilder.EmitInstruction (str.Location, Opcode.LoadConst, 
 				methodBuilder.Module.DefineConstant (new IodineString (str.Value)));
 			if (str.Children.Count != 0) {
-				methodBuilder.EmitInstruction (Opcode.LoadAttribute, methodBuilder.Module.DefineConstant (
-					new IodineName ("format")));
-				methodBuilder.EmitInstruction (Opcode.Invoke, str.Children.Count);
+				methodBuilder.EmitInstruction (str.Location, Opcode.LoadAttribute,
+					methodBuilder.Module.DefineConstant (new IodineName ("format")));
+				methodBuilder.EmitInstruction (str.Location, Opcode.Invoke, str.Children.Count);
 			}
 		}
 
@@ -283,40 +291,40 @@ namespace Iodine
 		public void Accept (NodeReturnStmt returnStmt)
 		{
 			visitSubnodes (returnStmt);
-			methodBuilder.EmitInstruction (Opcode.Return);
+			methodBuilder.EmitInstruction (returnStmt.Location, Opcode.Return);
 		}
 
 		public void Accept (NodeIndexer indexer)
 		{
 			indexer.Target.Visit (this);
 			indexer.Index.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.LoadIndex);
+			methodBuilder.EmitInstruction (indexer.Location, Opcode.LoadIndex);
 		}
 
 		public void Accept (NodeList list)
 		{
 			visitSubnodes (list);
-			methodBuilder.EmitInstruction (Opcode.BuildList, list.Children.Count);
+			methodBuilder.EmitInstruction (list.Location, Opcode.BuildList, list.Children.Count);
 		}
 
 		public void Accept (NodeSelf self)
 		{
-			methodBuilder.EmitInstruction (Opcode.LoadSelf);
+			methodBuilder.EmitInstruction (self.Location, Opcode.LoadSelf);
 		}
 
 		public void Accept (NodeTrue ntrue)
 		{
-			methodBuilder.EmitInstruction (Opcode.LoadTrue);
+			methodBuilder.EmitInstruction (ntrue.Location, Opcode.LoadTrue);
 		}
 
 		public void Accept (NodeFalse nfalse)
 		{
-			methodBuilder.EmitInstruction (Opcode.LoadFalse);
+			methodBuilder.EmitInstruction (nfalse.Location, Opcode.LoadFalse);
 		}
 
 		public void Accept (NodeNull nil)
 		{
-			methodBuilder.EmitInstruction (Opcode.LoadNull);
+			methodBuilder.EmitInstruction (nil.Location, Opcode.LoadNull);
 		}
 
 		public void Accept (NodeLambda lambda)
@@ -330,13 +338,13 @@ namespace Iodine
 					(lambda.Parameters [i]).Index;
 			}
 			lambda.Children[0].Visit (compiler);
-			anonMethod.EmitInstruction (Opcode.LoadNull);
+			anonMethod.EmitInstruction (lambda.Location, Opcode.LoadNull);
 			anonMethod.Variadic = lambda.Variadic;
 			anonMethod.FinalizeLabels ();
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
-			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (
-				anonMethod));
-			methodBuilder.EmitInstruction (Opcode.BuildClosure);
+			methodBuilder.EmitInstruction (lambda.Location, Opcode.LoadConst,
+				methodBuilder.Module.DefineConstant (anonMethod));
+			methodBuilder.EmitInstruction (lambda.Location, Opcode.BuildClosure);
 		}
 
 
@@ -344,19 +352,20 @@ namespace Iodine
 		{
 			IodineLabel exceptLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
-			methodBuilder.EmitInstruction (Opcode.PushExceptionHandler, exceptLabel);
+			methodBuilder.EmitInstruction (tryExcept.Location, Opcode.PushExceptionHandler, exceptLabel);
 			tryExcept.TryBody.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.PopExceptionHandler);
-			methodBuilder.EmitInstruction (Opcode.Jump, endLabel);
+			methodBuilder.EmitInstruction (tryExcept.TryBody.Location, Opcode.PopExceptionHandler);
+			methodBuilder.EmitInstruction (tryExcept.TryBody.Location, Opcode.Jump, endLabel);
 			methodBuilder.MarkLabelPosition (exceptLabel);
 			tryExcept.TypeList.Visit (this);
 			if (tryExcept.TypeList.Children.Count > 0) {
-				methodBuilder.EmitInstruction (Opcode.BeginExcept, tryExcept.TypeList.Children.Count);
+				methodBuilder.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.BeginExcept,
+					tryExcept.TypeList.Children.Count);
 			}
 			if (tryExcept.ExceptionIdentifier != null) {
-				methodBuilder.EmitInstruction (Opcode.LoadException);
-				methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (
-					tryExcept.ExceptionIdentifier).Index);
+				methodBuilder.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.LoadException);
+				methodBuilder.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.StoreLocal,
+					symbolTable.GetSymbol (tryExcept.ExceptionIdentifier).Index);
 			}
 			tryExcept.ExceptBody.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
@@ -365,7 +374,7 @@ namespace Iodine
 		public void Accept (NodeTuple tuple)
 		{
 			visitSubnodes (tuple);
-			methodBuilder.EmitInstruction (Opcode.BuildTuple, tuple.Children.Count);
+			methodBuilder.EmitInstruction (tuple.Location, Opcode.BuildTuple, tuple.Children.Count);
 		}
 
 		public void Accept (NodeConstant constant)
@@ -376,23 +385,24 @@ namespace Iodine
 		{
 			List<string> parent = super.Parent.Base;
 			super.Arguments.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.LoadGlobal, methodBuilder.Module.DefineConstant (
-				new IodineName (parent[0])));
+			methodBuilder.EmitInstruction (super.Location, Opcode.LoadGlobal,
+				methodBuilder.Module.DefineConstant (new IodineName (parent[0])));
 			for (int i = 1; i < parent.Count; i++) {
-				methodBuilder.EmitInstruction (Opcode.LoadAttribute, methodBuilder.Module.DefineConstant (
-					new IodineName (parent[0])));
+				methodBuilder.EmitInstruction (super.Location, Opcode.LoadAttribute,
+					methodBuilder.Module.DefineConstant (new IodineName (parent[0])));
 			}
-			methodBuilder.EmitInstruction (Opcode.InvokeSuper, super.Arguments.Children.Count);
+			methodBuilder.EmitInstruction (super.Location, Opcode.InvokeSuper,
+				super.Arguments.Children.Count);
 		}
 
 		public void Accept (NodeBreak brk) 
 		{
-			methodBuilder.EmitInstruction (Opcode.Jump, breakLabels.Peek ());
+			methodBuilder.EmitInstruction (brk.Location, Opcode.Jump, breakLabels.Peek ());
 		}
 
 		public void Accept (NodeContinue cont) 
 		{
-			methodBuilder.EmitInstruction (Opcode.Jump, continueLabels.Peek ());
+			methodBuilder.EmitInstruction (cont.Location, Opcode.Jump, continueLabels.Peek ());
 		}
 
 		private void visitSubnodes (AstNode root)

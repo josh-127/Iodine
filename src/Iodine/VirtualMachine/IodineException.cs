@@ -26,6 +26,12 @@ namespace Iodine
 			private set;
 			get;
 		}
+
+		public Location Location {
+			set;
+			get;
+		}
+
 		public IodineException ()
 			: base (TypeDefinition)
 		{
@@ -248,7 +254,8 @@ namespace Iodine
 
 					Console.WriteLine (" at {0} <internal method>", frame.NativeMethod.Callback.Method.Name);
 				} else {
-					Console.WriteLine (" at {0} (Module: {1})", top.Method.Name, top.Module.Name);
+					Console.WriteLine (" at {0} (Module: {1} ({2}:{3}))", top.Method.Name, top.Module.Name,
+						top.Location.Line, top.Location.Column);
 				}
 				top = top.Parent;
 			}

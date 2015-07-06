@@ -8,6 +8,7 @@ namespace Iodine
 		private Dictionary<string, IodineObject> globalDict = new Dictionary<string, IodineObject> ();
 		private Stack<IodineExceptionHandler> exceptionHandlers = new Stack<IodineExceptionHandler> ();
 		private IodineException lastException = null;
+		private Location currLoc;
 
 		public IodineStack Stack {
 			private set;
@@ -40,7 +41,7 @@ namespace Iodine
 				return null;
 			}
 
-			Stack.NewFrame (method, self, method.LocalCount);
+			Stack.NewFrame (currLoc, method, self, method.LocalCount);
 			int insCount = method.Body.Count;
 
 			int i = 0;
@@ -130,18 +131,9 @@ namespace Iodine
 			}
 		}
 
-		private void executeBytecode (IodineMethod method)
-		{
-			StackFrame top = Stack.Top;
-			int insCount = method.Body.Count;
-			while (top.InstructionPointer < insCount && !top.AbortExecution) {
-				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
-				ExecuteInstruction (currInstruction);
-			}
-		}
-
 		private void ExecuteInstruction (Instruction ins)
 		{
+			currLoc = ins.Location;
 			switch (ins.OperationCode) {
 			case Opcode.Pop: {
 					Stack.Pop ();

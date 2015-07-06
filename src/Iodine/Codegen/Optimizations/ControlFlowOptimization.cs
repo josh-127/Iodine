@@ -94,7 +94,8 @@ namespace Iodine
 				if (ins.OperationCode == Opcode.Jump || ins.OperationCode == Opcode.JumpIfFalse ||
 					ins.OperationCode == Opcode.JumpIfTrue || ins.OperationCode == Opcode.PushExceptionHandler) {
 					if (ins.Argument >= start) {
-						instructions[i] = new Instruction (ins.OperationCode, ins.Argument - 1);
+						instructions[i] = new Instruction (ins.Location, ins.OperationCode,
+							ins.Argument - 1);
 					}
 				}
 
