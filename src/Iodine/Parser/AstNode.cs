@@ -13,7 +13,7 @@ namespace Iodine
 				return this.children;
 			}
 		}
-
+			
 		public abstract void Visit (IAstVisitor visitor);
 
 		public void Add (AstNode node)

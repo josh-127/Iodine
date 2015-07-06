@@ -42,6 +42,7 @@ namespace Iodine
 		{
 			stream.Expect (TokenClass.Keyword, "class");
 			string name = stream.Expect (TokenClass.Identifier).Value;
+
 			List<string> baseClass = new List<string> ();
 			if (stream.Accept (TokenClass.Colon)) {
 				do {
