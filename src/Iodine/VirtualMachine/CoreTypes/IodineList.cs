@@ -35,6 +35,7 @@ namespace Iodine
 			this.Objects.AddRange (items);
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			this.SetAttribute ("add", new InternalMethodCallback (add, this));
+			this.SetAttribute ("addRange", new InternalMethodCallback (add, this));
 			this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
 			this.SetAttribute ("removeAt", new InternalMethodCallback (removeAt, this));
 			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
@@ -62,6 +63,20 @@ namespace Iodine
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
 			return this.Objects[iterIndex - 1];
+		}
+
+		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject collection)
+		{
+			switch (binop) {
+			case BinaryOperation.Add:
+				collection.IterReset (vm);
+				while (collection.IterMoveNext (vm)) {
+					IodineObject o = collection.IterGetNext (vm);
+					this.Add (o);
+				}
+				break;
+			}
+			return base.PerformBinaryOperation (vm, binop, collection);
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
@@ -96,6 +111,21 @@ namespace Iodine
 			IodineList list = self as IodineList;
 			foreach (IodineObject obj in arguments) {
 				list.Add (obj);
+			}
+			return null;
+		}
+
+		private IodineObject addRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			if (arguments.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineObject collection = arguments[0];
+			collection.IterReset (vm);
+			while (collection.IterMoveNext (vm)) {
+				IodineObject o = collection.IterGetNext (vm);
+				this.Add (o);
 			}
 			return null;
 		}
