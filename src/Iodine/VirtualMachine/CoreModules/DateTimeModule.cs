@@ -25,6 +25,26 @@ namespace Iodine
 				this.SetAttribute ("month", new IodineInteger (val.Month));
 				this.SetAttribute ("year", new IodineInteger (val.Year));
 			}
+
+			public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
+			{
+				if (rvalue is IodineTimeStamp) {
+					IodineTimeStamp op = rvalue as IodineTimeStamp;
+					switch (binop) {
+					case BinaryOperation.GreaterThan:
+						return new IodineBool (this.Value.CompareTo (op.Value) > 0);
+					case BinaryOperation.LessThan:
+						return new IodineBool (this.Value.CompareTo (op.Value) < 0);
+					case BinaryOperation.GreaterThanOrEqu:
+						return new IodineBool (this.Value.CompareTo (op.Value) >= 0);
+					case BinaryOperation.LessThanOrEqu:
+						return new IodineBool (this.Value.CompareTo (op.Value) <= 0);
+					case BinaryOperation.Equals:
+						return new IodineBool (this.Value.CompareTo (op.Value) == 0);
+					}
+				}
+				return base.PerformBinaryOperation (vm, binop, rvalue);
+			}
 		}
 
 		public DateTimeModule ()
