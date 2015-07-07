@@ -293,6 +293,7 @@ namespace Iodine
 
 			bool canRead = false;
 			bool canWrite = false;
+			bool append = false;
 
 			foreach (char c in mode.Value) {
 				switch (c) {
@@ -302,6 +303,9 @@ namespace Iodine
 				case 'r':
 					canRead = true;
 					break;
+				case 'a':
+					append = true;
+					break;
 				}
 			}
 
@@ -310,7 +314,9 @@ namespace Iodine
 				return null;
 			}
 
-			if (canRead && canWrite)
+			if (append)
+				return new IodineStream (File.Open (filePath.Value, FileMode.Append), canWrite, canRead);
+			else if (canRead && canWrite)
 				return new IodineStream (File.Open (filePath.Value, FileMode.OpenOrCreate), canWrite, canRead);
 			else if (canRead) 
 				return new IodineStream (File.OpenRead (filePath.Value), canWrite, canRead);
