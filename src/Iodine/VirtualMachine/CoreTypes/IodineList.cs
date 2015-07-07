@@ -69,12 +69,13 @@ namespace Iodine
 		{
 			switch (binop) {
 			case BinaryOperation.Add:
+				IodineList list = new IodineList (this.Objects.ToArray ());
 				collection.IterReset (vm);
 				while (collection.IterMoveNext (vm)) {
 					IodineObject o = collection.IterGetNext (vm);
-					this.Add (o);
+					list.Add (o);
 				}
-				break;
+				return list;
 			}
 			return base.PerformBinaryOperation (vm, binop, collection);
 		}
