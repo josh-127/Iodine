@@ -28,20 +28,56 @@ namespace Iodine
 					if (substr.Length == 0) {
 						accum.Append (args[nextArg++].ToString ());
 					} else {
+						int index = 0;
+						string indexStr = "";
+						string specifier = "";
+
 						if (substr.IndexOf (':') == -1) {
-							int index = 0;
-							if (Int32.TryParse (substr, out index)) {
-								accum.Append (args[index].ToString ());
-							} else {
-								return null;
-							}
+							indexStr = substr;
+						} else {
+							indexStr = substr.Substring (0, substr.IndexOf (":"));
+							specifier = substr.Substring (substr.IndexOf (":") + 1);
 						}
+
+						if (indexStr == "") {
+							index = nextArg++;
+						} else if (!Int32.TryParse (indexStr, out index)) {
+							return null;
+						}
+
+						accum.Append (formatObj (args[index], specifier));
+
 					}
 				} else {
 					accum.Append (format [pos++]);
 				}
 			}
 			return accum.ToString ();
+		}
+
+		private string formatObj (IodineObject obj, string specifier)
+		{
+			if (specifier.Length == 0) {
+				return obj.ToString ();
+			}
+			char type = specifier[0];
+			string args = specifier.Substring (1);
+			switch (char.ToLower (type)) {
+			case 'd': {
+					IodineInteger intObj = obj as IodineInteger;
+					int pad = args.Length == 0 ? 0 : int.Parse (args);
+					if (intObj == null) return null;
+					return intObj.Value.ToString (type.ToString () + pad);
+				}
+			case 'x': {
+					IodineInteger intObj = obj as IodineInteger;
+					int pad = args.Length == 0 ? 0 : int.Parse (args);
+					if (intObj == null) return null;
+					return intObj.Value.ToString (type.ToString () + pad);
+				}
+			default:
+				return null;
+			}
 		}
 	}
 }

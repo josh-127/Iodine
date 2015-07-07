@@ -28,7 +28,9 @@ namespace ModuleSockets
 			throw new Exception ("Invalid certificate: " + sslPolicyErrors.ToString ());
 		}
 
-		public IodineSocket (Socket sock) : base (SocketTypeDef) {
+		public IodineSocket (Socket sock)
+			: base (SocketTypeDef)
+		{
 			this.Socket = sock;
 			this.SetAttribute ("connect", new InternalMethodCallback (connect ,this));
 			this.SetAttribute ("connectSsl", new InternalMethodCallback (connectSsl, this));
