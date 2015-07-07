@@ -155,6 +155,7 @@ namespace Iodine
 			System.Threading.Thread.Sleep ((int)time.Value);
 			return null;
 		}
+
 		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
@@ -310,7 +311,7 @@ namespace Iodine
 			}
 
 			if (!File.Exists (filePath.Value) && (canRead && !canWrite)) {
-				vm.RaiseException ("File does not exist!");
+				vm.RaiseException (new IodineIOException ("File does not exist!"));
 				return null;
 			}
 
