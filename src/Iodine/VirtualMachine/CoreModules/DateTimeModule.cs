@@ -22,6 +22,7 @@ namespace Iodine
 				this.SetAttribute ("hour", new IodineInteger (val.Hour));
 				this.SetAttribute ("day", new IodineInteger (val.Day));
 				this.SetAttribute ("month", new IodineInteger (val.Month));
+				this.SetAttribute ("year", new IodineInteger (val.Year));
 			}
 		}
 
