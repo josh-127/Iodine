@@ -18,6 +18,7 @@ namespace Iodine
 			{
 				this.Value = val;
 				this.SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
+				this.SetAttribute ("second", new IodineInteger (val.Second));
 				this.SetAttribute ("minute", new IodineInteger (val.Minute));
 				this.SetAttribute ("hour", new IodineInteger (val.Hour));
 				this.SetAttribute ("day", new IodineInteger (val.Day));
