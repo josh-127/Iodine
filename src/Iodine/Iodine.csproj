@@ -138,6 +138,7 @@
     <Compile Include="Codegen\Optimizations\ControlFlowOptimization.cs" />
     <Compile Include="Location.cs" />
     <Compile Include="VirtualMachine\ICachable.cs" />
+    <Compile Include="VirtualMachine\CoreModules\DateTimeModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

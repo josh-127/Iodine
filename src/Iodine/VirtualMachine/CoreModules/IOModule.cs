@@ -290,6 +290,45 @@ namespace Iodine
 		{
 			this.SetAttribute ("Directory", new IodineDirectory ());
 			this.SetAttribute ("File", new IodineFile ());
+			this.SetAttribute ("getCreationTime", new InternalMethodCallback (getModifiedTime, this));
+			this.SetAttribute ("getModifiedTime", new InternalMethodCallback (getCreationTime, this));
+		}
+
+		private IodineObject getModifiedTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			if (!(args[0] is IodineString)) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			
+			}
+			if (!File.Exists (args[0].ToString ())) {
+				vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
+					"' does not exist!"));
+				return null;
+			}
+			return new DateTimeModule.IodineTimeStamp (File.GetLastAccessTime (args[0].ToString ()));
+		}
+
+		private IodineObject getCreationTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			if (!(args[0] is IodineString)) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+			if (!File.Exists (args[0].ToString ())) {
+				vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
+					"' does not exist!"));
+				return null;
+			}
+			return new DateTimeModule.IodineTimeStamp (File.GetCreationTime (args[0].ToString ()));
 		}
 	}
 }
