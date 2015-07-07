@@ -315,7 +315,7 @@ namespace Iodine
 			}
 
 			if (append)
-				return new IodineStream (File.Open (filePath.Value, FileMode.Append), canWrite, canRead);
+				return new IodineStream (File.Open (filePath.Value, FileMode.Append), true, true);
 			else if (canRead && canWrite)
 				return new IodineStream (File.Open (filePath.Value, FileMode.OpenOrCreate), canWrite, canRead);
 			else if (canRead) 
