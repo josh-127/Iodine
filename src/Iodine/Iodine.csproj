@@ -137,6 +137,7 @@
     <Compile Include="VirtualMachine\CoreModules\OSModule.cs" />
     <Compile Include="Codegen\Optimizations\ControlFlowOptimization.cs" />
     <Compile Include="Location.cs" />
+    <Compile Include="VirtualMachine\ICachable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

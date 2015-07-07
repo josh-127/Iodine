@@ -16,45 +16,60 @@ namespace Iodine
 		private IodineObject sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			byte[] bytes = new byte[]{};
+			byte[] hash = null;
+
+			SHA256Managed hashstring = new SHA256Managed();
 
 			if (args[0] is IodineString) {
 				bytes = System.Text.Encoding.UTF8.GetBytes (args[0].ToString ());
+				hash = hashstring.ComputeHash(bytes);
 			} else if (args[0] is IodineByteArray) {
 				bytes = ((IodineByteArray)args[0]).Array;
+				hash = hashstring.ComputeHash(bytes);
+			} else if (args[0] is IodineStream) {
+				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
 			}
 
-			SHA256Managed hashstring = new SHA256Managed();
-			byte[] hash = hashstring.ComputeHash(bytes);
 			return new IodineByteArray (hash);
 		}
 
 		private IodineObject sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			byte[] bytes = new byte[]{};
+			byte[] hash = null;
+
+			SHA1Managed hashstring = new SHA1Managed();
 
 			if (args[0] is IodineString) {
 				bytes = System.Text.Encoding.UTF8.GetBytes (args[0].ToString ());
+				hash = hashstring.ComputeHash(bytes);
 			} else if (args[0] is IodineByteArray) {
 				bytes = ((IodineByteArray)args[0]).Array;
+				hash = hashstring.ComputeHash(bytes);
+			} else if (args[0] is IodineStream) {
+				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
 			}
 
-			SHA1Managed hashstring = new SHA1Managed();
-			byte[] hash = hashstring.ComputeHash(bytes);
 			return new IodineByteArray (hash);
 		}
 
 		private IodineObject sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			byte[] bytes = new byte[]{};
+			byte[] hash = null;
+
+			SHA512Managed hashstring = new SHA512Managed();
 
 			if (args[0] is IodineString) {
 				bytes = System.Text.Encoding.UTF8.GetBytes (args[0].ToString ());
+				hash = hashstring.ComputeHash(bytes);
 			} else if (args[0] is IodineByteArray) {
 				bytes = ((IodineByteArray)args[0]).Array;
+				hash = hashstring.ComputeHash(bytes);
+			} else if (args[0] is IodineStream) {
+				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
 			}
 
-			SHA512Managed hashstring = new SHA512Managed();
-			byte[] hash = hashstring.ComputeHash(bytes);
 			return new IodineByteArray (hash);
 		}
 	}
