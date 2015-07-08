@@ -18,6 +18,4 @@ cp -r ./bin/modules $prefix
 cp -r ./bin/extensions $prefix
 cat ./iodine_run.sh > /usr/bin/iodine
 chmod a+x /usr/bin/iodine
-cp ./iodine_env.sh /etc/profile.d/iodine.sh
-echo "$prefix/modules" >> /etc/profile.d/iodine.sh
 
