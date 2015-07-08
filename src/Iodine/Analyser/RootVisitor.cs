@@ -207,6 +207,11 @@ namespace Iodine
 			symbolTable.AddSymbol (constant.Name);
 		}
 
+
+		public void Accept (NodeEnumDecl enumDecl)
+		{
+		}
+
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {

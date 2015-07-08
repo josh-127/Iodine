@@ -40,6 +40,7 @@ namespace Iodine
 			this.SetAttribute ("removeAt", new InternalMethodCallback (removeAt, this));
 			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			this.SetAttribute ("splice", new InternalMethodCallback (splice, this));
+			this.SetAttribute ("clear", new InternalMethodCallback (clear, this));
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
@@ -217,6 +218,13 @@ namespace Iodine
 			}
 
 			return retList;
+		}
+
+
+		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			this.Objects.Clear ();
+			return null;
 		}
 
 		public override int GetHashCode ()

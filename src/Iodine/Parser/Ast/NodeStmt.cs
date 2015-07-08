@@ -18,6 +18,8 @@ namespace Iodine
 		{
 			if (stream.Match (TokenClass.Keyword, "class")) {
 				return NodeClassDecl.Parse (stream);
+			} else if (stream.Match (TokenClass.Keyword, "enum")) {
+				return NodeEnumDecl.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "func")) {
 				return NodeFuncDecl.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "if")) {

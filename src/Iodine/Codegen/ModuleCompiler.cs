@@ -215,6 +215,16 @@ namespace Iodine
 		{
 		}
 
+
+		public void Accept (NodeEnumDecl enumDecl)
+		{
+			IodineEnum ienum = new IodineEnum (enumDecl.Name);
+			foreach (string name in enumDecl.Items.Keys) {
+				ienum.AddItem (name, enumDecl.Items[name]);
+			}
+			this.module.SetAttribute (enumDecl.Name, ienum);
+		}
+
 		private IodineMethod compileMethod (NodeFuncDecl funcDecl) 
 		{
 			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];

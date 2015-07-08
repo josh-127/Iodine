@@ -204,6 +204,10 @@ namespace Iodine
 			}
 			tryExcept.ExceptBody.Visit (this);
 		}
+			
+		public void Accept (NodeEnumDecl enumDecl)
+		{
+		}
 
 		private void visitSubnodes (AstNode root)
 		{

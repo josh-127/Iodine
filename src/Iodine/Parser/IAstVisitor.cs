@@ -38,6 +38,7 @@ namespace Iodine
 		void Accept (NodeTuple tuple);
 		void Accept (NodeFloat dec);
 		void Accept (NodeSuperCall super);
+		void Accept (NodeEnumDecl enumDecl);
 	}
 }
 
