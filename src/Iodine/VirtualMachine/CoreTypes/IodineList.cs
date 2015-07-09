@@ -46,6 +46,11 @@ namespace Iodine
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			IodineInteger index = key as IodineInteger;
+			if (index == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+
 			if (index.Value < Objects.Count)
 				return this.Objects[(int)index.Value];
 			vm.RaiseException (new IodineIndexException ());
@@ -55,6 +60,11 @@ namespace Iodine
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
 			IodineInteger index = key as IodineInteger;
+			if (index == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return;
+			}
+
 			if (index.Value < Objects.Count)
 				this.Objects[(int)index.Value] = value;
 			else
