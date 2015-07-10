@@ -46,12 +46,27 @@ namespace ModuleSockets
 			this.SetAttribute ("getStream", new InternalMethodCallback (getStream ,this));
 			this.SetAttribute ("close", new InternalMethodCallback (close, this));
 			this.SetAttribute ("setHost", new InternalMethodCallback (setHost, this));
+			this.SetAttribute ("connected", new InternalMethodCallback (connected, this));
 			this.host = string.Empty;
 		}
 
 		public IodineSocket (SocketType sockType, ProtocolType protoType)
 			: this (new Socket (sockType, protoType))
 		{
+		}
+		
+		private IodineObject connected (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			try {
+				var result = !((this.Socket.Poll(1000, SelectMode.SelectRead)
+					&& (this.Socket.Available == 0)) || !this.Socket.Connected);
+				return new IodineBool (result);
+			}
+			catch (Exception e) {
+				vm.RaiseException (e.Message);
+				return null;
+			}
+			return null;
 		}
 
 		private IodineObject setHost (VirtualMachine vm, IodineObject self, IodineObject[] args)
