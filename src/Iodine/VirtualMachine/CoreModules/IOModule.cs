@@ -16,6 +16,7 @@ namespace Iodine
 				this.SetAttribute ("listFiles", new InternalMethodCallback (listFiles, this));
 				this.SetAttribute ("listDirectories", new InternalMethodCallback (listDirectories, this));
 				this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
+				this.SetAttribute ("removeTree", new InternalMethodCallback (removeTree, this));
 				this.SetAttribute ("exists", new InternalMethodCallback (exists, this));
 				this.SetAttribute ("create", new InternalMethodCallback (create, this));
 				this.SetAttribute ("copy", new InternalMethodCallback (copy, this));
@@ -92,6 +93,29 @@ namespace Iodine
 				}
 
 				Directory.Delete (args[0].ToString ());
+
+				return null;
+			}
+
+			private IodineObject removeTree (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
+
+				if (!(args[0] is IodineString)) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+
+				if (!Directory.Exists (args[0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("Directory '" + args[0].ToString () + 
+						"' does not exist!"));
+					return null;
+				}
+
+				rmDir (args[0].ToString ());
 
 				return null;
 			}
@@ -177,6 +201,29 @@ namespace Iodine
 						copyDir(subdir.FullName, temppath, recurse);
 					}
 				}
+				return true;
+			}
+
+			private static bool rmDir (string target)
+			{
+				DirectoryInfo dir = new DirectoryInfo(target);
+				DirectoryInfo[] dirs = dir.GetDirectories();
+
+				if (!dir.Exists) {
+					return false;
+				}
+
+				FileInfo[] files = dir.GetFiles();
+				foreach (FileInfo file in files) {
+					string temppath = Path.Combine(target, file.Name);
+					File.Delete (temppath);
+				}
+
+				foreach (DirectoryInfo subdir in dirs) {
+					string temppath = Path.Combine(target, subdir.Name);
+					rmDir (temppath);
+				}
+				Directory.Delete (target);
 				return true;
 			}
 		}
@@ -303,7 +350,7 @@ namespace Iodine
 			if (!(args[0] is IodineString)) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
-			
+
 			}
 			if (!File.Exists (args[0].ToString ())) {
 				vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
