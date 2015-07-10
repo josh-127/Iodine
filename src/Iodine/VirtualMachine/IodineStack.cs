@@ -56,10 +56,10 @@ namespace Iodine
 			this.frames.Push (frame);
 		}
 
-		public void NewFrame (Location location, IodineMethod method, IodineObject self, int localCount)
+		public void NewFrame (IodineMethod method, IodineObject self, int localCount)
 		{
 			Frames++;
-			top = new StackFrame (location, method, top, self, localCount);
+			top = new StackFrame (method, top, self, localCount);
 			this.frames.Push (top);
 		}
 
@@ -135,7 +135,7 @@ namespace Iodine
 		}
 
 		public Location Location {
-			private set;
+			set;
 			get;
 		}
 
@@ -152,18 +152,17 @@ namespace Iodine
 		private Stack<IodineObject> stack = new Stack<IodineObject> ();
 		private IodineObject[] locals;
 
-		public StackFrame (Location location, IodineMethod method, StackFrame parent, IodineObject self, int localCount)
+		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount)
 		{
 			this.LocalCount = localCount;
 			this.locals = new IodineObject[localCount];
 			this.Method = method;
 			this.Self = self;
 			this.Parent = parent;
-			this.Location = location;
 		}
 
-		public StackFrame (Location location, IodineMethod method, StackFrame parent, IodineObject self, int localCount,
-			IodineObject[] locals) : this (location, method, parent, self, localCount)
+		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount,
+			IodineObject[] locals) : this (method, parent, self, localCount)
 		{
 			this.locals = locals;
 		}
@@ -193,7 +192,7 @@ namespace Iodine
 
 		public StackFrame Duplicate (StackFrame top)
 		{
-			return new StackFrame (this.Location, this.Method, top, this.Self, this.LocalCount,
+			return new StackFrame (this.Method, top, this.Self, this.LocalCount,
 				this.locals);;
 		}
 	}
@@ -207,7 +206,7 @@ namespace Iodine
 		}
 
 		public NativeStackFrame (InternalMethodCallback method, StackFrame parent)
-			: base (new Location (), null, parent, null, 0)
+			: base (null, parent, null, 0)
 		{
 			this.NativeMethod = method;
 		}

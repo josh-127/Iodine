@@ -41,7 +41,7 @@ namespace Iodine
 				return null;
 			}
 
-			Stack.NewFrame (currLoc, method, self, method.LocalCount);
+			Stack.NewFrame (method, self, method.LocalCount);
 
 			if (method.Body.Count > 0) {
 				currLoc = method.Body[0].Location;
@@ -64,6 +64,7 @@ namespace Iodine
 			while (top.InstructionPointer < insCount && !top.AbortExecution) {
 				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
 				ExecuteInstruction (currInstruction);
+				top.Location = currLoc;
 			}
 
 			if (top.AbortExecution) {
@@ -108,6 +109,7 @@ namespace Iodine
 			while (top.InstructionPointer < insCount && !top.AbortExecution) {
 				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
 				ExecuteInstruction (currInstruction);
+				top.Location = currLoc;
 			}
 
 			if (top.AbortExecution) {
