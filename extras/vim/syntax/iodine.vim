@@ -4,15 +4,10 @@ endif
 
 syn match iodineComment "#.*$"
 syn match iodineEscape	contained +\\["\\'0abfnrtvx]+
-"----------------------------------------------------------------
-" Celestia Star Catalog Numbers
-"----------------------------------------------------------------
 
-" Regular int like number with - + or nothing in front
 syn match iodineNumber '\d\+'  
 syn match iodineNumber '[-+]\d\+' 
 
-" Floating point number with decimal no E or e (+,-)
 syn match iodineNumber '\d\+\.\d*' 
 syn match iodineNumber '[-+]\d\+\.\d*'
 
