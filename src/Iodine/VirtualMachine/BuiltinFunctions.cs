@@ -50,34 +50,34 @@ namespace Iodine
 			globalDict["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
 			globalDict["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
 			globalDict["eval"] = new InternalMethodCallback (eval, null);
-			globalDict["system"] = new InternalMethodCallback (system, null);
-			globalDict["getEnv"] = new InternalMethodCallback (getEnv, null);
-			globalDict["setEnv"] = new InternalMethodCallback (setEnv, null);
+			globalDict["system"] = new InternalMethodCallback (system, null); // Obsolete (deprecated)
+			globalDict["getEnv"] = new InternalMethodCallback (getEnv, null); // Obsolete (deprecated)
+			globalDict["setEnv"] = new InternalMethodCallback (setEnv, null); // Obsolete (deprecated)
 			globalDict["raise"] = new InternalMethodCallback (raise, null);
 			globalDict["input"] = new InternalMethodCallback (input, null);
-			globalDict["toInt"] = IodineInteger.TypeDefinition;
-			globalDict["toStr"] = IodineString.TypeDefinition;
+			globalDict["toInt"] = IodineInteger.TypeDefinition;  // Obsolete (deprecated)
+			globalDict["toStr"] = IodineString.TypeDefinition;  // Obsolete (deprecated)
 			globalDict["Int"] = IodineInteger.TypeDefinition;
 			globalDict["Float"] = IodineFloat.TypeDefinition;
 			globalDict["Str"] = IodineString.TypeDefinition;
 			globalDict["Bool"] = IodineBool.TypeDefinition;
 			globalDict["Char"] = IodineChar.TypeDefinition;
-			globalDict["toBool"] = IodineBool.TypeDefinition;
-			globalDict["toChar"] = IodineChar.TypeDefinition;
-			globalDict["list"] = IodineList.TypeDefinition;
-			globalDict["event"] = IodineEvent.TypeDefinition;
-			globalDict["object"] = new InternalMethodCallback (Object, null);
-			globalDict["hashMap"] = IodineMap.TypeDefinition;
+			globalDict["toBool"] = IodineBool.TypeDefinition; // Obsolete (deprecated)
+			globalDict["toChar"] = IodineChar.TypeDefinition; // Obsolete (deprecated)
+			globalDict["list"] = IodineList.TypeDefinition; // Obsolete (deprecated)
+			globalDict["event"] = IodineEvent.TypeDefinition; // Obsolete (deprecated)
+			globalDict["object"] = new InternalMethodCallback (Object, null); // Obsolete (deprecated)
+			globalDict["hashMap"] = IodineMap.TypeDefinition; // Obsolete (deprecated)
 			globalDict["Tuple"] = IodineTuple.TypeDefinition;
 			globalDict["List"] = IodineList.TypeDefinition;
 			globalDict["Event"] = IodineEvent.TypeDefinition;
 			globalDict["Object"] = new InternalMethodCallback (Object, null);
 			globalDict["HashMap"] = IodineMap.TypeDefinition;
 			globalDict["filter"] = new InternalMethodCallback (filter, null);
-			globalDict["map"] = new InternalMethodCallback (map, null);
+			globalDict["map"] = new InternalMethodCallback (map, null); 
 			globalDict["range"] = new InternalMethodCallback (range, null);
 			globalDict["open"] = new InternalMethodCallback (open, null);
-			globalDict["sleep"] = new InternalMethodCallback (sleep, null);
+			globalDict["sleep"] = new InternalMethodCallback (sleep, null);  // Obsolete (deprecated)
 			globalDict["Exception"] = IodineException.TypeDefinition;
 			globalDict["TypeException"] = IodineTypeException.TypeDefinition;
 			globalDict["ArgumentException"] = IodineArgumentException.TypeDefinition;
@@ -129,6 +129,7 @@ namespace Iodine
 			return vm.InvokeMethod (tmpMethod, null, new IodineObject[]{});
 		}
 
+		[ObsoleteAttribute("This function is deprecated. Will be replaced by os.exec", false)]
 		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString str = args[0] as IodineString;
@@ -146,6 +147,7 @@ namespace Iodine
 			return new IodineInteger (proc.ExitCode);
 		}
 
+		[ObsoleteAttribute("This function is deprecated. Will be replaced by threading.sleep", false)] 
 		private IodineObject sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
@@ -156,6 +158,7 @@ namespace Iodine
 			return null;
 		}
 
+		[ObsoleteAttribute("This function is deprecated. Will be replaced by os.getEnv", false)] 
 		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
@@ -173,6 +176,7 @@ namespace Iodine
 				return null;
 		}
 
+		[ObsoleteAttribute("This function is deprecated. Will be replaced by os.setEnv", false)] 
 		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {

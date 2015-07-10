@@ -22,17 +22,16 @@ namespace Iodine
 		}
 
 		private int iterIndex = 0;
+
 		public List<IodineObject> Objects {
 			private set;
 			get;
 		}
 
 
-		public IodineList (IodineObject[] items)
+		public IodineList (List<IodineObject> list)
 			: base (TypeDefinition)
 		{
-			this.Objects = new List<IodineObject> ();
-			this.Objects.AddRange (items);
 			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			this.SetAttribute ("add", new InternalMethodCallback (add, this));
 			this.SetAttribute ("addRange", new InternalMethodCallback (add, this));
@@ -41,6 +40,12 @@ namespace Iodine
 			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			this.SetAttribute ("splice", new InternalMethodCallback (splice, this));
 			this.SetAttribute ("clear", new InternalMethodCallback (clear, this));
+			this.Objects = list;
+		}
+
+		public IodineList (IodineObject[] items)
+			: this (new List<IodineObject> (items))
+		{
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)

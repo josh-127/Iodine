@@ -141,6 +141,7 @@
     <Compile Include="VirtualMachine\CoreModules\DateTimeModule.cs" />
     <Compile Include="VirtualMachine\IodineEnum.cs" />
     <Compile Include="Parser\Ast\NodeEnumDecl.cs" />
+    <Compile Include="VirtualMachine\CoreModules\SysModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

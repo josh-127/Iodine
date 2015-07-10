@@ -15,7 +15,8 @@ namespace Iodine
 			Modules["threading"] = new ThreadingModule ();
 			Modules["io"] = new IOModule ();
 			Modules["os"] = new OSModule ();
-			Modules["datetime"] = new DateTimeModule();
+			Modules["datetime"] = new DateTimeModule ();
+			Modules["sys"] = new SysModule ();
 		}
 	}
 }

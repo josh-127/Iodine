@@ -37,12 +37,12 @@ namespace Iodine
 			this.SetAttribute ("userDir", new IodineString (Environment.GetFolderPath (
 				Environment.SpecialFolder.UserProfile)));
 			this.SetAttribute ("envSep", new IodineChar (Path.PathSeparator));
-			IodineList searchList = new IodineList (new IodineObject[] {});
-			foreach (string path in IodineModule.SearchPaths) {
-				searchList.Add (new IodineString (path));
-			}
-			this.SetAttribute ("searchPaths", searchList);
+
+			this.SetAttribute ("searchPaths", new IodineList (IodineModule.SearchPaths)); // Obsolete
+
 			this.SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
+			this.SetAttribute ("getEnv", new InternalMethodCallback (getEnv, this));
+			this.SetAttribute ("setEnv", new InternalMethodCallback (setEnv, this));
 		}
 
 		private IodineObject getProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -54,6 +54,74 @@ namespace Iodine
 			return list;
 		}
 
+		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+			IodineString str = args[0] as IodineString;
+
+			if (str == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+			if (Environment.GetEnvironmentVariable (str.Value) != null)
+				return new IodineString (Environment.GetEnvironmentVariable (str.Value));
+			else 
+				return null;
+		}
+
+		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+			IodineString str = args[0] as IodineString;
+			Environment.SetEnvironmentVariable (str.Value, args[1].ToString (), EnvironmentVariableTarget.User);
+			return null;
+		}
+
+		private IodineObject exec (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+
+			IodineString str = args[0] as IodineString;
+			string cmdArgs = "";
+			bool wait = true;
+
+			if (str == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			if (args.Length >= 2) {
+				IodineString cmdArgsObj = args[1] as IodineString;
+				if (cmdArgsObj == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+				cmdArgs = cmdArgsObj.Value;
+			}
+
+			if (args.Length >= 3) {
+				IodineBool waitObj = args[2] as IodineBool;
+				if (waitObj == null) {
+					vm.RaiseException (new IodineTypeException ("Bool"));
+					return null;
+				}
+				wait = waitObj.Value;
+			}
+
+			ProcessStartInfo info = new ProcessStartInfo (str.Value, cmdArgs);
+			info.UseShellExecute = false;
+			Process proc = Process.Start (info);
+			if (wait) {
+				proc.WaitForExit ();
+			}
+			return new IodineInteger (proc.ExitCode);
+		}
 	}
 }
 

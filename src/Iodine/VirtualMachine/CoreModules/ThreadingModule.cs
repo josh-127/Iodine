@@ -38,7 +38,12 @@ namespace Iodine
 
 		private IodineObject thread (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
 			IodineObject func = args[0];
+
 			Thread t = new Thread ( () => {
 				VirtualMachine newVm = new VirtualMachine (vm.Globals);
 				func.Invoke (newVm, new IodineObject[] {});

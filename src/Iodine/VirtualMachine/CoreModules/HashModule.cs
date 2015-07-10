@@ -15,6 +15,11 @@ namespace Iodine
 
 		private IodineObject sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
 			byte[] bytes = new byte[]{};
 			byte[] hash = null;
 
@@ -28,6 +33,9 @@ namespace Iodine
 				hash = hashstring.ComputeHash(bytes);
 			} else if (args[0] is IodineStream) {
 				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
+			} else {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
 			}
 
 			return new IodineByteArray (hash);
@@ -35,6 +43,11 @@ namespace Iodine
 
 		private IodineObject sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
 			byte[] bytes = new byte[]{};
 			byte[] hash = null;
 
@@ -48,6 +61,9 @@ namespace Iodine
 				hash = hashstring.ComputeHash(bytes);
 			} else if (args[0] is IodineStream) {
 				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
+			} else {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
 			}
 
 			return new IodineByteArray (hash);
@@ -55,6 +71,11 @@ namespace Iodine
 
 		private IodineObject sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
 			byte[] bytes = new byte[]{};
 			byte[] hash = null;
 
@@ -68,6 +89,9 @@ namespace Iodine
 				hash = hashstring.ComputeHash(bytes);
 			} else if (args[0] is IodineStream) {
 				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
+			} else {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
 			}
 
 			return new IodineByteArray (hash);

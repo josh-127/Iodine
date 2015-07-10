@@ -21,20 +21,19 @@ namespace Iodine
 
 	public class IodineModule : IodineObject
 	{
-		public static readonly List<string> SearchPaths = new List<string> ();
+		public static readonly List<IodineObject> SearchPaths = new List<IodineObject> ();
 		public static readonly Dictionary<string, IodineModule> ModuleCache = new Dictionary<string,IodineModule> ();
 		private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
 
 		static IodineModule ()
 		{
-			SearchPaths.Add (Environment.CurrentDirectory);
-			SearchPaths.Add (String.Format ("{0}{1}modules", Path.GetDirectoryName (
-				Assembly.GetEntryAssembly ().Location), Path.DirectorySeparatorChar));
+			SearchPaths.Add (new IodineString (Environment.CurrentDirectory));
+			SearchPaths.Add (new IodineString (String.Format ("{0}{1}modules", Path.GetDirectoryName (
+				Assembly.GetEntryAssembly ().Location), Path.DirectorySeparatorChar)));
 			if (Environment.GetEnvironmentVariable ("IODINE_PATH") != null) {
-				SearchPaths.Add (Environment.CurrentDirectory);
 				foreach (string path in Environment.GetEnvironmentVariable ("IODINE_PATH").Split (
 					Path.PathSeparator)) {
-					SearchPaths.Add (path);
+					SearchPaths.Add (new IodineString (path));
 				}
 			}
 		}
@@ -154,8 +153,8 @@ namespace Iodine
 					FindExtension (path));
 			} else if (FindModule (path) != null) {
 				string fullPath = FindModule (path);
-				if (SearchPaths.Contains (Path.GetDirectoryName (fullPath)))
-					SearchPaths.Add (Path.GetDirectoryName (fullPath));
+				if (!containsPath (Path.GetDirectoryName (fullPath)))
+					SearchPaths.Add (new IodineString (Path.GetDirectoryName (fullPath)));
 				return CompileModule (errLog, FindModule (path));
 			} else if (BuiltInModules.Modules.ContainsKey (path)) {
 				return BuiltInModules.Modules [path];
@@ -179,6 +178,16 @@ namespace Iodine
 			return null;
 		}
 
+		private static bool containsPath (string path)
+		{
+			foreach (IodineObject obj in SearchPaths) {
+				if (obj.ToString () == path) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		private static string FindModule (string name)
 		{
 			if (File.Exists (name)) {
@@ -188,7 +197,8 @@ namespace Iodine
 				return name + ".id";
 			}
 
-			foreach (string dir in SearchPaths) {
+			foreach (IodineObject obj in SearchPaths) {
+				string dir = obj.ToString ();
 				string expectedName = String.Format ("{0}{1}{2}.id", dir, Path.DirectorySeparatorChar,
 					name);
 				if (File.Exists (expectedName)) {
