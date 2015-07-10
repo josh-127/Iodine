@@ -188,7 +188,7 @@ func scanTokens (json) {
  			while (input.peekChar ().isDigit ()) {
 				accum += input.readChar ()
 			}
-			tokenStream.add (JSONToken (NUMBER, Int (accum)));
+			tokenStream.add (JSONToken (NUMBER, toInt (accum)));
 		} else if (input.peekChar ().isLetter ()) {
 			accum = "";
 			while (input.peekChar ().isLetter ()) {
