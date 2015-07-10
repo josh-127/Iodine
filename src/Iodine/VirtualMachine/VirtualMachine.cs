@@ -137,6 +137,7 @@ namespace Iodine
 				throw new UnhandledIodineExceptionException (Stack.Top, ex);
 			} else {
 				IodineExceptionHandler handler = exceptionHandlers.Pop ();
+				ex.SetAttribute ("stackTrace", new IodineString (Stack.Trace ()));
 				Stack.Unwind (Stack.Frames - handler.Frame);
 				lastException = ex;
 				Stack.InstructionPointer = handler.InstructionPointer;
@@ -358,7 +359,17 @@ namespace Iodine
 					}
 					break;
 				}
+			case Opcode.Raise: {
+					IodineException e = Stack.Pop () as IodineException;
+					if (e != null) {
+						RaiseException (e);
+					} else {
+						RaiseException (new IodineTypeException ("Exception"));
+					}
+					break;
+				}
 			}
+
 		}
 	}
 }

@@ -371,6 +371,12 @@ namespace Iodine
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
+		public void Accept (NodeRaiseStmt raise)
+		{
+			raise.Value.Visit (this);
+			methodBuilder.EmitInstruction (Opcode.Raise);
+		}
+
 		public void Accept (NodeTuple tuple)
 		{
 			visitSubnodes (tuple);

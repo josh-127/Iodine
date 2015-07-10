@@ -34,6 +34,8 @@ namespace Iodine
 				return NodeUseStatement.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "return")) {
 				return NodeReturnStmt.Parse (stream);
+			} else if (stream.Match (TokenClass.Keyword, "raise")) {
+				return NodeRaiseStmt.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "try")) {
 				return NodeTryExcept.Parse (stream);
 			} else if (stream.Accept (TokenClass.Keyword, "break")) {

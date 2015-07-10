@@ -38,8 +38,6 @@ namespace Iodine
 				Environment.SpecialFolder.UserProfile)));
 			this.SetAttribute ("envSep", new IodineChar (Path.PathSeparator));
 
-			this.SetAttribute ("searchPaths", new IodineList (IodineModule.SearchPaths)); // Obsolete
-
 			this.SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
 			this.SetAttribute ("getEnv", new InternalMethodCallback (getEnv, this));
 			this.SetAttribute ("setEnv", new InternalMethodCallback (setEnv, this));

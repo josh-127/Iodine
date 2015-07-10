@@ -34,6 +34,7 @@ namespace Iodine
 			: base ("threading")
 		{
 			this.SetAttribute ("Thread", new InternalMethodCallback (thread, this));
+			this.SetAttribute ("sleep", new InternalMethodCallback (sleep, this));
 		}
 
 		private IodineObject thread (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -51,6 +52,15 @@ namespace Iodine
 			return new IodineThread (t);
 		}
 
+		private IodineObject sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+			IodineInteger time = args[0] as IodineInteger;
+			System.Threading.Thread.Sleep ((int)time.Value);
+			return null;
+		}
 	}
 }
 

@@ -39,6 +39,7 @@ namespace Iodine
 		void Accept (NodeFloat dec);
 		void Accept (NodeSuperCall super);
 		void Accept (NodeEnumDecl enumDecl);
+		void Accept (NodeRaiseStmt raise);
 	}
 }
 

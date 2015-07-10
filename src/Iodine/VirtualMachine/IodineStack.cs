@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Iodine
@@ -93,6 +94,25 @@ namespace Iodine
 		public IodineObject Pop ()
 		{
 			return top.Pop ();
+		}
+
+		public string Trace ()
+		{
+			StringBuilder accum = new StringBuilder ();
+			StackFrame top = this.top;
+			while (top != null) {
+				if (top is NativeStackFrame) {
+					NativeStackFrame frame = top as NativeStackFrame;
+
+					accum.AppendFormat (" at {0} <internal method>\n", frame.NativeMethod.Callback.Method.Name);
+				} else {
+					accum.AppendFormat (" at {0} (Module: {1}, Line: {2})\n", top.Method.Name, top.Module.Name,
+						top.Location.Line + 1);
+				}
+				top = top.Parent;
+			}
+
+			return accum.ToString ();
 		}
 
 		public void Unwind (int frames)

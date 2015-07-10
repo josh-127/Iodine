@@ -142,6 +142,7 @@
     <Compile Include="VirtualMachine\IodineEnum.cs" />
     <Compile Include="Parser\Ast\NodeEnumDecl.cs" />
     <Compile Include="VirtualMachine\CoreModules\SysModule.cs" />
+    <Compile Include="Parser\Ast\NodeRaise.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -36,6 +36,7 @@ namespace Iodine
 		IterGetNext,
 		IterMoveNext,
 		IterReset,
+		Raise,
 		PushExceptionHandler,
 		PopExceptionHandler,
 		LoadException,

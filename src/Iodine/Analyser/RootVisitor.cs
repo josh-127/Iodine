@@ -192,6 +192,11 @@ namespace Iodine
 				"Statement not allowed outside function body!");
 		}
 
+		public void Accept (NodeRaiseStmt raise)
+		{
+			raise.Value.Visit (this);
+		}
+
 		public void Accept (NodeFloat num) 
 		{
 

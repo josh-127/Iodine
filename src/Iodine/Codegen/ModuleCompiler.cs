@@ -199,6 +199,11 @@ namespace Iodine
 			tryExcept.Visit (functionCompiler);
 		}
 
+		public void Accept (NodeRaiseStmt raise)
+		{
+			raise.Value.Visit (this);
+		}
+
 		public void Accept (NodeBreak brk)
 		{
 			brk.Visit (functionCompiler);

@@ -50,24 +50,12 @@ namespace Iodine
 			globalDict["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
 			globalDict["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
 			globalDict["eval"] = new InternalMethodCallback (eval, null);
-			globalDict["system"] = new InternalMethodCallback (system, null); // Obsolete (deprecated)
-			globalDict["getEnv"] = new InternalMethodCallback (getEnv, null); // Obsolete (deprecated)
-			globalDict["setEnv"] = new InternalMethodCallback (setEnv, null); // Obsolete (deprecated)
-			globalDict["raise"] = new InternalMethodCallback (raise, null);
 			globalDict["input"] = new InternalMethodCallback (input, null);
-			globalDict["toInt"] = IodineInteger.TypeDefinition;  // Obsolete (deprecated)
-			globalDict["toStr"] = IodineString.TypeDefinition;  // Obsolete (deprecated)
 			globalDict["Int"] = IodineInteger.TypeDefinition;
 			globalDict["Float"] = IodineFloat.TypeDefinition;
 			globalDict["Str"] = IodineString.TypeDefinition;
 			globalDict["Bool"] = IodineBool.TypeDefinition;
 			globalDict["Char"] = IodineChar.TypeDefinition;
-			globalDict["toBool"] = IodineBool.TypeDefinition; // Obsolete (deprecated)
-			globalDict["toChar"] = IodineChar.TypeDefinition; // Obsolete (deprecated)
-			globalDict["list"] = IodineList.TypeDefinition; // Obsolete (deprecated)
-			globalDict["event"] = IodineEvent.TypeDefinition; // Obsolete (deprecated)
-			globalDict["object"] = new InternalMethodCallback (Object, null); // Obsolete (deprecated)
-			globalDict["hashMap"] = IodineMap.TypeDefinition; // Obsolete (deprecated)
 			globalDict["Tuple"] = IodineTuple.TypeDefinition;
 			globalDict["List"] = IodineList.TypeDefinition;
 			globalDict["Event"] = IodineEvent.TypeDefinition;
@@ -77,7 +65,6 @@ namespace Iodine
 			globalDict["map"] = new InternalMethodCallback (map, null); 
 			globalDict["range"] = new InternalMethodCallback (range, null);
 			globalDict["open"] = new InternalMethodCallback (open, null);
-			globalDict["sleep"] = new InternalMethodCallback (sleep, null);  // Obsolete (deprecated)
 			globalDict["Exception"] = IodineException.TypeDefinition;
 			globalDict["TypeException"] = IodineTypeException.TypeDefinition;
 			globalDict["ArgumentException"] = IodineArgumentException.TypeDefinition;
@@ -128,75 +115,7 @@ namespace Iodine
 			tmpMethod.FinalizeLabels ();
 			return vm.InvokeMethod (tmpMethod, null, new IodineObject[]{});
 		}
-
-		[ObsoleteAttribute("This function is deprecated. Will be replaced by os.exec", false)]
-		private IodineObject system (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			IodineString str = args[0] as IodineString;
-			IodineString cmdArgs = new IodineString ("");
-			if (args.Length == 2)
-				cmdArgs = args[1] as IodineString;
-			ProcessStartInfo info = new ProcessStartInfo {
-				FileName = str.Value,
-				Arguments = cmdArgs.Value,
-				RedirectStandardOutput = true,
-			};
-			info.UseShellExecute = false;
-			Process proc = Process.Start (info);
-			proc.WaitForExit ();
-			return new IodineInteger (proc.ExitCode);
-		}
-
-		[ObsoleteAttribute("This function is deprecated. Will be replaced by threading.sleep", false)] 
-		private IodineObject sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-			IodineInteger time = args[0] as IodineInteger;
-			System.Threading.Thread.Sleep ((int)time.Value);
-			return null;
-		}
-
-		[ObsoleteAttribute("This function is deprecated. Will be replaced by os.getEnv", false)] 
-		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-			IodineString str = args[0] as IodineString;
-
-			if (str == null) {
-				vm.RaiseException (new IodineTypeException ("Str"));
-				return null;
-			}
-			if (Environment.GetEnvironmentVariable (str.Value) != null)
-				return new IodineString (Environment.GetEnvironmentVariable (str.Value));
-			else 
-				return null;
-		}
-
-		[ObsoleteAttribute("This function is deprecated. Will be replaced by os.setEnv", false)] 
-		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-			IodineString str = args[0] as IodineString;
-			Environment.SetEnvironmentVariable (str.Value, args[1].ToString (), EnvironmentVariableTarget.User);
-			return null;
-		}
-
-		private IodineObject raise (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-			IodineString str = args[0] as IodineString;
-			vm.RaiseException (str.Value);
-			return null;
-		}
-
+			
 		private IodineObject input (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			foreach (IodineObject arg in args) {

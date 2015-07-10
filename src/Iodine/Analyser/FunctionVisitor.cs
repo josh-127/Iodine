@@ -204,7 +204,12 @@ namespace Iodine
 			}
 			tryExcept.ExceptBody.Visit (this);
 		}
-			
+
+		public void Accept (NodeRaiseStmt raise)
+		{
+			raise.Value.Visit (this);
+		}
+
 		public void Accept (NodeEnumDecl enumDecl)
 		{
 		}

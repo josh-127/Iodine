@@ -20,6 +20,7 @@ namespace Iodine
 				}
 				return new IodineException ("{0}", args[0].ToString ());
 			}
+
 		}
 
 		public string Message {
@@ -50,6 +51,7 @@ namespace Iodine
 			this.Message = String.Format (format, args);
 			this.SetAttribute ("message", new IodineString (this.Message));
 		}
+			
 	}
 
 	public class IodineTypeException : IodineException
