@@ -64,6 +64,9 @@ namespace Iodine
 					} else {
 						clazz.Add (func);
 					}
+				} else if (stream.Match (TokenClass.Keyword, "class")) {
+					NodeClassDecl subclass = NodeClassDecl.Parse (stream) as NodeClassDecl;
+					clazz.Add (subclass);
 				} else {
 					stream.Expect (TokenClass.Keyword, "func");
 				}

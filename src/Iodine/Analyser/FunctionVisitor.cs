@@ -23,13 +23,9 @@ namespace Iodine
 		public void Accept (NodeClassDecl classDecl)
 		{
 			errorLog.AddError (ErrorType.ParserError, classDecl.Location,
-				"Can not define a class inside a function!");
-		}
-
-		public void Accept (NodeFuncDecl funcDecl)
-		{
-			errorLog.AddError (ErrorType.ParserError, funcDecl.Location,
-				"Closures not supported at this time!");
+				"class statement not valid inside function body!");
+			//RootVisitor visitor = new RootVisitor (errorLog, symbolTable);
+			//classDecl.Visit (visitor);
 		}
 
 		public void Accept (NodeUseStatement useStmt)
@@ -56,7 +52,21 @@ namespace Iodine
 			}
 			this.visitSubnodes (binop);
 		}
+			
+		public void Accept (NodeFuncDecl funcDecl)
+		{
+			symbolTable.AddSymbol (funcDecl.Name);
+			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
+			symbolTable.BeginScope ();
 
+			foreach (string param in funcDecl.Parameters) {
+				symbolTable.AddSymbol (param);
+			}
+
+			funcDecl.Children[0].Visit (visitor);
+			symbolTable.EndScope ();
+		}
+			
 		public void Accept (NodeForeach foreachStmt)
 		{
 			symbolTable.AddSymbol (foreachStmt.Item);

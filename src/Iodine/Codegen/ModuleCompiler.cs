@@ -131,17 +131,7 @@ namespace Iodine
 
 		public void Accept (NodeClassDecl classDecl)
 		{
-			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor));
-
-			for (int i = 1; i < classDecl.Children.Count; i++) {
-				NodeFuncDecl func = classDecl.Children [i] as NodeFuncDecl;
-				if (func.InstanceMethod)
-					clazz.AddInstanceMethod (compileMethod (func));
-				else
-					clazz.SetAttribute (func.Name, compileMethod (func));
-			}
-
-			module.SetAttribute (clazz.Name, clazz);
+			module.SetAttribute (classDecl.Name, compileClass (classDecl));
 		}
 
 		public void Accept (NodeConstant constant)
@@ -228,6 +218,25 @@ namespace Iodine
 				ienum.AddItem (name, enumDecl.Items[name]);
 			}
 			this.module.SetAttribute (enumDecl.Name, ienum);
+		}
+
+		private IodineClass compileClass (NodeClassDecl classDecl)
+		{
+			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor));
+
+			for (int i = 1; i < classDecl.Children.Count; i++) {
+				if (classDecl.Children[i] is NodeFuncDecl) {
+					NodeFuncDecl func = classDecl.Children [i] as NodeFuncDecl;
+					if (func.InstanceMethod)
+						clazz.AddInstanceMethod (compileMethod (func));
+					else
+						clazz.SetAttribute (func.Name, compileMethod (func));
+				} else if (classDecl.Children[i] is NodeClassDecl) {
+					NodeClassDecl subclass = classDecl.Children [i] as NodeClassDecl;
+					clazz.SetAttribute (subclass.Name, compileClass (subclass));
+				}
+			}
+			return clazz;
 		}
 
 		private IodineMethod compileMethod (NodeFuncDecl funcDecl) 

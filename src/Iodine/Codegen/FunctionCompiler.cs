@@ -143,6 +143,7 @@ namespace Iodine
 			call.Target.Visit (this);
 			methodBuilder.EmitInstruction (call.Target.Location, Opcode.Invoke, 
 				call.Arguments.Children.Count);
+			
 		}
 
 		public void Accept (NodeArgList arglist)
@@ -247,6 +248,23 @@ namespace Iodine
 
 		public void Accept (NodeFuncDecl funcDecl)
 		{
+			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
+			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, funcDecl.InstanceMethod, 
+				funcDecl.Parameters.Count, methodBuilder.LocalCount);
+			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
+			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
+				anonMethod.Parameters[funcDecl.Parameters[i]] = symbolTable.GetSymbol
+					(funcDecl.Parameters [i]).Index;
+			}
+			funcDecl.Children[0].Visit (compiler);
+			anonMethod.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
+			anonMethod.Variadic = funcDecl.Variadic;
+			anonMethod.FinalizeLabels ();
+			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
+			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadConst,
+				methodBuilder.Module.DefineConstant (anonMethod));
+			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.BuildClosure);
+			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.StoreLocal, symbolTable.GetSymbol (funcDecl.Name).Index);
 		}
 
 		public void Accept (NodeScope scope)
@@ -281,6 +299,7 @@ namespace Iodine
 
 		public void Accept (NodeClassDecl classDecl)
 		{
+			
 		}
 
 		public void Accept (NodeReturnStmt returnStmt)
