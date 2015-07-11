@@ -50,6 +50,7 @@ namespace Iodine
 			int insCount = method.Body.Count;
 
 			int i = 0;
+
 			foreach (string param in method.Parameters.Keys) {
 				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {
 					IodineObject[] tupleItems = new IodineObject[arguments.Length - i];
@@ -59,7 +60,6 @@ namespace Iodine
 					Stack.StoreLocal (method.Parameters[param], arguments[i++]);
 				}
 			}
-
 			StackFrame top = Stack.Top;
 			while (top.InstructionPointer < insCount && !top.AbortExecution) {
 				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
@@ -93,7 +93,7 @@ namespace Iodine
 			}
 
 			int insCount = method.Body.Count;
-		
+
 			int i = 0;
 			foreach (string param in method.Parameters.Keys) {
 				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {
@@ -101,6 +101,7 @@ namespace Iodine
 					Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
 					Stack.StoreLocal (method.Parameters[param], new IodineTuple (tupleItems));
 				} else {
+					Console.WriteLine ("{0} {1}", arguments.Length, i);
 					Stack.StoreLocal (method.Parameters[param], arguments[i++]);
 				}
 			}

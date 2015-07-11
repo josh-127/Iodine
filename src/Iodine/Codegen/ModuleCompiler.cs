@@ -32,7 +32,7 @@ namespace Iodine
 
 		public void Accept (NodeExpr expr)
 		{
-			expr.Visit (functionCompiler);
+			visitSubnodes (expr);
 		}
 
 		public void Accept (NodeStmt stmt)

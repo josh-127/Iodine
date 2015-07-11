@@ -44,6 +44,7 @@ namespace Iodine
 
 		public static void Main (string[] args)
 		{
+			args = new string[] {"test.id"};
 			IodineOptions options = IodineOptions.Parse (args);
 			ErrorLog errorLog = new ErrorLog ();
 			IodineModule module = IodineModule.LoadModule (errorLog, options.FileName);

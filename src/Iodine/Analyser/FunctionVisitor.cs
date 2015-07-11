@@ -13,24 +13,35 @@ namespace Iodine
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 		}
-
-		public void Accept (AstNode ast)
+			
+		public void Accept (NodeEnumDecl enumDecl)
 		{
-			visitSubnodes (ast);
+			errorLog.AddError (ErrorType.ParserError, enumDecl.Location,
+				"Can not define enum in function!");
 		}
 
-		public void Accept (Ast ast)
+		public void Accept (NodeClassDecl classDecl)
 		{
-			visitSubnodes (ast);
+			errorLog.AddError (ErrorType.ParserError, classDecl.Location,
+				"Can not define a class inside a function!");
 		}
 
-		public void Accept (NodeExpr expr)
+		public void Accept (NodeFuncDecl funcDecl)
 		{
-			visitSubnodes (expr);
+			errorLog.AddError (ErrorType.ParserError, funcDecl.Location,
+				"Closures not supported at this time!");
 		}
 
-		public void Accept (NodeStmt stmt)
+		public void Accept (NodeUseStatement useStmt)
 		{
+			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
+				"use statement not valid inside function body!");
+		}
+
+		public void Accept (NodeConstant constant)
+		{
+			errorLog.AddError (ErrorType.ParserError, constant.Location,
+				"Can not define constant in function!");
 		}
 
 		public void Accept (NodeBinOp binop)
@@ -46,60 +57,11 @@ namespace Iodine
 			this.visitSubnodes (binop);
 		}
 
-		public void Accept (NodeUnaryOp unaryop)
-		{
-			visitSubnodes (unaryop);
-		}
-
-		public void Accept (NodeIdent ident)
-		{
-		}
-
-		public void Accept (NodeCall call)
-		{
-			visitSubnodes (call);
-		}
-
-		public void Accept (NodeArgList arglist)
-		{
-			visitSubnodes (arglist);
-		}
-
-		public void Accept (NodeGetAttr getAttr)
-		{
-			visitSubnodes (getAttr);
-		}
-
-		public void Accept (NodeInteger integer)
-		{
-		}
-
-		public void Accept (NodeIfStmt ifStmt)
-		{
-			visitSubnodes (ifStmt);
-		}
-
-		public void Accept (NodeWhileStmt whileStmt)
-		{
-			visitSubnodes (whileStmt);
-		}
-
-		public void Accept (NodeForStmt forStmt)
-		{
-			visitSubnodes (forStmt);
-		}
-
 		public void Accept (NodeForeach foreachStmt)
 		{
 			symbolTable.AddSymbol (foreachStmt.Item);
 			foreachStmt.Iterator.Visit (this);
 			foreachStmt.Body.Visit (this);
-		}
-
-		public void Accept (NodeFuncDecl funcDecl)
-		{
-			errorLog.AddError (ErrorType.ParserError, funcDecl.Location,
-				"Closures not supported at this time!");
 		}
 
 		public void Accept (NodeLambda lambda)
@@ -120,27 +82,40 @@ namespace Iodine
 			symbolTable.EndScope ();
 		}
 
-		public void Accept (NodeString str)
+		public void Accept (NodeTryExcept tryExcept)
 		{
+			tryExcept.TryBody.Visit (this);
+			if (tryExcept.ExceptionIdentifier != null) {
+				symbolTable.AddSymbol (tryExcept.ExceptionIdentifier);
+			}
+			tryExcept.ExceptBody.Visit (this);
+		}
+
+		public void Accept (AstNode ast)
+		{
+			visitSubnodes (ast);
+		}
+
+		public void Accept (Ast ast)
+		{
+			visitSubnodes (ast);
+		}
+
+		public void Accept (NodeExpr expr)
+		{
+			visitSubnodes (expr);
+		}
+
+		public void Accept (NodeRaiseStmt raise)
+		{
+			visitSubnodes (raise);
 		}
 
 		public void Accept (NodeSuperCall super)
 		{
 			visitSubnodes (super);
 		}
-
-		public void Accept (NodeUseStatement useStmt)
-		{
-			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
-				"use statement not valid inside function body!");
-		}
-
-		public void Accept (NodeClassDecl classDecl)
-		{
-			errorLog.AddError (ErrorType.ParserError, classDecl.Location,
-				"Can not define a class inside a function!");
-		}
-
+			
 		public void Accept (NodeReturnStmt returnStmt)
 		{
 			visitSubnodes (returnStmt);
@@ -154,6 +129,65 @@ namespace Iodine
 		public void Accept (NodeIndexer indexer)
 		{
 			visitSubnodes (indexer);
+		}
+			
+		public void Accept (NodeTuple tuple)
+		{
+			visitSubnodes (tuple);
+		}
+
+		public void Accept (NodeUnaryOp unaryop)
+		{
+			visitSubnodes (unaryop);
+		}
+
+		public void Accept (NodeCall call)
+		{
+			visitSubnodes (call);
+		}
+
+		public void Accept (NodeArgList arglist)
+		{
+			visitSubnodes (arglist);
+		}
+
+		public void Accept (NodeGetAttr getAttr)
+		{
+			visitSubnodes (getAttr);
+		}
+		public void Accept (NodeIfStmt ifStmt)
+		{
+			visitSubnodes (ifStmt);
+		}
+
+		public void Accept (NodeWhileStmt whileStmt)
+		{
+			visitSubnodes (whileStmt);
+		}
+
+		public void Accept (NodeForStmt forStmt)
+		{
+			visitSubnodes (forStmt);
+		}
+
+		public void Accept (NodeStmt stmt)
+		{
+		}
+
+		public void Accept (NodeIdent ident)
+		{
+		}
+
+		public void Accept (NodeInteger integer)
+		{
+		}
+
+		public void Accept (NodeFloat num) 
+		{
+		}
+
+		public void Accept (NodeString str)
+		{
 		}
 
 		public void Accept (NodeSelf self)
@@ -177,40 +211,6 @@ namespace Iodine
 		}
 
 		public void Accept (NodeContinue cont)
-		{
-		}
-
-		public void Accept (NodeFloat num) 
-		{
-			
-		}
-
-		public void Accept (NodeTuple tuple)
-		{
-			visitSubnodes (tuple);
-		}
-
-		public void Accept (NodeConstant constant)
-		{
-			errorLog.AddError (ErrorType.ParserError, constant.Location,
-				"Can not define constant in function!");
-		}
-
-		public void Accept (NodeTryExcept tryExcept)
-		{
-			tryExcept.TryBody.Visit (this);
-			if (tryExcept.ExceptionIdentifier != null) {
-				symbolTable.AddSymbol (tryExcept.ExceptionIdentifier);
-			}
-			tryExcept.ExceptBody.Visit (this);
-		}
-
-		public void Accept (NodeRaiseStmt raise)
-		{
-			raise.Value.Visit (this);
-		}
-
-		public void Accept (NodeEnumDecl enumDecl)
 		{
 		}
 

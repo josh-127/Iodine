@@ -23,7 +23,7 @@ namespace Iodine
 						foreach (IodineObject item in inputList.Objects) {
 							IodineTuple kv = item as IodineTuple;
 							if (kv != null) {
-								ret.Dict.Add (kv.Objects[0].GetHashCode (), kv.Objects[1]);
+								ret.Set (kv.Objects[0], kv.Objects[1]);
 							}
 						}
 					} 

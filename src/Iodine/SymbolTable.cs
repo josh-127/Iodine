@@ -33,7 +33,7 @@ namespace Iodine
 				nextLocalIndex = 0;
 			}
 		}
-			
+
 		public int AddSymbol (string name)
 		{
 			if (this.CurrentScope.ParentScope != null) {
