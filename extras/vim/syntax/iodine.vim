@@ -13,8 +13,8 @@ syn match iodineNumber '[-+]\d\+\.\d*'
 
 syn region iodineString start='"' end='"' contains=iodineEscape
 
-syn keyword iodineKeyword if else for func class while break lambda self use return true false null foreach from in as try except super 
-syn keyword iodineFunctions print println input raise map filter 
+syn keyword iodineKeyword if else for func class while break lambda self use return true false null foreach from in as try except raise super 
+syn keyword iodineFunctions print println input map filter 
 
 syn region iodineBlock start="{" end="}" fold transparent contains=ALL
 
