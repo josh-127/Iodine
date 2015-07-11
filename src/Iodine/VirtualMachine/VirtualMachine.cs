@@ -101,7 +101,6 @@ namespace Iodine
 					Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
 					Stack.StoreLocal (method.Parameters[param], new IodineTuple (tupleItems));
 				} else {
-					Console.WriteLine ("{0} {1}", arguments.Length, i);
 					Stack.StoreLocal (method.Parameters[param], arguments[i++]);
 				}
 			}
