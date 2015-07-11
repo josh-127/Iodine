@@ -155,7 +155,7 @@ namespace Iodine
 		class InternalErrorExceptionTypeDef : IodineTypeDefinition
 		{
 			public InternalErrorExceptionTypeDef () 
-				: base ("InternalErrorException")
+				: base ("InternalException")
 			{
 			}
 		}
