@@ -284,11 +284,6 @@ namespace Iodine
 					Stack.InstructionPointer = ins.Argument;
 					break;
 				}
-			case Opcode.Print: {
-					Console.WriteLine (Stack.Pop ().ToString ());
-					Stack.Push (null);
-					break;
-				}
 			case Opcode.BuildList: {
 					IodineObject[] items = new IodineObject[ins.Argument];
 					for (int i = 1; i <= ins.Argument; i++ ){

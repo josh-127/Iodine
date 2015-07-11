@@ -140,14 +140,9 @@ namespace Iodine
 		public void Accept (NodeCall call)
 		{
 			call.Arguments.Visit (this);
-			if (call.Target is NodeIdent && ((NodeIdent)call.Target).Value == "print") {
-				methodBuilder.EmitInstruction (call.Location, Opcode.Print,
-					call.Arguments.Children.Count);
-			} else {
-				call.Target.Visit (this);
-				methodBuilder.EmitInstruction (call.Target.Location, Opcode.Invoke, 
-					call.Arguments.Children.Count);
-			}
+			call.Target.Visit (this);
+			methodBuilder.EmitInstruction (call.Target.Location, Opcode.Invoke, 
+				call.Arguments.Children.Count);
 		}
 
 		public void Accept (NodeArgList arglist)

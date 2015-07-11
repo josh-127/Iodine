@@ -5,7 +5,6 @@ namespace Iodine
 	public enum Opcode
 	{
 		Nop,
-		Print,
 		BinOp,
 		UnaryOp,
 		Pop,

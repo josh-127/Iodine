@@ -50,6 +50,7 @@ namespace Iodine
 			globalDict["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
 			globalDict["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
 			globalDict["eval"] = new InternalMethodCallback (eval, null);
+			globalDict["print"] = new InternalMethodCallback (print, null);
 			globalDict["input"] = new InternalMethodCallback (input, null);
 			globalDict["Int"] = IodineInteger.TypeDefinition;
 			globalDict["Float"] = IodineFloat.TypeDefinition;
@@ -115,7 +116,16 @@ namespace Iodine
 			tmpMethod.FinalizeLabels ();
 			return vm.InvokeMethod (tmpMethod, null, new IodineObject[]{});
 		}
-			
+
+		private IodineObject print (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			foreach (IodineObject arg in args) {
+				Console.WriteLine (arg.ToString ());
+			}
+
+			return null;
+		}
+
 		private IodineObject input (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			foreach (IodineObject arg in args) {
