@@ -177,7 +177,7 @@ class JSONParser {
 }
 
 func parse (json) {
-    myParser = JSONParser (parser);
+    myParser = JSONParser (json);
     return myParser.parse ();
 }
 
