@@ -43,37 +43,7 @@ namespace Iodine
 
 			Stack.NewFrame (method, self, method.LocalCount);
 
-			if (method.Body.Count > 0) {
-				currLoc = method.Body[0].Location;
-			}
-
-			int insCount = method.Body.Count;
-
-			int i = 0;
-
-			foreach (string param in method.Parameters.Keys) {
-				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {
-					IodineObject[] tupleItems = new IodineObject[arguments.Length - i];
-					Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
-					Stack.StoreLocal (method.Parameters[param], new IodineTuple (tupleItems));
-				} else {
-					Stack.StoreLocal (method.Parameters[param], arguments[i++]);
-				}
-			}
-			StackFrame top = Stack.Top;
-			while (top.InstructionPointer < insCount && !top.AbortExecution) {
-				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
-				ExecuteInstruction (currInstruction);
-				top.Location = currLoc;
-			}
-
-			if (top.AbortExecution) {
-				return null;
-			}
-
-			IodineObject retVal = Stack.Last;
-			Stack.EndFrame ();
-			return retVal;
+			return Invoke (method, arguments);
 		}
 
 		public IodineObject InvokeMethod (IodineMethod method, StackFrame frame, IodineObject self,
@@ -87,7 +57,11 @@ namespace Iodine
 			}
 
 			Stack.NewFrame (frame);
+			return Invoke (method, arguments);
+		}
 
+		private IodineObject Invoke (IodineMethod method, IodineObject[] arguments)
+		{
 			if (method.Body.Count > 0) {
 				currLoc = method.Body[0].Location;
 			}
@@ -116,7 +90,7 @@ namespace Iodine
 				return null;
 			}
 
-			IodineObject retVal = Stack.Pop ();
+			IodineObject retVal = Stack.Last;
 			Stack.EndFrame ();
 			return retVal;
 		}
