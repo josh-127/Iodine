@@ -62,7 +62,6 @@ namespace ModuleMySQL
 			prepareCmd (ref cmd, args);
 			cmd.ExecuteNonQuery ();
 			cmd.Dispose ();
-			Console.WriteLine ("Disposed..");
 			return null;
 		}
 		public IodineObject executeSql(VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -72,7 +71,6 @@ namespace ModuleMySQL
 			MySqlCommand cmd = new MySqlCommand (statement.Value, db.Connection);
 			cmd.ExecuteNonQuery ();
 			cmd.Dispose ();
-			Console.WriteLine ("Disposed..");
 			return null;
 		}
 		private IodineList convertDataTable(DataTable table)
@@ -99,7 +97,6 @@ namespace ModuleMySQL
 			table.Load (reader);
 			reader.Dispose ();
 			cmd.Dispose ();
-			Console.WriteLine ("Disposed..");
 			return convertDataTable (table);
 		}
 		public IodineObject querySql(VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -112,7 +109,6 @@ namespace ModuleMySQL
 			table.Load (reader);
 			reader.Dispose ();
 			cmd.Dispose ();
-			Console.WriteLine ("Disposed..");
 			return convertDataTable (table);
 		}
 		public IodineObject close(VirtualMachine vm, IodineObject self, IodineObject[] args)
