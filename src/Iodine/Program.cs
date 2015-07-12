@@ -44,6 +44,10 @@ namespace Iodine
 
 		public static void Main (string[] args)
 		{
+			if (args.Length == 0) {
+				DisplayUsage ();
+			}
+
 			IodineOptions options = IodineOptions.Parse (args);
 			ErrorLog errorLog = new ErrorLog ();
 			IodineModule module = IodineModule.LoadModule (errorLog, options.FileName);
@@ -82,6 +86,12 @@ namespace Iodine
 				Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
 					loc.Line, loc.Column, err.Text);
 			}
+		}
+
+		public static void DisplayUsage ()
+		{
+			Console.WriteLine ("usage: [option] ... [file] [arg] ...");
+			Environment.Exit (0);
 		}
 
 		public static void Panic (string format, params object[] args)
