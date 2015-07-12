@@ -66,7 +66,6 @@ namespace ModuleSockets
 				vm.RaiseException (e.Message);
 				return null;
 			}
-			return null;
 		}
 
 		private IodineObject setHost (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -8,7 +8,6 @@ namespace Iodine
 	{
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
-		private int currentScope = 0;
 		private IodineModule module;
 		private FunctionCompiler functionCompiler;
 

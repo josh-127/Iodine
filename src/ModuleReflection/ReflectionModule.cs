@@ -92,9 +92,6 @@ namespace ModuleReflection
 
 		private IodineObject methodBuilder (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineString name = args[0] as IodineString;
-			//IodineMethod method = new IodineMethod (
-			//IodineMethodBuilder methBuilder = new IodineMethodBuilder (
 			return null;
 		}
 	}

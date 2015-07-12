@@ -25,14 +25,14 @@ namespace Iodine
 							break;
 						}
 					} else {
-						ret.FileName = args[i++];
+						ret.FileName = args [i++];
 						if (!System.IO.File.Exists (ret.FileName)) {
 							Panic ("Could not find file {0}!", ret.FileName);
 						}
 						break;
 					}
 				}
-				IodineObject[] arguments = new IodineObject[args.Length - i];
+				IodineObject[] arguments = new IodineObject [args.Length - i];
 				int start = i;
 				for (; i < args.Length; i++) {
 					arguments[i - start] = new IodineString (args[i]);

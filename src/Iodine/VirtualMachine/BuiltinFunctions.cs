@@ -74,47 +74,58 @@ namespace Iodine
 			globalDict["IOException"] = IodineIOException.TypeDefinition;
 			globalDict["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
 			globalDict["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
-			globalDict["SynaxErrorException"] = IodineSyntaxException.TypeDefinition;
+			globalDict["SyntaxException"] = IodineSyntaxException.TypeDefinition;
 		}
 
 
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
 			IodineString str = args[0] as IodineString;
-			IodineMap map = args[1] as IodineMap;
+			IodineMap map = null;
+			if (str == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			if (args.Length >= 2) {
+				map = args[1] as IodineMap;
+				if (map == null) {
+					vm.RaiseException (new IodineTypeException ("HashMap"));
+					return null;
+				}
+			}
+
 			return eval (vm, str.ToString (), map);
 		}
 
 		private IodineObject eval (VirtualMachine host, string source, IodineMap dict)
 		{
-			VirtualMachine vm = new VirtualMachine (new Dictionary<string, IodineObject> ());
+			VirtualMachine vm = host;
 
-			foreach (string glob in host.Globals.Keys) {
-				vm.Globals[glob] = host.Globals[glob];
+			if (dict != null) {
+				vm = new VirtualMachine (new Dictionary<string, IodineObject> ());
+
+				foreach (string glob in host.Globals.Keys) {
+					vm.Globals[glob] = host.Globals[glob];
+				}
+
+				foreach (IodineObject key in dict.Keys.Values) {
+					vm.Globals[key.ToString ()] = dict.Dict[key.GetHashCode ()];
+				}
 			}
-
-			foreach (IodineObject key in dict.Keys.Values) {
-				vm.Globals[key.ToString ()] = dict.Dict[key.GetHashCode ()];
-			}
-
 			ErrorLog log = new ErrorLog ();
-			Lexer iLexer = new Lexer (log, source);
-			TokenStream tokens = iLexer.Scan ();
-			if (log.ErrorCount > 0) 
+			IodineModule module = IodineModule.CompileModuleFromSource (log, source);
+			if (module == null || log.ErrorCount > 0) {
+				IodineSyntaxException e = new IodineSyntaxException (log);
+				vm.RaiseException (e);
 				return null;
-			Parser iParser = new Parser (tokens);
-			AstNode root = iParser.Parse ();
-			if (log.ErrorCount > 0) 
-				return null;
-			SemanticAnalyser iAnalyser = new SemanticAnalyser (log);
-			SymbolTable sym = iAnalyser.Analyse ((Ast)root);
-			if (log.ErrorCount > 0) 
-				return null;
-			IodineMethod tmpMethod = new IodineMethod (vm.Stack.CurrentModule, "eval", false, 0, 0);
-			FunctionCompiler compiler = new FunctionCompiler (log, sym, tmpMethod);
-			root.Visit (compiler);
-			tmpMethod.FinalizeLabels ();
-			return vm.InvokeMethod (tmpMethod, null, new IodineObject[]{});
+			}
+			return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{});
 		}
 
 		private IodineObject print (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -142,6 +153,11 @@ namespace Iodine
 
 		private IodineObject filter (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+
 			IodineList list = new IodineList (new IodineObject[]{});
 			IodineObject collection = args[0];
 			IodineObject func = args[1];
@@ -157,9 +173,15 @@ namespace Iodine
 
 		private IodineObject map (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+
 			IodineList list = new IodineList (new IodineObject[]{});
 			IodineObject collection = args[0];
 			IodineObject func = args[1];
+
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
 				IodineObject o = collection.IterGetNext (vm);

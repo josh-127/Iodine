@@ -6,12 +6,12 @@ namespace ModuleReflection
 	public class IodineMethodBuilder : IodineObject
 	{
 		public static IodineTypeDefinition MethodBuilderTypeDef = new IodineTypeDefinition ("MethodBuilder");
-		private IodineMethod internalValue;
+
 
 		public IodineMethodBuilder (IodineMethod method)
 			: base (MethodBuilderTypeDef)
 		{
-			this.internalValue = method;
+			//this.internalValue = method;
 		}
 
 		private IodineObject emit (VirtualMachine vm, IodineObject self, IodineObject[] args)
