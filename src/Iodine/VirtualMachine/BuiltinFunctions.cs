@@ -76,8 +76,7 @@ namespace Iodine
 			globalDict["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
 			globalDict["SyntaxException"] = IodineSyntaxException.TypeDefinition;
 		}
-
-
+			
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
