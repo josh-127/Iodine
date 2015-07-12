@@ -8,7 +8,6 @@ namespace Iodine
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
 		private IodineMethod methodBuilder;
-		private int currentScope = 0;
 		private Stack<IodineLabel> breakLabels = new Stack<IodineLabel>();
 		private Stack<IodineLabel> continueLabels = new Stack<IodineLabel>();
 
@@ -248,7 +247,7 @@ namespace Iodine
 
 		public void Accept (NodeFuncDecl funcDecl)
 		{
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
+			symbolTable.NextScope ();
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, funcDecl.InstanceMethod, 
 				funcDecl.Parameters.Count, methodBuilder.LocalCount);
 			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
@@ -260,7 +259,6 @@ namespace Iodine
 			anonMethod.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
 			anonMethod.Variadic = funcDecl.Variadic;
 			anonMethod.FinalizeLabels ();
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadConst,
 				methodBuilder.Module.DefineConstant (anonMethod));
 			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.BuildClosure);
@@ -269,15 +267,13 @@ namespace Iodine
 
 		public void Accept (NodeScope scope)
 		{
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
+			symbolTable.NextScope ();
 
 			FunctionCompiler scopeCompiler = new FunctionCompiler (errorLog, symbolTable, methodBuilder,
 				breakLabels, continueLabels);
 			foreach (AstNode node in scope) {
 				node.Visit (scopeCompiler);
 			}
-
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 		}
 
 		public void Accept (NodeString str)
@@ -299,7 +295,20 @@ namespace Iodine
 
 		public void Accept (NodeClassDecl classDecl)
 		{
+			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, methodBuilder.Module);
+			IodineClass clazz = compiler.CompileClass (classDecl);
+			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (clazz));
+			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (classDecl.Name).Index);
+		}
 			
+		public void Accept (NodeEnumDecl enumDecl)
+		{
+			IodineEnum ienum = new IodineEnum (enumDecl.Name);
+			foreach (string name in enumDecl.Items.Keys) {
+				ienum.AddItem (name, enumDecl.Items[name]);
+			}
+			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (ienum));
+			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (enumDecl.Name).Index);
 		}
 
 		public void Accept (NodeReturnStmt returnStmt)
@@ -343,9 +352,11 @@ namespace Iodine
 
 		public void Accept (NodeLambda lambda)
 		{
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
+			symbolTable.NextScope ();
+
+			int locals = methodBuilder.LocalCount > 0 ? methodBuilder.LocalCount : symbolTable.CurrentScope.SymbolCount;
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, lambda.InstanceMethod, 
-				lambda.Parameters.Count, methodBuilder.LocalCount);
+				lambda.Parameters.Count, locals);
 			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
 			for (int i = 0; i < lambda.Parameters.Count; i++) {
 				anonMethod.Parameters[lambda.Parameters[i]] = symbolTable.GetSymbol
@@ -355,10 +366,11 @@ namespace Iodine
 			anonMethod.EmitInstruction (lambda.Location, Opcode.LoadNull);
 			anonMethod.Variadic = lambda.Variadic;
 			anonMethod.FinalizeLabels ();
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 			methodBuilder.EmitInstruction (lambda.Location, Opcode.LoadConst,
 				methodBuilder.Module.DefineConstant (anonMethod));
-			methodBuilder.EmitInstruction (lambda.Location, Opcode.BuildClosure);
+			if (methodBuilder.LocalCount > 0) {
+				methodBuilder.EmitInstruction (lambda.Location, Opcode.BuildClosure);
+			}
 		}
 
 
@@ -424,11 +436,7 @@ namespace Iodine
 		{
 			methodBuilder.EmitInstruction (cont.Location, Opcode.Jump, continueLabels.Peek ());
 		}
-
-		public void Accept (NodeEnumDecl enumDecl)
-		{
-		}
-
+			
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {

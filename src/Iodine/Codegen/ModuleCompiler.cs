@@ -131,7 +131,7 @@ namespace Iodine
 
 		public void Accept (NodeClassDecl classDecl)
 		{
-			module.SetAttribute (classDecl.Name, compileClass (classDecl));
+			module.SetAttribute (classDecl.Name, CompileClass (classDecl));
 		}
 
 		public void Accept (NodeConstant constant)
@@ -220,7 +220,7 @@ namespace Iodine
 			this.module.SetAttribute (enumDecl.Name, ienum);
 		}
 
-		private IodineClass compileClass (NodeClassDecl classDecl)
+		public IodineClass CompileClass (NodeClassDecl classDecl)
 		{
 			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor));
 
@@ -233,7 +233,7 @@ namespace Iodine
 						clazz.SetAttribute (func.Name, compileMethod (func));
 				} else if (classDecl.Children[i] is NodeClassDecl) {
 					NodeClassDecl subclass = classDecl.Children [i] as NodeClassDecl;
-					clazz.SetAttribute (subclass.Name, compileClass (subclass));
+					clazz.SetAttribute (subclass.Name, CompileClass (subclass));
 				}
 			}
 			return clazz;
@@ -241,7 +241,7 @@ namespace Iodine
 
 		private IodineMethod compileMethod (NodeFuncDecl funcDecl) 
 		{
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ChildScopes[currentScope++];
+			symbolTable.NextScope ();
 			IodineMethod methodBuilder = new IodineMethod (module, funcDecl.Name, funcDecl.InstanceMethod,
 				funcDecl.Parameters.Count, symbolTable.CurrentScope.SymbolCount);
 			FunctionCompiler compiler = new FunctionCompiler (this.errorLog, this.symbolTable, 
@@ -252,7 +252,6 @@ namespace Iodine
 					(funcDecl.Parameters[i]).Index;
 			}
 			funcDecl.Children[0].Visit (compiler);
-			symbolTable.CurrentScope = symbolTable.CurrentScope.ParentScope;
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
 			ControlFlowOptimization optimizations = new ControlFlowOptimization (methodBuilder);

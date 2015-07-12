@@ -8,6 +8,7 @@ namespace Iodine
 		private int nextGlobalIndex = 0;
 		private int nextLocalIndex = 0;
 		private Scope globalScope = new Scope ();
+		private Scope lastScope = null;
 
 		public Scope CurrentScope
 		{
@@ -19,11 +20,24 @@ namespace Iodine
 			CurrentScope = globalScope;
 		}
 
+		public Scope NextScope ()
+		{
+			if (CurrentScope == null) CurrentScope = globalScope;
+			CurrentScope = CurrentScope.NextScope;
+			return CurrentScope;
+		}
+
 		public void BeginScope ()
 		{
 			Scope newScope = new Scope (CurrentScope);
+			if (lastScope != null) {
+				lastScope.NextScope = newScope;
+			} else {
+				globalScope.NextScope = newScope;
+			}
 			CurrentScope.AddScope (newScope);
 			CurrentScope = newScope;
+			lastScope = newScope;
 		}
 
 		public void EndScope ()
@@ -75,25 +89,24 @@ namespace Iodine
 		private List<Symbol> symbols = new List<Symbol> ();
 		private List<Scope> childScopes = new List<Scope> ();
 	
-
-		public Scope ParentScope
-		{
+		public Scope ParentScope {
 			private set;
 			get;
 		}
 
-		public IList<Scope> ChildScopes
-		{
-			get
-			{
+		public Scope NextScope {
+			set;
+			get;
+		}
+
+		public IList<Scope> ChildScopes {
+			get {
 				return this.childScopes;
 			}
 		}
 
-		public int SymbolCount
-		{
-			get
-			{
+		public int SymbolCount {
+			get {
 				int val = symbols.Count;
 				foreach (Scope scope in this.childScopes) {
 					val += scope.SymbolCount;

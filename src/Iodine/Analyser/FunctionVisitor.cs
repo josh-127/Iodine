@@ -13,21 +13,7 @@ namespace Iodine
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 		}
-			
-		public void Accept (NodeEnumDecl enumDecl)
-		{
-			errorLog.AddError (ErrorType.ParserError, enumDecl.Location,
-				"Can not define enum in function!");
-		}
-
-		public void Accept (NodeClassDecl classDecl)
-		{
-			errorLog.AddError (ErrorType.ParserError, classDecl.Location,
-				"class statement not valid inside function body!");
-			//RootVisitor visitor = new RootVisitor (errorLog, symbolTable);
-			//classDecl.Visit (visitor);
-		}
-
+					
 		public void Accept (NodeUseStatement useStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
@@ -52,7 +38,19 @@ namespace Iodine
 			}
 			this.visitSubnodes (binop);
 		}
-			
+
+		public void Accept (NodeClassDecl classDecl)
+		{
+			symbolTable.AddSymbol (classDecl.Name);
+			RootVisitor visitor = new RootVisitor (errorLog, symbolTable);
+			classDecl.Visit (visitor);
+		}
+
+		public void Accept (NodeEnumDecl enumDecl)
+		{
+			symbolTable.AddSymbol (enumDecl.Name);
+		}
+
 		public void Accept (NodeFuncDecl funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);
