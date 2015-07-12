@@ -133,16 +133,6 @@ namespace Iodine
 			module.SetAttribute (classDecl.Name, CompileClass (classDecl));
 		}
 
-		public void Accept (NodeConstant constant)
-		{
-			if (constant.Value is NodeString)
-				module.SetAttribute (constant.Name, new IodineString (((NodeString)constant.Value
-					).Value));
-			else if (constant.Value is NodeInteger)
-				module.SetAttribute (constant.Name, new IodineInteger (((NodeInteger)constant.Value
-					).Value));
-		}
-
 		public void Accept (NodeReturnStmt returnStmt)
 		{
 			returnStmt.Visit (functionCompiler);

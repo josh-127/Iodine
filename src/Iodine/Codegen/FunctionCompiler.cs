@@ -409,10 +409,6 @@ namespace Iodine
 			methodBuilder.EmitInstruction (tuple.Location, Opcode.BuildTuple, tuple.Children.Count);
 		}
 
-		public void Accept (NodeConstant constant)
-		{
-		}
-
 		public void Accept (NodeSuperCall super)
 		{
 			List<string> parent = super.Parent.Base;

@@ -114,7 +114,6 @@
     <Compile Include="Parser\Ast\NodeTryExcept.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineChar.cs" />
     <Compile Include="Lexer\Matchers\MatchComment.cs" />
-    <Compile Include="Parser\Ast\NodeConstant.cs" />
     <Compile Include="Parser\Ast\NodeBreak.cs" />
     <Compile Include="VirtualMachine\IodineTypeDefinition.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineEvent.cs" />

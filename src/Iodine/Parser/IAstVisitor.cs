@@ -32,7 +32,6 @@ namespace Iodine
 		void Accept (NodeNull nil);
 		void Accept (NodeLambda lambda);
 		void Accept (NodeTryExcept tryCatch);
-		void Accept (NodeConstant constant);
 		void Accept (NodeBreak brk);
 		void Accept (NodeContinue cont);
 		void Accept (NodeTuple tuple);

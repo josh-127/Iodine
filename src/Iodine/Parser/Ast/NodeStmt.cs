@@ -50,8 +50,6 @@ namespace Iodine
 				return NodeScope.Parse (stream);
 			} else if (stream.Accept (TokenClass.SemiColon)) {
 				return new NodeStmt (stream.Location);
-			} else if (stream.Match (TokenClass.Identifier, TokenClass.Colon)) {
-				return NodeConstant.Parse (stream);
 			} else {
 				AstNode node = NodeExpr.Parse (stream);
 				if (node == null) {

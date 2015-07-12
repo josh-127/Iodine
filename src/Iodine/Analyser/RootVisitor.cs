@@ -167,11 +167,6 @@ namespace Iodine
 		{
 			visitSubnodes (ntrue);
 		}
-			
-		public void Accept (NodeConstant constant)
-		{
-			symbolTable.AddSymbol (constant.Name);
-		}
 
 		public void Accept (NodeTuple tuple)
 		{

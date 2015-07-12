@@ -20,12 +20,6 @@ namespace Iodine
 				"use statement not valid inside function body!");
 		}
 
-		public void Accept (NodeConstant constant)
-		{
-			errorLog.AddError (ErrorType.ParserError, constant.Location,
-				"Can not define constant in function!");
-		}
-
 		public void Accept (NodeBinOp binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
