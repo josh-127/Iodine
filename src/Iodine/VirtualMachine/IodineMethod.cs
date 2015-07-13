@@ -41,7 +41,7 @@ namespace Iodine
 		}
 	}
 
-	public class IodineMethod : IodineObject , ICachable
+	public class IodineMethod : IodineObject
 	{
 		private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
 		private static int nextLabelID = 0;
@@ -169,16 +169,6 @@ namespace Iodine
 		{
 			return vm.InvokeMethod (this, null, arguments);
 		}
-
-
-		public void EncodeInto (BinaryWriter bw)
-		{
-		}
-
-		public void DecodeInto (BinaryReader br)
-		{
-		}
-
 	}
 }
 

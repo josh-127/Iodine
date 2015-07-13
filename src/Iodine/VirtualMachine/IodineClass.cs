@@ -5,27 +5,35 @@ namespace Iodine
 {
 	public class IodineClass : IodineTypeDefinition
 	{
-		private IodineMethod constructor;
-		private IList<IodineMethod> instanceMethods = new List<IodineMethod> ();
+		public IodineMethod Constructor {
+			private set;
+			get;
+		}
+
+		public IList<IodineMethod> InstanceMethods {
+			private set;
+			get;
+		}
 
 		public IodineClass (string name, IodineMethod constructor)
 			: base (name)
 		{
-			this.constructor = constructor;
+			this.Constructor = constructor;
+			this.InstanceMethods = new List<IodineMethod> ();
 		}
 
 		public void AddInstanceMethod (IodineMethod method)
 		{
-			instanceMethods.Add (method);
+			InstanceMethods.Add (method);
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			IodineObject obj = new IodineObject (this);
-			foreach (IodineMethod method in this.instanceMethods) {
+			foreach (IodineMethod method in this.InstanceMethods) {
 				obj.SetAttribute (method.Name, method);
 			}
-			vm.InvokeMethod (constructor, obj, arguments);
+			vm.InvokeMethod (Constructor, obj, arguments);
 
 			return obj;
 		}
@@ -33,12 +41,12 @@ namespace Iodine
 		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			IodineObject obj = new IodineObject (this);
-			foreach (IodineMethod method in this.instanceMethods) {
+			foreach (IodineMethod method in this.InstanceMethods) {
 				if (!self.HasAttribute (method.Name))
 					self.SetAttribute (method.Name, method);
 				obj.SetAttribute (method.Name, method);
 			}
-			vm.InvokeMethod (constructor, self, arguments);
+			vm.InvokeMethod (Constructor, self, arguments);
 			self.SetAttribute ("_super", obj);
 			self.Base = obj;
 		}

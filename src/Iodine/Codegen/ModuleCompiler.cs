@@ -126,6 +126,26 @@ namespace Iodine
 
 		public void Accept (NodeUseStatement useStmt)
 		{
+			module.Imports.Add (useStmt.Module);
+			string import = !useStmt.Relative ? useStmt.Module : String.Format ("{0}{1}{2}",
+				Path.GetDirectoryName (useStmt.Location.File), Path.DirectorySeparatorChar, useStmt.Module);
+	
+			if (useStmt.Wildcard) {
+				module.Initializer.EmitInstruction (Opcode.ImportAll, module.DefineConstant (
+					new IodineName (import)));
+			} else {
+				IodineObject[] items = new IodineObject [useStmt.Imports.Count];
+				for (int i = 0; i < items.Length; i++) {
+					items [i] = new IodineString (useStmt.Imports [i]);
+				}
+				module.Initializer.EmitInstruction (Opcode.LoadConst, module.DefineConstant (
+					new IodineTuple (items)));
+				module.Initializer.EmitInstruction (Opcode.ImportFrom, module.DefineConstant (
+					new IodineName (import)));
+				module.Initializer.EmitInstruction (Opcode.Import, module.DefineConstant (
+					new IodineName (import)));
+			}
+			
 		}
 
 		public void Accept (NodeClassDecl classDecl)

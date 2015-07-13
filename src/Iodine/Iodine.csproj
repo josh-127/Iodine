@@ -145,6 +145,7 @@
     <Compile Include="VirtualMachine\CoreModules\MathModule.cs" />
     <Compile Include="Codegen\IBytecodeOptimization.cs" />
     <Compile Include="Codegen\Optimizations\InstructionOptimization.cs" />
+    <Compile Include="VirtualMachine\IodineCachedModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

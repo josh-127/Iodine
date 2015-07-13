@@ -28,6 +28,11 @@ namespace Iodine
 			self.SetAttribute ("_super", obj);
 			self.Base = obj;
 		}
+
+		public override string ToString ()
+		{
+			return this.Name;
+		}
 	}
 }
 

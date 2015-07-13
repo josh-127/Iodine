@@ -6,6 +6,8 @@ namespace Iodine
 {
 	public class VirtualMachine
 	{
+		public static readonly Dictionary<string, IodineModule> ModuleCache = new Dictionary<string,IodineModule> ();
+
 		private Dictionary<string, IodineObject> globalDict = new Dictionary<string, IodineObject> ();
 		private Stack<IodineExceptionHandler> exceptionHandlers = new Stack<IodineExceptionHandler> ();
 		private IodineException lastException = null;
@@ -337,8 +339,65 @@ namespace Iodine
 					}
 					break;
 				}
+			case Opcode.Import: {
+					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string fullPath = Path.GetFileName (name);
+					if (ModuleCache.ContainsKey (name)) {
+						IodineModule module = ModuleCache [fullPath];
+						Stack.Top.Module.SetAttribute (Path.GetFileNameWithoutExtension (fullPath),
+							module);
+					} else {
+						ErrorLog errLog = new ErrorLog ();
+						IodineModule module = IodineModule.CompileModule (errLog, fullPath);
+						if (errLog.ErrorCount == 0 && module != null) {
+							Stack.Top.Module.SetAttribute (Path.GetFileNameWithoutExtension (fullPath),
+								module);
+							ModuleCache [fullPath] = module;
+						}
+					}
+					break;
+				}
+			case Opcode.ImportFrom: {
+					IodineTuple names = Stack.Pop () as IodineTuple;
+					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string fullPath = Path.GetFileName (name);
+					IodineModule module = null;
+					if (ModuleCache.ContainsKey (name)) {
+						module = ModuleCache [fullPath];
+					} else {
+						ErrorLog errLog = new ErrorLog ();
+						module = IodineModule.LoadModule (errLog, fullPath);
+						ModuleCache [fullPath] = module;
+					}
+					if (module != null) {
+						foreach (IodineObject item in names.Objects) {
+							this.Stack.Top.Module.SetAttribute (item.ToString (), module.GetAttribute (
+								item.ToString ()));
+						}
+					}
+					break;
+				}
+			case Opcode.ImportAll: {
+					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string fullPath = Path.GetFileName (name);
+					IodineModule module = null;
+					if (ModuleCache.ContainsKey (name)) {
+						module = ModuleCache [fullPath];
+					} else {
+						ErrorLog errLog = new ErrorLog ();
+						module = IodineModule.LoadModule (errLog, fullPath);
+						ModuleCache [fullPath] = module;
+					}
+					if (module != null) {
+						foreach (string item in module.Attributes.Keys) {
+							this.Stack.Top.Module.SetAttribute (item, module.GetAttribute (
+								item));
+						}
+					}
+					break;
+				}
 			}
-
+	
 		}
 	}
 }

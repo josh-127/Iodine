@@ -40,7 +40,10 @@ namespace Iodine
 		PopExceptionHandler,
 		LoadException,
 		BeginExcept,
-		InstanceOf
+		InstanceOf,
+		Import,
+		ImportFrom,
+		ImportAll
 	}
 }
 

@@ -55,7 +55,7 @@ namespace Iodine
 		}
 
 		public IodineMethod Initializer {
-			private set;
+			set;
 			get;
 		}
 
