@@ -7,22 +7,18 @@ namespace Iodine
 	{
 		class ReachableRegion
 		{
-			public int Start
-			{
+			public int Start {
 				private set;
 				get;
 			}
 
-			public int End
-			{
+			public int End {
 				private set;
 				get;
 			}
 
-			public int Size
-			{
-				get
-				{
+			public int Size {
+				get {
 					return this.End - this.Start;
 				}
 			}
@@ -77,6 +73,9 @@ namespace Iodine
 					findRegion (method, regions, i + 1);
 					findRegion (method, regions, ins.Argument);
 					return;
+				} else if (ins.OperationCode == Opcode.Return) {
+					regions.Add (new ReachableRegion (start, i ));
+					return;
 				}
 			}
 			regions.Add (new ReachableRegion (start, method.Body.Count));
@@ -90,7 +89,7 @@ namespace Iodine
 					ins.OperationCode == Opcode.JumpIfTrue ||
 					ins.OperationCode == Opcode.PushExceptionHandler) {
 
-					if (ins.Argument >= start) {
+					if (ins.Argument > start) {
 						instructions[i] = new Instruction (ins.Location, ins.OperationCode,
 							ins.Argument - 1);
 					}

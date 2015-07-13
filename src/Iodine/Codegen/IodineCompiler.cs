@@ -9,7 +9,8 @@ namespace Iodine
 		private static List<IBytecodeOptimization> Optimizations = new List<IBytecodeOptimization> ();
 
 		static IodineCompiler () {
-			Optimizations.Add (new ControlFlowOptimization ());
+			//Optimizations.Add (new ControlFlowOptimization ());
+			//Optimizations.Add (new InstructionOptimization ());
 		}
 
 		private ErrorLog errorLog;
