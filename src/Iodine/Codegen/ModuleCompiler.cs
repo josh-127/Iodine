@@ -243,8 +243,8 @@ namespace Iodine
 			funcDecl.Children[0].Visit (compiler);
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
-			ControlFlowOptimization optimizations = new ControlFlowOptimization (methodBuilder);
-			optimizations.Optimize ();
+			//ControlFlowOptimization optimizations = new ControlFlowOptimization (methodBuilder);
+			//optimizations.Optimize ();
 			return methodBuilder;
 		}
 	}

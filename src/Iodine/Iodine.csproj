@@ -143,6 +143,7 @@
     <Compile Include="VirtualMachine\CoreModules\SysModule.cs" />
     <Compile Include="Parser\Ast\NodeRaise.cs" />
     <Compile Include="VirtualMachine\CoreModules\MathModule.cs" />
+    <Compile Include="Codegen\IBytecodeOptimization.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

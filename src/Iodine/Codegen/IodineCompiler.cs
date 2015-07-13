@@ -1,10 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Iodine
 {
 	public class IodineCompiler
 	{
+		private static List<IBytecodeOptimization> Optimizations = new List<IBytecodeOptimization> ();
+
+		static IodineCompiler () {
+			Optimizations.Add (new ControlFlowOptimization ());
+		}
+
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
 		private string file ;
@@ -28,7 +35,19 @@ namespace Iodine
 				}
 			}
 
+			optimizeObject (module);	
 			return module;
+		}
+
+		private void optimizeObject (IodineObject obj) {
+			foreach (IodineObject attr in obj.Attributes.Values) {
+				if (attr is IodineMethod) {
+					IodineMethod method = attr as IodineMethod;
+					foreach (IBytecodeOptimization opt in Optimizations) {
+						opt.PerformOptimization (method);
+					}
+				}
+			}
 		}
 
 		private void compileUseStatement (IodineModule module, NodeUseStatement useStmt) 
