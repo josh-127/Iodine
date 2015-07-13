@@ -341,7 +341,7 @@ namespace Iodine
 				}
 			case Opcode.Import: {
 					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
-					string fullPath = Path.GetFileName (name);
+					string fullPath = Path.GetFullPath (name);
 					if (ModuleCache.ContainsKey (name)) {
 						IodineModule module = ModuleCache [fullPath];
 						Stack.Top.Module.SetAttribute (Path.GetFileNameWithoutExtension (fullPath),
@@ -360,8 +360,7 @@ namespace Iodine
 			case Opcode.ImportFrom: {
 					IodineTuple names = Stack.Pop () as IodineTuple;
 					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
-					string fullPath = Path.GetFileName (name);
-					Console.WriteLine ("Import " + fullPath);
+					string fullPath = Path.GetFullPath (name);
 					IodineModule module = null;
 					if (ModuleCache.ContainsKey (name)) {
 						module = ModuleCache [fullPath];
@@ -380,8 +379,7 @@ namespace Iodine
 				}
 			case Opcode.ImportAll: {
 					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
-					string fullPath = Path.GetFileName (name);
-					Console.WriteLine ("Import " + fullPath);
+					string fullPath = Path.GetFullPath (name);
 					IodineModule module = null;
 					if (ModuleCache.ContainsKey (name)) {
 						module = ModuleCache [fullPath];

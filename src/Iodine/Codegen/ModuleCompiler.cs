@@ -129,7 +129,7 @@ namespace Iodine
 			module.Imports.Add (useStmt.Module);
 			string import = !useStmt.Relative ? useStmt.Module : String.Format ("{0}{1}{2}",
 				Path.GetDirectoryName (useStmt.Location.File), Path.DirectorySeparatorChar, useStmt.Module);
-	
+			
 			if (useStmt.Wildcard) {
 				module.Initializer.EmitInstruction (Opcode.ImportAll, module.DefineConstant (
 					new IodineName (import)));
