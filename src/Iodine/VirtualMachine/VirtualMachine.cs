@@ -361,6 +361,7 @@ namespace Iodine
 					IodineTuple names = Stack.Pop () as IodineTuple;
 					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
 					string fullPath = Path.GetFileName (name);
+					Console.WriteLine ("Import " + fullPath);
 					IodineModule module = null;
 					if (ModuleCache.ContainsKey (name)) {
 						module = ModuleCache [fullPath];
@@ -380,6 +381,7 @@ namespace Iodine
 			case Opcode.ImportAll: {
 					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
 					string fullPath = Path.GetFileName (name);
+					Console.WriteLine ("Import " + fullPath);
 					IodineModule module = null;
 					if (ModuleCache.ContainsKey (name)) {
 						module = ModuleCache [fullPath];
