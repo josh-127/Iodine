@@ -71,6 +71,7 @@ namespace Iodine
 					Panic ("Program terminated.");
 				} catch (Exception e) {
 					Console.Error.WriteLine ("Fatal exception has occured!");
+					Console.Error.WriteLine (e.Message);
 					Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
 					Panic ("Program terminated.");
 				}
