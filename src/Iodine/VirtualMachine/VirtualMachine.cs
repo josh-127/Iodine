@@ -348,7 +348,7 @@ namespace Iodine
 							module);
 					} else {
 						ErrorLog errLog = new ErrorLog ();
-						IodineModule module = IodineModule.CompileModule (errLog, fullPath);
+						IodineModule module = IodineModule.CompileModule (errLog, name);
 						if (errLog.ErrorCount == 0 && module != null) {
 							Stack.Top.Module.SetAttribute (Path.GetFileNameWithoutExtension (fullPath),
 								module);
@@ -366,7 +366,7 @@ namespace Iodine
 						module = ModuleCache [fullPath];
 					} else {
 						ErrorLog errLog = new ErrorLog ();
-						module = IodineModule.LoadModule (errLog, fullPath);
+						module = IodineModule.LoadModule (errLog, name);
 						ModuleCache [fullPath] = module;
 					}
 					if (module != null) {
@@ -385,7 +385,7 @@ namespace Iodine
 						module = ModuleCache [fullPath];
 					} else {
 						ErrorLog errLog = new ErrorLog ();
-						module = IodineModule.LoadModule (errLog, fullPath);
+						module = IodineModule.LoadModule (errLog, name);
 						ModuleCache [fullPath] = module;
 					}
 					if (module != null) {
