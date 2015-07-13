@@ -109,9 +109,13 @@ namespace Iodine
 					DateTime bytecodeTimeStamp = File.GetLastWriteTime (file + ".idx");
 					DateTime sourceTimeStamp = File.GetLastWriteTime (file);
 					if (bytecodeTimeStamp.CompareTo (sourceTimeStamp) >= 0) {
-						IodineModule mod = IodineCachedModule.Load (file + ".idx");
-						if (mod != null) {
-							return mod;
+						try {
+							IodineModule mod = IodineCachedModule.Load (file + ".idx");
+							if (mod != null) {
+								return mod;
+							}
+						} catch (Exception) {
+
 						}
 					}
 				}
@@ -132,7 +136,7 @@ namespace Iodine
 
 				try {
 					IodineCachedModule.SaveModule (file + ".idx", module);
-				} catch (UnauthorizedAccessException) {
+				} catch (Exception) {
 				}
 
 
