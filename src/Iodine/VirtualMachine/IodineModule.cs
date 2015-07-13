@@ -119,7 +119,7 @@ namespace Iodine
 						}
 					}
 				}
-				Lexer lexer = new Lexer (errorLog, File.ReadAllText (file), file);
+				Lexer lexer = new Lexer (errorLog, File.ReadAllText (FindModule (file)), file);
 				TokenStream tokenStream = lexer.Scan ();
 				if (errorLog.ErrorCount > 0) return null;
 				Parser parser = new Parser (tokenStream);
