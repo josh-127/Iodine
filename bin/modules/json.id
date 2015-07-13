@@ -196,8 +196,14 @@ func _dump (item) {
            return _dump (x) + " : " + _dump (item [x]);
         });
         return "{" + ",".join (items) + "}";
-    } else if (item is Int || item is Bool) {
+    } else if (item is Int) {
         return Str (item);
+    } else if (item is Bool) {
+        if (item) {
+            return "true";
+        } else {
+            return "false";
+        }
     }
     return "\"{}\"".format (Str (item));
 }
