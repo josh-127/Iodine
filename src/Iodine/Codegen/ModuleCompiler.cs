@@ -244,7 +244,7 @@ namespace Iodine
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
 			ControlFlowOptimization optimizations = new ControlFlowOptimization (methodBuilder);
-			//optimizations.Optimize ();
+			optimizations.Optimize ();
 			return methodBuilder;
 		}
 	}

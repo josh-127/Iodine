@@ -67,7 +67,6 @@ namespace Iodine
 			}
 
 			int insCount = method.Body.Count;
-
 			int i = 0;
 			foreach (string param in method.Parameters.Keys) {
 				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {

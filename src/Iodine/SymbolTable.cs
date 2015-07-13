@@ -5,13 +5,32 @@ namespace Iodine
 {
 	public class SymbolTable
 	{
+		class LocalScope {
+			public int NextLocal {
+				set;
+				get;
+			}
+
+			public LocalScope ParentScope {
+				private set;
+				get;
+			}
+
+			public LocalScope (LocalScope parentScope) {
+				this.ParentScope = parentScope;
+				this.NextLocal = 0;
+			}
+
+		}
+
 		private int nextGlobalIndex = 0;
 		private int nextLocalIndex = 0;
+		private Stack<int> localIndices = new Stack<int>(); 
 		private Scope globalScope = new Scope ();
 		private Scope lastScope = null;
+		private LocalScope currentLocalScope = null;
 
-		public Scope CurrentScope
-		{
+		public Scope CurrentScope {
 			set; get;
 		}
 
@@ -27,8 +46,11 @@ namespace Iodine
 			return CurrentScope;
 		}
 
-		public void BeginScope ()
+		public void BeginScope (bool isLocalScope = false)
 		{
+			if (isLocalScope) {
+				this.currentLocalScope = new LocalScope (this.currentLocalScope);
+			}
 			Scope newScope = new Scope (CurrentScope);
 			if (lastScope != null) {
 				lastScope.NextScope = newScope;
@@ -40,8 +62,12 @@ namespace Iodine
 			lastScope = newScope;
 		}
 
-		public void EndScope ()
+		public void EndScope (bool isLocalScope = false)
 		{
+			if (isLocalScope) {
+				this.currentLocalScope = this.currentLocalScope.ParentScope;
+			}
+
 			CurrentScope = CurrentScope.ParentScope;
 			if (CurrentScope == globalScope) {
 				nextLocalIndex = 0;
@@ -51,7 +77,7 @@ namespace Iodine
 		public int AddSymbol (string name)
 		{
 			if (this.CurrentScope.ParentScope != null) {
-				return CurrentScope.AddSymbol (SymbolType.Local, name, nextLocalIndex++);
+				return CurrentScope.AddSymbol (SymbolType.Local, name, currentLocalScope.NextLocal++);
 			} else {
 				return CurrentScope.AddSymbol (SymbolType.Global, name, nextGlobalIndex++);
 			}

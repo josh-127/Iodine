@@ -80,14 +80,14 @@ namespace Iodine
 		{
 			symbolTable.AddSymbol (funcDecl.Name);
 			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
-			symbolTable.BeginScope ();
+			symbolTable.BeginScope (true);
 
 			foreach (string param in funcDecl.Parameters) {
 				symbolTable.AddSymbol (param);
 			}
 
 			funcDecl.Children[0].Visit (visitor);
-			symbolTable.EndScope ();
+			symbolTable.EndScope (true);
 		}
 
 		public void Accept (NodeExpr expr)

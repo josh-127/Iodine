@@ -4,10 +4,11 @@ namespace Iodine
 {
 	public class IodineBool : IodineObject
 	{
+		public static readonly IodineTypeDefinition TypeDefinition = new BoolTypeDef ();
+
 		public static readonly IodineBool True = new IodineBool (true);
 		public static readonly IodineBool False = new IodineBool (false);
 
-		public static readonly IodineTypeDefinition TypeDefinition = new BoolTypeDef ();
 
 		class BoolTypeDef : IodineTypeDefinition
 		{

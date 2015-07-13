@@ -77,7 +77,7 @@ namespace Iodine
 					this.regions.Add ( new ReachableRegion (start, i));
 					FindRegion (ins.Argument);
 					return;
-				} else if (ins.OperationCode == Opcode.JumpIfTrue || ins.OperationCode == Opcode.JumpIfFalse) {
+				} else if (ins.OperationCode == Opcode.JumpIfTrue || ins.OperationCode == Opcode.JumpIfFalse || ins.OperationCode == Opcode.PushExceptionHandler) {
 					this.regions.Add ( new ReachableRegion (start, i));
 					FindRegion (i + 1);
 					FindRegion (ins.Argument);
