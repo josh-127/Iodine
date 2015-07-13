@@ -136,7 +136,6 @@
     <Compile Include="VirtualMachine\CoreModules\OSModule.cs" />
     <Compile Include="Codegen\Optimizations\ControlFlowOptimization.cs" />
     <Compile Include="Location.cs" />
-    <Compile Include="VirtualMachine\ICachable.cs" />
     <Compile Include="VirtualMachine\CoreModules\DateTimeModule.cs" />
     <Compile Include="VirtualMachine\IodineEnum.cs" />
     <Compile Include="Parser\Ast\NodeEnumDecl.cs" />

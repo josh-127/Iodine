@@ -105,6 +105,16 @@ namespace Iodine
 				return ModuleCache [Path.GetFullPath (file)];
 
 			if (FindModule (file) != null) {
+				if (File.Exists (file + ".idx")) {
+					DateTime bytecodeTimeStamp = File.GetLastWriteTime (file + ".idx");
+					DateTime sourceTimeStamp = File.GetLastWriteTime (file);
+					if (bytecodeTimeStamp.CompareTo (sourceTimeStamp) >= 0) {
+						IodineModule mod = IodineCachedModule.Load (file + ".idx");
+						if (mod != null) {
+							return mod;
+						}
+					}
+				}
 				Lexer lexer = new Lexer (errorLog, File.ReadAllText (file), file);
 				TokenStream tokenStream = lexer.Scan ();
 				if (errorLog.ErrorCount > 0) return null;
@@ -119,6 +129,13 @@ namespace Iodine
 				ModuleCache [Path.GetFullPath (file)] = module;
 				compiler.CompileAst (module, root);
 				if (errorLog.ErrorCount > 0) return null;
+
+				try {
+					IodineCachedModule.SaveModule (file + ".idx", module);
+				} catch (UnauthorizedAccessException) {
+				}
+
+
 				return module;
 			} else {
 				errorLog.AddError (ErrorType.ParserError, new Location (0, 0, file), 
@@ -228,6 +245,16 @@ namespace Iodine
 			}
 
 			return null;
+		}
+
+		private static bool canWrite (string folderPath)
+		{
+			try {
+				 
+				return true;
+			} catch (UnauthorizedAccessException) {
+				return false;
+			}
 		}
 	}
 }

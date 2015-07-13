@@ -4,8 +4,16 @@ using System.Collections.Generic;
 
 namespace Iodine
 {
-	public class IodineCachedModule
+	public static class IodineCachedModule
 	{
+		const byte BytecodeMajorVersion = 1;
+		const byte BytecodeMinorVersion = 1;
+		const byte Mag1 = 0x43;
+		const byte Mag2 = 0x41;
+		const byte Mag3 = 0x42;
+		const byte Mag4 = 0x3C;
+		const byte Mag5 = 0x33;
+
 		enum IodineItemType
 		{
 			Method = 0,
@@ -20,14 +28,17 @@ namespace Iodine
 			Name = 9,
 			Null = 10
 		}
-
-		public IodineCachedModule ()
-		{
-		}
-
+				
 		public static void SaveModule (string path, IodineModule original)
 		{
 			using (BinaryWriter bw = new BinaryWriter (new FileStream (path, FileMode.Create))) {
+				bw.Write (Mag1);
+				bw.Write (Mag2);
+				bw.Write (Mag3);
+				bw.Write (Mag4);
+				bw.Write (Mag5);
+				bw.Write (BytecodeMajorVersion);
+				bw.Write (BytecodeMinorVersion);
 				bw.Write (original.Name);
 				bw.Write (original.ConstantPool.Count);
 				foreach (IodineObject constant in original.ConstantPool) {
@@ -35,7 +46,6 @@ namespace Iodine
 				}
 				WriteObject (bw, original.Initializer);
 				bw.Write (original.Attributes.Count);
-
 				foreach (string key in original.Attributes.Keys) {
 					bw.Write (key);
 					WriteObject (bw, original.Attributes [key]);
@@ -117,7 +127,7 @@ namespace Iodine
 			}
 			bw.Write (method.Variadic);
 			bw.Write (method.InstanceMethod);
-			bw.Write (method.ParameterCount);
+			bw.Write (method.Parameters.Count);
 			foreach (string key in method.Parameters.Keys) {
 				bw.Write (key);
 				bw.Write (method.Parameters [key]);
@@ -149,21 +159,36 @@ namespace Iodine
 		public static IodineModule Load (string path)
 		{
 			using (BinaryReader br = new BinaryReader (new FileStream (path, FileMode.Open))) {
-				string name = br.ReadString ();
-				int constantCount = br.ReadInt32 ();
-				IodineModule ret = new IodineModule (name);
-				for (int i = 0; i < constantCount; i++) {
-					ret.DefineConstant (ReadObject (ret, br));
-				}
-				ret.Initializer = (IodineMethod)ReadObject (ret, br);
-				int attrCount = br.ReadInt32 ();
-				for (int i = 0; i < attrCount; i++) {
-					string attrName = br.ReadString ();
-					IodineObject val = ReadObject (ret, br);
-					ret.SetAttribute (attrName, val);
-				}
+				byte mag1 = br.ReadByte ();
+				byte mag2 = br.ReadByte ();
+				byte mag3 = br.ReadByte ();
+				byte mag4 = br.ReadByte ();
+				byte mag5 = br.ReadByte ();
+				byte major = br.ReadByte ();
+				byte minor = br.ReadByte ();
 
-				return ret;
+				if (mag1 == Mag1 && mag2 == Mag2 && mag3 == Mag3 && mag4 == Mag4 && mag5 == Mag5) {
+					if (major != BytecodeMajorVersion || minor != BytecodeMinorVersion) {
+						return null;
+					}
+					string name = br.ReadString ();
+					int constantCount = br.ReadInt32 ();
+					IodineModule ret = new IodineModule (name);
+					for (int i = 0; i < constantCount; i++) {
+						ret.DefineConstant (ReadObject (ret, br));
+					}
+					ret.Initializer = (IodineMethod)ReadObject (ret, br);
+					int attrCount = br.ReadInt32 ();
+					for (int i = 0; i < attrCount; i++) {
+						string attrName = br.ReadString ();
+						IodineObject val = ReadObject (ret, br);
+						ret.SetAttribute (attrName, val);
+					}
+
+					return ret;
+				} else {
+					return null;
+				}
 			}
 		}
 
