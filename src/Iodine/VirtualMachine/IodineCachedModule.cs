@@ -98,8 +98,7 @@ namespace Iodine
 			bw.Write (ienum.Attributes.Count);
 			foreach (string key in ienum.Attributes.Keys) {
 				bw.Write (key);
-				IodineInteger ival = ienum.GetAttribute (key) as IodineInteger;
-				bw.Write (ival.Value);
+				WriteObject (bw, ienum.GetAttribute (key));
 			}
 		}
 
@@ -227,8 +226,10 @@ namespace Iodine
 			IodineEnum ienum = new IodineEnum (name);
 			for (int i = 0; i < items; i++) {
 				string item = br.ReadString ();
-				long val = br.ReadInt64 ();
-				ienum.AddItem (item, (int)val);
+				IodineObject obj = ReadObject (module, br);
+				if (obj != null) {
+					ienum.SetAttribute (item, obj);
+				}
 			}
 			return ienum;
 		}
