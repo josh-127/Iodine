@@ -184,7 +184,10 @@ namespace Iodine
 		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount,
 			IodineObject[] locals) : this (method, parent, self, localCount)
 		{
-			this.locals = locals;
+			this.locals = new IodineObject[localCount];
+			for (int i = 0; i < localCount; i++) {
+				this.locals[i] = locals[i];
+			}
 		}
 
 		public void StoreLocal (int index, IodineObject obj)
@@ -213,7 +216,7 @@ namespace Iodine
 		public StackFrame Duplicate (StackFrame top)
 		{
 			return new StackFrame (this.Method, top, this.Self, this.LocalCount,
-				this.locals);;
+				this.locals);
 		}
 	}
 
