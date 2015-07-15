@@ -88,6 +88,9 @@ namespace Iodine
 				IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
 				IodineLabel endLabel = methodBuilder.CreateLabel ();
 				binop.Left.Visit (this);
+				/*
+				 * Short circuit evaluation 
+				 */
 				switch (binop.Operation) {
 				case BinaryOperation.BoolAnd:
 					methodBuilder.EmitInstruction (binop.Location, Opcode.Dup);
@@ -224,7 +227,7 @@ namespace Iodine
 			breakLabels.Push (breakLabel);
 			continueLabels.Push (foreachLabel);
 			foreachStmt.Iterator.Visit (this);
-			int tmp = methodBuilder.CreateTemporary ();
+			int tmp = methodBuilder.CreateTemporary (); 
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.Dup);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.StoreLocal, tmp);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterReset);

@@ -11,6 +11,7 @@ namespace Iodine
 		{
 			private static IodineTypeDefinition RangeIteratorTypeDef  = new IodineTypeDefinition ("RangeIterator");
 			private long iterIndex = 0;
+			private long min;
 			private long end;
 			private long step;
 
@@ -19,7 +20,7 @@ namespace Iodine
 			{
 				this.end = max;
 				this.step = step;
-				this.iterIndex = min;
+				this.min = min;
 			}
 
 
@@ -39,7 +40,7 @@ namespace Iodine
 
 			public override void IterReset (VirtualMachine vm)
 			{
-				this.iterIndex = 0;
+				this.iterIndex = min;
 			}
 
 		}
@@ -207,7 +208,7 @@ namespace Iodine
 				end = stepObj.Value;
 			} else if (args.Length == 2) {
 				IodineInteger startObj = args[0] as IodineInteger;
-				IodineInteger endObj = args[0] as IodineInteger;
+				IodineInteger endObj = args[1] as IodineInteger;
 				if (startObj == null || endObj == null) {
 					vm.RaiseException (new IodineTypeException ("Int"));
 					return null;
