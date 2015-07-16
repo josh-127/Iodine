@@ -19,7 +19,7 @@ class Stack {
 
   func pop (self) {
     if (len (self.store) == 0)
-      raise ("There are no elements on the stack!")
+      raise Exception ("There are no elements on the stack!")
     tmp = reverse (self.store)
     val = tmp[0]
     tmp.removeAt (0)
@@ -39,16 +39,16 @@ class Stack {
     return reverse (self.store)[lookahead]
   }
 
-  func _iterReset (self) {
+  func __iterReset__ (self) {
     self.iter_index = len (self.store) - 1
   }
 
-  func _iterMoveNext (self) {
+  func __iterMoveNext__ (self) {
     self.iter_index -= 1
     return self.iter_index >= 0
   }
 
-  func _iterGetNext (self) {
+  func __iterGetNext__ (self) {
     return self.store[self.iter_index]
   }
 }
@@ -61,6 +61,6 @@ class TypedStack : Stack {
   }
 
   func push (self, val) {
-    self._super.push (self.t (val))
+    self.__super__.push (self.t (val))
   }
 }

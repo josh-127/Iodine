@@ -76,6 +76,7 @@ namespace Iodine
 			globalDict["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
 			globalDict["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
 			globalDict["SyntaxException"] = IodineSyntaxException.TypeDefinition;
+			globalDict["NotSupportedException"] = IodineNotSupportedException.TypeDefinition;
 		}
 			
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)

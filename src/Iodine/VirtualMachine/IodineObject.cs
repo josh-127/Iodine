@@ -94,64 +94,105 @@ namespace Iodine
 		public virtual IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
 		{
 			IodineObject[] arguments = new IodineObject[] { rvalue };
+			string methodName = null;
 			switch (binop) {
 			case BinaryOperation.Add:
-				return GetAttribute (vm, "_add").Invoke (vm, arguments); 
+				methodName = "__add__";
+				break;
 			case BinaryOperation.Sub:
-				return GetAttribute (vm, "_sub").Invoke (vm, arguments); 
+				methodName = "__sub__";
+				break;
 			case BinaryOperation.Mul:
-				return GetAttribute (vm, "_mul").Invoke (vm, arguments); 
+				methodName = "__mul__";
+				break;
 			case BinaryOperation.Div:
-				return GetAttribute (vm, "_div").Invoke (vm, arguments); 
+				methodName = "__div__";
+				break;
 			case BinaryOperation.And:
-				return GetAttribute (vm, "_and").Invoke (vm, arguments); 
+				methodName = "__and__";
+				break;
 			case BinaryOperation.Xor:
-				return GetAttribute (vm, "_xor").Invoke (vm, arguments); 
+				methodName = "__xor__";
+				break;
 			case BinaryOperation.Or:
-				return GetAttribute (vm, "_or").Invoke (vm, arguments); 
+				methodName = "__or__";
+				break;
 			case BinaryOperation.Mod:
-				return GetAttribute (vm, "_mod").Invoke (vm, arguments); 
+				methodName = "__mod__";
+				break;
 			case BinaryOperation.Equals:
-				if (HasAttribute ("_equals"))
-					return GetAttribute (vm, "_equals").Invoke (vm, arguments); 
-				else
-					return new IodineBool (this == rvalue);
+				if (HasAttribute ("___equals__")) {
+					methodName = "__equals__";
+					break;
+				}
+				return new IodineBool (this == rvalue);
 			case BinaryOperation.NotEquals:
-				if (HasAttribute ("_notEquals"))
-					return GetAttribute (vm, "_notEquals").Invoke (vm, arguments); 
-				else
-					return new IodineBool (this != rvalue);
+				if (HasAttribute ("__notEquals__")) {
+					methodName = "__notEquals__";
+					break;
+				}
+				return new IodineBool (this != rvalue);
 			case BinaryOperation.RightShift:
-				return GetAttribute (vm, "_rightShift").Invoke (vm, arguments); 
+				methodName = "__rightShift__";
+				break;
 			case BinaryOperation.LeftShift:
-				return GetAttribute (vm, "_leftShift").Invoke (vm, arguments); 
+				methodName = "__leftShift__";
+				break;
 			case BinaryOperation.LessThan:
-				return GetAttribute (vm, "_lessThan").Invoke (vm, arguments); 
+				methodName = "__lessThan__";
+				break;
 			case BinaryOperation.GreaterThan:
-				return GetAttribute (vm, "_greaterThan").Invoke (vm, arguments); 
+				methodName = "__greaterThan__";
+				break;
 			case BinaryOperation.LessThanOrEqu:
-				return GetAttribute (vm, "_lessThanOrEqu").Invoke (vm, arguments); 
+				methodName = "__lessThanOrEqu__";
+				break;
 			case BinaryOperation.GreaterThanOrEqu:
-				return GetAttribute (vm, "_greaterThanOrEqu").Invoke (vm, arguments); 
+				methodName = "__greaterThanOrEqu__";
+				break;
 			case BinaryOperation.BoolAnd:
-				return GetAttribute (vm, "_boolAnd").Invoke (vm, arguments); 
+				methodName = "__logicalAnd__";
+				break;
 			case BinaryOperation.BoolOr:
-				return GetAttribute (vm, "_boolOr").Invoke (vm, arguments); 
-			default:
-				return null;
+				methodName = "__logicalOr__";
+				break;
 			}
 
+			if (this.HasAttribute (methodName)) {
+				return GetAttribute (vm, methodName).Invoke (vm, arguments);
+			}
+			vm.RaiseException (new IodineNotSupportedException (
+				"The requested binary operator has not been implemented"));
+			return null;
 		}
 
 		public virtual IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
 		{
+			string methodName = null;
+			switch (op) {
+			case UnaryOperation.Negate:
+				methodName = "__negate__";
+				break;
+			case UnaryOperation.Not:
+				methodName = "__not__";
+				break;
+			case UnaryOperation.BoolNot:
+				methodName = "__logicalNot__";
+				break;
+			}
+			if (this.HasAttribute (methodName)) {
+				return GetAttribute (vm, methodName).Invoke (vm, new IodineObject[] {});
+			}
+			vm.RaiseException (new IodineNotSupportedException (
+				"The requested unary operator has not been implemented"));
 			return null;
 		}
 
 		public virtual IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			vm.RaiseException ("Object does not support invocation!");
-			return new IodineObject (null);
+			vm.RaiseException (new IodineNotSupportedException (
+				"Object does not support invocation"));
+			return null;
 		}
 
 		public virtual bool IsTrue () {
@@ -160,17 +201,17 @@ namespace Iodine
 
 		public virtual IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return GetAttribute("_iterGetNext").Invoke (vm, new IodineObject[]{});
+			return GetAttribute("__iterGetNext__").Invoke (vm, new IodineObject[]{});
 		}
 
 		public virtual bool IterMoveNext (VirtualMachine vm) 
 		{
-			return GetAttribute("_iterMoveNext").Invoke (vm, new IodineObject[]{}).IsTrue ();
+			return GetAttribute("__iterMoveNext__").Invoke (vm, new IodineObject[]{}).IsTrue ();
 		}
 
 		public virtual void IterReset (VirtualMachine vm)
 		{
-			GetAttribute("_iterReset").Invoke (vm, new IodineObject[]{});
+			GetAttribute ("__iterReset__").Invoke (vm, new IodineObject[]{});
 		}
 
 		public virtual void PrintTest ()
@@ -192,8 +233,7 @@ namespace Iodine
 		public override int GetHashCode ()
 		{
 			int accum = 17;
-			unchecked
-			{
+			unchecked {
 				foreach (IodineObject obj in this.attributes.Values) {
 					accum += 529 * obj.GetHashCode ();
 				}

@@ -235,6 +235,36 @@ namespace Iodine
 		}
 	}
 
+	public class IodineNotSupportedException : IodineException
+	{
+		public static new readonly IodineTypeDefinition TypeDefinition = new NotSupportedExceptionTypeDef ();
+
+		class NotSupportedExceptionTypeDef : IodineTypeDefinition
+		{
+			public NotSupportedExceptionTypeDef () 
+				: base ("NotSupportedException")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				return new IodineIndexException ();
+			}
+		}
+
+		public IodineNotSupportedException ()
+			: base (TypeDefinition, "The requested feature is not supported!") 
+		{
+			this.Base = new IodineException ();
+		}
+
+		public IodineNotSupportedException (string message)
+			: base (TypeDefinition, message) 
+		{
+			this.Base = new IodineException ();
+		}
+	}
+
 	public class UnhandledIodineExceptionException : Exception
 	{
 		public IodineException OriginalException

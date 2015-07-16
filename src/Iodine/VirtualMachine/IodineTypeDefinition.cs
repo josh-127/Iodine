@@ -25,7 +25,7 @@ namespace Iodine
 					self.SetAttribute (attr, this.attributes[attr]);
 				obj.SetAttribute (attr, this.attributes[attr]);
 			}
-			self.SetAttribute ("_super", obj);
+			self.SetAttribute ("__super__", obj);
 			self.Base = obj;
 		}
 
