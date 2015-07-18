@@ -76,6 +76,10 @@ namespace Iodine
 			visitSubnodes (classDecl);
 		}
 
+		public void Accept (NodeInterfaceDecl interfaceDecl)
+		{
+		}
+
 		public void Accept (NodeFuncDecl funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);

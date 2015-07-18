@@ -7,7 +7,7 @@ namespace Iodine
 	public static class IodineCachedModule
 	{
 		const byte BytecodeMajorVersion = 1;
-		const byte BytecodeMinorVersion = 1;
+		const byte BytecodeMinorVersion = 2;
 		const byte Mag1 = 0x43;
 		const byte Mag2 = 0x41;
 		const byte Mag3 = 0x42;
@@ -26,7 +26,8 @@ namespace Iodine
 			Float = 7,
 			Bool = 8,
 			Name = 9,
-			Null = 10
+			Null = 10,
+			Inteface = 11,
 		}
 				
 		public static void SaveModule (string path, IodineModule original)
@@ -79,6 +80,9 @@ namespace Iodine
 			} else if (obj is IodineClass) {
 				bw.Write ((byte)IodineItemType.Class);
 				WriteClass (bw, obj as IodineClass);
+			} else if (obj is IodineInterface) {
+				bw.Write ((byte)IodineItemType.Inteface);
+				WriteInterface (bw, obj as IodineInterface);
 			} else if (obj is IodineTuple) {
 				bw.Write ((byte)IodineItemType.Tuple);
 				WriteTuple (bw, obj as IodineTuple);
@@ -116,7 +120,16 @@ namespace Iodine
 				WriteObject (bw, clazz.Attributes [key]);
 			}
 		}
-			
+
+		private static void WriteInterface (BinaryWriter bw, IodineInterface contract)
+		{
+			bw.Write (contract.Name);
+			bw.Write (contract.RequiredMethods.Count);
+			foreach (IodineMethod meth in contract.RequiredMethods) {
+				WriteObject (bw, meth);
+			}
+		}	
+
 		private static void WriteMethod (BinaryWriter bw, IodineMethod method)
 		{
 			if (method.Name != null) {
@@ -207,6 +220,8 @@ namespace Iodine
 				return new IodineName (br.ReadString ());
 			case IodineItemType.Class:
 				return ReadClass (module, br);
+			case IodineItemType.Inteface:
+				return ReadInterface (module, br);
 			case IodineItemType.Enum:
 				return ReadEnum (module, br);
 			case IodineItemType.Method:
@@ -249,6 +264,17 @@ namespace Iodine
 				clazz.SetAttribute (item, val);
 			}
 			return clazz;
+		}
+
+		private static IodineObject ReadInterface (IodineModule module, BinaryReader br)
+		{
+			string name = br.ReadString ();
+			IodineInterface contract = new IodineInterface (name);
+			int methods = br.ReadInt32 ();
+			for (int i = 0 ; i < methods; i++) {
+				contract.AddMethod (ReadObject (module, br) as IodineMethod);
+			}
+			return contract;
 		}
 
 		private static IodineObject ReadMethod (IodineModule module, BinaryReader br)

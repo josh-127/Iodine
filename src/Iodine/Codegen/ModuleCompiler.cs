@@ -153,6 +153,17 @@ namespace Iodine
 			module.SetAttribute (classDecl.Name, CompileClass (classDecl));
 		}
 
+		public void Accept (NodeInterfaceDecl contractDecl)
+		{
+			IodineInterface contract = new IodineInterface (contractDecl.Name);
+			foreach (AstNode node in contractDecl.Children) {
+				NodeFuncDecl decl = node as NodeFuncDecl;
+				contract.AddMethod (new IodineMethod (module, decl.Name, decl.InstanceMethod,
+					decl.Parameters.Count, 0));
+			}
+			module.SetAttribute (contractDecl.Name, contract);
+		}
+
 		public void Accept (NodeReturnStmt returnStmt)
 		{
 			returnStmt.Visit (functionCompiler);
@@ -263,8 +274,6 @@ namespace Iodine
 			funcDecl.Children[0].Visit (compiler);
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
-			//ControlFlowOptimization optimizations = new ControlFlowOptimization (methodBuilder);
-			//optimizations.Optimize ();
 			return methodBuilder;
 		}
 	}

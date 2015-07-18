@@ -58,8 +58,11 @@ namespace Iodine
 
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				if (stream.Match (TokenClass.Keyword, "func")) {
-					NodeFuncDecl func = NodeFuncDecl.Parse (stream, clazz) as NodeFuncDecl;
+					NodeFuncDecl func = NodeFuncDecl.Parse (stream, false, clazz) as NodeFuncDecl;
 					if (func.Name == name) {
+						if (!(func.Children [0] is NodeSuperCall) && baseClass.Count > 0) {
+							func.Children.Insert (0, new NodeSuperCall (func.Location));
+						}
 						clazz.Constructor = func;
 					} else {
 						clazz.Add (func);

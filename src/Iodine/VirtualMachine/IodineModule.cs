@@ -22,7 +22,6 @@ namespace Iodine
 	public class IodineModule : IodineObject
 	{
 		public static readonly List<IodineObject> SearchPaths = new List<IodineObject> ();
-		public static readonly Dictionary<string, IodineModule> ModuleCache = new Dictionary<string,IodineModule> ();
 		private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
 
 		static IodineModule ()
@@ -59,7 +58,6 @@ namespace Iodine
 			get;
 		}
 
-		private bool initialized = false;
 		private List<IodineObject> constantPool = new List<IodineObject> ();
 
 		public IodineModule (string name)
@@ -83,26 +81,12 @@ namespace Iodine
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			if (!this.initialized) {
-				this.Initializer.Invoke (vm, arguments);
-				this.initialized = true;
-			}
+			this.Initializer.Invoke (vm, arguments);
 			return null;
-		}
-
-		public override IodineObject GetAttribute (VirtualMachine vm, string name)
-		{
-			if (!this.initialized && this.Initializer.Body.Count > 0) {
-				this.initialized = true;
-				vm.InvokeMethod (this.Initializer, null, new IodineObject[]{});
-			}
-			return base.GetAttribute (vm, name);
 		}
 
 		public static IodineModule CompileModule (ErrorLog errorLog, string file)
 		{
-			if (ModuleCache.ContainsKey (Path.GetFullPath (file)))
-				return ModuleCache [Path.GetFullPath (file)];
 
 			if (FindModule (file) != null) {
 				if (File.Exists (file + ".idx")) {
@@ -130,7 +114,6 @@ namespace Iodine
 				if (errorLog.ErrorCount > 0) return null;
 				IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable, Path.GetFullPath (file));
 				IodineModule module = new IodineModule (Path.GetFileNameWithoutExtension (file));
-				ModuleCache [Path.GetFullPath (file)] = module;
 				compiler.CompileAst (module, root);
 				if (errorLog.ErrorCount > 0) return null;
 
@@ -138,7 +121,6 @@ namespace Iodine
 					IodineCachedModule.SaveModule (file + ".idx", module);
 				} catch (Exception) {
 				}
-
 
 				return module;
 			} else {

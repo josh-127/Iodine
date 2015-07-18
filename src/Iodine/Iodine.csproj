@@ -145,6 +145,8 @@
     <Compile Include="Codegen\IBytecodeOptimization.cs" />
     <Compile Include="Codegen\Optimizations\InstructionOptimization.cs" />
     <Compile Include="VirtualMachine\IodineCachedModule.cs" />
+    <Compile Include="VirtualMachine\IodineInterface.cs" />
+    <Compile Include="Parser\Ast\NodeInterfaceDecl.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

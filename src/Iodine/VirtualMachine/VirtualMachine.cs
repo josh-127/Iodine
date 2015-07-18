@@ -353,6 +353,7 @@ namespace Iodine
 							Stack.Top.Module.SetAttribute (Path.GetFileNameWithoutExtension (fullPath),
 								module);
 							ModuleCache [fullPath] = module;
+							module.Initializer.Invoke (this, new IodineObject[] {});
 						}
 					}
 					break;
@@ -368,6 +369,7 @@ namespace Iodine
 						ErrorLog errLog = new ErrorLog ();
 						module = IodineModule.LoadModule (errLog, name);
 						ModuleCache [fullPath] = module;
+						module.Initializer.Invoke (this, new IodineObject[] {});
 					}
 					if (module != null) {
 						foreach (IodineObject item in names.Objects) {
@@ -387,6 +389,7 @@ namespace Iodine
 						ErrorLog errLog = new ErrorLog ();
 						module = IodineModule.LoadModule (errLog, name);
 						ModuleCache [fullPath] = module;
+						module.Initializer.Invoke (this, new IodineObject[] {});
 					}
 					if (module != null) {
 						foreach (string item in module.Attributes.Keys) {

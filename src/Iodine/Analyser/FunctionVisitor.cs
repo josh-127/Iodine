@@ -32,6 +32,11 @@ namespace Iodine
 			}
 			this.visitSubnodes (binop);
 		}
+			
+		public void Accept (NodeInterfaceDecl interfaceDecl)
+		{
+			symbolTable.AddSymbol (interfaceDecl.Name);
+		}
 
 		public void Accept (NodeClassDecl classDecl)
 		{

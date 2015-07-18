@@ -47,7 +47,7 @@ namespace Iodine
 				obj.SetAttribute (method.Name, method);
 			}
 			vm.InvokeMethod (Constructor, self, arguments);
-			self.SetAttribute ("_super", obj);
+			self.SetAttribute ("__super__", obj);
 			self.Base = obj;
 		}
 	}

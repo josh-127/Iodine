@@ -47,6 +47,7 @@ namespace Iodine
 				matchString (inputStream, "as") ||
 				matchString (inputStream, "enum") ||
 				matchString (inputStream, "raise") ||
+				matchString (inputStream, "interface") ||
 				matchString (inputStream, "return");
 		}
 

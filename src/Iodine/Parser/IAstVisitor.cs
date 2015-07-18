@@ -22,6 +22,7 @@ namespace Iodine
 		void Accept (NodeScope scope);
 		void Accept (NodeString stringConst);
 		void Accept (NodeUseStatement useStmt);
+		void Accept (NodeInterfaceDecl interfaceDecl);
 		void Accept (NodeClassDecl classDecl);
 		void Accept (NodeReturnStmt returnStmt);
 		void Accept (NodeIndexer indexer);

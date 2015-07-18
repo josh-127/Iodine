@@ -14,7 +14,7 @@ namespace Iodine
 			: base (TypeDefTypeDef)
 		{
 			this.Name = name;
-			this.attributes["name"] = new IodineString (name);
+			this.attributes ["name"] = new IodineString (name);
 		}
 
 		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)

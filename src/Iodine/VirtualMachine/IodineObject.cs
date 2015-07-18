@@ -11,6 +11,10 @@ namespace Iodine
 			set; get;
 		}
 
+		public List<IodineInterface> Interfaces {
+			set; get;
+		}
+
 		public IodineTypeDefinition TypeDef {
 			private set;
 			get;
@@ -27,7 +31,8 @@ namespace Iodine
 		public IodineObject (IodineTypeDefinition typeDef)
 		{
 			this.TypeDef = typeDef;
-			this.attributes["typeDef"] = typeDef;
+			this.Interfaces = new List<IodineInterface> ();
+			this.attributes ["typeDef"] = typeDef;
 		}
 
 		public bool HasAttribute (string name)
@@ -220,6 +225,11 @@ namespace Iodine
 
 		public bool InstanceOf (IodineTypeDefinition def)
 		{
+			foreach (IodineInterface contract in this.Interfaces) {
+				if (contract == def) {
+					return true;
+				}
+			}
 			IodineObject i = this;
 			while (i != null) {
 				if (i.TypeDef == def) {

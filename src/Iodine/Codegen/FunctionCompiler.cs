@@ -303,7 +303,19 @@ namespace Iodine
 			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (clazz));
 			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (classDecl.Name).Index);
 		}
-			
+
+		public void Accept (NodeInterfaceDecl contractDecl)
+		{
+			IodineInterface contract = new IodineInterface (contractDecl.Name);
+			foreach (AstNode node in contractDecl.Children) {
+				NodeFuncDecl decl = node as NodeFuncDecl;
+				contract.AddMethod (new IodineMethod (methodBuilder.Module, decl.Name, decl.InstanceMethod,
+					decl.Parameters.Count, 0));
+			}
+			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (contract));
+			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (contractDecl.Name).Index);
+		}
+
 		public void Accept (NodeEnumDecl enumDecl)
 		{
 			IodineEnum ienum = new IodineEnum (enumDecl.Name);

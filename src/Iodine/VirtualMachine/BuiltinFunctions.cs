@@ -65,6 +65,7 @@ namespace Iodine
 			globalDict["HashMap"] = IodineMap.TypeDefinition;
 			globalDict["filter"] = new InternalMethodCallback (filter, null);
 			globalDict["map"] = new InternalMethodCallback (map, null); 
+			globalDict["reduce"] = new InternalMethodCallback (reduce, null);
 			globalDict["range"] = new InternalMethodCallback (range, null);
 			globalDict["open"] = new InternalMethodCallback (open, null);
 			globalDict["Exception"] = IodineException.TypeDefinition;
@@ -189,6 +190,26 @@ namespace Iodine
 				list.Add (func.Invoke (vm, new IodineObject[] { o }));
 			}
 			return list;
+		}
+
+		private IodineObject reduce (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+
+			IodineObject result = null;
+			IodineObject collection = args[0];
+			IodineObject func = args[1];
+
+			collection.IterReset (vm);
+			while (collection.IterMoveNext (vm)) {
+				IodineObject o = collection.IterGetNext (vm);
+				if (result == null) result = o;
+				result = func.Invoke (vm, new IodineObject[] { result, o });
+			}
+			return result;
 		}
 
 		private IodineObject range (VirtualMachine vm, IodineObject self, IodineObject[] args)

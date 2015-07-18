@@ -20,8 +20,7 @@ namespace Iodine
 	{
 		private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("InstanceMethod");
 
-		public IodineMethod Method
-		{
+		public IodineMethod Method {
 			private set;
 			get;
 		}
