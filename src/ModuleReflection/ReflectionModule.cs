@@ -28,7 +28,7 @@ namespace ModuleReflection
 			}
 			IodineObject o1 = args[0];
 			IodineString str = args[1] as IodineString;
-			if (str != null) {
+			if (str == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
