@@ -83,7 +83,7 @@ namespace Iodine
 
 		private static bool IsOperator (char c)
 		{
-			return "+-*/.-=<>~!&^|%".Contains (c.ToString ());
+			return "+-*/.-=<>~!&^|%@".Contains (c.ToString ());
 		}
 	}
 }

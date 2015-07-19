@@ -266,6 +266,7 @@ namespace Iodine
 				methodBuilder.Module.DefineConstant (anonMethod));
 			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.BuildClosure);
 			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.StoreLocal, symbolTable.GetSymbol (funcDecl.Name).Index);
+			symbolTable.LeaveScope ();
 		}
 
 		public void Accept (NodeScope scope)
@@ -277,6 +278,7 @@ namespace Iodine
 			foreach (AstNode node in scope) {
 				node.Visit (scopeCompiler);
 			}
+			symbolTable.LeaveScope ();
 		}
 
 		public void Accept (NodeString str)
@@ -386,6 +388,7 @@ namespace Iodine
 			if (methodBuilder.LocalCount > 0) {
 				methodBuilder.EmitInstruction (lambda.Location, Opcode.BuildClosure);
 			}
+			symbolTable.LeaveScope ();
 		}
 
 

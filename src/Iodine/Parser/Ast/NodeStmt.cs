@@ -22,7 +22,8 @@ namespace Iodine
 				return NodeEnumDecl.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "interface")) {
 				return NodeInterfaceDecl.Parse (stream);
-			} else if (stream.Match (TokenClass.Keyword, "func")) {
+			} else if (stream.Match (TokenClass.Keyword, "func") ||
+				stream.Match (TokenClass.Operator, "@")) {
 				return NodeFuncDecl.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "if")) {
 				return NodeIfStmt.Parse (stream);

@@ -6,7 +6,7 @@ namespace Iodine
 	public class NodeFuncDecl : AstNode
 	{
 		public string Name {
-			private set;
+			protected set;
 			get;
 		}
 
@@ -43,6 +43,34 @@ namespace Iodine
 		public static AstNode Parse (TokenStream stream, bool prototype = false, NodeClassDecl cdecl =
 			null)
 		{
+			if (stream.Accept (TokenClass.Operator, "@")) {
+				/*
+				 * Function decorators in the form of 
+				 * @myDecorator
+				 * func foo () {
+				 * }
+				 * are merely syntatic sugar for
+				 * func foo () {
+				 * }
+				 * foo = myDecorator (foo)
+				 */
+				AstNode expr = NodeExpr.Parse (stream); // Decorator expression 
+				/* This is the original function which is to be decorated */
+				NodeFuncDecl idecl = NodeFuncDecl.Parse (stream, prototype, cdecl) as NodeFuncDecl;
+				/* We must construct an arglist which will be passed to the decorator */
+				NodeArgList args = new NodeArgList (stream.Location);
+				args.Add (new NodeIdent (stream.Location, idecl.Name));
+				/*
+				 * Since two values can not be returned, we must return a single node containing both
+				 * the function declaration and call to the decorator 
+				 */
+				Ast nodes = new Ast (stream.Location);
+				nodes.Add (idecl);
+				nodes.Add (new NodeExpr (stream.Location, new NodeBinOp (stream.Location,
+					BinaryOperation.Assign, new NodeIdent (stream.Location, idecl.Name), new NodeCall (
+						stream.Location, expr, args))));
+				return nodes;
+			}
 			stream.Expect (TokenClass.Keyword, "func");
 			bool isInstanceMethod;
 			bool isVariadic;

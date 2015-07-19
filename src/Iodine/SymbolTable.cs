@@ -5,7 +5,8 @@ namespace Iodine
 {
 	public class SymbolTable
 	{
-		class LocalScope {
+		class LocalScope
+		{
 			public int NextLocal {
 				set;
 				get;
@@ -24,8 +25,6 @@ namespace Iodine
 		}
 
 		private int nextGlobalIndex = 0;
-		private int nextLocalIndex = 0;
-		private Stack<int> localIndices = new Stack<int>(); 
 		private Scope globalScope = new Scope ();
 		private Scope lastScope = null;
 		private LocalScope currentLocalScope = null;
@@ -43,6 +42,14 @@ namespace Iodine
 		{
 			if (CurrentScope == null) CurrentScope = globalScope;
 			CurrentScope = CurrentScope.NextScope;
+			return CurrentScope;
+		}
+
+		public Scope LeaveScope ()
+		{
+			Scope old = CurrentScope;
+			CurrentScope = old.ParentScope;
+			CurrentScope.NextScope = old.NextScope;
 			return CurrentScope;
 		}
 
@@ -69,9 +76,6 @@ namespace Iodine
 			}
 
 			CurrentScope = CurrentScope.ParentScope;
-			if (CurrentScope == globalScope) {
-				nextLocalIndex = 0;
-			}
 		}
 
 		public int AddSymbol (string name)

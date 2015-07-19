@@ -23,7 +23,7 @@ namespace Iodine
 				this.Children[0] = value;
 			}
 		}
-			
+
 		public NodeClassDecl (Location location, string name, List<string> baseClass)
 			: base (location)
 		{
@@ -60,9 +60,6 @@ namespace Iodine
 				if (stream.Match (TokenClass.Keyword, "func")) {
 					NodeFuncDecl func = NodeFuncDecl.Parse (stream, false, clazz) as NodeFuncDecl;
 					if (func.Name == name) {
-						if (!(func.Children [0] is NodeSuperCall) && baseClass.Count > 0) {
-							func.Children.Insert (0, new NodeSuperCall (func.Location));
-						}
 						clazz.Constructor = func;
 					} else {
 						clazz.Add (func);
@@ -81,4 +78,3 @@ namespace Iodine
 		}
 	}
 }
-

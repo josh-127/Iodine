@@ -2,7 +2,6 @@
 
 namespace Iodine
 {
-
 	public enum SymbolType
 	{
 		Local,

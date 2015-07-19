@@ -274,6 +274,7 @@ namespace Iodine
 			funcDecl.Children[0].Visit (compiler);
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
+			symbolTable.LeaveScope ();
 			return methodBuilder;
 		}
 	}
