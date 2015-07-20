@@ -184,10 +184,7 @@ namespace Iodine
 		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount,
 			IodineObject[] locals) : this (method, parent, self, localCount)
 		{
-			this.locals = new IodineObject[localCount];
-			for (int i = 0; i < localCount; i++) {
-				this.locals[i] = locals[i];
-			}
+			this.locals = locals;
 		}
 
 		public void StoreLocal (int index, IodineObject obj)
