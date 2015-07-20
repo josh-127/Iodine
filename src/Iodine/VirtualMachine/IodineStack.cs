@@ -9,24 +9,6 @@ namespace Iodine
 		private Stack<StackFrame> frames = new Stack<StackFrame>( );
 		private StackFrame top = null;
 
-		public IodineMethod CurrentMethod {
-			get {
-				return top.Method;
-			}
-		}
-
-		public IodineModule CurrentModule {
-			get {
-				return top.Module;
-			}
-		}
-
-		public IodineObject Self {
-			get {
-				return this.top.Self;
-			}
-		}
-
 		public IodineObject Last {
 			private set; get;
 		}
@@ -40,14 +22,6 @@ namespace Iodine
 		public int Frames {
 			private set;
 			get;
-		}
-
-		public int InstructionPointer {
-			get {
-				return top.InstructionPointer;
-			} set {
-				top.InstructionPointer = value;
-			}
 		}
 
 		public void NewFrame (StackFrame frame)

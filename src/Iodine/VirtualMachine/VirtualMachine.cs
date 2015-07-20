@@ -83,7 +83,7 @@ namespace Iodine
 
 			StackFrame top = Stack.Top;
 			while (top.InstructionPointer < insCount && !top.AbortExecution) {
-				Instruction currInstruction = method.Body[Stack.InstructionPointer++];
+				Instruction currInstruction = method.Body[Stack.Top.InstructionPointer++];
 				ExecuteInstruction (currInstruction);
 				top.Location = currLoc;
 			}
@@ -116,7 +116,7 @@ namespace Iodine
 				ex.SetAttribute ("stackTrace", new IodineString (Stack.Trace ()));
 				Stack.Unwind (Stack.Frames - handler.Frame);
 				lastException = ex;
-				Stack.InstructionPointer = handler.InstructionPointer;
+				Stack.Top.InstructionPointer = handler.InstructionPointer;
 			}
 		}
 
@@ -135,7 +135,7 @@ namespace Iodine
 					break;
 				}
 			case Opcode.LoadConst: {
-					Stack.Push (Stack.CurrentModule.ConstantPool[ins.Argument]);
+					Stack.Push (Stack.Top.Module.ConstantPool[ins.Argument]);
 					break;
 				}
 			case Opcode.LoadNull: {
@@ -143,7 +143,7 @@ namespace Iodine
 					break;
 				}
 			case Opcode.LoadSelf: {
-					Stack.Push (Stack.Self);
+					Stack.Push (Stack.Top.Self);
 					break;
 				}
 			case Opcode.LoadTrue: {
@@ -167,33 +167,33 @@ namespace Iodine
 					break;
 				}
 			case Opcode.StoreGlobal: {
-					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string name = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
 					if (globalDict.ContainsKey (name)) {
 						globalDict[name] = Stack.Pop ();
 					} else {
-						Stack.CurrentModule.SetAttribute (name, Stack.Pop ());
+						Stack.Top.Module.SetAttribute (name, Stack.Pop ());
 					}
 					break;
 				}
 			case Opcode.LoadGlobal: {
-					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string name = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
 					if (globalDict.ContainsKey (name)) {
 						Stack.Push (globalDict[name]);
 					} else {
-						Stack.Push (Stack.CurrentModule.GetAttribute (this, name));
+						Stack.Push (Stack.Top.Module.GetAttribute (this, name));
 					}
 					break;
 				}
 			case Opcode.StoreAttribute: {
 					IodineObject target = Stack.Pop ();
 					IodineObject value = Stack.Pop ();
-					string attribute = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string attribute = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
 					target.SetAttribute (attribute, value);
 					break;
 				}
 			case Opcode.LoadAttribute: {
 					IodineObject target = Stack.Pop ();
-					string attribute = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string attribute = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
 					Stack.Push (target.GetAttribute (this, attribute));
 					break;
 				}
@@ -237,27 +237,27 @@ namespace Iodine
 					for (int i = 1; i <= ins.Argument; i++ ){
 						arguments[ins.Argument - i] = Stack.Pop ();
 					}
-					target.Inherit (this, Stack.Self, arguments);
+					target.Inherit (this, Stack.Top.Self, arguments);
 					break;
 				}
 			case Opcode.Return: {
-					this.Stack.InstructionPointer = int.MaxValue;
+					this.Stack.Top.InstructionPointer = int.MaxValue;
 					break;
 				}
 			case Opcode.JumpIfTrue: {
 					if (Stack.Pop ().IsTrue ()) {
-						Stack.InstructionPointer = ins.Argument;
+						Stack.Top.InstructionPointer = ins.Argument;
 					}
 					break;
 				}
 			case Opcode.JumpIfFalse: {
 					if (!Stack.Pop ().IsTrue ()) {
-						Stack.InstructionPointer = ins.Argument;
+						Stack.Top.InstructionPointer = ins.Argument;
 					}
 					break;
 				}
 			case Opcode.Jump: {
-					Stack.InstructionPointer = ins.Argument;
+					Stack.Top.InstructionPointer = ins.Argument;
 					break;
 				}
 			case Opcode.BuildList: {
@@ -340,7 +340,7 @@ namespace Iodine
 					break;
 				}
 			case Opcode.Import: {
-					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string name = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
 					string fullPath = Path.GetFullPath (name);
 					if (ModuleCache.ContainsKey (fullPath)) {
 						IodineModule module = ModuleCache [fullPath];
@@ -360,7 +360,7 @@ namespace Iodine
 				}
 			case Opcode.ImportFrom: {
 					IodineTuple names = Stack.Pop () as IodineTuple;
-					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string name = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
 					string fullPath = Path.GetFullPath (name);
 					IodineModule module = null;
 					if (ModuleCache.ContainsKey (fullPath)) {
@@ -380,7 +380,7 @@ namespace Iodine
 					break;
 				}
 			case Opcode.ImportAll: {
-					string name = ((IodineName)Stack.CurrentModule.ConstantPool[ins.Argument]).Value;
+					string name = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
 					string fullPath = Path.GetFullPath (name);
 					IodineModule module = null;
 					if (ModuleCache.ContainsKey (fullPath)) {
