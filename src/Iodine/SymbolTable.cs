@@ -128,7 +128,7 @@ namespace Iodine
 			set;
 			get;
 		}
-
+			
 		public IList<Scope> ChildScopes {
 			get {
 				return this.childScopes;

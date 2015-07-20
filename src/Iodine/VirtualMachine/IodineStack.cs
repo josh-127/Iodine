@@ -145,11 +145,13 @@ namespace Iodine
 
 		private Stack<IodineObject> stack = new Stack<IodineObject> ();
 		private IodineObject[] locals;
+		private IodineObject[] parentLocals = null;
 
 		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount)
 		{
 			this.LocalCount = localCount;
 			this.locals = new IodineObject[localCount];
+			this.parentLocals = this.locals;
 			this.Method = method;
 			this.Self = self;
 			this.Parent = parent;
@@ -158,11 +160,18 @@ namespace Iodine
 		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount,
 			IodineObject[] locals) : this (method, parent, self, localCount)
 		{
-			this.locals = locals;
+			this.parentLocals = locals;
+			this.locals = new IodineObject[localCount];
+			for (int i = 0; i < localCount; i++) {
+				this.locals[i] = locals[i]; 
+			}
 		}
 
 		public void StoreLocal (int index, IodineObject obj)
 		{
+			if (this.parentLocals[index] != null) {
+				this.parentLocals[index] = obj;
+			}
 			this.locals[index] = obj;
 		}
 
