@@ -18,7 +18,7 @@ namespace Iodine
 			Modules["datetime"] = new DateTimeModule ();
 			Modules["sys"] = new SysModule ();
 			Modules["math"] = new MathModule ();
-
+			Modules["struct"] = new StructModule ();
 		}
 	}
 }

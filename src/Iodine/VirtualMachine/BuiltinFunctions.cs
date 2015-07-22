@@ -56,6 +56,7 @@ namespace Iodine
 			globalDict["Int"] = IodineInteger.TypeDefinition;
 			globalDict["Float"] = IodineFloat.TypeDefinition;
 			globalDict["Str"] = IodineString.TypeDefinition;
+			globalDict["ByteStr"] = IodineByteString.TypeDefinition;
 			globalDict["Bool"] = IodineBool.TypeDefinition;
 			globalDict["Char"] = IodineChar.TypeDefinition;
 			globalDict["Tuple"] = IodineTuple.TypeDefinition;

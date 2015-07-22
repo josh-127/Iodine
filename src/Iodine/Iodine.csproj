@@ -147,6 +147,8 @@
     <Compile Include="VirtualMachine\IodineCachedModule.cs" />
     <Compile Include="VirtualMachine\IodineInterface.cs" />
     <Compile Include="Parser\Ast\NodeInterfaceDecl.cs" />
+    <Compile Include="VirtualMachine\CoreModules\StructModule.cs" />
+    <Compile Include="VirtualMachine\CoreTypes\IodineByteString.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
