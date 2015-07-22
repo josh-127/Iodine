@@ -25,6 +25,7 @@ namespace Iodine
 		StoreIndex,
 		Invoke,
 		InvokeSuper,
+		InvokeVar,
 		Return,
 		JumpIfTrue,
 		JumpIfFalse,

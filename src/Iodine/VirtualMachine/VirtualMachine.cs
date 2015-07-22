@@ -231,6 +231,17 @@ namespace Iodine
 					Stack.Push (target.Invoke (this, arguments));
 					break;
 				}
+			case Opcode.InvokeVar: {
+					IodineObject target = Stack.Pop ();
+					List<IodineObject> arguments = new List<IodineObject> ();
+					IodineTuple tuple = Stack.Pop () as IodineTuple;
+					for (int i = 0; i < ins.Argument; i++) {
+						arguments.Add (Stack.Pop ());
+					}
+					arguments.AddRange (tuple.Objects);
+					Stack.Push (target.Invoke (this, arguments.ToArray ()));
+					break;
+				}
 			case Opcode.InvokeSuper: {
 					IodineTypeDefinition target = (IodineTypeDefinition)Stack.Pop ();
 					IodineObject[] arguments = new IodineObject[ins.Argument];

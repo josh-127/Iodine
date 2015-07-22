@@ -10,9 +10,9 @@ namespace Iodine
 			}
 		}
 
-		public AstNode Arguments {
+		public NodeArgList Arguments {
 			get {
-				return this.Children[1];
+				return (NodeArgList)this.Children[1];
 			}
 		}
 

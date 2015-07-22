@@ -7,7 +7,7 @@ namespace Iodine
 	public static class IodineCachedModule
 	{
 		const byte BytecodeMajorVersion = 1;
-		const byte BytecodeMinorVersion = 2;
+		const byte BytecodeMinorVersion = 3;
 		const byte Mag1 = 0x43;
 		const byte Mag2 = 0x41;
 		const byte Mag3 = 0x42;

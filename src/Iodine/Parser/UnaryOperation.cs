@@ -11,7 +11,6 @@ namespace Iodine
 		Negate,
 		BoolNot,
 		Not
-
 	}
 }
 
