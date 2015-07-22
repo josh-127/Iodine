@@ -235,6 +235,10 @@ namespace Iodine
 					IodineObject target = Stack.Pop ();
 					List<IodineObject> arguments = new List<IodineObject> ();
 					IodineTuple tuple = Stack.Pop () as IodineTuple;
+					if (tuple == null) {
+						RaiseException (new IodineTypeException ("Tuple"));
+						break;
+					}
 					for (int i = 0; i < ins.Argument; i++) {
 						arguments.Add (Stack.Pop ());
 					}
