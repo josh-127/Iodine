@@ -80,6 +80,11 @@ namespace Iodine
 		{
 		}
 
+		public void Accept (NodeDecoratedFuncDecl funcDecl)
+		{
+			funcDecl.Function.Visit (this);
+		}
+
 		public void Accept (NodeFuncDecl funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);

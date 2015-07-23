@@ -63,7 +63,12 @@ namespace Iodine
 			funcDecl.Children[0].Visit (visitor);
 			symbolTable.EndScope ();
 		}
-			
+
+		public void Accept (NodeDecoratedFuncDecl funcDecl)
+		{
+			//funcDecl.Function.Visit (this);
+		}
+
 		public void Accept (NodeForeach foreachStmt)
 		{
 			symbolTable.AddSymbol (foreachStmt.Item);

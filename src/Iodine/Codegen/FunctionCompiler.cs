@@ -49,6 +49,11 @@ namespace Iodine
 			visitSubnodes (stmt);
 		}
 
+		public void Accept (NodeDecoratedFuncDecl funcDecl)
+		{
+			//visitSubnodes (funcDecl);
+		}
+
 		public void Accept (NodeBinOp binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
