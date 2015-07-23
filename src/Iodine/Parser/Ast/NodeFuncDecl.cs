@@ -64,7 +64,7 @@ namespace Iodine
 				 * Since two values can not be returned, we must return a single node containing both
 				 * the function declaration and call to the decorator 
 				 */
-				NodeDecoratedFuncDecl nodes = new NodeDecoratedFuncDecl (idecl);
+				Ast nodes = new Ast (stream.Location);
 				nodes.Add (idecl);
 				nodes.Add (new NodeExpr (stream.Location, new NodeBinOp (stream.Location,
 					BinaryOperation.Assign, new NodeIdent (stream.Location, idecl.Name), new NodeCall (

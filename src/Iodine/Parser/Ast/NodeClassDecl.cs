@@ -59,9 +59,9 @@ namespace Iodine
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				if (stream.Match (TokenClass.Keyword, "func")  || stream.Match (TokenClass.Operator,
 					"@")) {
-					AstNode func = NodeFuncDecl.Parse (stream, false, clazz);
-					if (func is NodeFuncDecl && ((NodeFuncDecl)func).Name == name) {
-						clazz.Constructor = (NodeFuncDecl)func;
+					NodeFuncDecl func = NodeFuncDecl.Parse (stream, false, clazz) as NodeFuncDecl;
+					if (func.Name == name) {
+						clazz.Constructor = func;
 					} else {
 						clazz.Add (func);
 					}

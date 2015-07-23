@@ -149,7 +149,6 @@
     <Compile Include="Parser\Ast\NodeInterfaceDecl.cs" />
     <Compile Include="VirtualMachine\CoreModules\StructModule.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineByteString.cs" />
-    <Compile Include="Parser\Ast\NodeDecoratedFuncDecl.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

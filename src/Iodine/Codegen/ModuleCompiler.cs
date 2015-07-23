@@ -119,11 +119,6 @@ namespace Iodine
 			module.AddMethod (compileMethod (funcDecl));
 		}
 
-		public void Accept (NodeDecoratedFuncDecl funcDecl)
-		{
-			//visitSubnodes (funcDecl);
-		}
-
 		public void Accept (NodeScope scope)
 		{
 			scope.Visit (functionCompiler);
@@ -132,8 +127,9 @@ namespace Iodine
 		public void Accept (NodeUseStatement useStmt)
 		{
 			module.Imports.Add (useStmt.Module);
-			string import = !useStmt.Relative ? useStmt.Module : Path.Combine (Path.GetDirectoryName (
-				useStmt.Location.File), useStmt.Module);
+			string import = !useStmt.Relative ? useStmt.Module : String.Format ("{0}{1}{2}",
+				Path.GetDirectoryName (useStmt.Location.File), Path.DirectorySeparatorChar, useStmt.Module);
+			
 			if (useStmt.Wildcard) {
 				module.Initializer.EmitInstruction (Opcode.ImportAll, module.DefineConstant (
 					new IodineName (import)));
@@ -246,8 +242,7 @@ namespace Iodine
 
 		public IodineClass CompileClass (NodeClassDecl classDecl)
 		{
-			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor,
-				classDecl));
+			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor));
 
 			for (int i = 1; i < classDecl.Children.Count; i++) {
 				if (classDecl.Children[i] is NodeFuncDecl) {
@@ -259,22 +254,12 @@ namespace Iodine
 				} else if (classDecl.Children[i] is NodeClassDecl) {
 					NodeClassDecl subclass = classDecl.Children [i] as NodeClassDecl;
 					clazz.SetAttribute (subclass.Name, CompileClass (subclass));
-				} else if (classDecl.Children[i] is NodeDecoratedFuncDecl) {
-					NodeDecoratedFuncDecl func = classDecl.Children [i] as NodeDecoratedFuncDecl;
-					if (func.Function.InstanceMethod)
-						clazz.AddInstanceMethod (compileMethod (func.Function));
-					else
-						clazz.SetAttribute (func.Function.Name, compileMethod (func.Function));
-					FunctionCompiler compiler = new FunctionCompiler (this.errorLog,
-						this.symbolTable, clazz.Constructor);
-					func.Children[1].Visit (compiler);
-					clazz.Constructor.FinalizeLabels ();
 				}
 			}
 			return clazz;
 		}
 
-		private IodineMethod compileMethod (NodeFuncDecl funcDecl, NodeClassDecl classDecl = null) 
+		private IodineMethod compileMethod (NodeFuncDecl funcDecl) 
 		{
 			symbolTable.NextScope ();
 			IodineMethod methodBuilder = new IodineMethod (module, funcDecl.Name, funcDecl.InstanceMethod,
@@ -285,15 +270,6 @@ namespace Iodine
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
 				methodBuilder.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
 					(funcDecl.Parameters[i]).Index;
-			}
-			if (classDecl != null) {
-				foreach (AstNode node in classDecl.Children) {
-					if (node is NodeDecoratedFuncDecl) {
-						Console.WriteLine ("found one boss");
-						//node.Visit (compiler);
-						//funcDecl.Children.Insert (0, node.Children[0]);
-					}
-				}
 			}
 			funcDecl.Children[0].Visit (compiler);
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
