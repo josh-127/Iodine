@@ -236,7 +236,7 @@ namespace Iodine
 		private static bool canWrite (string folderPath)
 		{
 			try {
-				 
+
 				return true;
 			} catch (UnauthorizedAccessException) {
 				return false;
