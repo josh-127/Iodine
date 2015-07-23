@@ -56,8 +56,8 @@ namespace Iodine
 				DisplayErrors (errorLog);
 				Panic ("Compilation failed with {0} errors!", errorLog.ErrorCount);
 			} else {
+				VirtualMachine vm = new VirtualMachine ();
 				try {
-					VirtualMachine vm = new VirtualMachine ();
 					module.Invoke (vm, new IodineObject[] {});
 					if (module.HasAttribute ("main")) {
 						module.GetAttribute ("main").Invoke (vm, new IodineObject[] {options.Arguments });
@@ -73,6 +73,7 @@ namespace Iodine
 					Console.Error.WriteLine ("Fatal exception has occured!");
 					Console.Error.WriteLine (e.Message);
 					Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
+					Console.Error.WriteLine ("\nIodine stack trace \n{0}", vm.Stack.Trace ());
 					Panic ("Program terminated.");
 				}
 
