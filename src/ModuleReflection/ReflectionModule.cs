@@ -68,7 +68,9 @@ namespace ModuleReflection
 		private IodineObject loadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString pathStr = args[0] as IodineString;
-			return IodineModule.LoadModule (new ErrorLog (), pathStr.Value);
+			IodineModule module = IodineModule.LoadModule (new ErrorLog (), pathStr.Value);
+			module.Initializer.Invoke (vm, new IodineObject[] {});
+			return module;
 		}
 
 		private IodineObject compileModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
