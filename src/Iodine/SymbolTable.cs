@@ -17,7 +17,8 @@ namespace Iodine
 				get;
 			}
 
-			public LocalScope (LocalScope parentScope) {
+			public LocalScope (LocalScope parentScope)
+			{
 				this.ParentScope = parentScope;
 				this.NextLocal = 0;
 			}
@@ -30,7 +31,8 @@ namespace Iodine
 		private LocalScope currentLocalScope = null;
 
 		public Scope CurrentScope {
-			set; get;
+			set;
+			get;
 		}
 
 		public SymbolTable ()
@@ -40,7 +42,8 @@ namespace Iodine
 
 		public Scope NextScope ()
 		{
-			if (CurrentScope == null) CurrentScope = globalScope;
+			if (CurrentScope == null)
+				CurrentScope = globalScope;
 			CurrentScope = CurrentScope.NextScope;
 			return CurrentScope;
 		}
@@ -118,7 +121,7 @@ namespace Iodine
 	{
 		private List<Symbol> symbols = new List<Symbol> ();
 		private List<Scope> childScopes = new List<Scope> ();
-	
+
 		public Scope ParentScope {
 			private set;
 			get;
@@ -128,7 +131,7 @@ namespace Iodine
 			set;
 			get;
 		}
-			
+
 		public IList<Scope> ChildScopes {
 			get {
 				return this.childScopes;

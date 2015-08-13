@@ -7,13 +7,12 @@ using System.IO.Compression;
 
 namespace ModuleZip
 {
-
 	[IodineExtensionAttribute ("ziplib")]
 	public class ZipModule : IodineModule
 	{
 		public ZipModule () : base ("ziplib")
 		{
-			this.SetAttribute ("unzipToDirectory", new InternalMethodCallback (unzip ,this));
+			this.SetAttribute ("unzipToDirectory", new InternalMethodCallback (unzip, this));
 		}
 
 		private IodineObject unzip (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -23,6 +22,5 @@ namespace ModuleZip
 			ZipFile.ExtractToDirectory (archiveName.Value, targetDir.Value);
 			return null;
 		}
-
 	}
 }

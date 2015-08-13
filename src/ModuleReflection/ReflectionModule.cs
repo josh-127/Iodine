@@ -26,8 +26,8 @@ namespace ModuleReflection
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineObject o1 = args[0];
-			IodineString str = args[1] as IodineString;
+			IodineObject o1 = args [0];
+			IodineString str = args [1] as IodineString;
 			if (str == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
@@ -41,10 +41,10 @@ namespace ModuleReflection
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineObject o1 = args[0];
+			IodineObject o1 = args [0];
 			IodineMap map = new IodineMap ();
 			foreach (string key in o1.Attributes.Keys) {
-				map.Set (new IodineString (key), o1.Attributes[key]);
+				map.Set (new IodineString (key), o1.Attributes [key]);
 			}
 			return map;
 		}
@@ -55,35 +55,35 @@ namespace ModuleReflection
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineObject o1 = args[0];
-			IodineString str = args[1] as IodineString;
+			IodineObject o1 = args [0];
+			IodineString str = args [1] as IodineString;
 			if (str == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
-			o1.SetAttribute (str.Value, args[2]);
+			o1.SetAttribute (str.Value, args [2]);
 			return null;
 		}
 
 		private IodineObject loadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineString pathStr = args[0] as IodineString;
+			IodineString pathStr = args [0] as IodineString;
 			IodineModule module = IodineModule.LoadModule (new ErrorLog (), pathStr.Value);
-			module.Initializer.Invoke (vm, new IodineObject[] {});
+			module.Initializer.Invoke (vm, new IodineObject[] { });
 			return module;
 		}
 
 		private IodineObject compileModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineString pathStr = args[0] as IodineString;
+			IodineString pathStr = args [0] as IodineString;
 			return IodineModule.CompileModuleFromSource (new ErrorLog (), pathStr.Value);
 		}
 
 		private IodineObject getBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineMethod method = args[0] as IodineMethod;
+			IodineMethod method = args [0] as IodineMethod;
 
-			IodineList ret = new IodineList (new IodineObject[] {});
+			IodineList ret = new IodineList (new IodineObject[] { });
 
 			foreach (Instruction ins in method.Body) {
 				ret.Add (new IodineInstruction (method, ins));

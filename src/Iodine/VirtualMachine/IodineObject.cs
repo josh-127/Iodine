@@ -43,29 +43,44 @@ namespace Iodine
 			return res;
 		}
 
-		public void SetAttribute (string name, IodineObject value)
+		public void SetAttribute (VirtualMachine vm, string name, IodineObject value)
 		{
 			if (this.Base != null && !this.attributes.ContainsKey (name)) {
 				if (this.Base.HasAttribute (name)) {
-					this.Base.SetAttribute (name, value);
+					this.Base.SetAttribute (vm, name, value);
 					return;
 				}
 			}
 
+			if (this.attributes.ContainsKey ("__setAttribute__")) {
+				IodineInstanceMethodWrapper method = this.attributes ["__setAttribute__"] as
+					IodineInstanceMethodWrapper;
+				if (method == null) {
+					vm.RaiseException (new IodineTypeException ("Method"));
+				} else if (method.Method.ParameterCount < 2 && !method.Method.Variadic) {
+					vm.RaiseException (new IodineArgumentException (2));
+				}
+				method.Invoke (vm, new IodineObject[] {new IodineString (name), value});
+			} else {
+				SetAttribute (name, value);
+			}
+		}
+
+
+		public void SetAttribute (string name, IodineObject value)
+		{
 			if (value is IodineMethod) {
 				IodineMethod method = (IodineMethod)value;
 				if (method.InstanceMethod) {
 					this.attributes[name] = new IodineInstanceMethodWrapper (this, method);
-					return;
 				}
 			} else if (value is IodineInstanceMethodWrapper) {
 				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
 				this.attributes[name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
-				return;
+			} else {
+				this.attributes[name] = value;
 			}
-			this.attributes[name] = value;
 		}
-
 
 		public IodineObject GetAttribute (string name)
 		{
@@ -82,6 +97,16 @@ namespace Iodine
 				return this.attributes[name];
 			else if (this.Base != null && this.Base.Attributes.ContainsKey (name))
 				return this.Base.GetAttribute (name);
+			else if (this.attributes.ContainsKey ("__getAttribute__")) {
+				IodineInstanceMethodWrapper method = this.attributes ["__getAttribute__"] as
+					IodineInstanceMethodWrapper;
+				if (method == null) {
+					vm.RaiseException (new IodineTypeException ("Method"));
+				} else if (method.Method.ParameterCount < 1 && !method.Method.Variadic) {
+					vm.RaiseException (new IodineArgumentException (1));
+				}
+				return method.Invoke (vm, new IodineObject[] {new IodineString (name)});
+			}
 			vm.RaiseException (new IodineAttributeNotFoundException (name));
 			return null;
 		}

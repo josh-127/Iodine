@@ -171,7 +171,7 @@ namespace Iodine
 					if (globalDict.ContainsKey (name)) {
 						globalDict[name] = Stack.Pop ();
 					} else {
-						Stack.Top.Module.SetAttribute (name, Stack.Pop ());
+						Stack.Top.Module.SetAttribute (this, name, Stack.Pop ());
 					}
 					break;
 				}
@@ -188,7 +188,7 @@ namespace Iodine
 					IodineObject target = Stack.Pop ();
 					IodineObject value = Stack.Pop ();
 					string attribute = ((IodineName)Stack.Top.Module.ConstantPool[ins.Argument]).Value;
-					target.SetAttribute (attribute, value);
+					target.SetAttribute (this, attribute, value);
 					break;
 				}
 			case Opcode.LoadAttribute: {
@@ -359,14 +359,14 @@ namespace Iodine
 					string fullPath = Path.GetFullPath (name);
 					if (ModuleCache.ContainsKey (fullPath)) {
 						IodineModule module = ModuleCache [fullPath];
-						Stack.Top.Module.SetAttribute (Path.GetFileNameWithoutExtension (fullPath),
+						Stack.Top.Module.SetAttribute (this, Path.GetFileNameWithoutExtension (fullPath),
 							module);
 					} else {
 						ErrorLog errLog = new ErrorLog ();
 						IodineModule module = IodineModule.CompileModule (errLog, name);
 						if (errLog.ErrorCount == 0 && module != null) {
-							Stack.Top.Module.SetAttribute (Path.GetFileNameWithoutExtension (fullPath),
-								module);
+							Stack.Top.Module.SetAttribute (this, Path.GetFileNameWithoutExtension (
+								fullPath), module);
 							ModuleCache [fullPath] = module;
 							module.Initializer.Invoke (this, new IodineObject[] {});
 						}
@@ -388,8 +388,8 @@ namespace Iodine
 					}
 					if (module != null) {
 						foreach (IodineObject item in names.Objects) {
-							this.Stack.Top.Module.SetAttribute (item.ToString (), module.GetAttribute (
-								item.ToString ()));
+							this.Stack.Top.Module.SetAttribute (this, item.ToString (),
+								module.GetAttribute (item.ToString ()));
 						}
 					}
 					break;
@@ -408,7 +408,7 @@ namespace Iodine
 					}
 					if (module != null) {
 						foreach (string item in module.Attributes.Keys) {
-							this.Stack.Top.Module.SetAttribute (item, module.GetAttribute (
+							this.Stack.Top.Module.SetAttribute (this, item, module.GetAttribute (
 								item));
 						}
 					}

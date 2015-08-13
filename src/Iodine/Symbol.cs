@@ -10,20 +10,17 @@ namespace Iodine
 
 	public class Symbol
 	{
-		public string Name
-		{
+		public string Name {
 			private set;
 			get;
 		}
 
-		public int Index
-		{
+		public int Index {
 			private set;
 			get;
 		}
 
-		public SymbolType Type
-		{
+		public SymbolType Type {
 			private set;
 			get;
 		}

@@ -8,20 +8,21 @@ namespace Iodine
 	{
 		class IodineOptions
 		{
-			public string FileName { get; set; } 
+			public string FileName { get; set; }
 
 			public bool DisplayAst { set; get; }
+
 			public IodineList Arguments { set; get; }
 
 			public static IodineOptions Parse (string[] args)
 			{
-				IodineOptions ret = new IodineOptions();
+				IodineOptions ret = new IodineOptions ();
 				int i;
 				for (i = 0; i < args.Length; i++) {
-					if (args[i].StartsWith ("-")) {
-						switch (args[i]) {
+					if (args [i].StartsWith ("-")) {
+						switch (args [i]) {
 						default:
-							Panic ("Unknown command line argument '{0}'", args[i]);
+							Panic ("Unknown command line argument '{0}'", args [i]);
 							break;
 						}
 					} else {
@@ -35,7 +36,7 @@ namespace Iodine
 				IodineObject[] arguments = new IodineObject [args.Length - i];
 				int start = i;
 				for (; i < args.Length; i++) {
-					arguments[i - start] = new IodineString (args[i]);
+					arguments [i - start] = new IodineString (args [i]);
 				}
 				ret.Arguments = new IodineList (arguments);
 				return ret;
@@ -58,16 +59,16 @@ namespace Iodine
 			} else {
 				VirtualMachine vm = new VirtualMachine ();
 				try {
-					module.Invoke (vm, new IodineObject[] {});
+					module.Invoke (vm, new IodineObject[] { });
 					if (module.HasAttribute ("main")) {
-						module.GetAttribute ("main").Invoke (vm, new IodineObject[] {options.Arguments });
+						module.GetAttribute ("main").Invoke (vm, new IodineObject[] { options.Arguments });
 					}
 				} catch (UnhandledIodineExceptionException ex) {
-					Console.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);
-					Console.WriteLine ("\tMessage: {0}", ex.OriginalException.Message);
+					Console.Error.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);
+					Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.Message);
 					Console.WriteLine ();
 					ex.PrintStack ();
-					Console.WriteLine ();
+					Console.Error.WriteLine ();
 					Panic ("Program terminated.");
 				} catch (Exception e) {
 					Console.Error.WriteLine ("Fatal exception has occured!");
@@ -99,7 +100,7 @@ namespace Iodine
 		public static void Panic (string format, params object[] args)
 		{
 			Console.Error.WriteLine (format, args);
-			Environment.Exit(-1);
+			Environment.Exit (-1);
 		}
 	}
 }

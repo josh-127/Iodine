@@ -33,22 +33,18 @@ namespace Iodine
 	{
 		private List<Error> errors = new List<Error> ();
 
-		public int ErrorCount
-		{
+		public int ErrorCount {
 			private set;
 			get;
 		}
 
-		public int WarningCount
-		{
+		public int WarningCount {
 			private set;
 			get;
 		}
 
-		public IList<Error> Errors
-		{
-			get
-			{
+		public IList<Error> Errors {
+			get {
 				return this.errors;
 			}
 		}

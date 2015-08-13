@@ -149,7 +149,13 @@
     <Compile Include="Parser\Ast\NodeInterfaceDecl.cs" />
     <Compile Include="VirtualMachine\CoreModules\StructModule.cs" />
     <Compile Include="VirtualMachine\CoreTypes\IodineByteString.cs" />
-    <Compile Include="IodineEngine.cs" />
+    <Compile Include="Engine\IodineEngine.cs" />
+    <Compile Include="Engine\IodineDynamicObject.cs" />
+    <Compile Include="Engine\IodineTypeConverter.cs" />
+    <Compile Include="Engine\ITypeConverter.cs" />
+    <Compile Include="Engine\Converters\StringTypeConverter.cs" />
+    <Compile Include="Engine\Converters\IntegerTypeConverter.cs" />
+    <Compile Include="Engine\Converters\BoolTypeConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -163,5 +169,7 @@
     <Folder Include="Codegen\" />
     <Folder Include="VirtualMachine\CoreModules\" />
     <Folder Include="Codegen\Optimizations\" />
+    <Folder Include="Engine\" />
+    <Folder Include="Engine\Converters\" />
   </ItemGroup>
 </Project>
