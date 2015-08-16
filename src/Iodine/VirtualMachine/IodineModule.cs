@@ -27,8 +27,8 @@ namespace Iodine
 		static IodineModule ()
 		{
 			SearchPaths.Add (new IodineString (Environment.CurrentDirectory));
-			SearchPaths.Add (new IodineString (String.Format ("{0}{1}modules", Path.GetDirectoryName (
-				Assembly.GetEntryAssembly ().Location), Path.DirectorySeparatorChar)));
+			SearchPaths.Add (new IodineString (Path.Combine (Path.GetDirectoryName (
+				Assembly.GetEntryAssembly ().Location), "modules")));
 			if (Environment.GetEnvironmentVariable ("IODINE_PATH") != null) {
 				foreach (string path in Environment.GetEnvironmentVariable ("IODINE_PATH").Split (
 					Path.PathSeparator)) {
@@ -120,12 +120,13 @@ namespace Iodine
 				compiler.CompileAst (module, root);
 				if (errorLog.ErrorCount > 0)
 					return null;
-
-				try {
-					IodineCachedModule.SaveModule (file + ".idx", module);
-				} catch (Exception) {
-				}
-
+				/*
+				 * Caching temporarly disabled
+				 * try {
+				 *	IodineCachedModule.SaveModule (file + ".idx", module);
+				 * } catch (Exception) {
+				 * }
+				 */
 				return module;
 			} else {
 				errorLog.AddError (ErrorType.ParserError, new Location (0, 0, file), 
@@ -210,8 +211,7 @@ namespace Iodine
 
 			foreach (IodineObject obj in SearchPaths) {
 				string dir = obj.ToString ();
-				string expectedName = String.Format ("{0}{1}{2}.id", dir, Path.DirectorySeparatorChar,
-					                      name);
+				string expectedName = Path.Combine (dir, name + ".id");
 				if (File.Exists (expectedName)) {
 					return expectedName;
 				}
@@ -229,22 +229,22 @@ namespace Iodine
 				return name + ".dll";
 			}
 
-			string exePath = Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location) + "/extensions";
+			string exePath = Path.Combine (Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location), "extensions");
 
-			foreach (string file in Directory.GetFiles (exePath)) {
-				string fname = Path.GetFileName (file);
-				if (fname == name || fname == name + ".dll") {
-					return file;
+			if (Directory.Exists (exePath)) {
+				foreach (string file in Directory.GetFiles (exePath)) {
+					string fname = Path.GetFileName (file);
+					if (fname == name || fname == name + ".dll") {
+						return file;
+					}
 				}
 			}
-
 			return null;
 		}
 
 		private static bool canWrite (string folderPath)
 		{
 			try {
-
 				return true;
 			} catch (UnauthorizedAccessException) {
 				return false;

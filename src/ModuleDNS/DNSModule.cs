@@ -5,7 +5,6 @@ using Iodine;
 
 namespace ModuleDNS
 {
-
 	[IodineExtensionAttribute ("dns")]
 	public class DNSModule : IodineModule
 	{
