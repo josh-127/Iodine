@@ -164,6 +164,7 @@
     <Compile Include="ExtraModules\SocketsModule.cs" />
     <Compile Include="ExtraModules\WebClientModule.cs" />
     <Compile Include="ExtraModules\ZipModule.cs" />
+    <Compile Include="ExtraModules\WinRegModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
