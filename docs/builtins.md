@@ -1,6 +1,6 @@
 # Iodine Builtin Functions
 
-##### func print (object)
+##### ```func print (object)```
 Prints the string representation of an object
 ##### func input ([prompt])
 Reads from the standard input stream, optionally displaying prompt
