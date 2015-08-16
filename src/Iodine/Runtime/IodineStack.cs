@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineStack
 	{

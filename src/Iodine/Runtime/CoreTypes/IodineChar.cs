@@ -1,7 +1,7 @@
 ﻿using System;
 using Iodine.Compiler;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineChar : IodineObject
 	{

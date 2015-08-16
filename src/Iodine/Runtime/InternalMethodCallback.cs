@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public delegate IodineObject IodineMethodCallback (VirtualMachine vm, IodineObject self,
 		IodineObject[] arguments);

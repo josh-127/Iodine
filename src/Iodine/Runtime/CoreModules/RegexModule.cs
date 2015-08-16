@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	[IodineBuiltinModule ("regex")]
 	public class RegexModule : IodineModule

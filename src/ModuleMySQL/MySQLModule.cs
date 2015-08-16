@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Iodine;
+using Iodine.Runtime;
 using MySql.Data.MySqlClient;
 
 namespace ModuleMySQL

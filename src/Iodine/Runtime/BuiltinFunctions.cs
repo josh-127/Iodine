@@ -3,7 +3,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class BuiltinFunctions : IIodineExtension
 	{

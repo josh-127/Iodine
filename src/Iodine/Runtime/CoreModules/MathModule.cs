@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	[IodineBuiltinModule ("math")]
 	public class MathModule : IodineModule

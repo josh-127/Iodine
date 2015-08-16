@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public enum Opcode
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineFormatter : IodineObject
 	{

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Iodine.Compiler;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineEvent : IodineObject
 	{

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Iodine.Compiler;
 using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	[AttributeUsage (AttributeTargets.Class)]
 	public class IodineBuiltinModule : System.Attribute

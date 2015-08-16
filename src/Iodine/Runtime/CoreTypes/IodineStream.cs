@@ -3,13 +3,13 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineStream : IodineObject
 	{
-		private static readonly IodineTypeDefinition FileTypeDef = new IodineTypeDefinition ("File"); 
+		private static readonly IodineTypeDefinition FileTypeDef = new IodineTypeDefinition ("File");
 
-		public bool Closed { set; get;}
+		public bool Closed { set; get; }
 
 		public Stream File {
 			private set;
@@ -88,7 +88,7 @@ namespace Iodine
 				return null;
 			}
 
-			IodineByteArray arr = args[0] as IodineByteArray;
+			IodineByteArray arr = args [0] as IodineByteArray;
 			this.File.Write (arr.Array, 0, arr.Array.Length);
 
 			return null;
@@ -106,8 +106,8 @@ namespace Iodine
 				return null;
 			}
 
-			if (args[0] is IodineInteger) {
-				IodineInteger intv = args[0] as IodineInteger;
+			if (args [0] is IodineInteger) {
+				IodineInteger intv = args [0] as IodineInteger;
 				byte[] buf = new byte[(int)intv.Value];
 				this.File.Read (buf, 0, buf.Length);
 				return new IodineString (Encoding.UTF8.GetString (buf));
@@ -143,8 +143,8 @@ namespace Iodine
 				return null;
 			}
 
-			if (args[0] is IodineInteger) {
-				IodineInteger intv = args[0] as IodineInteger;
+			if (args [0] is IodineInteger) {
+				IodineInteger intv = args [0] as IodineInteger;
 				byte[] buf = new byte[(int)intv.Value];
 				this.File.Read (buf, 0, buf.Length);
 				return new IodineByteString (buf);
@@ -221,14 +221,14 @@ namespace Iodine
 			return new IodineByteString (bytes.ToArray ());
 		}
 
-		private void write (string str) 
+		private void write (string str)
 		{
 			foreach (char c in str) {
 				this.File.WriteByte ((byte)c);
 			}
 		}
 
-		public void write (byte b) 
+		public void write (byte b)
 		{
 			this.File.WriteByte (b);
 		}

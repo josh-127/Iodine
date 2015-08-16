@@ -1,5 +1,5 @@
 ﻿using System;
-using Iodine;
+using Iodine.Runtime;
 using Iodine.Compiler;
 
 namespace ModuleReflection

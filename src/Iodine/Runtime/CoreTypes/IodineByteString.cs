@@ -3,7 +3,7 @@ using System.Text;
 using System.Linq;
 using Iodine.Compiler;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineByteString : IodineObject
 	{

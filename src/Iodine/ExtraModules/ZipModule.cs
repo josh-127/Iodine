@@ -2,6 +2,7 @@
 
 using System;
 using System.IO.Compression;
+using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public static class BuiltInModules
 	{

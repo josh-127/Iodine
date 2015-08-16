@@ -1,7 +1,7 @@
 ﻿using System;
 using Iodine.Compiler;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	[IodineBuiltinModule ("datetime")]
 	public class DateTimeModule : IodineModule

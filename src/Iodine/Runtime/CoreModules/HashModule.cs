@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	[IodineBuiltinModule ("hash")]
 	public class HashModule : IodineModule

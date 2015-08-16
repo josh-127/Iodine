@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Security.Cryptography;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	[IodineBuiltinModule ("threading")]
 	public class ThreadingModule : IodineModule

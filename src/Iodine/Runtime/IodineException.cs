@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineException : IodineObject
 	{

@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using Iodine.Compiler;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class VirtualMachine
 	{

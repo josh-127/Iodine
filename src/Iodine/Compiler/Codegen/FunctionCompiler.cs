@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Iodine.Compiler;
 using Iodine.Compiler.Ast;
+using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {

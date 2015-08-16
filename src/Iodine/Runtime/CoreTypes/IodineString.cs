@@ -2,7 +2,7 @@
 using System.Text;
 using Iodine.Compiler;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	public class IodineString : IodineObject
 	{

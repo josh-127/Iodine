@@ -93,10 +93,6 @@
     <Compile Include="Runtime\IodineInterface.cs" />
     <Compile Include="Runtime\CoreModules\StructModule.cs" />
     <Compile Include="Runtime\CoreTypes\IodineByteString.cs" />
-    <Compile Include="Runtime\ExtraModules\SocketsModule.cs" />
-    <Compile Include="Runtime\ExtraModules\DnsModule.cs" />
-    <Compile Include="Runtime\ExtraModules\ZipModule.cs" />
-    <Compile Include="Runtime\ExtraModules\WebClientModule.cs" />
     <Compile Include="Compiler\Codegen\FunctionCompiler.cs" />
     <Compile Include="Compiler\Codegen\IBytecodeOptimization.cs" />
     <Compile Include="Compiler\Codegen\IodineCompiler.cs" />
@@ -164,6 +160,10 @@
     <Compile Include="Compiler\ErrorLog.cs" />
     <Compile Include="Compiler\ErrorType.cs" />
     <Compile Include="Compiler\Location.cs" />
+    <Compile Include="ExtraModules\DnsModule.cs" />
+    <Compile Include="ExtraModules\SocketsModule.cs" />
+    <Compile Include="ExtraModules\WebClientModule.cs" />
+    <Compile Include="ExtraModules\ZipModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -172,7 +172,6 @@
     <Folder Include="Runtime\" />
     <Folder Include="Runtime\CoreTypes\" />
     <Folder Include="Runtime\CoreModules\" />
-    <Folder Include="Runtime\ExtraModules\" />
     <Folder Include="Compiler\" />
   </ItemGroup>
 </Project>

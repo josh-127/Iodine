@@ -2,7 +2,7 @@
 using System.IO;
 using System.Diagnostics;
 
-namespace Iodine
+namespace Iodine.Runtime
 {
 	[IodineBuiltinModule ("os")]
 	public class OSModule : IodineModule
