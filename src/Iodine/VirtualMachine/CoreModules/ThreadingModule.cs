@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("threading")]
 	public class ThreadingModule : IodineModule
 	{
 		class IodineThread : IodineObject

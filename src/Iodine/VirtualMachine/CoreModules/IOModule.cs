@@ -3,6 +3,7 @@ using System.IO;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("io")]
 	public class IOModule : IodineModule
 	{
 		class IodineDirectory : IodineObject

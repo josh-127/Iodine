@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("struct")]
 	public class StructModule : IodineModule
 	{
 		public StructModule ()

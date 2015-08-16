@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("hash")]
 	public class HashModule : IodineModule
 	{
 		public HashModule ()

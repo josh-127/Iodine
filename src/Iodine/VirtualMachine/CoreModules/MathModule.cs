@@ -4,6 +4,7 @@ using System.Reflection;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("math")]
 	public class MathModule : IodineModule
 	{
 		public MathModule ()

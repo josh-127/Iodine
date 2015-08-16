@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using Iodine;
+﻿#if COMPILE_EXTRAS
+
+using System;
 using System.IO.Compression;
 
-
-namespace ModuleZip
+namespace Iodine.Modules.Extras
 {
 	[IodineBuiltinModule ("ziplib")]
-	public class ZipModule : IodineModule
+	internal class ZipModule : IodineModule
 	{
 		public ZipModule () : base ("ziplib")
 		{
@@ -24,3 +22,5 @@ namespace ModuleZip
 		}
 	}
 }
+
+#endif

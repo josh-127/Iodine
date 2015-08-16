@@ -5,15 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iodine", "Iodine.csproj", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleReflection", "..\ModuleReflection\ModuleReflection.csproj", "{4DF6CA93-D9D5-44CC-B057-AF19844DEDCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleSockets", "..\ModuleSockets\ModuleSockets.csproj", "{E0ADC874-B580-4B05-8B8D-60CA1F96CBF3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleDNS", "..\ModuleDNS\ModuleDNS.csproj", "{1229E42A-7B91-4A37-B769-D8390751AADE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleMySQL", "..\ModuleMySQL\ModuleMySQL.csproj", "{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleZip", "..\ModuleZip\ModuleZip.csproj", "{CCF0D936-52B7-4C91-B22E-C6FA8A65BDC3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleWebClient", "..\ModuleWebClient\ModuleWebClient.csproj", "{59C3EF84-6C9B-4AF9-9A06-0AAAC1BD85CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +13,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{1229E42A-7B91-4A37-B769-D8390751AADE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1229E42A-7B91-4A37-B769-D8390751AADE}.Debug|x86.Build.0 = Debug|Any CPU
-		{1229E42A-7B91-4A37-B769-D8390751AADE}.Release|x86.ActiveCfg = Release|Any CPU
-		{1229E42A-7B91-4A37-B769-D8390751AADE}.Release|x86.Build.0 = Release|Any CPU
 		{4DF6CA93-D9D5-44CC-B057-AF19844DEDCF}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{4DF6CA93-D9D5-44CC-B057-AF19844DEDCF}.Debug|x86.Build.0 = Debug|Any CPU
 		{4DF6CA93-D9D5-44CC-B057-AF19844DEDCF}.Release|x86.ActiveCfg = Release|Any CPU
@@ -33,21 +21,9 @@ Global
 		{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}.Debug|x86.Build.0 = Debug|Any CPU
 		{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}.Release|x86.ActiveCfg = Release|Any CPU
 		{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}.Release|x86.Build.0 = Release|Any CPU
-		{59C3EF84-6C9B-4AF9-9A06-0AAAC1BD85CC}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{59C3EF84-6C9B-4AF9-9A06-0AAAC1BD85CC}.Debug|x86.Build.0 = Debug|Any CPU
-		{59C3EF84-6C9B-4AF9-9A06-0AAAC1BD85CC}.Release|x86.ActiveCfg = Release|Any CPU
-		{59C3EF84-6C9B-4AF9-9A06-0AAAC1BD85CC}.Release|x86.Build.0 = Release|Any CPU
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Debug|x86.ActiveCfg = Debug|x86
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Debug|x86.Build.0 = Debug|x86
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Release|x86.ActiveCfg = Release|x86
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Release|x86.Build.0 = Release|x86
-		{CCF0D936-52B7-4C91-B22E-C6FA8A65BDC3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CCF0D936-52B7-4C91-B22E-C6FA8A65BDC3}.Debug|x86.Build.0 = Debug|Any CPU
-		{CCF0D936-52B7-4C91-B22E-C6FA8A65BDC3}.Release|x86.ActiveCfg = Release|Any CPU
-		{CCF0D936-52B7-4C91-B22E-C6FA8A65BDC3}.Release|x86.Build.0 = Release|Any CPU
-		{E0ADC874-B580-4B05-8B8D-60CA1F96CBF3}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E0ADC874-B580-4B05-8B8D-60CA1F96CBF3}.Debug|x86.Build.0 = Debug|Any CPU
-		{E0ADC874-B580-4B05-8B8D-60CA1F96CBF3}.Release|x86.ActiveCfg = Release|Any CPU
-		{E0ADC874-B580-4B05-8B8D-60CA1F96CBF3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

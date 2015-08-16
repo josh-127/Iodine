@@ -23,18 +23,20 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <DefineConstants>COMPILE_EXTRAS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -158,6 +160,10 @@
     <Compile Include="Engine\Converters\IntegerTypeConverter.cs" />
     <Compile Include="Engine\Converters\BoolTypeConverter.cs" />
     <Compile Include="ReplShell.cs" />
+    <Compile Include="VirtualMachine\ExtraModules\SocketsModule.cs" />
+    <Compile Include="VirtualMachine\ExtraModules\DnsModule.cs" />
+    <Compile Include="VirtualMachine\ExtraModules\ZipModule.cs" />
+    <Compile Include="VirtualMachine\ExtraModules\WebClientModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -173,5 +179,6 @@
     <Folder Include="Codegen\Optimizations\" />
     <Folder Include="Engine\" />
     <Folder Include="Engine\Converters\" />
+    <Folder Include="VirtualMachine\ExtraModules\" />
   </ItemGroup>
 </Project>

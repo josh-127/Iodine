@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("random")]
 	public class RandomModule : IodineModule
 	{
 		private static Random rand = new Random ();

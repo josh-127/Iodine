@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("regex")]
 	public class RegexModule : IodineModule
 	{
 		class IodineRegex : IodineObject

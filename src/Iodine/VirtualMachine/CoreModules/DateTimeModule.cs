@@ -2,6 +2,7 @@
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("datetime")]
 	public class DateTimeModule : IodineModule
 	{
 		public class IodineTimeStamp : IodineObject

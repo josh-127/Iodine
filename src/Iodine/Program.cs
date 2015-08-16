@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define COMPILE_EXTRAS
+
+using System;
 using System.IO;
 using System.Collections.Generic;
 

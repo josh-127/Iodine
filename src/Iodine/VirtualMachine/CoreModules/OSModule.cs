@@ -4,6 +4,7 @@ using System.Diagnostics;
 
 namespace Iodine
 {
+	[IodineBuiltinModule ("os")]
 	public class OSModule : IodineModule
 	{
 		class IodineProc : IodineObject
