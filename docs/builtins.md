@@ -18,7 +18,7 @@ Opens up a file, returning a new stream object.
 # Iodine Builtin Classes
 ##### class ```Int``` (object)
 Class represents a 64 bit signed integer. 
-##### ```class ```Char``` (object)
+##### class ```Char``` (object)
 Class represents a UTF-16 char
 ##### class ```Bool``` (object)
 Class represents a boolean
