@@ -6,7 +6,7 @@ namespace Iodine
 	public class IodineFormatter : IodineObject
 	{
 		public static IodineTypeDefinition FormatterTypeDef = new IodineTypeDefinition ("Formatter");
-			 
+
 		public IodineFormatter ()
 			: base (FormatterTypeDef)
 		{
@@ -18,7 +18,7 @@ namespace Iodine
 			int nextArg = 0;
 			int pos = 0;
 			while (pos < format.Length) {
-				if (format[pos] == '{') {
+				if (format [pos] == '{') {
 					string substr = format.Substring (pos + 1);
 					if (substr.IndexOf ('}') == -1) {
 						return null;
@@ -26,7 +26,7 @@ namespace Iodine
 					substr = substr.Substring (0, substr.IndexOf ('}'));
 					pos += substr.Length + 2;
 					if (substr.Length == 0) {
-						accum.Append (args[nextArg++].ToString ());
+						accum.Append (args [nextArg++].ToString ());
 					} else {
 						int index = 0;
 						string indexStr = "";
@@ -45,7 +45,7 @@ namespace Iodine
 							return null;
 						}
 
-						accum.Append (formatObj (args[index], specifier));
+						accum.Append (formatObj (args [index], specifier));
 
 					}
 				} else {
@@ -60,19 +60,23 @@ namespace Iodine
 			if (specifier.Length == 0) {
 				return obj.ToString ();
 			}
-			char type = specifier[0];
+			char type = specifier [0];
 			string args = specifier.Substring (1);
 			switch (char.ToLower (type)) {
-			case 'd': {
+			case 'd':
+				{
 					IodineInteger intObj = obj as IodineInteger;
 					int pad = args.Length == 0 ? 0 : int.Parse (args);
-					if (intObj == null) return null;
+					if (intObj == null)
+						return null;
 					return intObj.Value.ToString (type.ToString () + pad);
 				}
-			case 'x': {
+			case 'x':
+				{
 					IodineInteger intObj = obj as IodineInteger;
 					int pad = args.Length == 0 ? 0 : int.Parse (args);
-					if (intObj == null) return null;
+					if (intObj == null)
+						return null;
 					return intObj.Value.ToString (type.ToString () + pad);
 				}
 			default:

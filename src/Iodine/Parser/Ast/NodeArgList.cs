@@ -19,10 +19,10 @@ namespace Iodine
 		{
 			visitor.Accept (this);
 		}
-			
+
 		public static AstNode Parse (TokenStream stream)
 		{
-			NodeArgList argList = new NodeArgList(stream.Location);
+			NodeArgList argList = new NodeArgList (stream.Location);
 			stream.Expect (TokenClass.OpenParan);
 			while (!stream.Match (TokenClass.CloseParan)) {
 				if (stream.Accept (TokenClass.Operator, "*")) {

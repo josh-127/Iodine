@@ -6,7 +6,8 @@ namespace Iodine
 	{
 		public void PerformOptimization (IodineMethod method)
 		{
-			while (performOptimiziation (method) > 0);
+			while (performOptimiziation (method) > 0)
+				;
 		}
 
 		private int performOptimiziation (IodineMethod method)
@@ -20,7 +21,7 @@ namespace Iodine
 				Instruction curr = oldInstructions [i];
 				if (i != 0 && curr.OperationCode == Opcode.Pop) {
 					if (last.OperationCode == Opcode.LoadLocal || last.OperationCode == Opcode.LoadGlobal
-						|| last.OperationCode == Opcode.LoadNull) {
+					    || last.OperationCode == Opcode.LoadNull) {
 						oldInstructions [i] = new Instruction (curr.Location, Opcode.Nop, 0);
 						oldInstructions [i - 1] = new Instruction (curr.Location, Opcode.Nop, 0);
 						removed++;
@@ -45,16 +46,16 @@ namespace Iodine
 			return removed;
 		}
 
-		private void shiftLabels (int start, Instruction[] instructions) 
+		private void shiftLabels (int start, Instruction[] instructions)
 		{
 			for (int i = 0; i < instructions.Length; i++) {
-				Instruction ins = instructions[i];
+				Instruction ins = instructions [i];
 				if (ins.OperationCode == Opcode.Jump || ins.OperationCode == Opcode.JumpIfFalse ||
-					ins.OperationCode == Opcode.JumpIfTrue ||
-					ins.OperationCode == Opcode.PushExceptionHandler) {
+				    ins.OperationCode == Opcode.JumpIfTrue ||
+				    ins.OperationCode == Opcode.PushExceptionHandler) {
 
 					if (ins.Argument > start) {
-						instructions[i] = new Instruction (ins.Location, ins.OperationCode,
+						instructions [i] = new Instruction (ins.Location, ins.OperationCode,
 							ins.Argument - 1);
 					}
 				}

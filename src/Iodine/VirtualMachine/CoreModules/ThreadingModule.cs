@@ -10,8 +10,7 @@ namespace Iodine
 		{
 			public static readonly IodineTypeDefinition ThreadTypeDef = new IodineTypeDefinition ("Thread");
 
-			public Thread Value
-			{
+			public Thread Value {
 				private set;
 				get;
 			}
@@ -43,11 +42,11 @@ namespace Iodine
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineObject func = args[0];
+			IodineObject func = args [0];
 
-			Thread t = new Thread ( () => {
+			Thread t = new Thread (() => {
 				VirtualMachine newVm = new VirtualMachine (vm.Globals);
-				func.Invoke (newVm, new IodineObject[] {});
+				func.Invoke (newVm, new IodineObject[] { });
 			});
 			return new IodineThread (t);
 		}
@@ -57,7 +56,7 @@ namespace Iodine
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 			}
-			IodineInteger time = args[0] as IodineInteger;
+			IodineInteger time = args [0] as IodineInteger;
 			System.Threading.Thread.Sleep ((int)time.Value);
 			return null;
 		}

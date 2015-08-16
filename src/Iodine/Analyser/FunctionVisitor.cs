@@ -13,7 +13,7 @@ namespace Iodine
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 		}
-					
+
 		public void Accept (NodeUseStatement useStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
@@ -32,7 +32,7 @@ namespace Iodine
 			}
 			this.visitSubnodes (binop);
 		}
-			
+
 		public void Accept (NodeInterfaceDecl interfaceDecl)
 		{
 			symbolTable.AddSymbol (interfaceDecl.Name);
@@ -60,10 +60,10 @@ namespace Iodine
 				symbolTable.AddSymbol (param);
 			}
 
-			funcDecl.Children[0].Visit (visitor);
+			funcDecl.Children [0].Visit (visitor);
 			symbolTable.EndScope ();
 		}
-			
+
 		public void Accept (NodeForeach foreachStmt)
 		{
 			symbolTable.AddSymbol (foreachStmt.Item);
@@ -78,7 +78,7 @@ namespace Iodine
 				symbolTable.AddSymbol (param);
 			}
 			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
-			lambda.Children[0].Visit (visitor);
+			lambda.Children [0].Visit (visitor);
 			symbolTable.EndScope ();
 		}
 
@@ -122,7 +122,7 @@ namespace Iodine
 		{
 			visitSubnodes (super);
 		}
-			
+
 		public void Accept (NodeReturnStmt returnStmt)
 		{
 			visitSubnodes (returnStmt);
@@ -137,7 +137,7 @@ namespace Iodine
 		{
 			visitSubnodes (indexer);
 		}
-			
+
 		public void Accept (NodeTuple tuple)
 		{
 			visitSubnodes (tuple);
@@ -162,6 +162,7 @@ namespace Iodine
 		{
 			visitSubnodes (getAttr);
 		}
+
 		public void Accept (NodeIfStmt ifStmt)
 		{
 			visitSubnodes (ifStmt);
@@ -189,7 +190,7 @@ namespace Iodine
 		{
 		}
 
-		public void Accept (NodeFloat num) 
+		public void Accept (NodeFloat num)
 		{
 		}
 
@@ -226,7 +227,7 @@ namespace Iodine
 			foreach (AstNode node in root) {
 				node.Visit (this);
 			}
-		} 
+		}
 	}
 }
 

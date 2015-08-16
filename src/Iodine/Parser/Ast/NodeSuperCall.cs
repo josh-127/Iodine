@@ -7,12 +7,13 @@ namespace Iodine
 
 		public AstNode Arguments {
 			get {
-				return this.Children[0];
+				return this.Children [0];
 			}
 		}
 
 		public NodeClassDecl Parent {
-			set; get;
+			set;
+			get;
 		}
 
 		public NodeSuperCall (Location location)
@@ -31,7 +32,8 @@ namespace Iodine
 			stream.Expect (TokenClass.Keyword, "super");
 			ret.Parent = parent;
 			ret.Add (NodeArgList.Parse (stream));
-			while (stream.Accept (TokenClass.SemiColon));
+			while (stream.Accept (TokenClass.SemiColon))
+				;
 			return ret;
 		}
 	}

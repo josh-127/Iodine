@@ -9,13 +9,13 @@ namespace Iodine
 	{
 		class RangeIterator : IodineObject
 		{
-			private static IodineTypeDefinition RangeIteratorTypeDef  = new IodineTypeDefinition ("RangeIterator");
+			private static IodineTypeDefinition RangeIteratorTypeDef = new IodineTypeDefinition ("RangeIterator");
 			private long iterIndex = 0;
 			private long min;
 			private long end;
 			private long step;
 
-			public RangeIterator (long min, long max, long step) 
+			public RangeIterator (long min, long max, long step)
 				: base (RangeIteratorTypeDef)
 			{
 				this.end = max;
@@ -47,40 +47,40 @@ namespace Iodine
 
 		public void Initialize (Dictionary<string, IodineObject> globalDict)
 		{
-			globalDict["stdin"] = new IodineStream (Console.OpenStandardInput (), false, true);
-			globalDict["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
-			globalDict["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
-			globalDict["eval"] = new InternalMethodCallback (eval, null);
-			globalDict["print"] = new InternalMethodCallback (print, null);
-			globalDict["input"] = new InternalMethodCallback (input, null);
-			globalDict["Int"] = IodineInteger.TypeDefinition;
-			globalDict["Float"] = IodineFloat.TypeDefinition;
-			globalDict["Str"] = IodineString.TypeDefinition;
-			globalDict["ByteStr"] = IodineByteString.TypeDefinition;
-			globalDict["Bool"] = IodineBool.TypeDefinition;
-			globalDict["Char"] = IodineChar.TypeDefinition;
-			globalDict["Tuple"] = IodineTuple.TypeDefinition;
-			globalDict["List"] = IodineList.TypeDefinition;
-			globalDict["Event"] = IodineEvent.TypeDefinition;
-			globalDict["Object"] = new InternalMethodCallback (Object, null);
-			globalDict["HashMap"] = IodineMap.TypeDefinition;
-			globalDict["filter"] = new InternalMethodCallback (filter, null);
-			globalDict["map"] = new InternalMethodCallback (map, null); 
-			globalDict["reduce"] = new InternalMethodCallback (reduce, null);
-			globalDict["range"] = new InternalMethodCallback (range, null);
-			globalDict["open"] = new InternalMethodCallback (open, null);
-			globalDict["Exception"] = IodineException.TypeDefinition;
-			globalDict["TypeException"] = IodineTypeException.TypeDefinition;
-			globalDict["ArgumentException"] = IodineArgumentException.TypeDefinition;
-			globalDict["InternalException"] = IodineInternalErrorException.TypeDefinition;
-			globalDict["IndexException"] = IodineIndexException.TypeDefinition;
-			globalDict["IOException"] = IodineIOException.TypeDefinition;
-			globalDict["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
-			globalDict["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
-			globalDict["SyntaxException"] = IodineSyntaxException.TypeDefinition;
-			globalDict["NotSupportedException"] = IodineNotSupportedException.TypeDefinition;
+			globalDict ["stdin"] = new IodineStream (Console.OpenStandardInput (), false, true);
+			globalDict ["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
+			globalDict ["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
+			globalDict ["eval"] = new InternalMethodCallback (eval, null);
+			globalDict ["print"] = new InternalMethodCallback (print, null);
+			globalDict ["input"] = new InternalMethodCallback (input, null);
+			globalDict ["Int"] = IodineInteger.TypeDefinition;
+			globalDict ["Float"] = IodineFloat.TypeDefinition;
+			globalDict ["Str"] = IodineString.TypeDefinition;
+			globalDict ["ByteStr"] = IodineByteString.TypeDefinition;
+			globalDict ["Bool"] = IodineBool.TypeDefinition;
+			globalDict ["Char"] = IodineChar.TypeDefinition;
+			globalDict ["Tuple"] = IodineTuple.TypeDefinition;
+			globalDict ["List"] = IodineList.TypeDefinition;
+			globalDict ["Event"] = IodineEvent.TypeDefinition;
+			globalDict ["Object"] = new InternalMethodCallback (Object, null);
+			globalDict ["HashMap"] = IodineMap.TypeDefinition;
+			globalDict ["filter"] = new InternalMethodCallback (filter, null);
+			globalDict ["map"] = new InternalMethodCallback (map, null); 
+			globalDict ["reduce"] = new InternalMethodCallback (reduce, null);
+			globalDict ["range"] = new InternalMethodCallback (range, null);
+			globalDict ["open"] = new InternalMethodCallback (open, null);
+			globalDict ["Exception"] = IodineException.TypeDefinition;
+			globalDict ["TypeException"] = IodineTypeException.TypeDefinition;
+			globalDict ["ArgumentException"] = IodineArgumentException.TypeDefinition;
+			globalDict ["InternalException"] = IodineInternalErrorException.TypeDefinition;
+			globalDict ["IndexException"] = IodineIndexException.TypeDefinition;
+			globalDict ["IOException"] = IodineIOException.TypeDefinition;
+			globalDict ["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
+			globalDict ["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
+			globalDict ["SyntaxException"] = IodineSyntaxException.TypeDefinition;
+			globalDict ["NotSupportedException"] = IodineNotSupportedException.TypeDefinition;
 		}
-			
+
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
@@ -88,7 +88,7 @@ namespace Iodine
 				return null;
 			}
 
-			IodineString str = args[0] as IodineString;
+			IodineString str = args [0] as IodineString;
 			IodineMap map = null;
 			if (str == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
@@ -96,7 +96,7 @@ namespace Iodine
 			}
 
 			if (args.Length >= 2) {
-				map = args[1] as IodineMap;
+				map = args [1] as IodineMap;
 				if (map == null) {
 					vm.RaiseException (new IodineTypeException ("HashMap"));
 					return null;
@@ -114,11 +114,11 @@ namespace Iodine
 				vm = new VirtualMachine (new Dictionary<string, IodineObject> ());
 
 				foreach (string glob in host.Globals.Keys) {
-					vm.Globals[glob] = host.Globals[glob];
+					vm.Globals [glob] = host.Globals [glob];
 				}
 
 				foreach (IodineObject key in dict.Keys.Values) {
-					vm.Globals[key.ToString ()] = dict.Dict[key.GetHashCode ()];
+					vm.Globals [key.ToString ()] = dict.Dict [key.GetHashCode ()];
 				}
 			}
 			ErrorLog log = new ErrorLog ();
@@ -128,7 +128,7 @@ namespace Iodine
 				vm.RaiseException (e);
 				return null;
 			}
-			return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{});
+			return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{ });
 		}
 
 		private IodineObject print (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -161,9 +161,9 @@ namespace Iodine
 				return null;
 			}
 
-			IodineList list = new IodineList (new IodineObject[]{});
-			IodineObject collection = args[0];
-			IodineObject func = args[1];
+			IodineList list = new IodineList (new IodineObject[]{ });
+			IodineObject collection = args [0];
+			IodineObject func = args [1];
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
 				IodineObject o = collection.IterGetNext (vm);
@@ -181,9 +181,9 @@ namespace Iodine
 				return null;
 			}
 
-			IodineList list = new IodineList (new IodineObject[]{});
-			IodineObject collection = args[0];
-			IodineObject func = args[1];
+			IodineList list = new IodineList (new IodineObject[]{ });
+			IodineObject collection = args [0];
+			IodineObject func = args [1];
 
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
@@ -201,13 +201,14 @@ namespace Iodine
 			}
 
 			IodineObject result = null;
-			IodineObject collection = args[0];
-			IodineObject func = args[1];
+			IodineObject collection = args [0];
+			IodineObject func = args [1];
 
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
 				IodineObject o = collection.IterGetNext (vm);
-				if (result == null) result = o;
+				if (result == null)
+					result = o;
 				result = func.Invoke (vm, new IodineObject[] { result, o });
 			}
 			return result;
@@ -223,15 +224,15 @@ namespace Iodine
 				return null;
 			}
 			if (args.Length == 1) {
-				IodineInteger stepObj = args[0] as IodineInteger;
+				IodineInteger stepObj = args [0] as IodineInteger;
 				if (stepObj == null) {
 					vm.RaiseException (new IodineTypeException ("Int"));
 					return null;
 				}
 				end = stepObj.Value;
 			} else if (args.Length == 2) {
-				IodineInteger startObj = args[0] as IodineInteger;
-				IodineInteger endObj = args[1] as IodineInteger;
+				IodineInteger startObj = args [0] as IodineInteger;
+				IodineInteger endObj = args [1] as IodineInteger;
 				if (startObj == null || endObj == null) {
 					vm.RaiseException (new IodineTypeException ("Int"));
 					return null;
@@ -239,9 +240,9 @@ namespace Iodine
 				start = startObj.Value;
 				end = endObj.Value;
 			} else {
-				IodineInteger startObj = args[0] as IodineInteger;
-				IodineInteger endObj = args[1] as IodineInteger;
-				IodineInteger stepObj = args[2] as IodineInteger;
+				IodineInteger startObj = args [0] as IodineInteger;
+				IodineInteger endObj = args [1] as IodineInteger;
+				IodineInteger stepObj = args [2] as IodineInteger;
 				if (startObj == null || endObj == null || stepObj == null) {
 					vm.RaiseException (new IodineTypeException ("Int"));
 					return null;
@@ -259,8 +260,8 @@ namespace Iodine
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineString filePath = args[0] as IodineString;
-			IodineString mode = args[1] as IodineString;
+			IodineString filePath = args [0] as IodineString;
+			IodineString mode = args [1] as IodineString;
 
 			if (filePath == null) {
 				vm.RaiseException ("Expected filePath to be of type string!");
@@ -297,9 +298,9 @@ namespace Iodine
 				return new IodineStream (File.Open (filePath.Value, FileMode.Append), true, true);
 			else if (canRead && canWrite)
 				return new IodineStream (File.Open (filePath.Value, FileMode.OpenOrCreate), canWrite, canRead);
-			else if (canRead) 
+			else if (canRead)
 				return new IodineStream (File.OpenRead (filePath.Value), canWrite, canRead);
-			else if (canWrite) 
+			else if (canWrite)
 				return new IodineStream (File.OpenWrite (filePath.Value), canWrite, canRead);
 			return null;
 		}

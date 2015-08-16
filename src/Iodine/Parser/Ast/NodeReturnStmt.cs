@@ -6,7 +6,7 @@ namespace Iodine
 	{
 		public AstNode Value {
 			get {
-				return this.Children[0];
+				return this.Children [0];
 			}
 		}
 

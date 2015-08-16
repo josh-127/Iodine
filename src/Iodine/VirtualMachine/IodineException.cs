@@ -9,7 +9,7 @@ namespace Iodine
 
 		class ExceptionTypeDef : IodineTypeDefinition
 		{
-			public ExceptionTypeDef () 
+			public ExceptionTypeDef ()
 				: base ("Exception")
 			{
 			}
@@ -19,7 +19,7 @@ namespace Iodine
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineException ("{0}", args[0].ToString ());
+				return new IodineException ("{0}", args [0].ToString ());
 			}
 
 		}
@@ -61,7 +61,7 @@ namespace Iodine
 
 		class TypeExceptionTypeDef : IodineTypeDefinition
 		{
-			public TypeExceptionTypeDef () 
+			public TypeExceptionTypeDef ()
 				: base ("TypeException")
 			{
 			}
@@ -71,12 +71,12 @@ namespace Iodine
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineTypeException (args[0].ToString ());
+				return new IodineTypeException (args [0].ToString ());
 			}
 		}
 
 		public IodineTypeException (string expectedType)
-			: base (TypeDefinition, "Expected type '{0}'", expectedType) 
+			: base (TypeDefinition, "Expected type '{0}'", expectedType)
 		{
 			this.Base = new IodineException ();
 		}
@@ -88,7 +88,7 @@ namespace Iodine
 
 		class IndexExceptionTypeDef : IodineTypeDefinition
 		{
-			public IndexExceptionTypeDef () 
+			public IndexExceptionTypeDef ()
 				: base ("IndexException")
 			{
 			}
@@ -100,7 +100,7 @@ namespace Iodine
 		}
 
 		public IodineIndexException ()
-			: base (TypeDefinition, "Index out of range!") 
+			: base (TypeDefinition, "Index out of range!")
 		{
 			this.Base = new IodineException ();
 		}
@@ -112,7 +112,7 @@ namespace Iodine
 
 		class KeyNotFoundTypeDef : IodineTypeDefinition
 		{
-			public KeyNotFoundTypeDef () 
+			public KeyNotFoundTypeDef ()
 				: base ("KeyNotFoundException")
 			{
 			}
@@ -124,7 +124,7 @@ namespace Iodine
 		}
 
 		public IodineKeyNotFound ()
-			: base (TypeDefinition, "Key not found!") 
+			: base (TypeDefinition, "Key not found!")
 		{
 			this.Base = new IodineException ();
 		}
@@ -136,14 +136,14 @@ namespace Iodine
 
 		class AttributeNotFoundExceptionTypeDef : IodineTypeDefinition
 		{
-			public AttributeNotFoundExceptionTypeDef () 
+			public AttributeNotFoundExceptionTypeDef ()
 				: base ("AttributeNotFoundException")
 			{
 			}
 		}
 
 		public IodineAttributeNotFoundException (string name)
-			: base (TypeDefinition, "Attribute '{0}' not found!", name) 
+			: base (TypeDefinition, "Attribute '{0}' not found!", name)
 		{
 			this.Base = new IodineException ();
 		}
@@ -155,7 +155,7 @@ namespace Iodine
 
 		class InternalErrorExceptionTypeDef : IodineTypeDefinition
 		{
-			public InternalErrorExceptionTypeDef () 
+			public InternalErrorExceptionTypeDef ()
 				: base ("InternalException")
 			{
 			}
@@ -163,7 +163,7 @@ namespace Iodine
 
 		public IodineInternalErrorException (Exception ex)
 			: base (TypeDefinition, "Internal exception: {0}\n Inner Exception: ",
-				ex.Message, ex.InnerException == null ?  "" : ex.InnerException.Message) 
+			        ex.Message, ex.InnerException == null ? "" : ex.InnerException.Message)
 		{
 			this.Base = new IodineException ();
 		}
@@ -175,14 +175,14 @@ namespace Iodine
 
 		class ArgumentExceptionTypeDef : IodineTypeDefinition
 		{
-			public ArgumentExceptionTypeDef () 
+			public ArgumentExceptionTypeDef ()
 				: base ("ArgumentException")
 			{
 			}
 		}
 
 		public IodineArgumentException (int argCount)
-			: base (TypeDefinition, "Expected {0} or more arguments!", argCount) 
+			: base (TypeDefinition, "Expected {0} or more arguments!", argCount)
 		{
 			this.Base = new IodineException ();
 		}
@@ -194,14 +194,14 @@ namespace Iodine
 
 		class IOExceptionTypeDef : IodineTypeDefinition
 		{
-			public IOExceptionTypeDef () 
+			public IOExceptionTypeDef ()
 				: base ("IOException")
 			{
 			}
 		}
 
 		public IodineIOException (string msg)
-			: base (TypeDefinition, msg) 
+			: base (TypeDefinition, msg)
 		{
 			this.Base = new IodineException ();
 		}
@@ -213,14 +213,14 @@ namespace Iodine
 
 		class SyntaxExceptionTypeDef : IodineTypeDefinition
 		{
-			public SyntaxExceptionTypeDef () 
+			public SyntaxExceptionTypeDef ()
 				: base ("SynaxErrorException")
 			{
 			}
 		}
 
 		public IodineSyntaxException (ErrorLog errorLog)
-			: base (TypeDefinition, "Syntax error") 
+			: base (TypeDefinition, "Syntax error")
 		{
 			this.Base = new IodineException ();
 			IodineObject[] errors = new IodineObject[errorLog.ErrorCount];
@@ -228,7 +228,7 @@ namespace Iodine
 			foreach (Error error in errorLog.Errors) {
 				Location loc = error.Location;
 				string text = String.Format ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
-					loc.Line, loc.Column, error.Text);
+					              loc.Line, loc.Column, error.Text);
 				errors [i++] = new IodineString (text);
 			}
 			this.SetAttribute ("errors", new IodineTuple (errors));
@@ -241,7 +241,7 @@ namespace Iodine
 
 		class NotSupportedExceptionTypeDef : IodineTypeDefinition
 		{
-			public NotSupportedExceptionTypeDef () 
+			public NotSupportedExceptionTypeDef ()
 				: base ("NotSupportedException")
 			{
 			}
@@ -253,13 +253,13 @@ namespace Iodine
 		}
 
 		public IodineNotSupportedException ()
-			: base (TypeDefinition, "The requested feature is not supported!") 
+			: base (TypeDefinition, "The requested feature is not supported!")
 		{
 			this.Base = new IodineException ();
 		}
 
 		public IodineNotSupportedException (string message)
-			: base (TypeDefinition, message) 
+			: base (TypeDefinition, message)
 		{
 			this.Base = new IodineException ();
 		}
@@ -267,14 +267,12 @@ namespace Iodine
 
 	public class UnhandledIodineExceptionException : Exception
 	{
-		public IodineException OriginalException
-		{
+		public IodineException OriginalException {
 			private set;
 			get;
 		}
 
-		public StackFrame Frame
-		{
+		public StackFrame Frame {
 			private set;
 			get;
 		}

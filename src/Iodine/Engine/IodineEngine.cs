@@ -33,7 +33,8 @@ namespace Iodine
 					ret = IodineTypeConverter.Instance.CreateDynamicObject (this, obj);
 				}
 				return ret;
-			} set {
+			}
+			set {
 				IodineObject obj;
 				IodineTypeConverter.Instance.ConvertFromPrimative (value, out obj);
 				if (this.defaultModule.HasAttribute (name)) {

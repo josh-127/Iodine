@@ -8,14 +8,15 @@ namespace Iodine
 	{
 		private static List<IBytecodeOptimization> Optimizations = new List<IBytecodeOptimization> ();
 
-		static IodineCompiler () {
+		static IodineCompiler ()
+		{
 			Optimizations.Add (new ControlFlowOptimization ());
 			Optimizations.Add (new InstructionOptimization ());
 		}
 
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
-		private string file ;
+		private string file;
 
 		public IodineCompiler (ErrorLog errLog, SymbolTable symbolTable, string file)
 		{
@@ -40,7 +41,8 @@ namespace Iodine
 			return module;
 		}
 
-		private void optimizeObject (IodineObject obj) {
+		private void optimizeObject (IodineObject obj)
+		{
 			foreach (IodineObject attr in obj.Attributes.Values) {
 				if (attr is IodineMethod) {
 					IodineMethod method = attr as IodineMethod;
@@ -51,7 +53,7 @@ namespace Iodine
 			}
 		}
 
-		private void compileUseStatement (IodineModule module, NodeUseStatement useStmt) 
+		private void compileUseStatement (IodineModule module, NodeUseStatement useStmt)
 		{
 		}
 	}

@@ -4,7 +4,7 @@ namespace Iodine
 {
 	public class IodineClosure : IodineObject
 	{
-		private static readonly IodineTypeDefinition ClosureTypeDef = new IodineTypeDefinition ("Closure"); 
+		private static readonly IodineTypeDefinition ClosureTypeDef = new IodineTypeDefinition ("Closure");
 		private StackFrame frame;
 		private IodineMethod target;
 

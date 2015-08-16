@@ -9,16 +9,16 @@ namespace Iodine
 
 		static BuiltInModules ()
 		{
-			Modules["random"] = new RandomModule ();
-			Modules["regex"] = new RegexModule ();
-			Modules["hash"] = new HashModule ();
-			Modules["threading"] = new ThreadingModule ();
-			Modules["io"] = new IOModule ();
-			Modules["os"] = new OSModule ();
-			Modules["datetime"] = new DateTimeModule ();
-			Modules["sys"] = new SysModule ();
-			Modules["math"] = new MathModule ();
-			Modules["struct"] = new StructModule ();
+			Modules ["random"] = new RandomModule ();
+			Modules ["regex"] = new RegexModule ();
+			Modules ["hash"] = new HashModule ();
+			Modules ["threading"] = new ThreadingModule ();
+			Modules ["io"] = new IOModule ();
+			Modules ["os"] = new OSModule ();
+			Modules ["datetime"] = new DateTimeModule ();
+			Modules ["sys"] = new SysModule ();
+			Modules ["math"] = new MathModule ();
+			Modules ["struct"] = new StructModule ();
 		}
 	}
 }

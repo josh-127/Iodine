@@ -90,7 +90,7 @@ namespace Iodine
 				symbolTable.AddSymbol (param);
 			}
 
-			funcDecl.Children[0].Visit (visitor);
+			funcDecl.Children [0].Visit (visitor);
 			symbolTable.EndScope (true);
 		}
 
@@ -126,7 +126,7 @@ namespace Iodine
 		{
 			visitSubnodes (unaryop);
 		}
-			
+
 		public void Accept (NodeCall call)
 		{
 			visitSubnodes (call);
@@ -176,7 +176,7 @@ namespace Iodine
 		{
 			visitSubnodes (tuple);
 		}
-			
+
 		public void Accept (NodeLambda lambda)
 		{
 			FunctionVisitor visitor = new FunctionVisitor (this.errorLog, this.symbolTable);
@@ -211,7 +211,7 @@ namespace Iodine
 		{
 		}
 
-		public void Accept (NodeFloat num) 
+		public void Accept (NodeFloat num)
 		{
 		}
 

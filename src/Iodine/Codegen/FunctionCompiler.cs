@@ -8,8 +8,8 @@ namespace Iodine
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
 		private IodineMethod methodBuilder;
-		private Stack<IodineLabel> breakLabels = new Stack<IodineLabel>();
-		private Stack<IodineLabel> continueLabels = new Stack<IodineLabel>();
+		private Stack<IodineLabel> breakLabels = new Stack<IodineLabel> ();
+		private Stack<IodineLabel> continueLabels = new Stack<IodineLabel> ();
 
 		public FunctionCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineMethod methodBuilder)
 		{
@@ -19,7 +19,7 @@ namespace Iodine
 		}
 
 		public FunctionCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineMethod methodBuilder,
-			Stack<IodineLabel> breakLabels, Stack<IodineLabel> continueLabels)
+		                         Stack<IodineLabel> breakLabels, Stack<IodineLabel> continueLabels)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
@@ -60,15 +60,14 @@ namespace Iodine
 						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreLocal, sym.Index);
 						methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, sym.Index);
 					} else {
-						int globalIndex = methodBuilder.Module.DefineConstant (new IodineName
-							(ident.Value));
+						int globalIndex = methodBuilder.Module.DefineConstant (new IodineName (ident.Value));
 						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreGlobal, globalIndex);
 						methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalIndex);
 					}
 				} else if (binop.Left is NodeGetAttr) {
 					NodeGetAttr getattr = binop.Left as NodeGetAttr;
 					getattr.Target.Visit (this);
-					int attrIndex = methodBuilder.Module.DefineConstant (new IodineName(getattr.Field));
+					int attrIndex = methodBuilder.Module.DefineConstant (new IodineName (getattr.Field));
 					methodBuilder.EmitInstruction (getattr.Location, Opcode.StoreAttribute, attrIndex);
 					getattr.Target.Visit (this);
 					methodBuilder.EmitInstruction (getattr.Location, Opcode.LoadAttribute, attrIndex);
@@ -225,7 +224,7 @@ namespace Iodine
 			continueLabels.Pop ();
 		}
 
-		public void Accept (NodeForeach foreachStmt) 
+		public void Accept (NodeForeach foreachStmt)
 		{
 			IodineLabel foreachLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
@@ -257,13 +256,13 @@ namespace Iodine
 		{
 			symbolTable.NextScope ();
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, funcDecl.InstanceMethod, 
-				funcDecl.Parameters.Count, methodBuilder.LocalCount);
+				                          funcDecl.Parameters.Count, methodBuilder.LocalCount);
 			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-				anonMethod.Parameters[funcDecl.Parameters[i]] = symbolTable.GetSymbol
+				anonMethod.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
 					(funcDecl.Parameters [i]).Index;
 			}
-			funcDecl.Children[0].Visit (compiler);
+			funcDecl.Children [0].Visit (compiler);
 			anonMethod.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
 			anonMethod.Variadic = funcDecl.Variadic;
 			anonMethod.FinalizeLabels ();
@@ -279,7 +278,7 @@ namespace Iodine
 			symbolTable.NextScope ();
 
 			FunctionCompiler scopeCompiler = new FunctionCompiler (errorLog, symbolTable, methodBuilder,
-				breakLabels, continueLabels);
+				                                 breakLabels, continueLabels);
 			foreach (AstNode node in scope) {
 				node.Visit (scopeCompiler);
 			}
@@ -327,7 +326,7 @@ namespace Iodine
 		{
 			IodineEnum ienum = new IodineEnum (enumDecl.Name);
 			foreach (string name in enumDecl.Items.Keys) {
-				ienum.AddItem (name, enumDecl.Items[name]);
+				ienum.AddItem (name, enumDecl.Items [name]);
 			}
 			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (ienum));
 			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (enumDecl.Name).Index);
@@ -378,13 +377,13 @@ namespace Iodine
 
 			int locals = methodBuilder.LocalCount > 0 ? methodBuilder.LocalCount : symbolTable.CurrentScope.SymbolCount;
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, lambda.InstanceMethod, 
-				lambda.Parameters.Count, locals);
+				                          lambda.Parameters.Count, locals);
 			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
 			for (int i = 0; i < lambda.Parameters.Count; i++) {
-				anonMethod.Parameters[lambda.Parameters[i]] = symbolTable.GetSymbol
+				anonMethod.Parameters [lambda.Parameters [i]] = symbolTable.GetSymbol
 					(lambda.Parameters [i]).Index;
 			}
-			lambda.Children[0].Visit (compiler);
+			lambda.Children [0].Visit (compiler);
 			anonMethod.EmitInstruction (lambda.Location, Opcode.LoadNull);
 			anonMethod.Variadic = lambda.Variadic;
 			anonMethod.FinalizeLabels ();
@@ -437,31 +436,31 @@ namespace Iodine
 			List<string> parent = super.Parent.Base;
 			super.Arguments.Visit (this);
 			methodBuilder.EmitInstruction (super.Location, Opcode.LoadGlobal,
-				methodBuilder.Module.DefineConstant (new IodineName (parent[0])));
+				methodBuilder.Module.DefineConstant (new IodineName (parent [0])));
 			for (int i = 1; i < parent.Count; i++) {
 				methodBuilder.EmitInstruction (super.Location, Opcode.LoadAttribute,
-					methodBuilder.Module.DefineConstant (new IodineName (parent[0])));
+					methodBuilder.Module.DefineConstant (new IodineName (parent [0])));
 			}
 			methodBuilder.EmitInstruction (super.Location, Opcode.InvokeSuper,
 				super.Arguments.Children.Count);
 		}
 
-		public void Accept (NodeBreak brk) 
+		public void Accept (NodeBreak brk)
 		{
 			methodBuilder.EmitInstruction (brk.Location, Opcode.Jump, breakLabels.Peek ());
 		}
 
-		public void Accept (NodeContinue cont) 
+		public void Accept (NodeContinue cont)
 		{
 			methodBuilder.EmitInstruction (cont.Location, Opcode.Jump, continueLabels.Peek ());
 		}
-			
+
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {
 				node.Visit (this);
 			}
-		} 
+		}
 	}
 }
 

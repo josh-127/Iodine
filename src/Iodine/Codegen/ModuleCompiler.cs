@@ -58,7 +58,7 @@ namespace Iodine
 		{
 			call.Visit (functionCompiler);
 		}
-			
+
 		public void Accept (NodeArgList arglist)
 		{
 			arglist.Visit (functionCompiler);
@@ -94,7 +94,7 @@ namespace Iodine
 			whileStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeForStmt forStmt) 
+		public void Accept (NodeForStmt forStmt)
 		{
 			forStmt.Visit (functionCompiler);
 		}
@@ -128,7 +128,7 @@ namespace Iodine
 		{
 			module.Imports.Add (useStmt.Module);
 			string import = !useStmt.Relative ? useStmt.Module : String.Format ("{0}{1}{2}",
-				Path.GetDirectoryName (useStmt.Location.File), Path.DirectorySeparatorChar, useStmt.Module);
+				                Path.GetDirectoryName (useStmt.Location.File), Path.DirectorySeparatorChar, useStmt.Module);
 			
 			if (useStmt.Wildcard) {
 				module.Initializer.EmitInstruction (Opcode.ImportAll, module.DefineConstant (
@@ -189,7 +189,7 @@ namespace Iodine
 			ntrue.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeFalse nfalse) 
+		public void Accept (NodeFalse nfalse)
 		{
 			nfalse.Visit (functionCompiler);
 		}
@@ -235,7 +235,7 @@ namespace Iodine
 		{
 			IodineEnum ienum = new IodineEnum (enumDecl.Name);
 			foreach (string name in enumDecl.Items.Keys) {
-				ienum.AddItem (name, enumDecl.Items[name]);
+				ienum.AddItem (name, enumDecl.Items [name]);
 			}
 			this.module.SetAttribute (enumDecl.Name, ienum);
 		}
@@ -245,13 +245,13 @@ namespace Iodine
 			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor));
 
 			for (int i = 1; i < classDecl.Children.Count; i++) {
-				if (classDecl.Children[i] is NodeFuncDecl) {
+				if (classDecl.Children [i] is NodeFuncDecl) {
 					NodeFuncDecl func = classDecl.Children [i] as NodeFuncDecl;
 					if (func.InstanceMethod)
 						clazz.AddInstanceMethod (compileMethod (func));
 					else
 						clazz.SetAttribute (func.Name, compileMethod (func));
-				} else if (classDecl.Children[i] is NodeClassDecl) {
+				} else if (classDecl.Children [i] is NodeClassDecl) {
 					NodeClassDecl subclass = classDecl.Children [i] as NodeClassDecl;
 					clazz.SetAttribute (subclass.Name, CompileClass (subclass));
 				}
@@ -259,19 +259,19 @@ namespace Iodine
 			return clazz;
 		}
 
-		private IodineMethod compileMethod (NodeFuncDecl funcDecl) 
+		private IodineMethod compileMethod (NodeFuncDecl funcDecl)
 		{
 			symbolTable.NextScope ();
 			IodineMethod methodBuilder = new IodineMethod (module, funcDecl.Name, funcDecl.InstanceMethod,
-				funcDecl.Parameters.Count, symbolTable.CurrentScope.SymbolCount);
+				                             funcDecl.Parameters.Count, symbolTable.CurrentScope.SymbolCount);
 			FunctionCompiler compiler = new FunctionCompiler (this.errorLog, this.symbolTable, 
-				methodBuilder);
+				                            methodBuilder);
 			methodBuilder.Variadic = funcDecl.Variadic;
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
 				methodBuilder.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
-					(funcDecl.Parameters[i]).Index;
+					(funcDecl.Parameters [i]).Index;
 			}
-			funcDecl.Children[0].Visit (compiler);
+			funcDecl.Children [0].Visit (compiler);
 			methodBuilder.EmitInstruction (Opcode.LoadNull);
 			methodBuilder.FinalizeLabels ();
 			symbolTable.LeaveScope ();

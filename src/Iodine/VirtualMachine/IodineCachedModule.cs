@@ -29,7 +29,7 @@ namespace Iodine
 			Null = 10,
 			Inteface = 11,
 		}
-				
+
 		public static void SaveModule (string path, IodineModule original)
 		{
 			using (BinaryWriter bw = new BinaryWriter (new FileStream (path, FileMode.Create))) {
@@ -128,7 +128,7 @@ namespace Iodine
 			foreach (IodineMethod meth in contract.RequiredMethods) {
 				WriteObject (bw, meth);
 			}
-		}	
+		}
 
 		private static void WriteMethod (BinaryWriter bw, IodineMethod method)
 		{
@@ -254,7 +254,7 @@ namespace Iodine
 			string name = br.ReadString ();
 			IodineClass clazz = new IodineClass (name, (IodineMethod)ReadObject (module, br));
 			int instanceMethods = br.ReadInt32 ();
-			for (int i = 0 ; i < instanceMethods; i++) {
+			for (int i = 0; i < instanceMethods; i++) {
 				clazz.AddInstanceMethod (ReadObject (module, br) as IodineMethod);
 			}
 			int items = br.ReadInt32 ();
@@ -271,7 +271,7 @@ namespace Iodine
 			string name = br.ReadString ();
 			IodineInterface contract = new IodineInterface (name);
 			int methods = br.ReadInt32 ();
-			for (int i = 0 ; i < methods; i++) {
+			for (int i = 0; i < methods; i++) {
 				contract.AddMethod (ReadObject (module, br) as IodineMethod);
 			}
 			return contract;

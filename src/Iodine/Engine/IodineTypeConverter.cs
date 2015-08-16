@@ -20,18 +20,18 @@ namespace Iodine
 
 		public IodineTypeConverter ()
 		{
-			RegisterTypeConveter (typeof (Byte), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (Int16), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (UInt16), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (Int32), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (UInt32), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (Int64), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (UInt64), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (Boolean), new BoolTypeConverter ());
-			RegisterTypeConveter (typeof (String), new StringTypeConverter ());
-			RegisterTypeConveter (typeof (IodineString), new StringTypeConverter ());
-			RegisterTypeConveter (typeof (IodineInteger), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof (IodineBool), new BoolTypeConverter ());
+			RegisterTypeConveter (typeof(Byte), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(Int16), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(UInt16), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(Int32), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(UInt32), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(Int64), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(UInt64), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(Boolean), new BoolTypeConverter ());
+			RegisterTypeConveter (typeof(String), new StringTypeConverter ());
+			RegisterTypeConveter (typeof(IodineString), new StringTypeConverter ());
+			RegisterTypeConveter (typeof(IodineInteger), new IntegerTypeConverter ());
+			RegisterTypeConveter (typeof(IodineBool), new BoolTypeConverter ());
 		}
 
 		public void RegisterTypeConveter (Type fromType, ITypeConverter converter)
@@ -47,7 +47,7 @@ namespace Iodine
 			result = null;
 			return false;
 		}
-			
+
 		public bool ConvertFromPrimative (object obj, out IodineObject result)
 		{
 			if (conveters.ContainsKey (obj.GetType ())) {

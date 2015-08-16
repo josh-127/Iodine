@@ -9,7 +9,7 @@ namespace Iodine
 
 		class TupleTypeDef : IodineTypeDefinition
 		{
-			public TupleTypeDef () 
+			public TupleTypeDef ()
 				: base ("Tuple")
 			{
 			}
@@ -17,7 +17,7 @@ namespace Iodine
 			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
 			{
 				if (args.Length >= 1) {
-					IodineList inputList = args[0] as IodineList;
+					IodineList inputList = args [0] as IodineList;
 					return new IodineTuple (inputList.Objects.ToArray ());
 				}
 				return null;
@@ -42,14 +42,14 @@ namespace Iodine
 		{
 			IodineInteger index = key as IodineInteger;
 			if (index.Value < Objects.Length)
-				return this.Objects[(int)index.Value];
+				return this.Objects [(int)index.Value];
 			vm.RaiseException (new IodineIndexException ());
 			return null;
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return this.Objects[iterIndex - 1];
+			return this.Objects [iterIndex - 1];
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)

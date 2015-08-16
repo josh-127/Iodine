@@ -5,14 +5,16 @@ namespace Iodine
 {
 	public class IodineObject
 	{
-		public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object"); 
-		
+		public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
+
 		public IodineObject Base {
-			set; get;
+			set;
+			get;
 		}
 
 		public List<IodineInterface> Interfaces {
-			set; get;
+			set;
+			get;
 		}
 
 		public IodineTypeDefinition TypeDef {
@@ -38,7 +40,7 @@ namespace Iodine
 		public bool HasAttribute (string name)
 		{
 			bool res = this.attributes.ContainsKey (name);
-			if (!res && this.Base != null) 
+			if (!res && this.Base != null)
 				return this.Base.HasAttribute (name);
 			return res;
 		}
@@ -60,7 +62,7 @@ namespace Iodine
 				} else if (method.Method.ParameterCount < 2 && !method.Method.Variadic) {
 					vm.RaiseException (new IodineArgumentException (2));
 				}
-				method.Invoke (vm, new IodineObject[] {new IodineString (name), value});
+				method.Invoke (vm, new IodineObject[] { new IodineString (name), value });
 			} else {
 				SetAttribute (name, value);
 			}
@@ -72,20 +74,20 @@ namespace Iodine
 			if (value is IodineMethod) {
 				IodineMethod method = (IodineMethod)value;
 				if (method.InstanceMethod) {
-					this.attributes[name] = new IodineInstanceMethodWrapper (this, method);
+					this.attributes [name] = new IodineInstanceMethodWrapper (this, method);
 				}
 			} else if (value is IodineInstanceMethodWrapper) {
 				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
-				this.attributes[name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
+				this.attributes [name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
 			} else {
-				this.attributes[name] = value;
+				this.attributes [name] = value;
 			}
 		}
 
 		public IodineObject GetAttribute (string name)
 		{
 			if (this.attributes.ContainsKey (name))
-				return this.attributes[name];
+				return this.attributes [name];
 			else if (this.Base != null && this.Base.Attributes.ContainsKey (name))
 				return this.Base.GetAttribute (name);
 			return null;
@@ -94,7 +96,7 @@ namespace Iodine
 		public virtual IodineObject GetAttribute (VirtualMachine vm, string name)
 		{
 			if (this.attributes.ContainsKey (name))
-				return this.attributes[name];
+				return this.attributes [name];
 			else if (this.Base != null && this.Base.Attributes.ContainsKey (name))
 				return this.Base.GetAttribute (name);
 			else if (this.attributes.ContainsKey ("__getAttribute__")) {
@@ -105,7 +107,7 @@ namespace Iodine
 				} else if (method.Method.ParameterCount < 1 && !method.Method.Variadic) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return method.Invoke (vm, new IodineObject[] {new IodineString (name)});
+				return method.Invoke (vm, new IodineObject[] { new IodineString (name) });
 			}
 			vm.RaiseException (new IodineAttributeNotFoundException (name));
 			return null;
@@ -211,7 +213,7 @@ namespace Iodine
 				break;
 			}
 			if (this.HasAttribute (methodName)) {
-				return GetAttribute (vm, methodName).Invoke (vm, new IodineObject[] {});
+				return GetAttribute (vm, methodName).Invoke (vm, new IodineObject[] { });
 			}
 			vm.RaiseException (new IodineNotSupportedException (
 				"The requested unary operator has not been implemented"));
@@ -225,23 +227,24 @@ namespace Iodine
 			return null;
 		}
 
-		public virtual bool IsTrue () {
+		public virtual bool IsTrue ()
+		{
 			return false;
 		}
 
 		public virtual IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return GetAttribute("__iterGetNext__").Invoke (vm, new IodineObject[]{});
+			return GetAttribute ("__iterGetNext__").Invoke (vm, new IodineObject[]{ });
 		}
 
-		public virtual bool IterMoveNext (VirtualMachine vm) 
+		public virtual bool IterMoveNext (VirtualMachine vm)
 		{
-			return GetAttribute("__iterMoveNext__").Invoke (vm, new IodineObject[]{}).IsTrue ();
+			return GetAttribute ("__iterMoveNext__").Invoke (vm, new IodineObject[]{ }).IsTrue ();
 		}
 
 		public virtual void IterReset (VirtualMachine vm)
 		{
-			GetAttribute ("__iterReset__").Invoke (vm, new IodineObject[]{});
+			GetAttribute ("__iterReset__").Invoke (vm, new IodineObject[]{ });
 		}
 
 		public virtual void PrintTest ()

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 namespace Iodine
 {
-	[AttributeUsage(AttributeTargets.Class)]
-	public class IodineExtensionAttribute : System.Attribute 
+	[AttributeUsage (AttributeTargets.Class)]
+	public class IodineExtensionAttribute : System.Attribute
 	{
 		public string Name {
 			private set;
@@ -70,7 +70,7 @@ namespace Iodine
 
 		public void AddMethod (IodineMethod method)
 		{
-			this.attributes[method.Name] = method;
+			this.attributes [method.Name] = method;
 		}
 
 		public int DefineConstant (IodineObject obj)
@@ -105,17 +105,21 @@ namespace Iodine
 				}
 				Lexer lexer = new Lexer (errorLog, File.ReadAllText (FindModule (file)), file);
 				TokenStream tokenStream = lexer.Scan ();
-				if (errorLog.ErrorCount > 0) return null;
+				if (errorLog.ErrorCount > 0)
+					return null;
 				Parser parser = new Parser (tokenStream);
 				Ast root = parser.Parse ();
-				if (errorLog.ErrorCount > 0) return null;
+				if (errorLog.ErrorCount > 0)
+					return null;
 				SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
 				SymbolTable symbolTable = analyser.Analyse (root);
-				if (errorLog.ErrorCount > 0) return null;
+				if (errorLog.ErrorCount > 0)
+					return null;
 				IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable, Path.GetFullPath (file));
 				IodineModule module = new IodineModule (Path.GetFileNameWithoutExtension (file));
 				compiler.CompileAst (module, root);
-				if (errorLog.ErrorCount > 0) return null;
+				if (errorLog.ErrorCount > 0)
+					return null;
 
 				try {
 					IodineCachedModule.SaveModule (file + ".idx", module);
@@ -134,18 +138,22 @@ namespace Iodine
 		{
 			Lexer lexer = new Lexer (errorLog, source);
 			TokenStream tokenStream = lexer.Scan ();
-			if (errorLog.ErrorCount > 0) return null;
+			if (errorLog.ErrorCount > 0)
+				return null;
 			Parser parser = new Parser (tokenStream);
 			Ast root = parser.Parse ();
-			if (errorLog.ErrorCount > 0) return null;
+			if (errorLog.ErrorCount > 0)
+				return null;
 			SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
 			SymbolTable symbolTable = analyser.Analyse (root);
-			if (errorLog.ErrorCount > 0) return null;
+			if (errorLog.ErrorCount > 0)
+				return null;
 			IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable, "");
 			IodineModule module = new IodineModule ("");
 
 			compiler.CompileAst (module, root);
-			if (errorLog.ErrorCount > 0) return null;
+			if (errorLog.ErrorCount > 0)
+				return null;
 			return module;
 		}
 
@@ -165,7 +173,7 @@ namespace Iodine
 			return null;
 		}
 
-		private static IodineModule LoadExtensionModule (string module, string dll) 
+		private static IodineModule LoadExtensionModule (string module, string dll)
 		{
 			Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
 
@@ -174,7 +182,7 @@ namespace Iodine
 
 				if (attr != null) {
 					if (attr.Name == module) {
-						return (IodineModule)type.GetConstructor (new Type[] {}).Invoke (new object[]{});
+						return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
 					}
 				}
 			}
@@ -203,7 +211,7 @@ namespace Iodine
 			foreach (IodineObject obj in SearchPaths) {
 				string dir = obj.ToString ();
 				string expectedName = String.Format ("{0}{1}{2}.id", dir, Path.DirectorySeparatorChar,
-					name);
+					                      name);
 				if (File.Exists (expectedName)) {
 					return expectedName;
 				}

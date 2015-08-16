@@ -6,13 +6,13 @@ namespace Iodine
 	{
 		public AstNode Target {
 			get {
-				return this.Children[0];
+				return this.Children [0];
 			}
 		}
 
 		public AstNode Index {
 			get {
-				return this.Children[1];
+				return this.Children [1];
 			}
 		}
 

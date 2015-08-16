@@ -7,7 +7,7 @@ namespace Iodine
 	public class IodineLabel
 	{
 		public int _Position;
-		public int _LabelID ;
+		public int _LabelID;
 
 		public IodineLabel (int labelID)
 		{
@@ -91,7 +91,7 @@ namespace Iodine
 		}
 
 		public IodineMethod (IodineModule module, string name, bool isInstance, int parameterCount,
-			int localCount) : base (MethodTypeDef)
+		                     int localCount) : base (MethodTypeDef)
 		{
 			this.Name = name;
 			this.ParameterCount = parameterCount;
@@ -102,7 +102,7 @@ namespace Iodine
 		}
 
 		public IodineMethod (IodineMethod parent, IodineModule module, string name, bool isInstance, int parameterCount,
-			int localCount) : this (module, name, isInstance, parameterCount, localCount)
+		                     int localCount) : this (module, name, isInstance, parameterCount, localCount)
 		{
 			this.parent = parent;
 		}
@@ -119,7 +119,7 @@ namespace Iodine
 
 		public void EmitInstruction (Opcode opcode, IodineLabel label)
 		{
-			this.labelReferences[this.instructions.Count] = label;
+			this.labelReferences [this.instructions.Count] = label;
 			this.instructions.Add (new Instruction (new Location (0, 0, ""), opcode, 0));
 		}
 
@@ -135,13 +135,13 @@ namespace Iodine
 
 		public void EmitInstruction (Location loc, Opcode opcode, IodineLabel label)
 		{
-			this.labelReferences[this.instructions.Count] = label;
+			this.labelReferences [this.instructions.Count] = label;
 			this.instructions.Add (new Instruction (loc, opcode, 0));
 		}
 
 		public int CreateTemporary ()
 		{
-			if (this.parent != null) 
+			if (this.parent != null)
 				this.parent.CreateTemporary ();
 			return this.LocalCount++;
 		}
@@ -159,8 +159,8 @@ namespace Iodine
 		public void FinalizeLabels ()
 		{
 			foreach (int position in this.labelReferences.Keys) {
-				this.instructions[position] = new Instruction (this.instructions[position].Location,
-					this.instructions[position].OperationCode, this.labelReferences[position]._Position);
+				this.instructions [position] = new Instruction (this.instructions [position].Location,
+					this.instructions [position].OperationCode, this.labelReferences [position]._Position);
 			}
 		}
 
