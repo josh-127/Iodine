@@ -6,14 +6,14 @@ using System.Collections.Generic;
 namespace Iodine
 {
 	[AttributeUsage (AttributeTargets.Class)]
-	public class IodineExtensionAttribute : System.Attribute
+	public class IodineBuiltinModule : System.Attribute
 	{
 		public string Name {
 			private set;
 			get;
 		}
 
-		public IodineExtensionAttribute (string moduleName)
+		public IodineBuiltinModule (string moduleName)
 		{
 			this.Name = moduleName;
 		}
@@ -179,7 +179,7 @@ namespace Iodine
 			Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
 
 			foreach (Type type in extension.GetTypes ()) {
-				IodineExtensionAttribute attr = type.GetCustomAttribute <IodineExtensionAttribute> ();
+				IodineBuiltinModule attr = type.GetCustomAttribute <IodineBuiltinModule> ();
 
 				if (attr != null) {
 					if (attr.Name == module) {

@@ -6,7 +6,7 @@ using Iodine;
 namespace ModuleSockets
 {
 
-	[IodineExtensionAttribute ("socket")]
+	[IodineBuiltinModule ("socket")]
 	public class SocketModule : IodineModule
 	{
 		public SocketModule ()

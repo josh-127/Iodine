@@ -4,7 +4,7 @@ using Iodine;
 
 namespace ModuleWebClient
 {
-	[IodineExtension ("webclient")]
+	[IodineBuiltinModule ("webclient")]
 	public class WebClientModule : IodineModule
 	{
 		public WebClientModule () : base ("webclient") {

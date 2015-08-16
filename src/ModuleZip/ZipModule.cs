@@ -7,7 +7,7 @@ using System.IO.Compression;
 
 namespace ModuleZip
 {
-	[IodineExtensionAttribute ("ziplib")]
+	[IodineBuiltinModule ("ziplib")]
 	public class ZipModule : IodineModule
 	{
 		public ZipModule () : base ("ziplib")

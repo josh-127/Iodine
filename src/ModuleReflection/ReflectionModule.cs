@@ -4,7 +4,7 @@ using Iodine;
 
 namespace ModuleReflection
 {
-	[IodineExtensionAttribute ("reflection")]
+	[IodineBuiltinModule ("reflection")]
 	public class ReflectionModule : IodineModule
 	{
 		public ReflectionModule ()
