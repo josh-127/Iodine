@@ -6,7 +6,7 @@ using System.Net;
 namespace Iodine.Modules.Extras
 {
 	[IodineBuiltinModule ("webclient")]
-	public class WebClientModule : IodineModule
+	internal class WebClientModule : IodineModule
 	{
 		public class IodineWebClient : IodineObject
 		{
@@ -21,6 +21,7 @@ namespace Iodine.Modules.Extras
 				this.SetAttribute ("downloadString", new InternalMethodCallback (downloadString, this));
 				this.SetAttribute ("downloadRaw", new InternalMethodCallback (downloadRaw, this));
 				this.SetAttribute ("downloadFile", new InternalMethodCallback (downloadFile, this));
+				this.SetAttribute ("uploadFile", new InternalMethodCallback (uploadFile, this));
 				WebProxy proxy = new WebProxy ();
 				this.client = new WebClient ();
 				this.client.Proxy = proxy;
@@ -67,6 +68,15 @@ namespace Iodine.Modules.Extras
 				}
 				return null;
 
+			}
+
+			private IodineObject uploadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+				IodineString uri = args [0] as IodineString;
+				IodineString file = args [1] as IodineString;
+				client.UploadFile (uri.ToString (), file.ToString ());
+				return null;
 			}
 		}
 
