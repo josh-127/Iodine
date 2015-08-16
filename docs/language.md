@@ -86,6 +86,10 @@ Anonymous functions can be created using the lambda keyword. Anonymous functions
 lambda () => statement
 ```
 
+##### 2.1.3 Self reference
+Inside instance methods, the self reference points to the current object instance. The self reference can be accessed via the ```self``` keyword.
+
+
 #### 2.2 Statements
 
 ##### 2.2.1 Class definitions
