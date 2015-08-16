@@ -89,10 +89,10 @@ namespace Iodine
 			}
 
 			if (top.AbortExecution) {
-				return null;
+				return IodineNull.Instance;
 			}
 
-			IodineObject retVal = Stack.Last;
+			IodineObject retVal = Stack.Last == null ? IodineNull.Instance : Stack.Last;
 			Stack.EndFrame ();
 			return retVal;
 		}

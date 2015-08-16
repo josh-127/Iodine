@@ -46,7 +46,9 @@ namespace Iodine
 		public static void Main (string[] args)
 		{
 			if (args.Length == 0) {
-				DisplayUsage ();
+				ReplShell shell = new ReplShell ();
+				shell.Run ();
+				Environment.Exit (0);
 			}
 
 			IodineOptions options = IodineOptions.Parse (args);
@@ -82,7 +84,7 @@ namespace Iodine
 
 		}
 
-		public static void DisplayErrors (ErrorLog errorLog)
+		private static void DisplayErrors (ErrorLog errorLog)
 		{
 			foreach (Error err in errorLog) {
 				Location loc = err.Location;
@@ -91,13 +93,13 @@ namespace Iodine
 			}
 		}
 
-		public static void DisplayUsage ()
+		private static void DisplayUsage ()
 		{
 			Console.WriteLine ("usage: [option] ... [file] [arg] ...");
 			Environment.Exit (0);
 		}
 
-		public static void Panic (string format, params object[] args)
+		private static void Panic (string format, params object[] args)
 		{
 			Console.Error.WriteLine (format, args);
 			Environment.Exit (-1);

@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
+    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Engine\Converters\StringTypeConverter.cs" />
     <Compile Include="Engine\Converters\IntegerTypeConverter.cs" />
     <Compile Include="Engine\Converters\BoolTypeConverter.cs" />
+    <Compile Include="ReplShell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
