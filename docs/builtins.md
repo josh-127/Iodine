@@ -34,3 +34,13 @@ Class represents a variable tuple
 Class represents an event
 ##### class ```Stream``` ()
 Class represents a stream
+##### class ```Exception``` (message)
+Class represents a generic exception. Exceptions in Iodine can be raised using the ```raise``` keyword. Any class deriving ```Exception``` can be raised.
+Example:
+```
+try {
+    raise Exception ("An exception!");
+} except (ex) {
+}
+```
+
