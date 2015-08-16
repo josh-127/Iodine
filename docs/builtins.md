@@ -32,3 +32,5 @@ Class represents a variable length list
 Class represents a variable tuple
 ##### ```class Event ()```
 Class represents an event
+##### ```class Stream ()```
+Class represents a stream
