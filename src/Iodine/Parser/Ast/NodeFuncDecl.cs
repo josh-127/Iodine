@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public class NodeFuncDecl : AstNode
 	{
@@ -64,7 +64,7 @@ namespace Iodine
 				 * Since two values can not be returned, we must return a single node containing both
 				 * the function declaration and call to the decorator 
 				 */
-				Ast nodes = new Ast (stream.Location);
+				AstRoot nodes = new AstRoot (stream.Location);
 				nodes.Add (idecl);
 				nodes.Add (new NodeExpr (stream.Location, new NodeBinOp (stream.Location,
 					BinaryOperation.Assign, new NodeIdent (stream.Location, idecl.Name), new NodeCall (

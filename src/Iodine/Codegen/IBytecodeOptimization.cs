@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public interface IBytecodeOptimization
 	{

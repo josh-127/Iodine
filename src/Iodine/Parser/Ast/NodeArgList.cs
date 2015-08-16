@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public class NodeArgList : AstNode
 	{

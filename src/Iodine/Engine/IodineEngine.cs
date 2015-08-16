@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using Iodine.Compiler;
+using Iodine.Compiler.Ast;
 
 namespace Iodine
 {
@@ -66,7 +68,7 @@ namespace Iodine
 			Parser parser = new Parser (lex.Scan ());
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
-			Ast root = parser.Parse ();
+			AstRoot root = parser.Parse ();
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
 			SemanticAnalyser analyser = new SemanticAnalyser (errorLog);

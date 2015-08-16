@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class TokenStream
 	{
@@ -53,13 +53,13 @@ namespace Iodine
 		public bool Match (TokenClass clazz1, TokenClass clazz2)
 		{
 			return peekToken () != null && peekToken ().Class == clazz1 &&
-				peekToken (1) != null && peekToken (1).Class == clazz2;
+			peekToken (1) != null && peekToken (1).Class == clazz2;
 		}
 
 		public bool Match (TokenClass clazz, string val)
 		{
 			return peekToken () != null && peekToken ().Class == clazz &&
-				peekToken ().Value == val;
+			peekToken ().Value == val;
 		}
 
 		public bool Accept (TokenClass clazz)
@@ -80,7 +80,7 @@ namespace Iodine
 			return false;
 		}
 
-		public bool Accept (TokenClass clazz, string val) 
+		public bool Accept (TokenClass clazz, string val)
 		{
 			if (peekToken () != null && peekToken ().Class == clazz && peekToken ().Value == val) {
 				readToken ();
@@ -121,7 +121,7 @@ namespace Iodine
 			if (offender != null) {
 				errorLog.AddError (ErrorType.ParserError, offender.Location, 
 					"Unexpected '{0}' (Expected '{1}')", offender.ToString (), Token.ClassToString (
-						clazz));
+					clazz));
 			} else {
 				errorLog.AddError (ErrorType.ParserError, offender.Location, 
 					"Unexpected end of file (Expected {0})", Token.ClassToString (clazz));
@@ -136,12 +136,12 @@ namespace Iodine
 				readToken ().ToString ());
 		}
 
-		private Token peekToken () 
+		private Token peekToken ()
 		{
 			return peekToken (0);
 		}
 
-		private Token peekToken (int n) 
+		private Token peekToken (int n)
 		{
 			if (this.Position + n >= this.tokens.Count) {
 				return null;
@@ -149,7 +149,7 @@ namespace Iodine
 			return this.tokens [this.Position + n];
 		}
 
-		private Token readToken () 
+		private Token readToken ()
 		{
 			if (this.Position >= this.tokens.Count) {
 				return null;

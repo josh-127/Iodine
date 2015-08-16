@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public class NodeIfStmt : AstNode
 	{
@@ -43,7 +43,7 @@ namespace Iodine
 			if (stream.Accept (TokenClass.Keyword, "else")) {
 				ifStmt.Add (NodeStmt.Parse (stream));
 			} else {
-				ifStmt.Add (new Ast (stream.Location));
+				ifStmt.Add (new NodeScope (stream.Location));
 			}
 			return ifStmt;
 		}

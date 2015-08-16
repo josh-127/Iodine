@@ -1,6 +1,7 @@
 ﻿using System;
+using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class RootVisitor : IAstVisitor
 	{
@@ -61,7 +62,7 @@ namespace Iodine
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (Ast ast)
+		public void Accept (AstRoot ast)
 		{
 			visitSubnodes (ast);
 		}

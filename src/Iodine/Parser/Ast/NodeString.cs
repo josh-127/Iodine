@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public class NodeString : AstNode
 	{

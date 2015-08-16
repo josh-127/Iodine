@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class ModuleCompiler : IAstVisitor
 	{
@@ -24,7 +25,7 @@ namespace Iodine
 			this.visitSubnodes (ast);
 		}
 
-		public void Accept (Ast ast)
+		public void Accept (AstRoot ast)
 		{
 			visitSubnodes (ast);
 		}

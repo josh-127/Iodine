@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public class NodeUseStatement : AstNode
 	{

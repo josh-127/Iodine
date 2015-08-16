@@ -1,10 +1,11 @@
 ﻿using System;
+using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public interface IAstVisitor
 	{
-		void Accept (Ast ast);
+		void Accept (AstRoot ast);
 		void Accept (NodeExpr expr);
 		void Accept (NodeStmt stmt);
 		void Accept (NodeBinOp binop);

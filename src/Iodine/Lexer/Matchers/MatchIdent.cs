@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class MatchIdent : IMatcher
 	{

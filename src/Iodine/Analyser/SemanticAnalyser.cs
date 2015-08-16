@@ -1,6 +1,7 @@
 ﻿using System;
+using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class SemanticAnalyser
 	{
@@ -11,7 +12,7 @@ namespace Iodine
 			this.errorLog = errorLog;
 		}
 
-		public SymbolTable Analyse (Ast ast)
+		public SymbolTable Analyse (AstRoot ast)
 		{
 			SymbolTable retTable = new SymbolTable ();
 			RootVisitor visitor = new RootVisitor (errorLog, retTable);

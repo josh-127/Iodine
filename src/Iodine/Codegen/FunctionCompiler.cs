@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Iodine.Compiler;
+using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class FunctionCompiler : IAstVisitor
 	{
@@ -33,7 +35,7 @@ namespace Iodine
 			visitSubnodes (ast);
 		}
 
-		public void Accept (Ast ast)
+		public void Accept (AstRoot ast)
 		{
 			visitSubnodes (ast);
 		}

@@ -2,6 +2,8 @@
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using Iodine.Compiler;
+using Iodine.Compiler.Ast;
 
 namespace Iodine
 {
@@ -108,7 +110,7 @@ namespace Iodine
 				if (errorLog.ErrorCount > 0)
 					return null;
 				Parser parser = new Parser (tokenStream);
-				Ast root = parser.Parse ();
+				AstRoot root = parser.Parse ();
 				if (errorLog.ErrorCount > 0)
 					return null;
 				SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
@@ -142,7 +144,7 @@ namespace Iodine
 			if (errorLog.ErrorCount > 0)
 				return null;
 			Parser parser = new Parser (tokenStream);
-			Ast root = parser.Parse ();
+			AstRoot root = parser.Parse ();
 			if (errorLog.ErrorCount > 0)
 				return null;
 			SemanticAnalyser analyser = new SemanticAnalyser (errorLog);

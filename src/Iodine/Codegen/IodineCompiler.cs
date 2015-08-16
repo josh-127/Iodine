@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class IodineCompiler
 	{
@@ -25,7 +26,7 @@ namespace Iodine
 			this.file = file;
 		}
 
-		public IodineModule CompileAst (IodineModule module, Ast ast)
+		public IodineModule CompileAst (IodineModule module, AstRoot ast)
 		{
 			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module);
 			ast.Visit (compiler);

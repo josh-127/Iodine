@@ -1,6 +1,7 @@
 ﻿using System;
+using Iodine.Compiler;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public class NodeStmt : AstNode
 	{

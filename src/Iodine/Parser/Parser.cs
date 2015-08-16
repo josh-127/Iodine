@@ -1,6 +1,7 @@
 ﻿using System;
+using Iodine.Compiler.Ast;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	public class Parser
 	{
@@ -11,13 +12,13 @@ namespace Iodine
 			this.tokenStream = tokenStream;
 		}
 
-		public Ast Parse ()
+		public AstRoot Parse ()
 		{
 			try {
-				return (Ast)Ast.Parse (this.tokenStream);
+				return AstRoot.Parse (this.tokenStream);
 			} catch (Exception) {
 				//this.tokenStream.ErrorLog.AddError (ErrorType.ParserError, "");
-				return new Ast (this.tokenStream.Location);
+				return new AstRoot (this.tokenStream.Location);
 			}
 		}
 	}

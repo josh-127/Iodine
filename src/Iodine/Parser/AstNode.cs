@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public abstract class AstNode : IEnumerable<AstNode>
 	{
@@ -43,9 +43,9 @@ namespace Iodine
 		}
 	}
 
-	public class Ast : AstNode
+	public class AstRoot : AstNode
 	{
-		public Ast (Location location)
+		public AstRoot (Location location)
 			: base (location)
 		{
 		}
@@ -55,9 +55,9 @@ namespace Iodine
 			visitor.Accept (this);
 		}
 
-		public static Ast Parse (TokenStream inputStream)
+		public static AstRoot Parse (TokenStream inputStream)
 		{
-			Ast root = new Ast (inputStream.Location);
+			AstRoot root = new AstRoot (inputStream.Location);
 			while (!inputStream.EndOfStream) {
 				root.Add (NodeStmt.Parse (inputStream));
 			}

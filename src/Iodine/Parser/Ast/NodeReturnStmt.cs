@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iodine
+namespace Iodine.Compiler.Ast
 {
 	public class NodeReturnStmt : AstNode
 	{
@@ -25,7 +25,7 @@ namespace Iodine
 		{
 			stream.Expect (TokenClass.Keyword, "return");
 			if (stream.Accept (TokenClass.SemiColon)) {
-				return new NodeReturnStmt (stream.Location, new Ast (stream.Location));
+				return new NodeReturnStmt (stream.Location, new NodeScope (stream.Location));
 			} else {
 				return new NodeReturnStmt (stream.Location, NodeExpr.Parse (stream));
 			}
