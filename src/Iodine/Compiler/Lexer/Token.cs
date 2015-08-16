@@ -1,24 +1,74 @@
-﻿using System;
+﻿/**
+  * Copyright (c) 2015, GruntTheDivine All rights reserved.
+
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  * 
+  *  * Redistributions of source code must retain the above copyright notice, this list
+  *    of conditions and the following disclaimer.
+  * 
+  *  * Redistributions in binary form must reproduce the above copyright notice, this
+  *    list of conditions and the following disclaimer in the documentation and/or
+  *    other materials provided with the distribution.
+
+  * Neither the name of the copyright holder nor the names of its contributors may be
+  * used to endorse or promote products derived from this software without specific
+  * prior written permission.
+  * 
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY
+  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+  * SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+  * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+  * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  * CONTRACT ,STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+  * DAMAGE.
+**/
+
+using System;
 
 namespace Iodine.Compiler
 {
+	/// <summary>
+	/// Token.
+	/// </summary>
 	public class Token
 	{
+		/// <summary>
+		/// Gets the token class.
+		/// </summary>
+		/// <value>The class of the token.</value>
 		public TokenClass Class {
 			private set;
 			get;
 		}
 
+		/// <summary>
+		/// Gets the value.
+		/// </summary>
+		/// <value>The value.</value>
 		public string Value {
 			private set;
 			get;
 		}
 
+		/// <summary>
+		/// Gets the location.
+		/// </summary>
+		/// <value>The location.</value>
 		public Location Location {
 			private set;
 			get;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Iodine.Compiler.Token"/> class.
+		/// </summary>
+		/// <param name="clazz">Token class.</param>
+		/// <param name="value">Value.</param>
+		/// <param name="location">Location.</param>
 		public Token (TokenClass clazz, string value, Location location)
 		{
 			this.Class = clazz;
@@ -26,11 +76,21 @@ namespace Iodine.Compiler
 			this.Location = location;
 		}
 
+		/// <summary>
+		/// Returns a string that represents the current object.
+		/// </summary>
+		/// <returns>A string that represents the current object.</returns>
+		/// <filterpriority>2</filterpriority>
 		public override string ToString ()
 		{
 			return this.Value.ToString ();
 		}
 
+		/// <summary>
+		/// Converts a TokenClass enum to its string representation
+		/// </summary>
+		/// <returns>The string representation of the TokenClass enum.</returns>
+		/// <param name="clazz">Token class.</param>
 		public static string ClassToString (TokenClass clazz)
 		{
 			switch (clazz) {
@@ -59,11 +119,22 @@ namespace Iodine.Compiler
 			}
 		}
 
+		/// <summary>
+		/// Create a new Token object.
+		/// </summary>
+		/// <param name="clazz">The token's slass.</param>
+		/// <param name="stream">The inputstream we are scanning.</param>
 		public static Token Create (TokenClass clazz, InputStream stream) 
 		{
 			return new Token (clazz, ClassToString (clazz), stream.Location);
 		}
 
+		/// <summary>
+		/// Create a new Token object.
+		/// </summary>
+		/// <param name="clazz">The token's slass.</param>
+		/// <param name="value">Value.</param>
+		/// <param name="stream">The inputstream we are scanning.</param>
 		public static Token Create (TokenClass clazz, string value, InputStream stream) 
 		{
 			return new Token (clazz, value, stream.Location);
