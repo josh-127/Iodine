@@ -10,6 +10,8 @@ Evaluates a string of iodine source code
 Iterates through an iterable object, passing each iteration to function. If function returns true, then the element is added to a list that is returned to the caller.
 ##### func ```map``` (iterable, function)
 Iterates through an iterable object, performing function on each iteration. The outputs from function is added to a new list that is returned to the caller.
+##### func ```reduce``` (iterable, function)
+Reduces all members of an iterable object by applying function to each item left to right. The function passed to reduce receives two arguments, the result of the last call to function, and the current item from the iterable object.  
 ##### func ```range``` (n)
 ##### func ```range``` (start, end)
 Returns an iterable object with n iterations 
