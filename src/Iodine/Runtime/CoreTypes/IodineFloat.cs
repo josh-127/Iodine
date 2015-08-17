@@ -77,6 +77,8 @@ namespace Iodine.Runtime
 					vm.RaiseException (new IodineTypeException ("Float"));
 					return null;
 				}
+			} else {
+				op2 = floatVal.Value;
 			}
 
 			switch (binop) {

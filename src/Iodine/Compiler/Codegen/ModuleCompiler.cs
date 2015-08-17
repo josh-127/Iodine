@@ -280,8 +280,9 @@ namespace Iodine.Compiler
 					NodeFuncDecl func = classDecl.Children [i] as NodeFuncDecl;
 					if (func.InstanceMethod)
 						clazz.AddInstanceMethod (compileMethod (func));
-					else
+					else {
 						clazz.SetAttribute (func.Name, compileMethod (func));
+					}
 				} else if (classDecl.Children [i] is NodeClassDecl) {
 					NodeClassDecl subclass = classDecl.Children [i] as NodeClassDecl;
 					clazz.SetAttribute (subclass.Name, CompileClass (subclass));

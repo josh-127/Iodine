@@ -105,6 +105,8 @@ namespace Iodine.Runtime
 				IodineMethod method = (IodineMethod)value;
 				if (method.InstanceMethod) {
 					this.attributes [name] = new IodineInstanceMethodWrapper (this, method);
+				} else {
+					this.attributes [name] = value;
 				}
 			} else if (value is IodineInstanceMethodWrapper) {
 				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
