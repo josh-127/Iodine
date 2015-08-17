@@ -26,8 +26,12 @@ Class represents a UTF-16 char
 Class represents a boolean
 ##### class ```Str``` (object)
 Class represents a string
-##### class ```HashMap``` (object)
-Class represents a HashMap (Dictionary)
+##### class ```HashMap``` ([object])
+Class represents a HashMap (Dictionary). An optional list containing key/value pairs can also be passed to initialize the dictionary.
+```
+myDict = HashMap ();
+myDict = HashMap ({("key", "value")});
+```
 ##### class ```List``` (object)
 Class represents a variable length list
 ##### class ```Tuple``` (object)
