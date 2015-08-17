@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using Iodine.Runtime;
 
 namespace Iodine
@@ -39,12 +40,19 @@ namespace Iodine
 
 		public void Run ()
 		{
+			int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
+			int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
+			int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
+			Console.WriteLine ("Iodine v{0}.{1}.{2}", major, minor, patch);
+
 			engine ["prompt"] = ">>> ";
 			while (true) {
 				Console.Write (engine ["prompt"].ToString ());
-				string source = Console.ReadLine ();
+				string source = Console.ReadLine ().Trim ();
 				try {
-					Console.WriteLine (engine.DoString (source).ToString ());
+					if (source.Length > 0) {
+						Console.WriteLine (engine.DoString (source).ToString ());
+					}
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.Error.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);
 					Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.Message);

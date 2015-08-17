@@ -40,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Engine\IodineEngine.cs" />
     <Compile Include="Engine\IodineDynamicObject.cs" />
     <Compile Include="Engine\IodineTypeConverter.cs" />
@@ -165,6 +164,7 @@
     <Compile Include="ExtraModules\WebClientModule.cs" />
     <Compile Include="ExtraModules\ZipModule.cs" />
     <Compile Include="ExtraModules\WinRegModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

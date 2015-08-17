@@ -209,8 +209,15 @@ namespace Iodine.Compiler
 
 		public void Accept (NodeLambda lambda)
 		{
-			FunctionVisitor visitor = new FunctionVisitor (this.errorLog, this.symbolTable);
-			lambda.Visit (visitor);
+			symbolTable.BeginScope (true);
+
+			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
+			foreach (string param in lambda.Parameters) {
+				symbolTable.AddSymbol (param);
+			}
+
+			lambda.Children [0].Visit (visitor);
+			symbolTable.EndScope (true);
 		}
 
 		public void Accept (NodeEnumDecl enumDecl)

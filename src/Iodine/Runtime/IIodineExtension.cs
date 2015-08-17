@@ -32,6 +32,9 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+	/*
+	 * This really should be gotten ridden of...
+	 */
 	public interface IIodineExtension
 	{
 		void Initialize (Dictionary<string, IodineObject> globalDict);
