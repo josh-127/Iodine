@@ -145,6 +145,14 @@ namespace Iodine.Compiler
 			cont.Visit (functionCompiler);
 		}
 
+		public void Accept (NodeSwitchStmt switchStmt)
+		{
+		}
+
+		public void Accept (NodeCaseStmt caseStmt)
+		{
+		}
+
 		public void Accept (NodeFuncDecl funcDecl)
 		{
 			module.AddMethod (compileMethod (funcDecl));

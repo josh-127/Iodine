@@ -44,7 +44,7 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		public IodineBuiltinModule (string moduleName)
+		public IodineBuiltinModule (string moduleName, bool existsInGlobalNamespace = false)
 		{
 			this.Name = moduleName;
 		}

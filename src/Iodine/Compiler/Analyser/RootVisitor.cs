@@ -91,6 +91,18 @@ namespace Iodine.Compiler
 				"Statement not allowed outside function body!");
 		}
 
+		public void Accept (NodeSwitchStmt switchStmt)
+		{
+			errorLog.AddError (ErrorType.ParserError, switchStmt.Location,
+				"Statement not allowed outside function body!");
+		}
+
+		public void Accept (NodeCaseStmt caseStmt)
+		{
+			errorLog.AddError (ErrorType.ParserError, caseStmt.Location,
+				"Statement not allowed outside function body!");
+		}
+
 		public void Accept (AstRoot ast)
 		{
 			visitSubnodes (ast);

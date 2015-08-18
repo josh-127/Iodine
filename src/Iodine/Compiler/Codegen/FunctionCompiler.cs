@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Iodine.Compiler;
 using Iodine.Compiler.Ast;
@@ -282,6 +283,21 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (breakLabel);
 			breakLabels.Pop ();
 			continueLabels.Pop ();
+		}
+
+		public void Accept (NodeSwitchStmt switchStmt)
+		{
+			foreach (AstNode node in switchStmt.CaseStatements.Children) {
+				NodeCaseStmt caseStmt = node as NodeCaseStmt;
+				caseStmt.Values.Visit (this);
+				caseStmt.Body.Visit (this);
+			}
+			switchStmt.GivenValue.Visit (this);
+			methodBuilder.EmitInstruction (Opcode.SwitchLookup, switchStmt.CaseStatements.Children.Count);
+		}
+
+		public void Accept (NodeCaseStmt caseStmt)
+		{
 		}
 
 		public void Accept (NodeFuncDecl funcDecl)

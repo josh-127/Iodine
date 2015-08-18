@@ -77,6 +77,8 @@ namespace Iodine.Compiler
 				matchString (inputStream, "enum") ||
 				matchString (inputStream, "raise") ||
 				matchString (inputStream, "interface") ||
+				matchString (inputStream, "switch") ||
+				matchString (inputStream, "case") ||
 				matchString (inputStream, "return");
 		}
 

@@ -73,7 +73,8 @@ namespace Iodine.Runtime
 		InstanceOf,
 		Import,
 		ImportFrom,
-		ImportAll
+		ImportAll,
+		SwitchLookup
 	}
 }
 

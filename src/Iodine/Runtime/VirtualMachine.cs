@@ -483,6 +483,20 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
+			case Opcode.SwitchLookup:
+				{
+					Dictionary<int, IodineObject> lookup = new Dictionary<int, IodineObject> ();
+					int needle = Stack.Pop ().GetHashCode ();
+					for (int i = 0; i < ins.Argument; i++) {
+						IodineObject value = Stack.Pop ();
+						IodineObject key = Stack.Pop ();
+						lookup [key.GetHashCode ()] = value;
+					}
+					if (lookup.ContainsKey (needle)) {
+						lookup [needle].Invoke (this, new IodineObject[] { });
+					}
+					break;
+				}
 			}
 
 		}

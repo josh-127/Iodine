@@ -198,6 +198,16 @@ namespace Iodine.Compiler
 			visitSubnodes (ifStmt);
 		}
 
+		public void Accept (NodeSwitchStmt switchStmt)
+		{
+			visitSubnodes (switchStmt);
+		}
+
+		public void Accept (NodeCaseStmt caseStmt)
+		{
+			visitSubnodes (caseStmt);
+		}
+
 		public void Accept (NodeWhileStmt whileStmt)
 		{
 			visitSubnodes (whileStmt);

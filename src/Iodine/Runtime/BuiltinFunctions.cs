@@ -326,11 +326,11 @@ namespace Iodine.Runtime
 			if (append)
 				return new IodineStream (File.Open (filePath.Value, FileMode.Append), true, true);
 			else if (canRead && canWrite)
-				return new IodineStream (File.Open (filePath.Value, FileMode.OpenOrCreate), canWrite, canRead);
+				return new IodineStream (File.Open (filePath.Value, FileMode.Create), canWrite, canRead);
 			else if (canRead)
 				return new IodineStream (File.OpenRead (filePath.Value), canWrite, canRead);
 			else if (canWrite)
-				return new IodineStream (File.OpenWrite (filePath.Value), canWrite, canRead);
+				return new IodineStream (File.Open (filePath.Value, FileMode.Create), canWrite, canRead);
 			return null;
 		}
 

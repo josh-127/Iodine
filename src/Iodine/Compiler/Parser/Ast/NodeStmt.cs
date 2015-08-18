@@ -57,6 +57,8 @@ namespace Iodine.Compiler.Ast
 				return NodeFuncDecl.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "if")) {
 				return NodeIfStmt.Parse (stream);
+			} else if (stream.Match (TokenClass.Keyword, "switch")) {
+				return NodeSwitchStmt.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "for")) {
 				return NodeForStmt.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "foreach")) {
