@@ -32,14 +32,14 @@ Class represents a HashMap (Dictionary). An optional list containing key/value p
 myDict = HashMap ();
 myDict = HashMap ({("key", "value")});
 ```
-##### class ```List``` (object)
+##### class ```List``` (p[object])
 Class represents a variable length list
-##### class ```Tuple``` (object)
-Class represents a variable tuple
+##### class ```Tuple``` ([object])
+Class represents a tuple. A tuple can be initialized by passing any iterable object to Tuple's constructor
 ##### class ```Event``` ()
-Class represents an event
+Class represents an event. An instance of the event class is callable. Calling an instance of the ```Event``` class will call all registered events. Events can be registered with the ```+=``` operator.
 ##### class ```Stream``` ()
-Class represents a stream
+Class represents a stream. This class can not be directly instantiated however is returned from the ```open``` function.
 ##### class ```Exception``` (message)
 Class represents a generic exception. Exceptions in Iodine can be raised using the ```raise``` keyword. Any class deriving ```Exception``` can be raised.
 Example:
