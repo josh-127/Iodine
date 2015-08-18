@@ -24,6 +24,10 @@ Class represents a 64 bit signed integer.
 Class represents a UTF-16 char
 ##### class ```Bool``` (object)
 Class represents a boolean
+##### class ```ByteArray``` (object)
+Class represents a fixed length array of bytes
+##### class ```ByteStr``` (object)
+Class represents an immutable string of bytes
 ##### class ```Str``` (object)
 Class represents a string
 ##### class ```HashMap``` ([object])
