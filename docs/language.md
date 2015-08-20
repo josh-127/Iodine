@@ -186,3 +186,50 @@ The foreach loop can be used to iterate through an iterable object. The syntax f
 foreach (identifier in expression) 
     statement;
 ```
+##### 2.2.9 Switch/case statement
+The switch/case statement can be used to test a given value against a series of possible values. In the event that a value is not present, the default statement (If it exists) will be executed.
+```
+switch (expression) {
+    case (expression)
+        statement;
+    case (expression)
+        statement;
+    default
+        statement
+}
+```
+##### 2.2.10 try/except statement
+The try/except statement can be used to catch an exception if raised inside the try block. The syntax is
+```
+try
+    statement;
+except
+    statement;
+```
+Additionally, if an exception is thrown it can be stored in a local variable. This is declared in the except statement.
+```
+try
+    statement;
+except (identifier)
+    statement;
+```
+The except block can also be written to only catch certain exceptions. The syntax of this is
+```
+try
+    statement;
+except (identifier as Type)
+    statement;
+```
+Where identifier is the name of the variable the current exception is to be stored in and Type is the type of the exception that is expected. Multiple types can be specified.
+```
+try
+    statement;
+except (identifier as Type1, Type2)
+    statement;
+```
+##### 2.2.11 raise statement
+The raise statement can be used to throw an exception. The syntax for raise is
+```
+raise expression;
+```
+With expression being an expression that returns a value deriving Exception.
