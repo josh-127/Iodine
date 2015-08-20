@@ -93,7 +93,7 @@ Inside instance methods, the self reference points to the current object instanc
 #### 2.2 Statements
 
 ##### 2.2.1 Class Declaration
-Classes in Iodine are defined using the '''class''' keyword. The syntax for declaring a class is 
+Classes in Iodine are defined using the ```class``` keyword. The syntax for declaring a class is 
 ```
  class MyClass {
  
@@ -108,7 +108,7 @@ class MyClass : BaseClass {
 Classes may contain function definitions. A class can extend another class, or multiple interfaces seperated by a comma
 
 ##### 2.2.2 Interface Declaration
-Interfaces in Iodine are defined using the '''interface''' keyword. The syntax for declaring a interface is
+Interfaces in Iodine are defined using the ```interface``` keyword. The syntax for declaring a interface is
 ```
 interface IMyInterface {
     func aFunction ();
@@ -117,7 +117,7 @@ interface IMyInterface {
 Only function prototypes are allowed inside the interface body. An inteface may not extend another class or interface.
 
 ##### 2.2.3 Enum Declaration
-Enumerations in Iodine are defined using the '''enum''' keyword. The syntax for declaring an ''enum''' is
+Enumerations in Iodine are defined using the ```'enum``` keyword. The syntax for declaring an ```enum``` is
 ```
 enum MyEnum {
     VALUE_1,
@@ -132,7 +132,7 @@ enum MyEnum {
 }
 ```
 ##### 2.2.4 Function Declarations
-Functions can be declared using the '''func''' keyword. A function contain a list of statements. In Iodine, control statements are only valid inside functions. Classes, enums, and interfaces however may also be declared inside a function. The syntax for declaring a function is
+Functions can be declared using the ```func``` keyword. A function contain a list of statements. In Iodine, control statements are only valid inside functions. Classes, enums, and interfaces however may also be declared inside a function. The syntax for declaring a function is
 ```
 func myFunction () {
 
@@ -144,13 +144,13 @@ func myFunction (param1, param2) {
 
 }
 ```
-If the first parameter is named '''self''', then the function is an instance method. Instance methods are typically declared inside classes, however they are also valid outside classes. When calling instances methods, the '''self''' parameter can be ignored.
+If the first parameter is named ```self```, then the function is an instance method. Instance methods are typically declared inside classes, however they are also valid outside classes. When calling instances methods, the ```self``` parameter can be ignored.
 ```
 func instanceMethod (self) {
 
 }
 ```
-Variadic functions are supported by using the '''params''' keyword.
+Variadic functions are supported by using the ```params``` keyword.
 ```
 func variadicFunction (params args) {
 
@@ -159,7 +159,7 @@ func variadicFunction (params args) {
 The params keyword must be used on the final parameter. The final parameter will be a tuple containing all extra arguments that were passed to the function.
 
 ##### 2.2.5 ```if``` statement
-The '''if''' statement can be used to test if a condition is true or false. If the condition is true, the body of the if statement wil be executed. If false, the optional else body will be executed. The syntax for the if statement is
+The ```if``` statement can be used to test if a condition is true or false. If the condition is true, the body of the if statement wil be executed. If false, the optional else body will be executed. The syntax for the if statement is
 ```
 if (expression) 
     statement;
@@ -168,7 +168,7 @@ else
 ```
 
 ##### 2.2.6 ```while``` Statement
-The '''while''' loop can be used to continuously execute a block of code while a condition remains true.  The syntax for a while loop is 
+The ```while``` loop can be used to continuously execute a block of code while a condition remains true.  The syntax for a while loop is 
 ```
 while (expression)
     statement;
