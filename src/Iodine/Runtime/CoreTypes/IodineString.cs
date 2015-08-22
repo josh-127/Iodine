@@ -82,6 +82,11 @@ namespace Iodine.Runtime
 			SetAttribute ("join", new InternalMethodCallback (join, this));
 			SetAttribute ("trim", new InternalMethodCallback (trim, this));
 			SetAttribute ("format", new InternalMethodCallback (format, this));
+			SetAttribute ("isLetter", new InternalMethodCallback (isLetter, this));
+			SetAttribute ("isDigit", new InternalMethodCallback (isDigit, this));
+			SetAttribute ("isLetterOrDigit", new InternalMethodCallback (isLetterOrDigit, this));
+			SetAttribute ("isWhiteSpace", new InternalMethodCallback (isWhiteSpace, this));
+			SetAttribute ("isSymbol", new InternalMethodCallback (isSymbol, this));
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -90,9 +95,7 @@ namespace Iodine.Runtime
 			string strVal = "";
 
 			if (str == null) {
-				if (rvalue is IodineChar) {
-					strVal = rvalue.ToString ();
-				} else if (rvalue is IodineNull) {
+				if (rvalue is IodineNull) {
 					return base.PerformBinaryOperation (vm, binop, rvalue);
 				} else {
 					vm.RaiseException ("Right value must be of type string!");
@@ -135,12 +138,12 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineIndexException ());
 				return null;
 			}
-			return new IodineChar (Value [(int)index.Value]);
+			return new IodineString (Value [(int)index.Value].ToString ());
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return new IodineChar (Value [iterIndex - 1]);
+			return new IodineString (Value [iterIndex - 1].ToString ());
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
@@ -216,18 +219,13 @@ namespace Iodine.Runtime
 				return null;
 			}
 
-			IodineChar ch = args [0] as IodineChar;
+			IodineString ch = args [0] as IodineString;
 			char val;
 			if (ch == null) {
-				if (args [0] is IodineString) {
-					val = args [0].ToString () [0];
-				} else {
-					vm.RaiseException (new IodineTypeException ("Char"));
-					return null;
-				}
-			} else {
-				val = ch.Value;
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
 			}
+			val = ch.Value [0];
 
 			return new IodineInteger (Value.IndexOf (val));
 		}
@@ -282,18 +280,15 @@ namespace Iodine.Runtime
 			}
 
 			IodineString selfStr = self as IodineString;
-			IodineChar ch = args [0] as IodineChar;
+			IodineString ch = args [0] as IodineString;
 			char val;
 			if (ch == null) {
-				if (args [0] is IodineString) {
-					val = args [0].ToString () [0];
-				} else {
-					vm.RaiseException (new IodineTypeException ("Char"));
-					return null;
-				}
-			} else {
-				val = ch.Value;
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+
 			}
+			val = ch.Value [0];
+
 			IodineList list = new IodineList (new IodineObject[]{ });
 			foreach (string str in selfStr.Value.Split (val)) {
 				list.Add (new IodineString (str));
@@ -328,6 +323,61 @@ namespace Iodine.Runtime
 			string format = this.Value;
 			IodineFormatter formatter = new IodineFormatter ();
 			return new IodineString (formatter.Format (vm, format, args));
+		}
+
+		private IodineObject isLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			bool result = Value.Length == 0 ? false : true;
+			for (int i = 0; i < Value.Length; i++) {
+				if (!char.IsLetter (Value [i])) {
+					return IodineBool.False;
+				}
+			}
+			return new IodineBool (result);
+		}
+
+		private IodineObject isDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			bool result = Value.Length == 0 ? false : true;
+			for (int i = 0; i < Value.Length; i++) {
+				if (!char.IsDigit (Value [i])) {
+					return IodineBool.False;
+				}
+			}
+			return new IodineBool (result);
+		}
+
+		private IodineObject isLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			bool result = Value.Length == 0 ? false : true;
+			for (int i = 0; i < Value.Length; i++) {
+				if (!char.IsLetterOrDigit (Value [i])) {
+					return IodineBool.False;
+				}
+			}
+			return new IodineBool (result);
+		}
+
+		private IodineObject isWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			bool result = Value.Length == 0 ? false : true;
+			for (int i = 0; i < Value.Length; i++) {
+				if (!char.IsWhiteSpace (Value [i])) {
+					return IodineBool.False;
+				}
+			}
+			return new IodineBool (result);
+		}
+
+		private IodineObject isSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			bool result = Value.Length == 0 ? false : true;
+			for (int i = 0; i < Value.Length; i++) {
+				if (!char.IsSymbol (Value [i])) {
+					return IodineBool.False;
+				}
+			}
+			return new IodineBool (result);
 		}
 	}
 }

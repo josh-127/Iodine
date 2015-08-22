@@ -66,7 +66,6 @@
     <Compile Include="Runtime\IodineClosure.cs" />
     <Compile Include="Runtime\IodineException.cs" />
     <Compile Include="Runtime\IodineExceptionHandler.cs" />
-    <Compile Include="Runtime\CoreTypes\IodineChar.cs" />
     <Compile Include="Runtime\IodineTypeDefinition.cs" />
     <Compile Include="Runtime\CoreTypes\IodineEvent.cs" />
     <Compile Include="Runtime\CoreTypes\IodineTuple.cs" />

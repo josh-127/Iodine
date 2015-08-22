@@ -42,7 +42,7 @@ namespace Iodine.Runtime
 			public IodineDirectory ()
 				: base (DirectoryTypeDef)
 			{
-				SetAttribute ("separator", new IodineChar (Path.DirectorySeparatorChar));
+				SetAttribute ("separator", new IodineString (Path.DirectorySeparatorChar.ToString ()));
 				SetAttribute ("getFiles", new InternalMethodCallback (listFiles, this));
 				SetAttribute ("getDirectories", new InternalMethodCallback (listDirectories, this));
 				SetAttribute ("remove", new InternalMethodCallback (remove, this));
