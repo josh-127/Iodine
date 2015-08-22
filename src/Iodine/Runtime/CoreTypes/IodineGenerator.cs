@@ -28,51 +28,53 @@
 **/
 
 using System;
-using Iodine.Compiler.Ast;
 
-namespace Iodine.Compiler
+namespace Iodine.Runtime
 {
-	public interface IAstVisitor
+	public class IodineGenerator : IodineObject
 	{
-		void Accept (AstRoot ast);
-		void Accept (NodeExpr expr);
-		void Accept (NodeStmt stmt);
-		void Accept (NodeBinOp binop);
-		void Accept (NodeUnaryOp unaryop);
-		void Accept (NodeIdent ident);
-		void Accept (NodeCall call);
-		void Accept (NodeArgList arglist);
-		void Accept (NodeGetAttr getAttr);
-		void Accept (NodeInteger integer);
-		void Accept (NodeIfStmt ifStmt);
-		void Accept (NodeWhileStmt whileStmt);
-		void Accept (NodeForStmt forStmt);
-		void Accept (NodeForeach foreachStmt);
-		void Accept (NodeSwitchStmt switchStmt);
-		void Accept (NodeCaseStmt caseStmt);
-		void Accept (NodeFuncDecl funcDecl);
-		void Accept (NodeScope scope);
-		void Accept (NodeString stringConst);
-		void Accept (NodeUseStatement useStmt);
-		void Accept (NodeInterfaceDecl interfaceDecl);
-		void Accept (NodeClassDecl classDecl);
-		void Accept (NodeReturnStmt returnStmt);
-		void Accept (NodeYieldStmt yieldStmt);
-		void Accept (NodeIndexer indexer);
-		void Accept (NodeList list);
-		void Accept (NodeSelf self);
-		void Accept (NodeTrue ntrue);
-		void Accept (NodeFalse nfalse);
-		void Accept (NodeNull nil);
-		void Accept (NodeLambda lambda);
-		void Accept (NodeTryExcept tryCatch);
-		void Accept (NodeBreak brk);
-		void Accept (NodeContinue cont);
-		void Accept (NodeTuple tuple);
-		void Accept (NodeFloat dec);
-		void Accept (NodeSuperCall super);
-		void Accept (NodeEnumDecl enumDecl);
-		void Accept (NodeRaiseStmt raise);
+		private static readonly IodineTypeDefinition TypeDef = new IodineTypeDefinition ("Generator");
+
+		private IodineMethod baseMethod;
+		private IodineObject self;
+		private IodineObject value;
+		private IodineObject[] arguments;
+		private StackFrame stackFrame;
+
+		public IodineGenerator (StackFrame parentFrame, IodineMethod baseMethod, IodineObject[] args)
+			: base (TypeDef)
+		{
+			arguments = args;
+			this.baseMethod = baseMethod;
+		}
+
+		public IodineGenerator (StackFrame parentFrame, IodineInstanceMethodWrapper baseMethod, IodineObject[] args)
+			: base (TypeDef)
+		{
+			arguments = args;
+			this.self = baseMethod.Self;
+			this.baseMethod = baseMethod.Method;
+		}
+
+		public override bool IterMoveNext (VirtualMachine vm)
+		{
+			if (stackFrame.AbortExecution) {
+				return false;
+			}
+			value = vm.InvokeMethod (baseMethod, stackFrame, self, arguments);
+			return stackFrame.Yielded;
+		}
+
+		public override IodineObject IterGetNext (VirtualMachine vm)
+		{
+			stackFrame.Yielded = false;
+			return value;
+		}
+
+		public override void IterReset (VirtualMachine vm)
+		{
+			this.stackFrame = new StackFrame (baseMethod, vm.Stack.Top, null, this.baseMethod.LocalCount);
+		}
 	}
 }
 

@@ -166,6 +166,8 @@
     <Compile Include="Compiler\Parser\Ast\NodeCaseStmt.cs" />
     <Compile Include="Runtime\CoreModules\BuiltinsModule.cs" />
     <Compile Include="Compiler\Lexer\Matchers\MatchHexNumber.cs" />
+    <Compile Include="Runtime\CoreTypes\IodineGenerator.cs" />
+    <Compile Include="Compiler\Parser\Ast\NodeYieldStmt.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

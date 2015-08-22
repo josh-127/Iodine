@@ -118,7 +118,7 @@ namespace Iodine.Runtime
 			}
 
 			StackFrame top = Stack.Top;
-			while (top.InstructionPointer < insCount && !top.AbortExecution) {
+			while (top.InstructionPointer < insCount && !top.AbortExecution && !Stack.Top.Yielded) {
 				Instruction currInstruction = method.Body [Stack.Top.InstructionPointer++];
 				ExecuteInstruction (currInstruction);
 				top.Location = currLoc;
@@ -310,6 +310,11 @@ namespace Iodine.Runtime
 			case Opcode.Return:
 				{
 					this.Stack.Top.InstructionPointer = int.MaxValue;
+					break;
+				}
+			case Opcode.Yield:
+				{
+					Stack.Top.Yielded = true;
 					break;
 				}
 			case Opcode.JumpIfTrue:

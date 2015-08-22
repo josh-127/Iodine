@@ -158,6 +158,11 @@ namespace Iodine.Compiler
 			visitSubnodes (returnStmt);
 		}
 
+		public void Accept (NodeYieldStmt yieldStmt)
+		{
+			visitSubnodes (yieldStmt);
+		}
+
 		public void Accept (NodeList list)
 		{
 			visitSubnodes (list);

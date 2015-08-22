@@ -210,6 +210,11 @@ namespace Iodine.Compiler
 			returnStmt.Visit (functionCompiler);
 		}
 
+		public void Accept (NodeYieldStmt yieldStmt)
+		{
+			yieldStmt.Visit (functionCompiler);
+		}
+
 		public void Accept (NodeIndexer indexer)
 		{
 			indexer.Visit (functionCompiler);

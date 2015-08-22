@@ -386,6 +386,13 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (returnStmt.Location, Opcode.Return);
 		}
 
+		public void Accept (NodeYieldStmt yieldStmt)
+		{
+			visitSubnodes (yieldStmt);
+			methodBuilder.Generator = true;
+			methodBuilder.EmitInstruction (yieldStmt.Location, Opcode.Yield);
+		}
+
 		public void Accept (NodeIndexer indexer)
 		{
 			indexer.Target.Visit (this);

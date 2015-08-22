@@ -54,18 +54,23 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		private IodineObject self;
+		public IodineObject Self {
+			private set;
+			get;
+		}
 
 		public IodineInstanceMethodWrapper (IodineObject self, IodineMethod method)
 			: base (InstanceTypeDef)
 		{
-			this.Method = method;
-			this.self = self;
+			Method = method;
+			Self = self;
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			return vm.InvokeMethod (Method, self, arguments);
+			if (Method.Generator)
+				return new IodineGenerator (vm.Stack.Top, this, arguments);
+			return vm.InvokeMethod (Method, Self, arguments);
 		}
 	}
 
@@ -105,6 +110,11 @@ namespace Iodine.Runtime
 		}
 
 		public bool Variadic {
+			set;
+			get;
+		}
+
+		public bool Generator {
 			set;
 			get;
 		}
@@ -196,6 +206,8 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
+			if (Generator)
+				return new IodineGenerator (vm.Stack.Top, this, arguments);
 			return vm.InvokeMethod (this, null, arguments);
 		}
 	}

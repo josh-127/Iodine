@@ -56,6 +56,7 @@ namespace Iodine.Runtime
 		InvokeSuper,
 		InvokeVar,
 		Return,
+		Yield,
 		JumpIfTrue,
 		JumpIfFalse,
 		Jump,

@@ -34,7 +34,7 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	[IodineBuiltinModule ("__builtins__", true)]
+	[IodineBuiltinModule ("__builtins__")]
 	public class BuiltinsModule : IodineModule
 	{
 		class RangeIterator : IodineObject
@@ -52,7 +52,6 @@ namespace Iodine.Runtime
 				this.step = step;
 				this.min = min;
 			}
-
 
 			public override IodineObject IterGetNext (VirtualMachine vm)
 			{

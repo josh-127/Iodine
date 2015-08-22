@@ -142,6 +142,11 @@ namespace Iodine.Runtime
 			get;
 		}
 
+		public bool Yielded {
+			set;
+			get;
+		}
+
 		public IodineMethod Method {
 			private set;
 			get;
