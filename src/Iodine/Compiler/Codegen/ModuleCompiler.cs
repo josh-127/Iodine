@@ -288,7 +288,23 @@ namespace Iodine.Compiler
 
 		public IodineClass CompileClass (NodeClassDecl classDecl)
 		{
-			IodineClass clazz = new IodineClass (classDecl.Name, compileMethod (classDecl.Constructor));
+			IodineMethod constructor = compileMethod (classDecl.Constructor);
+			if (classDecl.Constructor.Children [0].Children.Count == 0 ||
+				!(classDecl.Constructor.Children [0].Children [0] is NodeSuperCall)) {
+				if (classDecl.Base.Count > 0) {
+					foreach (string subclass in classDecl.Base) {
+						string[] contract = subclass.Split ('.');
+						constructor.EmitInstruction (classDecl.Location, Opcode.LoadGlobal,
+							constructor.Module.DefineConstant (new IodineName (contract [0])));
+						for (int j = 1; j < contract.Length; j++) {
+							constructor.EmitInstruction (classDecl.Location, Opcode.LoadAttribute,
+								constructor.Module.DefineConstant (new IodineName (contract [0])));
+						}
+						constructor.EmitInstruction (classDecl.Location, Opcode.InvokeSuper, 0);
+					}
+				}
+			}
+			IodineClass clazz = new IodineClass (classDecl.Name, constructor);
 
 			for (int i = 1; i < classDecl.Children.Count; i++) {
 				if (classDecl.Children [i] is NodeFuncDecl) {
