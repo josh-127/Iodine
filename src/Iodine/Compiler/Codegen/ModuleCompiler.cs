@@ -125,6 +125,11 @@ namespace Iodine.Compiler
 			whileStmt.Visit (functionCompiler);
 		}
 
+		public void Accept (NodeDoStmt doStmt)
+		{
+			doStmt.Visit (functionCompiler);
+		}
+
 		public void Accept (NodeForStmt forStmt)
 		{
 			forStmt.Visit (functionCompiler);

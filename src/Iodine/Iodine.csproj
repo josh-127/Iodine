@@ -169,6 +169,7 @@
     <Compile Include="Runtime\CoreTypes\IodineGenerator.cs" />
     <Compile Include="Compiler\Parser\Ast\NodeYieldStmt.cs" />
     <Compile Include="ExtraModules\SslModule.cs" />
+    <Compile Include="Compiler\Parser\Ast\NodeDoStmt.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

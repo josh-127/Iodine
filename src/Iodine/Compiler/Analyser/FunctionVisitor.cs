@@ -218,6 +218,11 @@ namespace Iodine.Compiler
 			visitSubnodes (whileStmt);
 		}
 
+		public void Accept (NodeDoStmt doStmt)
+		{
+			visitSubnodes (doStmt);
+		}
+
 		public void Accept (NodeForStmt forStmt)
 		{
 			visitSubnodes (forStmt);

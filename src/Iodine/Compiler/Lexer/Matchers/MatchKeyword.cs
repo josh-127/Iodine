@@ -54,6 +54,7 @@ namespace Iodine.Compiler
 			return matchString(inputStream, "if") ||
 				matchString (inputStream, "else") ||
 				matchString (inputStream, "while") ||
+				matchString (inputStream, "do") ||
 				matchString (inputStream, "for") ||
 				matchString (inputStream, "func") ||
 				matchString (inputStream, "class") ||

@@ -248,6 +248,22 @@ namespace Iodine.Compiler
 			continueLabels.Pop ();
 		}
 
+		public void Accept (NodeDoStmt doStmt)
+		{
+			IodineLabel doLabel = methodBuilder.CreateLabel ();
+			IodineLabel breakLabel = methodBuilder.CreateLabel ();
+			breakLabels.Push (breakLabel);
+			continueLabels.Push (doLabel);
+			methodBuilder.MarkLabelPosition (doLabel);
+			doStmt.Body.Visit (this);
+			doStmt.Condition.Visit (this);
+			methodBuilder.EmitInstruction (doStmt.Condition.Location, Opcode.JumpIfTrue,
+				doLabel);
+			methodBuilder.MarkLabelPosition (breakLabel);
+			breakLabels.Pop ();
+			continueLabels.Pop ();
+		}
+
 		public void Accept (NodeForStmt forStmt)
 		{
 			IodineLabel forLabel = methodBuilder.CreateLabel ();

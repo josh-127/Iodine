@@ -65,6 +65,8 @@ namespace Iodine.Compiler.Ast
 				return NodeForeach.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "while")) {
 				return NodeWhileStmt.Parse (stream);
+			} else if (stream.Match (TokenClass.Keyword, "do")) {
+				return NodeDoStmt.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "use")) {
 				return NodeUseStatement.Parse (stream);
 			} else if (stream.Match (TokenClass.Keyword, "return")) {
