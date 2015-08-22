@@ -294,6 +294,10 @@ namespace Iodine.Compiler
 			}
 			switchStmt.GivenValue.Visit (this);
 			methodBuilder.EmitInstruction (Opcode.SwitchLookup, switchStmt.CaseStatements.Children.Count);
+			IodineLabel endLabel = methodBuilder.CreateLabel ();
+			methodBuilder.EmitInstruction (Opcode.JumpIfTrue, endLabel);
+			switchStmt.DefaultStatement.Visit (this);
+			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
 		public void Accept (NodeCaseStmt caseStmt)

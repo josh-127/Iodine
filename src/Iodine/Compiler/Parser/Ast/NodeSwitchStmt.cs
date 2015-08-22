@@ -45,6 +45,12 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
+		public AstNode DefaultStatement {
+			get {
+				return Children [2];
+			}
+		}
+
 		public NodeSwitchStmt (Location location)
 			: base (location)
 		{
@@ -63,11 +69,16 @@ namespace Iodine.Compiler.Ast
 			switchStmt.Add (NodeExpr.Parse (stream));
 			stream.Expect (TokenClass.CloseParan);
 			stream.Expect (TokenClass.OpenBrace);
+			AstNode defaultBlock = new AstRoot (stream.Location);
 			AstRoot caseStatements = new AstRoot (stream.Location);
 			while (!stream.EndOfStream && !stream.Match (TokenClass.CloseBrace)) {
 				caseStatements.Add (NodeCaseStmt.Parse (stream));
+				if (stream.Accept (TokenClass.Keyword, "default")) {
+					defaultBlock = NodeStmt.Parse (stream); 
+				}
 			}
 			switchStmt.Add (caseStatements);
+			switchStmt.Add (defaultBlock);
 			stream.Expect (TokenClass.CloseBrace);
 			return switchStmt;
 		}

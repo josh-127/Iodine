@@ -80,6 +80,7 @@ namespace Iodine.Compiler
 				matchString (inputStream, "switch") ||
 				matchString (inputStream, "case") ||
 				matchString (inputStream, "yield") ||
+				matchString (inputStream, "default") ||
 				matchString (inputStream, "return");
 		}
 

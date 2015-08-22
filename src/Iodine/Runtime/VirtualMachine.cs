@@ -500,6 +500,9 @@ namespace Iodine.Runtime
 					}
 					if (lookup.ContainsKey (needle)) {
 						lookup [needle].Invoke (this, new IodineObject[] { });
+						Stack.Push (IodineBool.True);
+					} else {
+						Stack.Push (IodineBool.False);
 					}
 					break;
 				}
