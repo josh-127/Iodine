@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
@@ -76,9 +77,8 @@ namespace Iodine.Compiler.Ast
 			List<string> baseClass = new List<string> ();
 			if (stream.Accept (TokenClass.Colon)) {
 				do {
-					string attr = stream.Expect (TokenClass.Identifier).Value;
-					baseClass.Add (attr);
-				} while (stream.Accept (TokenClass.Dot));
+					baseClass.Add (ParseClassName (stream));
+				} while (stream.Accept (TokenClass.Comma));
 			}
 
 			NodeClassDecl clazz = new NodeClassDecl (stream.Location, name, baseClass);
@@ -105,6 +105,18 @@ namespace Iodine.Compiler.Ast
 			stream.Expect (TokenClass.CloseBrace);
 
 			return clazz;
+		}
+
+		private static string ParseClassName (TokenStream stream)
+		{
+			StringBuilder ret = new StringBuilder ();
+			do {
+				string attr = stream.Expect (TokenClass.Identifier).Value;
+				ret.Append (attr);
+				if (stream.Match (TokenClass.Dot))
+					ret.Append ('.');
+			} while (stream.Accept (TokenClass.Dot));
+			return ret.ToString ();
 		}
 	}
 }

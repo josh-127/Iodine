@@ -488,16 +488,26 @@ namespace Iodine.Compiler
 
 		public void Accept (NodeSuperCall super)
 		{
-			List<string> parent = super.Parent.Base;
+			string[] subclass = super.Parent.Base [0].Split ('.');
 			super.Arguments.Visit (this);
 			methodBuilder.EmitInstruction (super.Location, Opcode.LoadGlobal,
-				methodBuilder.Module.DefineConstant (new IodineName (parent [0])));
-			for (int i = 1; i < parent.Count; i++) {
+				methodBuilder.Module.DefineConstant (new IodineName (subclass [0])));
+			for (int i = 1; i < subclass.Length; i++) {
 				methodBuilder.EmitInstruction (super.Location, Opcode.LoadAttribute,
-					methodBuilder.Module.DefineConstant (new IodineName (parent [0])));
+					methodBuilder.Module.DefineConstant (new IodineName (subclass [0])));
 			}
 			methodBuilder.EmitInstruction (super.Location, Opcode.InvokeSuper,
 				super.Arguments.Children.Count);
+			for (int i = 1; i < super.Parent.Base.Count; i++) {
+				string[] contract = super.Parent.Base [i].Split ('.');
+				methodBuilder.EmitInstruction (super.Location, Opcode.LoadGlobal,
+					methodBuilder.Module.DefineConstant (new IodineName (contract [0])));
+				for (int j = 1; j < contract.Length; j++) {
+					methodBuilder.EmitInstruction (super.Location, Opcode.LoadAttribute,
+						methodBuilder.Module.DefineConstant (new IodineName (contract [0])));
+				}
+				methodBuilder.EmitInstruction (super.Location, Opcode.InvokeSuper, 0);
+			}
 		}
 
 		public void Accept (NodeBreak brk)
