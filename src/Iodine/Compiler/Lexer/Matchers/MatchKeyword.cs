@@ -73,6 +73,7 @@ namespace Iodine.Compiler
 				matchString (inputStream, "params") ||
 				matchString (inputStream, "super") ||
 				matchString (inputStream, "is") ||
+				matchString (inputStream, "isnot") ||
 				matchString (inputStream, "as") ||
 				matchString (inputStream, "enum") ||
 				matchString (inputStream, "raise") ||

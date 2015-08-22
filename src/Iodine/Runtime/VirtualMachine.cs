@@ -396,6 +396,21 @@ namespace Iodine.Runtime
 					Stack.Push (new IodineBool (o.InstanceOf (type)));
 					break;
 				}
+			case Opcode.DynamicCast:
+				{
+					IodineObject o = Stack.Pop ();
+					IodineTypeDefinition type = Stack.Pop () as IodineTypeDefinition;
+					if (type == null) {
+						RaiseException (new IodineTypeException ("TypeDef"));
+						break;
+					}
+					if (o.InstanceOf (type)) {
+						Stack.Push (o);
+					} else {
+						Stack.Push (IodineNull.Instance);
+					}
+					break;
+				}
 			case Opcode.BeginExcept:
 				{
 					bool rethrow = true;

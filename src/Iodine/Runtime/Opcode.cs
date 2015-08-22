@@ -72,6 +72,7 @@ namespace Iodine.Runtime
 		LoadException,
 		BeginExcept,
 		InstanceOf,
+		DynamicCast,
 		Import,
 		ImportFrom,
 		ImportAll,

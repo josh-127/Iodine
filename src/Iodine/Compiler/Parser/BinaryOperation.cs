@@ -52,7 +52,9 @@ namespace Iodine.Compiler
 		Mul,
 		Div,
 		Mod,
-		InstanceOf
+		InstanceOf,
+		NotInstanceOf,
+		DynamicCast
 	}
 }
 

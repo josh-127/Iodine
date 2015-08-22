@@ -158,6 +158,12 @@ namespace Iodine.Compiler.Ast
 			} else if (stream.Accept (TokenClass.Keyword, "is")) {
 				return new NodeBinOp (stream.Location, BinaryOperation.InstanceOf, left,
 					ParseRelationalOp (stream));
+			} else if (stream.Accept (TokenClass.Keyword, "isnot")) {
+				return new NodeBinOp (stream.Location, BinaryOperation.NotInstanceOf, left,
+					ParseRelationalOp (stream));
+			} else if (stream.Accept (TokenClass.Keyword, "as")) {
+				return new NodeBinOp (stream.Location, BinaryOperation.DynamicCast, left,
+					ParseRelationalOp (stream));
 			}
 			return left;
 		}

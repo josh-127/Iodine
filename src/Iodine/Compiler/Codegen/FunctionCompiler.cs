@@ -115,6 +115,15 @@ namespace Iodine.Compiler
 				binop.Right.Visit (this);
 				binop.Left.Visit (this);
 				methodBuilder.EmitInstruction (binop.Location, Opcode.InstanceOf);
+			} else if (binop.Operation == BinaryOperation.NotInstanceOf) {
+				binop.Right.Visit (this);
+				binop.Left.Visit (this);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.InstanceOf);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.UnaryOp, (int)UnaryOperation.BoolNot);
+			}  else if (binop.Operation == BinaryOperation.DynamicCast) {
+				binop.Right.Visit (this);
+				binop.Left.Visit (this);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.DynamicCast);
 			} else {
 				IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
 				IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
