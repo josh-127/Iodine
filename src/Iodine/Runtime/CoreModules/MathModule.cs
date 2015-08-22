@@ -39,19 +39,19 @@ namespace Iodine.Runtime
 		public MathModule ()
 			: base ("math")
 		{
-			this.SetAttribute ("PI", new IodineFloat (Math.PI));
-			this.SetAttribute ("E", new IodineFloat (Math.E));
-			this.SetAttribute ("sin", new InternalMethodCallback (sin, this));
-			this.SetAttribute ("cos", new InternalMethodCallback (cos, this));
-			this.SetAttribute ("tan", new InternalMethodCallback (tan, this));
-			this.SetAttribute ("asin", new InternalMethodCallback (asin, this));
-			this.SetAttribute ("acos", new InternalMethodCallback (acos, this));
-			this.SetAttribute ("atan", new InternalMethodCallback (atan, this));
-			this.SetAttribute ("abs", new InternalMethodCallback (abs, this));
-			this.SetAttribute ("sqrt", new InternalMethodCallback (sqrt, this));
-			this.SetAttribute ("floor", new InternalMethodCallback (floor, this));
-			this.SetAttribute ("ceiling", new InternalMethodCallback (ceiling, this));
-			this.SetAttribute ("log", new InternalMethodCallback (log, this));
+			SetAttribute ("PI", new IodineFloat (Math.PI));
+			SetAttribute ("E", new IodineFloat (Math.E));
+			SetAttribute ("sin", new InternalMethodCallback (sin, this));
+			SetAttribute ("cos", new InternalMethodCallback (cos, this));
+			SetAttribute ("tan", new InternalMethodCallback (tan, this));
+			SetAttribute ("asin", new InternalMethodCallback (asin, this));
+			SetAttribute ("acos", new InternalMethodCallback (acos, this));
+			SetAttribute ("atan", new InternalMethodCallback (atan, this));
+			SetAttribute ("abs", new InternalMethodCallback (abs, this));
+			SetAttribute ("sqrt", new InternalMethodCallback (sqrt, this));
+			SetAttribute ("floor", new InternalMethodCallback (floor, this));
+			SetAttribute ("ceiling", new InternalMethodCallback (ceiling, this));
+			SetAttribute ("log", new InternalMethodCallback (log, this));
 		}
 
 		private IodineObject sin (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -62,10 +62,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -82,10 +82,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -102,10 +102,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -122,10 +122,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -142,10 +142,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -162,10 +162,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -182,10 +182,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -202,10 +202,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -222,10 +222,10 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
@@ -242,17 +242,17 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
 
 			return new IodineFloat (Math.Ceiling (input));
-		}	
+		}
 
 		private IodineObject log (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
@@ -262,17 +262,17 @@ namespace Iodine.Runtime
 			}
 
 			double input = 0;
-			if (args[0] is IodineInteger) {
-				input = (double)((IodineInteger)args[0]).Value;
-			} else if (args[0] is IodineFloat) {
-				input = ((IodineFloat)args[0]).Value;
+			if (args [0] is IodineInteger) {
+				input = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				input = ((IodineFloat)args [0]).Value;
 			} else {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
 
 			return new IodineFloat (Math.Log (input));
-		}	
+		}
 	}
 }
 

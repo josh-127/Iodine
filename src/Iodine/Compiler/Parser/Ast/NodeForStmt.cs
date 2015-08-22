@@ -35,26 +35,26 @@ namespace Iodine.Compiler.Ast
 	{
 		public AstNode Initializer {
 			get {
-				return this.Children[0];
+				return Children [0];
 			}
 		}
 
 		public AstNode Condition {
 			get {
-				return this.Children[1];
+				return Children [1];
 			}
 		}
 
 		public AstNode AfterThought {
 			get {
-				return this.Children[2];
+				return Children [2];
 			}
 
 		}
 
 		public AstNode Body {
 			get {
-				return this.Children[3];
+				return Children [3];
 			}
 		}
 

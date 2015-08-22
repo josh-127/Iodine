@@ -39,9 +39,9 @@ namespace Iodine.Runtime
 		public SysModule ()
 			: base ("sys")
 		{
-			this.SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
-			this.SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
-			this.SetAttribute ("exit", new InternalMethodCallback (exit, this));
+			SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
+			SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
+			SetAttribute ("exit", new InternalMethodCallback (exit, this));
 		}
 
 		private IodineObject exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineInteger code = args[0] as IodineInteger;
+			IodineInteger code = args [0] as IodineInteger;
 
 			if (code == null) {
 				vm.RaiseException (new IodineTypeException ("Int"));

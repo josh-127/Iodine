@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 			: base (InternalMethodTypeDef)
 		{
 			this.self = self;
-			this.Callback = callback;
+			Callback = callback;
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)

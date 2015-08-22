@@ -47,7 +47,7 @@ namespace Iodine.Compiler
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.module = module;
-			this.functionCompiler = new FunctionCompiler (errorLog, symbolTable, module.Initializer);
+			functionCompiler = new FunctionCompiler (errorLog, symbolTable, module.Initializer);
 		}
 
 		public void Accept (AstNode ast)
@@ -167,7 +167,9 @@ namespace Iodine.Compiler
 		{
 			module.Imports.Add (useStmt.Module);
 			string import = !useStmt.Relative ? useStmt.Module : String.Format ("{0}{1}{2}",
-				                Path.GetDirectoryName (useStmt.Location.File), Path.DirectorySeparatorChar, useStmt.Module);
+				                Path.GetDirectoryName (useStmt.Location.File),
+				                Path.DirectorySeparatorChar,
+				                useStmt.Module);
 			
 			if (useStmt.Wildcard) {
 				module.Initializer.EmitInstruction (Opcode.ImportAll, module.DefineConstant (
@@ -303,8 +305,9 @@ namespace Iodine.Compiler
 		{
 			symbolTable.NextScope ();
 			IodineMethod methodBuilder = new IodineMethod (module, funcDecl.Name, funcDecl.InstanceMethod,
-				                             funcDecl.Parameters.Count, symbolTable.CurrentScope.SymbolCount);
-			FunctionCompiler compiler = new FunctionCompiler (this.errorLog, this.symbolTable, 
+				                             funcDecl.Parameters.Count,
+				                             symbolTable.CurrentScope.SymbolCount);
+			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, 
 				                            methodBuilder);
 			methodBuilder.Variadic = funcDecl.Variadic;
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {

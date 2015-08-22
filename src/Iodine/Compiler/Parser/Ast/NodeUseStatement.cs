@@ -59,19 +59,19 @@ namespace Iodine.Compiler.Ast
 		public NodeUseStatement (Location location, string module, bool relative = false)
 			: base (location)
 		{
-			this.Module = module;
-			this.Relative = relative;
-			this.Imports = new List<string> ();
+			Module = module;
+			Relative = relative;
+			Imports = new List<string> ();
 		}
 
-		public NodeUseStatement (Location location, string module, List<string> imports, bool wildcard,
-			bool relative = false)
+		public NodeUseStatement (Location location,string module, List<string> imports, bool wildcard,
+		                         bool relative = false)
 			: base (location)
 		{
-			this.Module = module;
-			this.Imports = imports;
-			this.Wildcard = wildcard;
-			this.Relative = relative;
+			Module = module;
+			Imports = imports;
+			Wildcard = wildcard;
+			Relative = relative;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -87,7 +87,7 @@ namespace Iodine.Compiler.Ast
 			if (!stream.Match (TokenClass.Operator, "*"))
 				ident = ParseModuleName (stream);
 			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma) ||
-				stream.Match (TokenClass.Operator, "*")) {
+			    stream.Match (TokenClass.Operator, "*")) {
 				List<string> items = new List<string> ();
 				bool wildcard = false;
 				if (!stream.Accept (TokenClass.Operator, "*")) {

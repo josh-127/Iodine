@@ -40,19 +40,19 @@ namespace Iodine.Compiler.Ast
 
 		public AstNode TryBody {
 			get {
-				return this.Children [0];
+				return Children [0];
 			}
 		}
 
 		public AstNode ExceptBody {
 			get {
-				return this.Children [1];
+				return Children [1];
 			}
 		}
 
 		public AstNode TypeList {
 			get {
-				return this.Children [2];
+				return Children [2];
 			}
 		}
 

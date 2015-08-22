@@ -40,15 +40,15 @@ namespace Iodine.Compiler.Ast
 
 		public AstNode Value {
 			get {
-				return this.Children [0];
+				return Children [0];
 			}
 		}
 
 		public NodeUnaryOp (Location location, UnaryOperation op, AstNode val)
 			: base (location)
 		{
-			this.Operation = op;
-			this.Add (val);
+			Operation = op;
+			Add (val);
 		}
 
 		public override void Visit (IAstVisitor visitor)

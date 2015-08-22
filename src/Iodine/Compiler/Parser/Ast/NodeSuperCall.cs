@@ -36,7 +36,7 @@ namespace Iodine.Compiler.Ast
 
 		public AstNode Arguments {
 			get {
-				return this.Children [0];
+				return Children [0];
 			}
 		}
 

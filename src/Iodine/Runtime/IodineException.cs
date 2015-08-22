@@ -71,15 +71,15 @@ namespace Iodine.Runtime
 		public IodineException (string format, params object[] args)
 			: base (TypeDefinition)
 		{
-			this.Message = String.Format (format, args);
-			this.SetAttribute ("message", new IodineString (this.Message));
+			Message = String.Format (format, args);
+			SetAttribute ("message", new IodineString (this.Message));
 		}
 
 		public IodineException (IodineTypeDefinition typeDef, string format, params object[] args)
 			: base (typeDef)
 		{
-			this.Message = String.Format (format, args);
-			this.SetAttribute ("message", new IodineString (this.Message));
+			Message = String.Format (format, args);
+			SetAttribute ("message", new IodineString (this.Message));
 		}
 			
 	}
@@ -131,7 +131,7 @@ namespace Iodine.Runtime
 		public IodineIndexException ()
 			: base (TypeDefinition, "Index out of range!")
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 	}
 
@@ -174,7 +174,7 @@ namespace Iodine.Runtime
 		public IodineAttributeNotFoundException (string name)
 			: base (TypeDefinition, "Attribute '{0}' not found!", name)
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 	}
 
@@ -194,7 +194,7 @@ namespace Iodine.Runtime
 			: base (TypeDefinition, "Internal exception: {0}\n Inner Exception: ",
 			        ex.Message, ex.InnerException == null ? "" : ex.InnerException.Message)
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 	}
 
@@ -213,7 +213,7 @@ namespace Iodine.Runtime
 		public IodineArgumentException (int argCount)
 			: base (TypeDefinition, "Expected {0} or more arguments!", argCount)
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 	}
 
@@ -232,7 +232,7 @@ namespace Iodine.Runtime
 		public IodineIOException (string msg)
 			: base (TypeDefinition, msg)
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 	}
 
@@ -251,7 +251,7 @@ namespace Iodine.Runtime
 		public IodineSyntaxException (ErrorLog errorLog)
 			: base (TypeDefinition, "Syntax error")
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 			IodineObject[] errors = new IodineObject[errorLog.ErrorCount];
 			int i = 0;
 			foreach (Error error in errorLog.Errors) {
@@ -260,7 +260,7 @@ namespace Iodine.Runtime
 					              loc.Line, loc.Column, error.Text);
 				errors [i++] = new IodineString (text);
 			}
-			this.SetAttribute ("errors", new IodineTuple (errors));
+			SetAttribute ("errors", new IodineTuple (errors));
 		}
 	}
 
@@ -284,13 +284,13 @@ namespace Iodine.Runtime
 		public IodineNotSupportedException ()
 			: base (TypeDefinition, "The requested feature is not supported!")
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 
 		public IodineNotSupportedException (string message)
 			: base (TypeDefinition, message)
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 	}
 
@@ -308,13 +308,13 @@ namespace Iodine.Runtime
 
 		public UnhandledIodineExceptionException (StackFrame frame, IodineException original)
 		{
-			this.OriginalException = original;
-			this.Frame = frame;
+			OriginalException = original;
+			Frame = frame;
 		}
 
 		public void PrintStack ()
 		{
-			StackFrame top = this.Frame;
+			StackFrame top = Frame;
 			Console.WriteLine ("Stack trace:");
 			Console.WriteLine ("------------");
 			while (top != null) {

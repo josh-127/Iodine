@@ -60,10 +60,10 @@ namespace Iodine.Compiler
 		/// <param name="errorLog">Error log.</param>
 		/// <param name="source">Source.</param>
 		/// <param name="file">File.</param>
-		public Lexer (ErrorLog errorLog, string source, string file = "") 
+		public Lexer (ErrorLog errorLog, string source, string file = "")
 		{
 			this.errorLog = errorLog;
-			this.input = new InputStream (source, file);
+			input = new InputStream (source, file);
 		}
 
 		/// <summary>
@@ -72,13 +72,13 @@ namespace Iodine.Compiler
 		/// </summary>
 		public TokenStream Scan ()
 		{
-			TokenStream retStream = new TokenStream (this.errorLog);
-			this.input.EatWhiteSpaces ();
-			while (this.input.PeekChar () != -1) {
+			TokenStream retStream = new TokenStream (errorLog);
+			input.EatWhiteSpaces ();
+			while (input.PeekChar () != -1) {
 				bool matchFound = false;
 				foreach (IMatcher matcher in matchers) {
-					if (matcher.IsMatchImpl (this.input)) {
-						Token token = matcher.ScanToken (this.errorLog, this.input);
+					if (matcher.IsMatchImpl (input)) {
+						Token token = matcher.ScanToken (errorLog, input);
 						if (token != null) {
 							retStream.AddToken (token);
 						}
@@ -88,11 +88,11 @@ namespace Iodine.Compiler
 				}
 
 				if (!matchFound) {
-					errorLog.AddError (ErrorType.LexerError, this.input.Location, "Unexpected '{0}'", 
-						(char)this.input.ReadChar ());
+					errorLog.AddError (ErrorType.LexerError, input.Location, "Unexpected '{0}'", 
+						(char)input.ReadChar ());
 				}
 
-				this.input.EatWhiteSpaces ();
+				input.EatWhiteSpaces ();
 			}
 			return retStream;
 		}

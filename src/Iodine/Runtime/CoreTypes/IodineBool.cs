@@ -42,7 +42,7 @@ namespace Iodine.Runtime
 
 		class BoolTypeDef : IodineTypeDefinition
 		{
-			public BoolTypeDef () 
+			public BoolTypeDef ()
 				: base ("Bool")
 			{
 			}
@@ -52,7 +52,7 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineBool (Boolean.Parse (args[0].ToString ()));
+				return new IodineBool (Boolean.Parse (args [0].ToString ()));
 			}
 		}
 
@@ -87,19 +87,19 @@ namespace Iodine.Runtime
 		{
 			switch (op) {
 			case UnaryOperation.BoolNot:
-				return new IodineBool (!this.Value);
+				return new IodineBool (!Value);
 			}
 			return null;
 		}
 
 		public override bool IsTrue ()
 		{
-			return this.Value;
+			return Value;
 		}
 
 		public override string ToString ()
 		{
-			return this.Value.ToString ();
+			return Value.ToString ();
 		}
 
 		public override int GetHashCode ()

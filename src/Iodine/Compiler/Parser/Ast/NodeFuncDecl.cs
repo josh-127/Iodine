@@ -58,10 +58,10 @@ namespace Iodine.Compiler.Ast
 		                     IList<string> parameters)
 			: base (location)
 		{
-			this.Name = name;
-			this.Parameters = parameters;
-			this.InstanceMethod = isInstanceMethod;
-			this.Variadic = isVariadic;
+			Name = name;
+			Parameters = parameters;
+			InstanceMethod = isInstanceMethod;
+			Variadic = isVariadic;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -96,8 +96,9 @@ namespace Iodine.Compiler.Ast
 				AstRoot nodes = new AstRoot (stream.Location);
 				nodes.Add (idecl);
 				nodes.Add (new NodeExpr (stream.Location, new NodeBinOp (stream.Location,
-					BinaryOperation.Assign, new NodeIdent (stream.Location, idecl.Name), new NodeCall (
-					stream.Location, expr, args))));
+					BinaryOperation.Assign,
+					new NodeIdent (stream.Location, idecl.Name),
+					new NodeCall (stream.Location, expr, args))));
 				return nodes;
 			}
 			stream.Expect (TokenClass.Keyword, "func");

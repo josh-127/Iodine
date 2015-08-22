@@ -72,9 +72,9 @@ namespace Iodine
 		public Location (int line, int column, string file)
 			: this ()
 		{
-			this.Line = line;
-			this.Column = column;
-			this.File = file;
+			Line = line;
+			Column = column;
+			File = file;
 		}
 
 		/// <summary>
@@ -83,7 +83,7 @@ namespace Iodine
 		/// <returns>The line.</returns>
 		public Location IncrementLine ()
 		{
-			return new Location (this.Line + 1, this.Column, this.File);
+			return new Location (Line + 1, Column, File);
 		}
 
 		/// <summary>
@@ -92,7 +92,7 @@ namespace Iodine
 		/// <returns>The column.</returns>
 		public Location IncrementColumn ()
 		{
-			return new Location (this.Line, this.Column + 1, this.File);
+			return new Location (Line, Column + 1, File);
 		}
 	}
 }

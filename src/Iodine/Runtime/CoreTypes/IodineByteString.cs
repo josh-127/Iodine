@@ -40,7 +40,7 @@ namespace Iodine.Runtime
 
 		class ByteStringTypeDef : IodineTypeDefinition
 		{
-			public ByteStringTypeDef () 
+			public ByteStringTypeDef ()
 				: base ("ByteStr")
 			{
 			}
@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineByteString (args[0].ToString ());
+				return new IodineByteString (args [0].ToString ());
 			}
 		}
 
@@ -69,13 +69,13 @@ namespace Iodine.Runtime
 		public IodineByteString (byte[] val)
 			: this ()
 		{
-			this.Value = val;
+			Value = val;
 		}
 
 		public IodineByteString (string val)
 			: this ()
 		{
-			this.Value = Encoding.ASCII.GetBytes (val);
+			Value = Encoding.ASCII.GetBytes (val);
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -108,10 +108,10 @@ namespace Iodine.Runtime
 				return base.PerformBinaryOperation (vm, binop, rvalue);
 			}
 		}
-	
+
 		public override string ToString ()
 		{
-			return Encoding.ASCII.GetString (this.Value);
+			return Encoding.ASCII.GetString (Value);
 		}
 
 		public override int GetHashCode ()
@@ -130,26 +130,26 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineIndexException ());
 				return null;
 			}
-			return new IodineInteger ((long)this.Value [(int)index.Value]);
+			return new IodineInteger ((long)Value [(int)index.Value]);
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return new IodineInteger ((long)this.Value[iterIndex - 1]);
+			return new IodineInteger ((long)Value [iterIndex - 1]);
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
 		{
-			if (this.iterIndex >= this.Value.Length) {
+			if (iterIndex >= Value.Length) {
 				return false;
 			}
-			this.iterIndex++;
+			iterIndex++;
 			return true;
 		}
 
 		public override void IterReset (VirtualMachine vm)
 		{
-			this.iterIndex = 0;
+			iterIndex = 0;
 		}
 
 	}

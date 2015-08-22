@@ -40,9 +40,9 @@ namespace Iodine.Runtime
 		public StructModule ()
 			: base ("struct")
 		{
-			this.SetAttribute ("pack", new InternalMethodCallback (pack, this));
-			this.SetAttribute ("unpack", new InternalMethodCallback (unpack, this));
-			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
+			SetAttribute ("pack", new InternalMethodCallback (pack, this));
+			SetAttribute ("unpack", new InternalMethodCallback (unpack, this));
+			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 		}
 
 		private IodineObject pack (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -51,8 +51,8 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineString format = args[0] as IodineString;
-			IodineTuple tuple = args[1] as IodineTuple;
+			IodineString format = args [0] as IodineString;
+			IodineTuple tuple = args [1] as IodineTuple;
 			if (format == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
@@ -105,8 +105,8 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineString format = args[0] as IodineString;
-			IodineByteString str = args[1] as IodineByteString;
+			IodineString format = args [0] as IodineString;
+			IodineByteString str = args [1] as IodineByteString;
 			if (format == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
@@ -157,7 +157,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineString format = args[0] as IodineString;
+			IodineString format = args [0] as IodineString;
 			int ret = 0;
 			int i = 0;
 			while (i < format.Value.Length) {
@@ -192,7 +192,8 @@ namespace Iodine.Runtime
 		private bool packObj (VirtualMachine vm, BinaryWriter bw, char type, int arg, IodineObject obj)
 		{
 			switch (type) {
-			case '?': {
+			case '?':
+				{
 					IodineBool val = obj as IodineBool;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Bool"));
@@ -202,7 +203,8 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
-			case 'b': {
+			case 'b':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -212,7 +214,8 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
-			case 'B': {
+			case 'B':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -222,7 +225,8 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
-			case 'h': {
+			case 'h':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -232,7 +236,8 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
-			case 'H': {
+			case 'H':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -243,7 +248,8 @@ namespace Iodine.Runtime
 					break;
 				}
 			case 'l':
-			case 'i': {
+			case 'i':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -254,7 +260,8 @@ namespace Iodine.Runtime
 					break;
 				}
 			case 'I':
-			case 'L': {
+			case 'L':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -264,7 +271,8 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
-			case 'q': {
+			case 'q':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -274,7 +282,8 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
-			case 'Q': {
+			case 'Q':
+				{
 					IodineInteger val = obj as IodineInteger;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Int"));
@@ -285,7 +294,8 @@ namespace Iodine.Runtime
 					break;
 				}
 			case 'p':
-			case 's': {
+			case 's':
+				{
 					IodineString val = obj as IodineString;
 					if (val == null) {
 						vm.RaiseException (new IodineTypeException ("Str"));
@@ -293,7 +303,7 @@ namespace Iodine.Runtime
 					} else {
 						byte[] bytes = Encoding.ASCII.GetBytes (val.ToString ());
 						for (int i = 0; i < arg; i++) {
-							if (i < bytes.Length) 
+							if (i < bytes.Length)
 								bw.Write (bytes [i]);
 							else
 								bw.Write ((byte)0);
@@ -308,37 +318,47 @@ namespace Iodine.Runtime
 		private IodineObject unpackObj (VirtualMachine vm, BinaryReader br, char type, int arg)
 		{
 			switch (type) {
-			case '?': {
+			case '?':
+				{
 					return new IodineBool (br.ReadBoolean ());
 				}
-			case 'b': {
+			case 'b':
+				{
 					return new IodineInteger (br.ReadSByte ());
 				}
-			case 'B': {
+			case 'B':
+				{
 					return new IodineInteger (br.ReadByte ());
 				}
-			case 'h': {
+			case 'h':
+				{
 					return new IodineInteger (br.ReadInt16 ());
 				}
-			case 'H': {
+			case 'H':
+				{
 					return new IodineInteger (br.ReadUInt16 ());
 				}
 			case 'l':
-			case 'i': {
+			case 'i':
+				{
 					return new IodineInteger (br.ReadInt32 ());
 				}
 			case 'I':
-			case 'L': {
+			case 'L':
+				{
 					return new IodineInteger (br.ReadUInt32 ());
 				}
-			case 'q': {
+			case 'q':
+				{
 					return new IodineInteger (br.ReadInt64 ());
 				}
-			case 'Q': {
+			case 'Q':
+				{
 					return new IodineInteger ((long)br.ReadUInt64 ());
 				}
 			case 'p':
-			case 's': {
+			case 's':
+				{
 					return new IodineString (Encoding.ASCII.GetString (br.ReadBytes (arg)));
 				}
 			}

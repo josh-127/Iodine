@@ -48,15 +48,15 @@ namespace Iodine.Runtime
 			public IodineProc (Process proc)
 				: base (ProcTypeDef)
 			{
-				this.Value = proc;
-				this.SetAttribute ("id", new IodineInteger (proc.Id));
-				this.SetAttribute ("name", new IodineString (proc.ProcessName));
-				this.SetAttribute ("kill", new InternalMethodCallback (kill, this));
+				Value = proc;
+				SetAttribute ("id", new IodineInteger (proc.Id));
+				SetAttribute ("name", new IodineString (proc.ProcessName));
+				SetAttribute ("kill", new InternalMethodCallback (kill, this));
 			}
 
-			private IodineObject kill (VirtualMachine vm, IodineObject self, IodineObject[] args) 
+			private IodineObject kill (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
-				this.Value.Kill ();
+				Value.Kill ();
 				return null;
 			}
 		}
@@ -64,18 +64,18 @@ namespace Iodine.Runtime
 		public OSModule ()
 			: base ("os")
 		{
-			this.SetAttribute ("userDir", new IodineString (Environment.GetFolderPath (
+			SetAttribute ("userDir", new IodineString (Environment.GetFolderPath (
 				Environment.SpecialFolder.UserProfile)));
-			this.SetAttribute ("envSep", new IodineChar (Path.PathSeparator));
-			this.SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
-			this.SetAttribute ("getEnv", new InternalMethodCallback (getEnv, this));
-			this.SetAttribute ("setEnv", new InternalMethodCallback (setEnv, this));
-			this.SetAttribute ("spawn", new InternalMethodCallback (spawn, this));
+			SetAttribute ("envSep", new IodineChar (Path.PathSeparator));
+			SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
+			SetAttribute ("getEnv", new InternalMethodCallback (getEnv, this));
+			SetAttribute ("setEnv", new InternalMethodCallback (setEnv, this));
+			SetAttribute ("spawn", new InternalMethodCallback (spawn, this));
 		}
 
 		private IodineObject getProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineList list = new IodineList (new IodineObject[] {});
+			IodineList list = new IodineList (new IodineObject[] { });
 			foreach (Process proc in Process.GetProcesses ()) {
 				list.Add (new IodineProc (proc));
 			}
@@ -87,7 +87,7 @@ namespace Iodine.Runtime
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 			}
-			IodineString str = args[0] as IodineString;
+			IodineString str = args [0] as IodineString;
 
 			if (str == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
@@ -95,7 +95,7 @@ namespace Iodine.Runtime
 			}
 			if (Environment.GetEnvironmentVariable (str.Value) != null)
 				return new IodineString (Environment.GetEnvironmentVariable (str.Value));
-			else 
+			else
 				return null;
 		}
 
@@ -104,8 +104,8 @@ namespace Iodine.Runtime
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 			}
-			IodineString str = args[0] as IodineString;
-			Environment.SetEnvironmentVariable (str.Value, args[1].ToString (), EnvironmentVariableTarget.User);
+			IodineString str = args [0] as IodineString;
+			Environment.SetEnvironmentVariable (str.Value, args [1].ToString (), EnvironmentVariableTarget.User);
 			return null;
 		}
 
@@ -115,7 +115,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 			}
 
-			IodineString str = args[0] as IodineString;
+			IodineString str = args [0] as IodineString;
 			string cmdArgs = "";
 			bool wait = true;
 
@@ -125,7 +125,7 @@ namespace Iodine.Runtime
 			}
 
 			if (args.Length >= 2) {
-				IodineString cmdArgsObj = args[1] as IodineString;
+				IodineString cmdArgsObj = args [1] as IodineString;
 				if (cmdArgsObj == null) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
@@ -134,7 +134,7 @@ namespace Iodine.Runtime
 			}
 
 			if (args.Length >= 3) {
-				IodineBool waitObj = args[2] as IodineBool;
+				IodineBool waitObj = args [2] as IodineBool;
 				if (waitObj == null) {
 					vm.RaiseException (new IodineTypeException ("Bool"));
 					return null;

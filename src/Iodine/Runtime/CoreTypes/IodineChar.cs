@@ -38,7 +38,7 @@ namespace Iodine.Runtime
 
 		class CharTypeDef : IodineTypeDefinition
 		{
-			public CharTypeDef () 
+			public CharTypeDef ()
 				: base ("Char")
 			{
 			}
@@ -49,10 +49,10 @@ namespace Iodine.Runtime
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
 				}
-				if (args[0] is IodineInteger)
-					return new IodineChar ((char)((IodineInteger)args[0]).Value);
-				else if (args[0] is IodineString)
-					return new IodineChar ((char)args[0].ToString()[0]);
+				if (args [0] is IodineInteger)
+					return new IodineChar ((char)((IodineInteger)args [0]).Value);
+				else if (args [0] is IodineString)
+					return new IodineChar ((char)args [0].ToString () [0]);
 				return null;
 			}
 		}
@@ -65,12 +65,12 @@ namespace Iodine.Runtime
 		public IodineChar (char value)
 			: base (TypeDefinition)
 		{
-			this.Value = value;
-			this.SetAttribute ("isLetter", new InternalMethodCallback (isLetter, this));
-			this.SetAttribute ("isDigit", new InternalMethodCallback (isDigit, this));
-			this.SetAttribute ("isLetterOrDigit", new InternalMethodCallback (isLetterOrDigit, this));
-			this.SetAttribute ("isWhiteSpace", new InternalMethodCallback (isWhiteSpace, this));
-			this.SetAttribute ("isSymbol", new InternalMethodCallback (isSymbol, this));
+			Value = value;
+			SetAttribute ("isLetter", new InternalMethodCallback (isLetter, this));
+			SetAttribute ("isDigit", new InternalMethodCallback (isDigit, this));
+			SetAttribute ("isLetterOrDigit", new InternalMethodCallback (isLetterOrDigit, this));
+			SetAttribute ("isWhiteSpace", new InternalMethodCallback (isWhiteSpace, this));
+			SetAttribute ("isSymbol", new InternalMethodCallback (isSymbol, this));
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -80,7 +80,7 @@ namespace Iodine.Runtime
 			char otherVal;
 			if (otherChr == null) {
 				if (rvalue is IodineString) {
-					otherVal = rvalue.ToString ()[0];
+					otherVal = rvalue.ToString () [0];
 				} else if (rvalue is IodineNull) {
 					return base.PerformBinaryOperation (vm, binop, rvalue);
 				} else {
@@ -93,9 +93,9 @@ namespace Iodine.Runtime
 
 			switch (binop) {
 			case BinaryOperation.Equals:
-				return new IodineBool (otherVal == this.Value);
+				return new IodineBool (otherVal == Value);
 			case BinaryOperation.NotEquals:
-				return new IodineBool (otherVal != this.Value);
+				return new IodineBool (otherVal != Value);
 			default:
 				return base.PerformBinaryOperation (vm, binop, rvalue);	
 			}
@@ -113,27 +113,27 @@ namespace Iodine.Runtime
 
 		private IodineObject isLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineBool (char.IsLetter (this.Value));
+			return new IodineBool (char.IsLetter (Value));
 		}
 
 		private IodineObject isDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineBool (char.IsDigit (this.Value));
+			return new IodineBool (char.IsDigit (Value));
 		}
 
 		private IodineObject isLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineBool (char.IsLetterOrDigit (this.Value));
+			return new IodineBool (char.IsLetterOrDigit (Value));
 		}
 
 		private IodineObject isWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineBool (char.IsWhiteSpace (this.Value));
+			return new IodineBool (char.IsWhiteSpace (Value));
 		}
 
 		private IodineObject isSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineBool (char.IsSymbol (this.Value));
+			return new IodineBool (char.IsSymbol (Value));
 		}
 	}
 }

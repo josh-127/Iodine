@@ -51,13 +51,13 @@ namespace Iodine.Runtime
 
 		public Dictionary <string, IodineObject> Globals {
 			get {
-				return this.globalDict;
+				return globalDict;
 			}
 		}
 
 		public VirtualMachine ()
 		{
-			this.Stack = new IodineStack ();
+			Stack = new IodineStack ();
 			var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
 			foreach (IodineModule module in modules) {
 				foreach (KeyValuePair<string, IodineObject> val in module.Attributes) {
@@ -68,8 +68,8 @@ namespace Iodine.Runtime
 
 		public VirtualMachine (Dictionary<string, IodineObject> globals)
 		{
-			this.Stack = new IodineStack ();
-			this.globalDict = globals;
+			Stack = new IodineStack ();
+			globalDict = globals;
 		}
 
 		public IodineObject InvokeMethod (IodineMethod method, IodineObject self, IodineObject[] arguments)

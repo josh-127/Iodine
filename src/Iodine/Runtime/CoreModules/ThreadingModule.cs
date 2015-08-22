@@ -49,7 +49,7 @@ namespace Iodine.Runtime
 				: base (ThreadTypeDef)
 			{
 				this.Value = t;
-				this.SetAttribute ("start", new InternalMethodCallback (start, this));
+				SetAttribute ("start", new InternalMethodCallback (start, this));
 			}
 
 			private IodineObject start (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -62,8 +62,8 @@ namespace Iodine.Runtime
 		public ThreadingModule ()
 			: base ("threading")
 		{
-			this.SetAttribute ("Thread", new InternalMethodCallback (thread, this));
-			this.SetAttribute ("sleep", new InternalMethodCallback (sleep, this));
+			SetAttribute ("Thread", new InternalMethodCallback (thread, this));
+			SetAttribute ("sleep", new InternalMethodCallback (sleep, this));
 		}
 
 		private IodineObject thread (VirtualMachine vm, IodineObject self, IodineObject[] args)

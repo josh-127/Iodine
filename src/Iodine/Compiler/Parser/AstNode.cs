@@ -47,16 +47,17 @@ namespace Iodine.Compiler.Ast
 				return this.children;
 			}
 		}
-			
+
 		public abstract void Visit (IAstVisitor visitor);
 
-		public AstNode (Location location) {
-			this.Location = location;
+		public AstNode (Location location)
+		{
+			Location = location;
 		}
 
 		public void Add (AstNode node)
 		{
-			this.children.Add (node);
+			children.Add (node);
 		}
 
 		public IEnumerator<AstNode> GetEnumerator ()

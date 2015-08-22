@@ -83,7 +83,7 @@ namespace Iodine.Compiler
 		/// <filterpriority>2</filterpriority>
 		public override string ToString ()
 		{
-			return this.Value.ToString ();
+			return Value.ToString ();
 		}
 
 		/// <summary>

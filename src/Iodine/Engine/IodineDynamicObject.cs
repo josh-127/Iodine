@@ -40,8 +40,8 @@ namespace Iodine
 
 		internal IodineDynamicObject (IodineObject obj, VirtualMachine vm)
 		{
-			this.internalObject = obj;
-			this.internalVm = vm;
+			internalObject = obj;
+			internalVm = vm;
 		}
 
 		public override bool TryGetMember (GetMemberBinder binder, out object result)
@@ -95,7 +95,7 @@ namespace Iodine
 
 		public override string ToString ()
 		{
-			return this.internalObject.ToString ();
+			return internalObject.ToString ();
 		}
 	}
 }

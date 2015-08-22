@@ -64,27 +64,27 @@ namespace Iodine.Runtime
 		public IodineTuple (IodineObject[] items)
 			: base (TypeDefinition)
 		{
-			this.Objects = items;
-			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
+			Objects = items;
+			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			IodineInteger index = key as IodineInteger;
 			if (index.Value < Objects.Length)
-				return this.Objects [(int)index.Value];
+				return Objects [(int)index.Value];
 			vm.RaiseException (new IodineIndexException ());
 			return null;
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return this.Objects [iterIndex - 1];
+			return Objects [iterIndex - 1];
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
 		{
-			if (iterIndex >= this.Objects.Length)
+			if (iterIndex >= Objects.Length)
 				return false;
 			iterIndex++;
 			return true;
@@ -97,13 +97,13 @@ namespace Iodine.Runtime
 
 		public override IodineObject Represent (VirtualMachine vm)
 		{
-			string repr = String.Join (", ", this.Objects.Select (p => p.Represent (vm).ToString ()));
+			string repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
 			return new IodineString (String.Format ("({0})", repr));
 		}
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			return new IodineInteger (this.Objects.Length);
+			return new IodineInteger (Objects.Length);
 		}
 
 		public override int GetHashCode ()

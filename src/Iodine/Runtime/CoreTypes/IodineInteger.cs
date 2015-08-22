@@ -38,7 +38,7 @@ namespace Iodine.Runtime
 
 		class IntTypeDef : IodineTypeDefinition
 		{
-			public IntTypeDef () 
+			public IntTypeDef ()
 				: base ("Int")
 			{
 			}
@@ -48,7 +48,7 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineInteger (Int64.Parse (args[0].ToString ()));
+				return new IodineInteger (Int64.Parse (args [0].ToString ()));
 			}
 		}
 
@@ -60,7 +60,7 @@ namespace Iodine.Runtime
 		public IodineInteger (long val)
 			: base (TypeDefinition)
 		{
-			this.Value = val;
+			Value = val;
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -115,15 +115,11 @@ namespace Iodine.Runtime
 		{
 			switch (op) {
 			case UnaryOperation.Not:
-				return new IodineInteger (~this.Value);
+				return new IodineInteger (~Value);
 			case UnaryOperation.Negate:
-				return new IodineInteger (-this.Value);
+				return new IodineInteger (-Value);
 			}
 			return null;
-		}
-		public override void PrintTest ()
-		{
-			Console.WriteLine (this.Value);
 		}
 
 		public override string ToString ()

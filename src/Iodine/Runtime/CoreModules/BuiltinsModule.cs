@@ -78,40 +78,40 @@ namespace Iodine.Runtime
 		public BuiltinsModule ()
 			: base ("__builtins__")
 		{
-			this.attributes ["stdin"] = new IodineStream (Console.OpenStandardInput (), false, true);
-			this.attributes ["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
-			this.attributes ["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
-			this.attributes ["eval"] = new InternalMethodCallback (eval, null);
-			this.attributes ["print"] = new InternalMethodCallback (print, null);
-			this.attributes ["input"] = new InternalMethodCallback (input, null);
-			this.attributes ["Int"] = IodineInteger.TypeDefinition;
-			this.attributes ["Float"] = IodineFloat.TypeDefinition;
-			this.attributes ["Str"] = IodineString.TypeDefinition;
-			this.attributes ["ByteStr"] = IodineByteString.TypeDefinition;
-			this.attributes ["Bool"] = IodineBool.TypeDefinition;
-			this.attributes ["Char"] = IodineChar.TypeDefinition;
-			this.attributes ["Tuple"] = IodineTuple.TypeDefinition;
-			this.attributes ["List"] = IodineList.TypeDefinition;
-			this.attributes ["Event"] = IodineEvent.TypeDefinition;
-			this.attributes ["Object"] = new InternalMethodCallback (Object, null);
-			this.attributes ["HashMap"] = IodineMap.TypeDefinition;
-			this.attributes ["repr"] = new InternalMethodCallback (repr, null);
-			this.attributes ["filter"] = new InternalMethodCallback (filter, null);
-			this.attributes ["map"] = new InternalMethodCallback (map, null); 
-			this.attributes ["reduce"] = new InternalMethodCallback (reduce, null);
-			this.attributes ["range"] = new InternalMethodCallback (range, null);
-			this.attributes ["open"] = new InternalMethodCallback (open, null);
-			this.attributes ["Exception"] = IodineException.TypeDefinition;
-			this.attributes ["TypeException"] = IodineTypeException.TypeDefinition;
-			this.attributes ["ArgumentException"] = IodineArgumentException.TypeDefinition;
-			this.attributes ["InternalException"] = IodineInternalErrorException.TypeDefinition;
-			this.attributes ["IndexException"] = IodineIndexException.TypeDefinition;
-			this.attributes ["IOException"] = IodineIOException.TypeDefinition;
-			this.attributes ["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
-			this.attributes ["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
-			this.attributes ["SyntaxException"] = IodineSyntaxException.TypeDefinition;
-			this.attributes ["NotSupportedException"] = IodineNotSupportedException.TypeDefinition;
-			this.ExistsInGlobalNamespace = true;
+			SetAttribute ("stdin", new IodineStream (Console.OpenStandardInput (), false, true));
+			SetAttribute ("stdout", new IodineStream (Console.OpenStandardOutput (), true, false));
+			SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
+			SetAttribute ("eval", new InternalMethodCallback (eval, null));
+			SetAttribute ("print", new InternalMethodCallback (print, null));
+			SetAttribute ("input", new InternalMethodCallback (input, null));
+			SetAttribute ("Int", IodineInteger.TypeDefinition);
+			SetAttribute ("Float", IodineFloat.TypeDefinition);
+			SetAttribute ("Str", IodineString.TypeDefinition);
+			SetAttribute ("ByteStr", IodineByteString.TypeDefinition);
+			SetAttribute ("Bool", IodineBool.TypeDefinition);
+			SetAttribute ("Char", IodineChar.TypeDefinition);
+			SetAttribute ("Tuple", IodineTuple.TypeDefinition);
+			SetAttribute ("List", IodineList.TypeDefinition);
+			SetAttribute ("Event", IodineEvent.TypeDefinition);
+			SetAttribute ("Object", new InternalMethodCallback (Object, null));
+			SetAttribute ("HashMap", IodineMap.TypeDefinition);
+			SetAttribute ("repr", new InternalMethodCallback (repr, null));
+			SetAttribute ("filter", new InternalMethodCallback (filter, null));
+			SetAttribute ("map", new InternalMethodCallback (map, null)); 
+			SetAttribute ("reduce", new InternalMethodCallback (reduce, null));
+			SetAttribute ("range", new InternalMethodCallback (range, null));
+			SetAttribute ("open", new InternalMethodCallback (open, null));
+			SetAttribute ("Exception", IodineException.TypeDefinition);
+			SetAttribute ("TypeException", IodineTypeException.TypeDefinition);
+			SetAttribute ("ArgumentException", IodineArgumentException.TypeDefinition);
+			SetAttribute ("InternalException", IodineInternalErrorException.TypeDefinition);
+			SetAttribute ("IndexException", IodineIndexException.TypeDefinition);
+			SetAttribute ("IOException", IodineIOException.TypeDefinition);
+			SetAttribute ("KeyNotFoundException", IodineKeyNotFound.TypeDefinition);
+			SetAttribute ("AttributeNotFoundException", IodineAttributeNotFoundException.TypeDefinition);
+			SetAttribute ("SyntaxException", IodineSyntaxException.TypeDefinition);
+			SetAttribute ("NotSupportedException", IodineNotSupportedException.TypeDefinition);
+			ExistsInGlobalNamespace = true;
 		}
 
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)

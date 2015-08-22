@@ -38,10 +38,10 @@ namespace Iodine.Runtime
 		public HashModule ()
 			: base ("hash")
 		{
-			this.SetAttribute ("sha1", new InternalMethodCallback (sha1, this));
-			this.SetAttribute ("sha256", new InternalMethodCallback (sha256, this));
-			this.SetAttribute ("sha512", new InternalMethodCallback (sha512, this));
-			this.SetAttribute ("md5", new InternalMethodCallback (md5, this));
+			SetAttribute ("sha1", new InternalMethodCallback (sha1, this));
+			SetAttribute ("sha256", new InternalMethodCallback (sha256, this));
+			SetAttribute ("sha512", new InternalMethodCallback (sha512, this));
+			SetAttribute ("md5", new InternalMethodCallback (md5, this));
 		}
 
 		private IodineObject sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)

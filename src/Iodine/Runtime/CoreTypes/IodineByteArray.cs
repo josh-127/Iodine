@@ -38,7 +38,7 @@ namespace Iodine.Runtime
 
 		class ByteArrayTypeDef : IodineTypeDefinition
 		{
-			public ByteArrayTypeDef () 
+			public ByteArrayTypeDef ()
 				: base ("ByteArray")
 			{
 			}
@@ -59,8 +59,8 @@ namespace Iodine.Runtime
 		public IodineByteArray (byte[] bytes)
 			: base (TypeDefinition)
 		{
-			this.Array = bytes;
-			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
+			Array = bytes;
+			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 		}
 
 
@@ -69,7 +69,7 @@ namespace Iodine.Runtime
 			IodineInteger index = key as IodineInteger;
 			IodineInteger val = value as IodineInteger;
 			if (index.Value < Array.Length)
-				this.Array[(int)index.Value] = (byte)(val.Value & 0xFF);
+				Array [(int)index.Value] = (byte)(val.Value & 0xFF);
 			else
 				vm.RaiseException (new IodineIndexException ());
 		}
@@ -78,19 +78,19 @@ namespace Iodine.Runtime
 		{
 			IodineInteger index = key as IodineInteger;
 			if (index.Value < Array.Length)
-				return new IodineInteger (this.Array[(int)index.Value]);
+				return new IodineInteger (Array [(int)index.Value]);
 			vm.RaiseException (new IodineIndexException ());
 			return null;
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return new IodineInteger (this.Array[iterIndex - 1]);
+			return new IodineInteger (Array [iterIndex - 1]);
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
 		{
-			if (iterIndex >= this.Array.Length)
+			if (iterIndex >= Array.Length)
 				return false;
 			iterIndex++;
 			return true;
@@ -103,7 +103,7 @@ namespace Iodine.Runtime
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			return new IodineInteger (this.Array.Length);
+			return new IodineInteger (Array.Length);
 		}
 
 		public override int GetHashCode ()

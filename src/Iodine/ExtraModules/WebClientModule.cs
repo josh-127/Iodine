@@ -48,13 +48,13 @@ namespace Iodine.Modules.Extras
 			public IodineWebClient ()
 				: base (WebClientTypeDef)
 			{
-				this.SetAttribute ("downloadString", new InternalMethodCallback (downloadString, this));
-				this.SetAttribute ("downloadRaw", new InternalMethodCallback (downloadRaw, this));
-				this.SetAttribute ("downloadFile", new InternalMethodCallback (downloadFile, this));
-				this.SetAttribute ("uploadFile", new InternalMethodCallback (uploadFile, this));
+				SetAttribute ("downloadString", new InternalMethodCallback (downloadString, this));
+				SetAttribute ("downloadRaw", new InternalMethodCallback (downloadRaw, this));
+				SetAttribute ("downloadFile", new InternalMethodCallback (downloadFile, this));
+				SetAttribute ("uploadFile", new InternalMethodCallback (uploadFile, this));
 				WebProxy proxy = new WebProxy ();
-				this.client = new WebClient ();
-				this.client.Proxy = proxy;
+				client = new WebClient ();
+				client.Proxy = proxy;
 			}
 
 			private IodineObject downloadString (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -77,7 +77,7 @@ namespace Iodine.Modules.Extras
 				IodineString uri = args [0] as IodineString;
 				byte[] data;
 				try {
-					data = this.client.DownloadData (uri.ToString ());
+					data = client.DownloadData (uri.ToString ());
 				} catch (Exception e) {
 					vm.RaiseException (e.Message);
 					return null;
@@ -92,7 +92,7 @@ namespace Iodine.Modules.Extras
 				IodineString file = args [1] as IodineString;
 
 				try {
-					this.client.DownloadFile (uri.ToString (), file.ToString ());
+					client.DownloadFile (uri.ToString (), file.ToString ());
 				} catch (Exception e) {
 					vm.RaiseException (e.Message);
 				}
@@ -112,8 +112,8 @@ namespace Iodine.Modules.Extras
 
 		public WebClientModule () : base ("webclient")
 		{
-			this.SetAttribute ("WebClient", new InternalMethodCallback (webclient, this));
-			this.SetAttribute ("disableCertificateCheck", new InternalMethodCallback (disableCertCheck, this));
+			SetAttribute ("WebClient", new InternalMethodCallback (webclient, this));
+			SetAttribute ("disableCertificateCheck", new InternalMethodCallback (disableCertCheck, this));
 		}
 
 		private IodineObject webclient (VirtualMachine vm, IodineObject self, IodineObject[] args)

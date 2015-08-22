@@ -44,10 +44,10 @@ namespace Iodine.Compiler
 		public AstRoot Parse ()
 		{
 			try {
-				return AstRoot.Parse (this.tokenStream);
+				return AstRoot.Parse (tokenStream);
 			} catch (Exception) {
 				//this.tokenStream.ErrorLog.AddError (ErrorType.ParserError, "");
-				return new AstRoot (this.tokenStream.Location);
+				return new AstRoot (tokenStream.Location);
 			}
 		}
 	}

@@ -41,12 +41,12 @@ namespace Iodine.Runtime
 
 		public void AddItem (string name)
 		{
-			this.SetAttribute (name, new IodineInteger (nextVal++));
+			SetAttribute (name, new IodineInteger (nextVal++));
 		}
 
 		public void AddItem (string name, int val)
 		{
-			this.SetAttribute (name, new IodineInteger (val));
+			SetAttribute (name, new IodineInteger (val));
 		}
 	}
 }

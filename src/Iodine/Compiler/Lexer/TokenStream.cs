@@ -39,7 +39,7 @@ namespace Iodine.Compiler
 
 		public bool EndOfStream {
 			get {
-				return this.tokens.Count <= Position;
+				return tokens.Count <= Position;
 			}
 		}
 
@@ -50,17 +50,17 @@ namespace Iodine.Compiler
 
 		public Location Location {
 			get {
-				if (this.peekToken () != null)
-					return this.peekToken ().Location;
+				if (peekToken () != null)
+					return peekToken ().Location;
 				else {
-					return this.peekToken (-1).Location;
+					return peekToken (-1).Location;
 				}
 			}
 		}
 
 		public ErrorLog ErrorLog {
 			get {
-				return this.errorLog;
+				return errorLog;
 			}
 		}
 
@@ -71,7 +71,7 @@ namespace Iodine.Compiler
 
 		public void AddToken (Token token)
 		{
-			this.tokens.Add (token);
+			tokens.Add (token);
 		}
 
 		public bool Match (TokenClass clazz)
@@ -82,12 +82,14 @@ namespace Iodine.Compiler
 		public bool Match (TokenClass clazz1, TokenClass clazz2)
 		{
 			return peekToken () != null && peekToken ().Class == clazz1 &&
-			peekToken (1) != null && peekToken (1).Class == clazz2;
+			peekToken (1) != null &&
+			peekToken (1).Class == clazz2;
 		}
 
 		public bool Match (TokenClass clazz, string val)
 		{
-			return peekToken () != null && peekToken ().Class == clazz &&
+			return peekToken () != null &&
+			peekToken ().Class == clazz &&
 			peekToken ().Value == val;
 		}
 
@@ -172,18 +174,18 @@ namespace Iodine.Compiler
 
 		private Token peekToken (int n)
 		{
-			if (this.Position + n >= this.tokens.Count) {
+			if (Position + n >= tokens.Count) {
 				return null;
 			}
-			return this.tokens [this.Position + n];
+			return tokens [Position + n];
 		}
 
 		private Token readToken ()
 		{
-			if (this.Position >= this.tokens.Count) {
+			if (Position >= tokens.Count) {
 				return null;
 			}
-			return this.tokens [this.Position++];
+			return tokens [Position++];
 		}
 	}
 }

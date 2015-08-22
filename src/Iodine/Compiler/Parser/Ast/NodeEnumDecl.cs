@@ -44,15 +44,6 @@ namespace Iodine.Compiler.Ast
 			get;
 		}
 
-		public NodeFuncDecl Constructor {
-			get {
-				return (NodeFuncDecl)this.Children[0];
-			}
-			set {
-				this.Children[0] = value;
-			}
-		}
-
 		public NodeEnumDecl (Location location, string name)
 			: base (location)
 		{
@@ -82,9 +73,9 @@ namespace Iodine.Compiler.Ast
 					if (val != "") {
 						numVal = Int32.Parse (val);
 					}
-					decl.Items[ident] = numVal;
+					decl.Items [ident] = numVal;
 				} else {
-					decl.Items[ident] = defaultVal--;
+					decl.Items [ident] = defaultVal--;
 				}
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;

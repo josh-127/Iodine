@@ -59,10 +59,10 @@ namespace Iodine.Modules.Extras
 			public IodineRegistryKeyHandle (RegistryKey original)
 				: base (TypeDef)
 			{
-				this.Key = original;
-				this.Attributes ["setValue"] = new InternalMethodCallback (setValue, this);
-				this.Attributes ["getValue"] = new InternalMethodCallback (getValue, this);
-				this.Attributes ["deleteValue"] = new InternalMethodCallback (deleteValue, this);
+				Key = original;
+				SetAttribute ("setValue", new InternalMethodCallback (setValue, this));
+				SetAttribute ("getValue", new InternalMethodCallback (getValue, this));
+				SetAttribute ("deleteValue", new InternalMethodCallback (deleteValue, this));
 			}
 
 			private IodineObject setValue (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -120,17 +120,17 @@ namespace Iodine.Modules.Extras
 		public WinRegModule ()
 			: base ("winreg")
 		{
-			this.Attributes ["HKEY_CLASSES_ROOT"] = new IodineRegistryHive (RegistryHive.ClassesRoot); 
-			this.Attributes ["HKEY_CURRENT_CONFIG"] = new IodineRegistryHive (RegistryHive.CurrentConfig); 
-			this.Attributes ["HKEY_CURRENT_USER"] = new IodineRegistryHive (RegistryHive.CurrentUser); 
-			this.Attributes ["HKEY_LOCAL_MACHINE"] = new IodineRegistryHive (RegistryHive.LocalMachine); 
-			this.Attributes ["HKEY_USERS"] = new IodineRegistryHive (RegistryHive.Users);
-			this.Attributes ["ClassesRoot"] = new IodineRegistryKeyHandle (Registry.ClassesRoot);
-			this.Attributes ["CurrentConfig"] = new IodineRegistryKeyHandle (Registry.CurrentConfig);
-			this.Attributes ["CurrentUser"] = new IodineRegistryKeyHandle (Registry.CurrentUser);
-			this.Attributes ["LocalMachine"] = new IodineRegistryKeyHandle (Registry.LocalMachine);
-			this.Attributes ["setValue"] = new InternalMethodCallback (setValue, null);
-			this.Attributes ["getValue"] = new InternalMethodCallback (getValue, null);
+			SetAttribute ("HKEY_CLASSES_ROOT", new IodineRegistryHive (RegistryHive.ClassesRoot));
+			SetAttribute ("HKEY_CURRENT_CONFIG", new IodineRegistryHive (RegistryHive.CurrentConfig));
+			SetAttribute ("HKEY_CURRENT_USER", new IodineRegistryHive (RegistryHive.CurrentUser));
+			SetAttribute ("HKEY_LOCAL_MACHINE", new IodineRegistryHive (RegistryHive.LocalMachine));
+			SetAttribute ("HKEY_USERS", new IodineRegistryHive (RegistryHive.Users));
+			SetAttribute ("ClassesRoot", new IodineRegistryKeyHandle (Registry.ClassesRoot));
+			SetAttribute ("CurrentConfig", new IodineRegistryKeyHandle (Registry.CurrentConfig));
+			SetAttribute ("CurrentUser", new IodineRegistryKeyHandle (Registry.CurrentUser));
+			SetAttribute ("LocalMachine", new IodineRegistryKeyHandle (Registry.LocalMachine));
+			SetAttribute ("setValue", new InternalMethodCallback (setValue, null));
+			SetAttribute ("getValue", new InternalMethodCallback (getValue, null));
 		}
 
 		private IodineObject setValue (VirtualMachine vm, IodineObject self, IodineObject[] args)

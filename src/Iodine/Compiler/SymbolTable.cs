@@ -51,8 +51,8 @@ namespace Iodine.Compiler
 
 			public LocalScope (LocalScope parentScope)
 			{
-				this.ParentScope = parentScope;
-				this.NextLocal = 0;
+				ParentScope = parentScope;
+				NextLocal = 0;
 			}
 
 		}
@@ -110,7 +110,7 @@ namespace Iodine.Compiler
 		public void BeginScope (bool isLocalScope = false)
 		{
 			if (isLocalScope) {
-				this.currentLocalScope = new LocalScope (this.currentLocalScope);
+				currentLocalScope = new LocalScope (currentLocalScope);
 			}
 			Scope newScope = new Scope (CurrentScope);
 			if (lastScope != null) {
@@ -130,7 +130,7 @@ namespace Iodine.Compiler
 		public void EndScope (bool isLocalScope = false)
 		{
 			if (isLocalScope) {
-				this.currentLocalScope = this.currentLocalScope.ParentScope;
+				currentLocalScope = currentLocalScope.ParentScope;
 			}
 
 			CurrentScope = CurrentScope.ParentScope;
@@ -207,14 +207,14 @@ namespace Iodine.Compiler
 
 		public IList<Scope> ChildScopes {
 			get {
-				return this.childScopes;
+				return childScopes;
 			}
 		}
 
 		public int SymbolCount {
 			get {
 				int val = symbols.Count;
-				foreach (Scope scope in this.childScopes) {
+				foreach (Scope scope in childScopes) {
 					val += scope.SymbolCount;
 				}
 				return val;
@@ -223,28 +223,28 @@ namespace Iodine.Compiler
 
 		public Scope ()
 		{
-			this.ParentScope = null;
+			ParentScope = null;
 		}
 
 		public Scope (Scope parent)
 		{
-			this.ParentScope = parent;
+			ParentScope = parent;
 		}
 
 		public int AddSymbol (SymbolType type, string name, int index)
 		{
-			this.symbols.Add (new Symbol (type, name, index));
+			symbols.Add (new Symbol (type, name, index));
 			return index;
 		}
 
 		public void AddScope (Scope scope)
 		{
-			this.childScopes.Add (scope);
+			childScopes.Add (scope);
 		}
 
 		public bool GetSymbol (string name, out Symbol symbol)
 		{
-			foreach (Symbol sym in this.symbols) {
+			foreach (Symbol sym in symbols) {
 				if (sym.Name == name) {
 					symbol = sym;
 					return true;

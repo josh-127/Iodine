@@ -41,10 +41,10 @@ namespace Iodine.Runtime
 		public RandomModule ()
 			: base ("random")
 		{
-			this.SetAttribute ("rand", new InternalMethodCallback (rand, this));
-			this.SetAttribute ("randInt", new InternalMethodCallback (randInt, this));
-			this.SetAttribute ("choice", new InternalMethodCallback (choice, this));
-			this.SetAttribute ("cryptoString", new InternalMethodCallback (cryptoString, this));
+			SetAttribute ("rand", new InternalMethodCallback (rand, this));
+			SetAttribute ("randInt", new InternalMethodCallback (randInt, this));
+			SetAttribute ("choice", new InternalMethodCallback (choice, this));
+			SetAttribute ("cryptoString", new InternalMethodCallback (cryptoString, this));
 		}
 
 		private IodineObject rand (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -87,7 +87,7 @@ namespace Iodine.Runtime
 				return null;
 			}
 				
-			IodineInteger count = args[0] as IodineInteger;
+			IodineInteger count = args [0] as IodineInteger;
 
 			if (count == null) {
 				vm.RaiseException (new IodineTypeException ("Int"));
@@ -105,7 +105,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineObject collection = args[0];
+			IodineObject collection = args [0];
 			int count = 0;
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {

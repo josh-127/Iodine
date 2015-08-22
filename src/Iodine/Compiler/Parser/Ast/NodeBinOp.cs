@@ -40,22 +40,22 @@ namespace Iodine.Compiler.Ast
 
 		public AstNode Left {
 			get {
-				return this.Children[0];
+				return Children[0];
 			}
 		}
 
 		public AstNode Right {
 			get {
-				return this.Children[1];
+				return Children[1];
 			}
 		}
 
 		public NodeBinOp (Location location, BinaryOperation op, AstNode left, AstNode right)
 			: base (location)
 		{
-			this.Operation = op;
-			this.Add (left);
-			this.Add (right);
+			Operation = op;
+			Add (left);
+			Add (right);
 		}
 
 		public override void Visit (IAstVisitor visitor)

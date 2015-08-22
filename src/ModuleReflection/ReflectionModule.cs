@@ -11,14 +11,14 @@ namespace ModuleReflection
 		public ReflectionModule ()
 			: base ("reflection")
 		{
-			this.SetAttribute ("getBytecode", new InternalMethodCallback (getBytecode, this));
-			this.SetAttribute ("hasAttribute", new InternalMethodCallback (hasAttribute, this));
-			this.SetAttribute ("setAttribute", new InternalMethodCallback (setAttribute, this));
-			this.SetAttribute ("getAttributes", new InternalMethodCallback (getAttributes, this));
-			this.SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
-			this.SetAttribute ("compileModule", new InternalMethodCallback (compileModule, this));
-			this.SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
-			this.SetAttribute ("Opcode", IodineOpcode.OpcodeTypeDef);
+			SetAttribute ("getBytecode", new InternalMethodCallback (getBytecode, this));
+			SetAttribute ("hasAttribute", new InternalMethodCallback (hasAttribute, this));
+			SetAttribute ("setAttribute", new InternalMethodCallback (setAttribute, this));
+			SetAttribute ("getAttributes", new InternalMethodCallback (getAttributes, this));
+			SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
+			SetAttribute ("compileModule", new InternalMethodCallback (compileModule, this));
+			SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
+			SetAttribute ("Opcode", IodineOpcode.OpcodeTypeDef);
 		}
 
 		private IodineObject hasAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -47,7 +47,7 @@ namespace Iodine.Runtime
 		public IodineInterface (string name)
 			: base (name)
 		{
-			this.RequiredMethods = new List<IodineMethod> ();
+			RequiredMethods = new List<IodineMethod> ();
 		}
 
 		public void AddMethod (IodineMethod method)

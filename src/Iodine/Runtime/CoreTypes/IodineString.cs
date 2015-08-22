@@ -39,7 +39,7 @@ namespace Iodine.Runtime
 
 		class StringTypeDef : IodineTypeDefinition
 		{
-			public StringTypeDef () 
+			public StringTypeDef ()
 				: base ("Str")
 			{
 			}
@@ -49,12 +49,12 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				if (args[0].HasAttribute ("_toStr")) {
-					IodineString ret = args[0].GetAttribute ("_toStr").Invoke (vm, new IodineObject[]{})
+				if (args [0].HasAttribute ("_toStr")) {
+					IodineString ret = args [0].GetAttribute ("_toStr").Invoke (vm, new IodineObject[]{ })
 						as IodineString;
 					return ret;
 				}
-				return new IodineString (args[0].ToString ());
+				return new IodineString (args [0].ToString ());
 			}
 		}
 
@@ -68,20 +68,20 @@ namespace Iodine.Runtime
 		public IodineString (string val)
 			: base (TypeDefinition)
 		{
-			this.Value = val;
-			this.SetAttribute ("toLower", new InternalMethodCallback (toLower, this));
-			this.SetAttribute ("toUpper", new InternalMethodCallback (toUpper, this));
-			this.SetAttribute ("substr", new InternalMethodCallback (substring, this));
-			this.SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
-			this.SetAttribute ("indexOf", new InternalMethodCallback (indexOf, this));
-			this.SetAttribute ("contains", new InternalMethodCallback (contains, this));
-			this.SetAttribute ("replace", new InternalMethodCallback (replace, this));
-			this.SetAttribute ("startsWith", new InternalMethodCallback (startsWith, this));
-			this.SetAttribute ("endsWith", new InternalMethodCallback (endsWith, this));
-			this.SetAttribute ("split", new InternalMethodCallback (split, this));
-			this.SetAttribute ("join", new InternalMethodCallback (join, this));
-			this.SetAttribute ("trim", new InternalMethodCallback (trim, this));
-			this.SetAttribute ("format", new InternalMethodCallback (format, this));
+			Value = val;
+			SetAttribute ("toLower", new InternalMethodCallback (toLower, this));
+			SetAttribute ("toUpper", new InternalMethodCallback (toUpper, this));
+			SetAttribute ("substr", new InternalMethodCallback (substring, this));
+			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
+			SetAttribute ("indexOf", new InternalMethodCallback (indexOf, this));
+			SetAttribute ("contains", new InternalMethodCallback (contains, this));
+			SetAttribute ("replace", new InternalMethodCallback (replace, this));
+			SetAttribute ("startsWith", new InternalMethodCallback (startsWith, this));
+			SetAttribute ("endsWith", new InternalMethodCallback (endsWith, this));
+			SetAttribute ("split", new InternalMethodCallback (split, this));
+			SetAttribute ("join", new InternalMethodCallback (join, this));
+			SetAttribute ("trim", new InternalMethodCallback (trim, this));
+			SetAttribute ("format", new InternalMethodCallback (format, this));
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -114,14 +114,9 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public override void PrintTest ()
-		{
-			Console.WriteLine (Value);
-		}
-
 		public override string ToString ()
 		{
-			return this.Value;
+			return Value;
 		}
 
 		public override int GetHashCode ()
@@ -136,45 +131,45 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineTypeException ("Int"));
 				return null;
 			}
-			if (index.Value >= this.Value.Length) {
+			if (index.Value >= Value.Length) {
 				vm.RaiseException (new IodineIndexException ());
 				return null;
 			}
-			return new IodineChar (this.Value[(int)index.Value]);
+			return new IodineChar (Value [(int)index.Value]);
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)
 		{
-			return new IodineChar (this.Value[iterIndex - 1]);
+			return new IodineChar (Value [iterIndex - 1]);
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
 		{
-			if (this.iterIndex >= this.Value.Length) {
+			if (iterIndex >= Value.Length) {
 				return false;
 			}
-			this.iterIndex++;
+			iterIndex++;
 			return true;
 		}
 
 		public override void IterReset (VirtualMachine vm)
 		{
-			this.iterIndex = 0;
+			iterIndex = 0;
 		}
 
 		public override IodineObject Represent (VirtualMachine vm)
 		{
-			return new IodineString (String.Format ("\"{0}\"", this.Value));
+			return new IodineString (String.Format ("\"{0}\"", Value));
 		}
 
 		private IodineObject toUpper (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineString (this.Value.ToUpper ());
+			return new IodineString (Value.ToUpper ());
 		}
 
 		private IodineObject toLower (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineString (this.Value.ToLower ());
+			return new IodineString (Value.ToLower ());
 		}
 
 		private IodineObject substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -185,7 +180,7 @@ namespace Iodine.Runtime
 			}
 			int start = 0;
 			int len = 0;
-			IodineInteger startObj = args[0] as IodineInteger;
+			IodineInteger startObj = args [0] as IodineInteger;
 			if (startObj == null) {
 				vm.RaiseException (new IodineTypeException ("Int"));
 				return null;
@@ -194,7 +189,7 @@ namespace Iodine.Runtime
 			if (args.Length == 1) {
 				len = this.Value.Length;
 			} else {
-				IodineInteger endObj = args[1] as IodineInteger;
+				IodineInteger endObj = args [1] as IodineInteger;
 				if (endObj == null) {
 					vm.RaiseException (new IodineTypeException ("Int"));
 					return null;
@@ -202,8 +197,8 @@ namespace Iodine.Runtime
 				len = (int)endObj.Value;
 			}
 
-			if (start < this.Value.Length && len <= this.Value.Length)  {
-				return new IodineString (this.Value.Substring (start, len - start));
+			if (start < Value.Length && len <= Value.Length) {
+				return new IodineString (Value.Substring (start, len - start));
 			}
 			vm.RaiseException (new IodineIndexException ());
 			return null;
@@ -211,7 +206,7 @@ namespace Iodine.Runtime
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineInteger (this.Value.Length);
+			return new IodineInteger (Value.Length);
 		}
 
 		private IodineObject indexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -221,11 +216,11 @@ namespace Iodine.Runtime
 				return null;
 			}
 
-			IodineChar ch = args[0] as IodineChar;
+			IodineChar ch = args [0] as IodineChar;
 			char val;
 			if (ch == null) {
-				if (args[0] is IodineString) {
-					val = args[0].ToString ()[0];
+				if (args [0] is IodineString) {
+					val = args [0].ToString () [0];
 				} else {
 					vm.RaiseException (new IodineTypeException ("Char"));
 					return null;
@@ -234,7 +229,7 @@ namespace Iodine.Runtime
 				val = ch.Value;
 			}
 
-			return new IodineInteger (this.Value.IndexOf (val));
+			return new IodineInteger (Value.IndexOf (val));
 		}
 
 		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -243,7 +238,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return new IodineBool (this.Value.Contains (args[0].ToString ()));
+			return new IodineBool (Value.Contains (args [0].ToString ()));
 		}
 
 		private IodineObject startsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -252,7 +247,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return new IodineBool (this.Value.StartsWith (args[0].ToString ()));
+			return new IodineBool (Value.StartsWith (args [0].ToString ()));
 		}
 
 		private IodineObject endsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -261,7 +256,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return new IodineBool (this.Value.EndsWith (args[0].ToString ()));
+			return new IodineBool (Value.EndsWith (args [0].ToString ()));
 		}
 
 		private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -270,13 +265,13 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			IodineString arg1 = args[0] as IodineString;
-			IodineString arg2 = args[1] as IodineString;
+			IodineString arg1 = args [0] as IodineString;
+			IodineString arg2 = args [1] as IodineString;
 			if (arg1 == null || arg2 == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
-			return new IodineString (this.Value.Replace (arg1.Value, arg2.Value));
+			return new IodineString (Value.Replace (arg1.Value, arg2.Value));
 		}
 
 		private IodineObject split (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -287,11 +282,11 @@ namespace Iodine.Runtime
 			}
 
 			IodineString selfStr = self as IodineString;
-			IodineChar ch = args[0] as IodineChar;
+			IodineChar ch = args [0] as IodineChar;
 			char val;
 			if (ch == null) {
-				if (args[0] is IodineString) {
-					val = args[0].ToString ()[0];
+				if (args [0] is IodineString) {
+					val = args [0].ToString () [0];
 				} else {
 					vm.RaiseException (new IodineTypeException ("Char"));
 					return null;
@@ -299,7 +294,7 @@ namespace Iodine.Runtime
 			} else {
 				val = ch.Value;
 			}
-			IodineList list = new IodineList (new IodineObject[]{});
+			IodineList list = new IodineList (new IodineObject[]{ });
 			foreach (string str in selfStr.Value.Split (val)) {
 				list.Add (new IodineString (str));
 			}
@@ -308,13 +303,13 @@ namespace Iodine.Runtime
 
 		private IodineObject trim (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new IodineString (this.Value.Trim ());
+			return new IodineString (Value.Trim ());
 		}
 
 		private IodineObject join (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			StringBuilder accum = new StringBuilder ();
-			IodineObject collection = args[0];
+			IodineObject collection = args [0];
 			collection.IterReset (vm);
 			string last = "";
 			string sep = "";

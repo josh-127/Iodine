@@ -42,14 +42,14 @@ namespace Iodine.Runtime
 			public IodineDirectory ()
 				: base (DirectoryTypeDef)
 			{
-				this.SetAttribute ("separator", new IodineChar (Path.DirectorySeparatorChar));
-				this.SetAttribute ("getFiles", new InternalMethodCallback (listFiles, this));
-				this.SetAttribute ("getDirectories", new InternalMethodCallback (listDirectories, this));
-				this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
-				this.SetAttribute ("removeTree", new InternalMethodCallback (removeTree, this));
-				this.SetAttribute ("exists", new InternalMethodCallback (exists, this));
-				this.SetAttribute ("create", new InternalMethodCallback (create, this));
-				this.SetAttribute ("copy", new InternalMethodCallback (copy, this));
+				SetAttribute ("separator", new IodineChar (Path.DirectorySeparatorChar));
+				SetAttribute ("getFiles", new InternalMethodCallback (listFiles, this));
+				SetAttribute ("getDirectories", new InternalMethodCallback (listDirectories, this));
+				SetAttribute ("remove", new InternalMethodCallback (remove, this));
+				SetAttribute ("removeTree", new InternalMethodCallback (removeTree, this));
+				SetAttribute ("exists", new InternalMethodCallback (exists, this));
+				SetAttribute ("create", new InternalMethodCallback (create, this));
+				SetAttribute ("copy", new InternalMethodCallback (copy, this));
 			}
 
 			private IodineObject listFiles (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -59,18 +59,18 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				if (!Directory.Exists (args[0].ToString ())) {
-					vm.RaiseException (new IodineIOException ("Directory '" + args[0].ToString () + 
-						"' does not exist!"));
+				if (!Directory.Exists (args [0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("Directory '" + args [0].ToString () +
+					"' does not exist!"));
 					return null;
 				}
 
-				IodineList ret = new IodineList (new IodineObject[]{});
+				IodineList ret = new IodineList (new IodineObject[]{ });
 
 				foreach (string dir in Directory.GetFiles (args[0].ToString ())) {
 					ret.Add (new IodineString (dir));
@@ -85,18 +85,18 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				if (!Directory.Exists (args[0].ToString ())) {
-					vm.RaiseException (new IodineIOException ("Directory '" + args[0].ToString () + 
-						"' does not exist!"));
+				if (!Directory.Exists (args [0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("Directory '" + args [0].ToString () +
+					"' does not exist!"));
 					return null;
 				}
 
-				IodineList ret = new IodineList (new IodineObject[]{});
+				IodineList ret = new IodineList (new IodineObject[]{ });
 
 				foreach (string dir in Directory.GetDirectories (args[0].ToString ())) {
 					ret.Add (new IodineString (dir));
@@ -111,18 +111,18 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				if (!Directory.Exists (args[0].ToString ())) {
-					vm.RaiseException (new IodineIOException ("Directory '" + args[0].ToString () + 
-						"' does not exist!"));
+				if (!Directory.Exists (args [0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("Directory '" + args [0].ToString () +
+					"' does not exist!"));
 					return null;
 				}
 
-				Directory.Delete (args[0].ToString ());
+				Directory.Delete (args [0].ToString ());
 
 				return null;
 			}
@@ -134,18 +134,18 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				if (!Directory.Exists (args[0].ToString ())) {
-					vm.RaiseException (new IodineIOException ("Directory '" + args[0].ToString () + 
-						"' does not exist!"));
+				if (!Directory.Exists (args [0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("Directory '" + args [0].ToString () +
+					"' does not exist!"));
 					return null;
 				}
 
-				rmDir (args[0].ToString ());
+				rmDir (args [0].ToString ());
 
 				return null;
 			}
@@ -157,12 +157,12 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				return new IodineBool (Directory.Exists (args[0].ToString ()));
+				return new IodineBool (Directory.Exists (args [0].ToString ()));
 			}
 
 			private IodineObject create (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -172,11 +172,11 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
-				Directory.CreateDirectory (args[0].ToString ());
+				Directory.CreateDirectory (args [0].ToString ());
 				return null;
 			}
 
@@ -187,48 +187,48 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString) || !(args[1] is IodineString)) {
+				if (!(args [0] is IodineString) || !(args [1] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 				bool recurse = false;
 				if (args.Length >= 3) {
-					if (!(args[2] is IodineBool)) {
+					if (!(args [2] is IodineBool)) {
 						vm.RaiseException (new IodineTypeException ("Bool"));
 						return null;
 					}
-					recurse = ((IodineBool)args[2]).Value;
+					recurse = ((IodineBool)args [2]).Value;
 				}
-				bool res = copyDir (args[0].ToString (), args[1].ToString (), recurse);
+				bool res = copyDir (args [0].ToString (), args [1].ToString (), recurse);
 				if (!res) {
-					vm.RaiseException (new IodineIOException ("Could not find directory " + args[0].ToString () ));
+					vm.RaiseException (new IodineIOException ("Could not find directory " + args [0].ToString ()));
 				}
 				return null;
 			}
 
 			private static bool copyDir (string src, string dest, bool recurse)
 			{
-				DirectoryInfo dir = new DirectoryInfo(src);
-				DirectoryInfo[] dirs = dir.GetDirectories();
+				DirectoryInfo dir = new DirectoryInfo (src);
+				DirectoryInfo[] dirs = dir.GetDirectories ();
 
 				if (!dir.Exists) {
 					return false;
 				}
 
-				if (!Directory.Exists(dest)) {
-					Directory.CreateDirectory(dest);
+				if (!Directory.Exists (dest)) {
+					Directory.CreateDirectory (dest);
 				}
 
-				FileInfo[] files = dir.GetFiles();
+				FileInfo[] files = dir.GetFiles ();
 				foreach (FileInfo file in files) {
-					string temppath = Path.Combine(dest, file.Name);
-					file.CopyTo(temppath, false);
+					string temppath = Path.Combine (dest, file.Name);
+					file.CopyTo (temppath, false);
 				}
 
 				if (recurse) {
 					foreach (DirectoryInfo subdir in dirs) {
-						string temppath = Path.Combine(dest, subdir.Name);
-						copyDir(subdir.FullName, temppath, recurse);
+						string temppath = Path.Combine (dest, subdir.Name);
+						copyDir (subdir.FullName, temppath, recurse);
 					}
 				}
 				return true;
@@ -236,21 +236,21 @@ namespace Iodine.Runtime
 
 			private static bool rmDir (string target)
 			{
-				DirectoryInfo dir = new DirectoryInfo(target);
-				DirectoryInfo[] dirs = dir.GetDirectories();
+				DirectoryInfo dir = new DirectoryInfo (target);
+				DirectoryInfo[] dirs = dir.GetDirectories ();
 
 				if (!dir.Exists) {
 					return false;
 				}
 
-				FileInfo[] files = dir.GetFiles();
+				FileInfo[] files = dir.GetFiles ();
 				foreach (FileInfo file in files) {
-					string temppath = Path.Combine(target, file.Name);
+					string temppath = Path.Combine (target, file.Name);
 					File.Delete (temppath);
 				}
 
 				foreach (DirectoryInfo subdir in dirs) {
-					string temppath = Path.Combine(target, subdir.Name);
+					string temppath = Path.Combine (target, subdir.Name);
 					rmDir (temppath);
 				}
 				Directory.Delete (target);
@@ -266,11 +266,11 @@ namespace Iodine.Runtime
 			public IodineFile ()
 				: base (FileTypeDef)
 			{
-				this.SetAttribute ("remove", new InternalMethodCallback (remove, this));
-				this.SetAttribute ("exists", new InternalMethodCallback (exists, this));
-				this.SetAttribute ("getNameWithoutExt", new InternalMethodCallback (getNameWithoutExt, this));
-				this.SetAttribute ("getName", new InternalMethodCallback (getName, this));
-				this.SetAttribute ("copy", new InternalMethodCallback (copy, this));
+				SetAttribute ("remove", new InternalMethodCallback (remove, this));
+				SetAttribute ("exists", new InternalMethodCallback (exists, this));
+				SetAttribute ("getNameWithoutExt", new InternalMethodCallback (getNameWithoutExt, this));
+				SetAttribute ("getName", new InternalMethodCallback (getName, this));
+				SetAttribute ("copy", new InternalMethodCallback (copy, this));
 			}
 
 			private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -280,18 +280,18 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				if (!File.Exists (args[0].ToString ())) {
-					vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
-						"' does not exist!"));
+				if (!File.Exists (args [0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("File '" + args [0].ToString () +
+					"' does not exist!"));
 					return null;
 				}
 
-				File.Delete (args[0].ToString ());
+				File.Delete (args [0].ToString ());
 
 				return null;
 			}
@@ -303,12 +303,12 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				return new IodineBool (File.Exists (args[0].ToString ()));
+				return new IodineBool (File.Exists (args [0].ToString ()));
 			}
 
 			private IodineObject getNameWithoutExt (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -318,11 +318,11 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
-				return new IodineString (Path.GetFileNameWithoutExtension (args[0].ToString ()));
+				return new IodineString (Path.GetFileNameWithoutExtension (args [0].ToString ()));
 			}
 
 			private IodineObject getName (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -332,11 +332,11 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString)) {
+				if (!(args [0] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
-				return new IodineString (Path.GetFileName (args[0].ToString ()));
+				return new IodineString (Path.GetFileName (args [0].ToString ()));
 			}
 
 			private IodineObject copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -346,18 +346,18 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				if (!(args[0] is IodineString) || !(args[1] is IodineString)) {
+				if (!(args [0] is IodineString) || !(args [1] is IodineString)) {
 					vm.RaiseException (new IodineTypeException ("Str"));
 					return null;
 				}
 
-				if (!File.Exists (args[0].ToString ())) {
-					vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
-						"' does not exist!"));
+				if (!File.Exists (args [0].ToString ())) {
+					vm.RaiseException (new IodineIOException ("File '" + args [0].ToString () +
+					"' does not exist!"));
 					return null;
 				}
 
-				File.Copy (args[0].ToString (), args[1].ToString (), true);
+				File.Copy (args [0].ToString (), args [1].ToString (), true);
 				return null;
 			}
 		}
@@ -365,10 +365,10 @@ namespace Iodine.Runtime
 		public IOModule ()
 			: base ("io")
 		{
-			this.SetAttribute ("Directory", new IodineDirectory ());
-			this.SetAttribute ("File", new IodineFile ());
-			this.SetAttribute ("getCreationTime", new InternalMethodCallback (getModifiedTime, this));
-			this.SetAttribute ("getModifiedTime", new InternalMethodCallback (getCreationTime, this));
+			SetAttribute ("Directory", new IodineDirectory ());
+			SetAttribute ("File", new IodineFile ());
+			SetAttribute ("getCreationTime", new InternalMethodCallback (getModifiedTime, this));
+			SetAttribute ("getModifiedTime", new InternalMethodCallback (getCreationTime, this));
 		}
 
 		private IodineObject getModifiedTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -377,17 +377,17 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			if (!(args[0] is IodineString)) {
+			if (!(args [0] is IodineString)) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 
 			}
-			if (!File.Exists (args[0].ToString ())) {
-				vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
-					"' does not exist!"));
+			if (!File.Exists (args [0].ToString ())) {
+				vm.RaiseException (new IodineIOException ("File '" + args [0].ToString () +
+				"' does not exist!"));
 				return null;
 			}
-			return new DateTimeModule.IodineTimeStamp (File.GetLastAccessTime (args[0].ToString ()));
+			return new DateTimeModule.IodineTimeStamp (File.GetLastAccessTime (args [0].ToString ()));
 		}
 
 		private IodineObject getCreationTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -396,16 +396,16 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			if (!(args[0] is IodineString)) {
+			if (!(args [0] is IodineString)) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
-			if (!File.Exists (args[0].ToString ())) {
-				vm.RaiseException (new IodineIOException ("File '" + args[0].ToString () + 
-					"' does not exist!"));
+			if (!File.Exists (args [0].ToString ())) {
+				vm.RaiseException (new IodineIOException ("File '" + args [0].ToString () +
+				"' does not exist!"));
 				return null;
 			}
-			return new DateTimeModule.IodineTimeStamp (File.GetCreationTime (args[0].ToString ()));
+			return new DateTimeModule.IodineTimeStamp (File.GetCreationTime (args [0].ToString ()));
 		}
 	}
 }

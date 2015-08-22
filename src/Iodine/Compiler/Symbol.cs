@@ -80,9 +80,9 @@ namespace Iodine.Compiler
 		/// <param name="index">Symbol index.</param>
 		public Symbol (SymbolType type, string name, int index)
 		{
-			this.Name = name;
-			this.Index = index;
-			this.Type = type;
+			Name = name;
+			Index = index;
+			Type = type;
 		}
 	}
 }

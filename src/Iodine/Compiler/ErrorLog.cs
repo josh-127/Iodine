@@ -55,9 +55,9 @@ namespace Iodine
 
 		public Error (ErrorType etype, Location location, string text)
 		{
-			this.EType = etype;
-			this.Text = text;
-			this.Location = location;
+			EType = etype;
+			Text = text;
+			Location = location;
 		}
 	}
 
@@ -92,7 +92,7 @@ namespace Iodine
 		/// <value>The errors.</value>
 		public IList<Error> Errors {
 			get {
-				return this.errors;
+				return errors;
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace Iodine
 		/// <param name="args">Arguments.</param>
 		public void AddError (ErrorType etype, Location location, string format, params object[] args)
 		{
-			this.errors.Add (new Error (etype, location, String.Format (format, args)));
+			errors.Add (new Error (etype, location, String.Format (format, args)));
 			ErrorCount++;
 		}
 

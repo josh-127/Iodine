@@ -105,25 +105,25 @@ namespace Iodine.Runtime
 		public IodineModule (string name)
 			: base (ModuleTypeDef)
 		{
-			this.Name = name;
-			this.Imports = new List<string> ();
-			this.Initializer = new IodineMethod (this, "__init__", false, 0, 0);
+			Name = name;
+			Imports = new List<string> ();
+			Initializer = new IodineMethod (this, "__init__", false, 0, 0);
 		}
 
 		public void AddMethod (IodineMethod method)
 		{
-			this.attributes [method.Name] = method;
+			attributes [method.Name] = method;
 		}
 
 		public int DefineConstant (IodineObject obj)
 		{
 			constantPool.Add (obj);
-			return this.constantPool.Count - 1;
+			return constantPool.Count - 1;
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			this.Initializer.Invoke (vm, arguments);
+			Initializer.Invoke (vm, arguments);
 			return null;
 		}
 

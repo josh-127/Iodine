@@ -52,12 +52,12 @@ namespace Iodine.Modules.Extras
 				: base (HostEntryTypeDef)
 			{
 				this.Entry = host;
-				IodineObject[] addresses = new IodineObject[this.Entry.AddressList.Length];
+				IodineObject[] addresses = new IodineObject[Entry.AddressList.Length];
 				int i = 0;
-				foreach (IPAddress ip in this.Entry.AddressList) {
+				foreach (IPAddress ip in Entry.AddressList) {
 					addresses [i++] = new IodineString (ip.ToString ());
 				}
-				this.SetAttribute ("addressList", new IodineTuple (addresses));
+				SetAttribute ("addressList", new IodineTuple (addresses));
 			}
 
 		}
@@ -65,7 +65,7 @@ namespace Iodine.Modules.Extras
 		public DNSModule ()
 			: base ("dns")
 		{
-			this.SetAttribute ("getHostEntry", new InternalMethodCallback (getHostEntry, this));
+			SetAttribute ("getHostEntry", new InternalMethodCallback (getHostEntry, this));
 		}
 
 		private IodineObject getHostEntry (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -45,8 +45,8 @@ namespace Iodine.Runtime
 
 		public IodineExceptionHandler (int frame, int ip)
 		{
-			this.Frame = frame;
-			this.InstructionPointer = ip;
+			Frame = frame;
+			InstructionPointer = ip;
 		}
 	}
 }

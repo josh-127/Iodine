@@ -35,11 +35,12 @@ namespace Iodine.Runtime
 {
 	public class IodineStack
 	{
-		private Stack<StackFrame> frames = new Stack<StackFrame>( );
+		private Stack<StackFrame> frames = new Stack<StackFrame> ();
 		private StackFrame top = null;
 
 		public IodineObject Last {
-			private set; get;
+			private set;
+			get;
 		}
 
 		public StackFrame Top {
@@ -57,22 +58,22 @@ namespace Iodine.Runtime
 		{
 			Frames++;
 			top = frame;
-			this.frames.Push (frame);
+			frames.Push (frame);
 		}
 
 		public void NewFrame (IodineMethod method, IodineObject self, int localCount)
 		{
 			Frames++;
 			top = new StackFrame (method, top, self, localCount);
-			this.frames.Push (top);
+			frames.Push (top);
 		}
 
 		public void EndFrame ()
 		{
 			Frames--;
-			this.frames.Pop ();
-			if (this.frames.Count != 0) {
-				top = this.frames.Peek ();
+			frames.Pop ();
+			if (frames.Count != 0) {
+				top = frames.Peek ();
 			} else {
 				top = null;
 			}
@@ -91,7 +92,7 @@ namespace Iodine.Runtime
 		public void Push (IodineObject obj)
 		{
 			top.Push (obj);
-			this.Last = obj;
+			Last = obj;
 		}
 
 		public IodineObject Pop ()
@@ -140,7 +141,7 @@ namespace Iodine.Runtime
 			set;
 			get;
 		}
-			
+
 		public IodineMethod Method {
 			private set;
 			get;
@@ -178,61 +179,59 @@ namespace Iodine.Runtime
 
 		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount)
 		{
-			this.LocalCount = localCount;
-			this.locals = new IodineObject[localCount];
-			this.parentLocals = this.locals;
-			this.Method = method;
-			this.Self = self;
-			this.Parent = parent;
+			LocalCount = localCount;
+			locals = new IodineObject[localCount];
+			parentLocals = locals;
+			Method = method;
+			Self = self;
+			Parent = parent;
 		}
 
 		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount,
-			IodineObject[] locals) : this (method, parent, self, localCount)
+		                   IodineObject[] locals) : this (method, parent, self, localCount)
 		{
-			this.parentLocals = locals;
+			parentLocals = locals;
 			this.locals = new IodineObject[localCount];
 			for (int i = 0; i < localCount; i++) {
-				this.locals[i] = locals[i]; 
+				this.locals [i] = locals [i]; 
 			}
 		}
 
 		public void StoreLocal (int index, IodineObject obj)
 		{
-			if (this.parentLocals[index] != null) {
-				this.parentLocals[index] = obj;
+			if (parentLocals [index] != null) {
+				parentLocals [index] = obj;
 			}
-			this.locals[index] = obj;
+			locals [index] = obj;
 		}
 
 		public IodineObject LoadLocal (int index)
 		{
-			return this.locals[index];
+			return locals [index];
 		}
 
 		public void Push (IodineObject obj)
 		{
-			if (obj != null) 
-				this.stack.Push (obj);
+			if (obj != null)
+				stack.Push (obj);
 			else
-				this.stack.Push (IodineNull.Instance);
+				stack.Push (IodineNull.Instance);
 		}
 
 		public IodineObject Pop ()
 		{
-			return this.stack.Pop ();
+			return stack.Pop ();
 		}
 
 		public StackFrame Duplicate (StackFrame top)
 		{
-			return new StackFrame (this.Method, top, this.Self, this.LocalCount,
-				this.locals);
+			return new StackFrame (Method, top, Self, LocalCount, locals);
 		}
 	}
 
 	public class NativeStackFrame : StackFrame
 	{
-		public InternalMethodCallback NativeMethod
-		{
+		public InternalMethodCallback NativeMethod {
 			private set;
 			get;
 		}

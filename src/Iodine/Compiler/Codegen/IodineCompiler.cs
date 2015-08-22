@@ -49,9 +49,9 @@ namespace Iodine.Compiler
 		private SymbolTable symbolTable;
 		private string file;
 
-		public IodineCompiler (ErrorLog errLog, SymbolTable symbolTable, string file)
+		public IodineCompiler (ErrorLog errorLog, SymbolTable symbolTable, string file)
 		{
-			this.errorLog = errLog;
+			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.file = file;
 		}
@@ -61,13 +61,6 @@ namespace Iodine.Compiler
 			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module);
 			ast.Visit (compiler);
 			module.Initializer.FinalizeLabels ();
-
-			foreach (AstNode node in ast) {
-				if (node is NodeUseStatement) {
-					compileUseStatement (module, node as NodeUseStatement);
-				}
-			}
-
 			optimizeObject (module);	
 			return module;
 		}
@@ -82,10 +75,6 @@ namespace Iodine.Compiler
 					}
 				}
 			}
-		}
-
-		private void compileUseStatement (IodineModule module, NodeUseStatement useStmt)
-		{
 		}
 	}
 }

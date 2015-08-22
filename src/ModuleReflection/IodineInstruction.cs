@@ -20,8 +20,8 @@ namespace ModuleReflection
 			: base (InstructionTypeDef)
 		{
 			this.Instruction = instruction;
-			this.SetAttribute ("opcode", new IodineInteger ((long)instruction.OperationCode));
-			this.SetAttribute ("immediate", new IodineInteger (instruction.Argument));
+			SetAttribute ("opcode", new IodineInteger ((long)instruction.OperationCode));
+			SetAttribute ("immediate", new IodineInteger (instruction.Argument));
 			this.parentMethod = method;
 		}
 

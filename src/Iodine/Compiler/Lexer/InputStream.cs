@@ -58,8 +58,8 @@ namespace Iodine.Compiler
 		public InputStream (string source, string file)
 		{
 			this.source = source;
-			this.position = 0;
-			this.sourceLen = source.Length;
+			position = 0;
+			sourceLen = source.Length;
 			this.file = file;
 		}
 
@@ -68,8 +68,8 @@ namespace Iodine.Compiler
 		/// </summary>
 		public void EatWhiteSpaces ()
 		{
-			while (char.IsWhiteSpace ((char)this.PeekChar ())) {
-				this.ReadChar ();
+			while (char.IsWhiteSpace ((char)PeekChar ())) {
+				ReadChar ();
 			}
 		}
 

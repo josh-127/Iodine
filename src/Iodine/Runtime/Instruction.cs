@@ -51,17 +51,17 @@ namespace Iodine.Runtime
 		public Instruction (Location location, Opcode opcode)
 			: this ()
 		{
-			this.OperationCode = opcode;
-			this.Argument = 0;
-			this.Location = location;
+			OperationCode = opcode;
+			Argument = 0;
+			Location = location;
 		}
 
 		public Instruction (Location location, Opcode opcode, int arg)
 			: this ()
 		{
-			this.OperationCode = opcode;
-			this.Argument = arg;
-			this.Location = location;
+			OperationCode = opcode;
+			Argument = arg;
+			Location = location;
 		}
 	}
 }

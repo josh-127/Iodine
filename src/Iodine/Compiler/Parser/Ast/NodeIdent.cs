@@ -41,7 +41,7 @@ namespace Iodine.Compiler.Ast
 		public NodeIdent (Location location, string value)
 			: base (location)
 		{
-			this.Value = value;
+			Value = value;
 		}
 
 		public override void Visit (IAstVisitor visitor)

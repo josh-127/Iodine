@@ -38,7 +38,7 @@ namespace Iodine.Runtime
 
 		class FloatTypeDef : IodineTypeDefinition
 		{
-			public FloatTypeDef () 
+			public FloatTypeDef ()
 				: base ("Float")
 			{
 			}
@@ -49,7 +49,7 @@ namespace Iodine.Runtime
 					vm.RaiseException (new IodineArgumentException (1));
 				}
 
-				return new IodineFloat (Double.Parse (args[0].ToString ()));
+				return new IodineFloat (Double.Parse (args [0].ToString ()));
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace Iodine.Runtime
 		public IodineFloat (double val)
 			: base (TypeDefinition)
 		{
-			this.Value = val;
+			Value = val;
 		}
 
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -114,13 +114,9 @@ namespace Iodine.Runtime
 		{
 			switch (op) {
 			case UnaryOperation.Negate:
-				return new IodineFloat (-this.Value);
+				return new IodineFloat (-Value);
 			}
 			return null;
-		}
-		public override void PrintTest ()
-		{
-			Console.WriteLine (this.Value);
 		}
 
 		public override string ToString ()

@@ -80,7 +80,8 @@ namespace Iodine.Compiler
 		{
 			for (int i = 0; i < instructions.Length; i++) {
 				Instruction ins = instructions [i];
-				if (ins.OperationCode == Opcode.Jump || ins.OperationCode == Opcode.JumpIfFalse ||
+				if (ins.OperationCode == Opcode.Jump ||
+					ins.OperationCode == Opcode.JumpIfFalse ||
 				    ins.OperationCode == Opcode.JumpIfTrue ||
 				    ins.OperationCode == Opcode.PushExceptionHandler) {
 

@@ -52,8 +52,8 @@ namespace Iodine.Compiler.Ast
 		public NodeLambda (Location location, bool isInstanceMethod, IList<string> parameters)
 			: base (location)
 		{
-			this.Parameters = parameters;
-			this.InstanceMethod = isInstanceMethod;
+			Parameters = parameters;
+			InstanceMethod = isInstanceMethod;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -75,7 +75,8 @@ namespace Iodine.Compiler.Ast
 		}
 
 
-		private static List<string> ParseFuncParameters (TokenStream stream, out bool isInstanceMethod,
+		private static List<string> ParseFuncParameters (TokenStream stream,
+		                                                 out bool isInstanceMethod,
 		                                                 out bool isVariadic)
 		{
 			isVariadic = false;

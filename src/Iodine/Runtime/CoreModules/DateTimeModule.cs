@@ -48,13 +48,13 @@ namespace Iodine.Runtime
 				: base (TimeStampTypeDef)
 			{
 				this.Value = val;
-				this.SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
-				this.SetAttribute ("second", new IodineInteger (val.Second));
-				this.SetAttribute ("minute", new IodineInteger (val.Minute));
-				this.SetAttribute ("hour", new IodineInteger (val.Hour));
-				this.SetAttribute ("day", new IodineInteger (val.Day));
-				this.SetAttribute ("month", new IodineInteger (val.Month));
-				this.SetAttribute ("year", new IodineInteger (val.Year));
+				SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
+				SetAttribute ("second", new IodineInteger (val.Second));
+				SetAttribute ("minute", new IodineInteger (val.Minute));
+				SetAttribute ("hour", new IodineInteger (val.Hour));
+				SetAttribute ("day", new IodineInteger (val.Day));
+				SetAttribute ("month", new IodineInteger (val.Month));
+				SetAttribute ("year", new IodineInteger (val.Year));
 			}
 
 			public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
@@ -63,15 +63,15 @@ namespace Iodine.Runtime
 					IodineTimeStamp op = rvalue as IodineTimeStamp;
 					switch (binop) {
 					case BinaryOperation.GreaterThan:
-						return new IodineBool (this.Value.CompareTo (op.Value) > 0);
+						return new IodineBool (Value.CompareTo (op.Value) > 0);
 					case BinaryOperation.LessThan:
-						return new IodineBool (this.Value.CompareTo (op.Value) < 0);
+						return new IodineBool (Value.CompareTo (op.Value) < 0);
 					case BinaryOperation.GreaterThanOrEqu:
-						return new IodineBool (this.Value.CompareTo (op.Value) >= 0);
+						return new IodineBool (Value.CompareTo (op.Value) >= 0);
 					case BinaryOperation.LessThanOrEqu:
-						return new IodineBool (this.Value.CompareTo (op.Value) <= 0);
+						return new IodineBool (Value.CompareTo (op.Value) <= 0);
 					case BinaryOperation.Equals:
-						return new IodineBool (this.Value.CompareTo (op.Value) == 0);
+						return new IodineBool (Value.CompareTo (op.Value) == 0);
 					}
 				}
 				return base.PerformBinaryOperation (vm, binop, rvalue);
@@ -81,7 +81,7 @@ namespace Iodine.Runtime
 		public DateTimeModule ()
 			: base ("datetime")
 		{
-			this.SetAttribute ("now", new InternalMethodCallback (now, this));
+			SetAttribute ("now", new InternalMethodCallback (now, this));
 		}
 
 		private static IodineObject now (VirtualMachine vm, IodineObject self, IodineObject[] args)

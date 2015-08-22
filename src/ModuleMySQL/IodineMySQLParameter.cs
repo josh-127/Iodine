@@ -35,12 +35,12 @@ namespace ModuleMySQL
 		public IodineMySQLConnection (MySqlConnection con) : base(MySQLConnectionTypeDef)
 		{
 			this.Connection = con;
-			this.SetAttribute ("executeSql", new InternalMethodCallback (executeSql, this));
-			this.SetAttribute ("executeSqlPrepared", new InternalMethodCallback (executeSqlPrepared, this));
-			this.SetAttribute ("querySql", new InternalMethodCallback (querySql, this));
-			this.SetAttribute ("querySqlPrepared", new InternalMethodCallback (querySqlPrepared, this));
-			this.SetAttribute ("close", new InternalMethodCallback (close, this));
-			this.SetAttribute ("createParam", new InternalMethodCallback (createParam, this));
+			SetAttribute ("executeSql", new InternalMethodCallback (executeSql, this));
+			SetAttribute ("executeSqlPrepared", new InternalMethodCallback (executeSqlPrepared, this));
+			SetAttribute ("querySql", new InternalMethodCallback (querySql, this));
+			SetAttribute ("querySqlPrepared", new InternalMethodCallback (querySqlPrepared, this));
+			SetAttribute ("close", new InternalMethodCallback (close, this));
+			SetAttribute ("createParam", new InternalMethodCallback (createParam, this));
 		}
 		public IodineMySQLParameter createParam(VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{

@@ -35,21 +35,21 @@ namespace Iodine.Compiler.Ast
 	{
 		public AstNode Target {
 			get {
-				return this.Children [0];
+				return Children [0];
 			}
 		}
 
 		public AstNode Index {
 			get {
-				return this.Children [1];
+				return Children [1];
 			}
 		}
 
 		public NodeIndexer (Location location, AstNode lvalue, AstNode index)
 			: base (location)
 		{
-			this.Add (lvalue);
-			this.Add (index);
+			Add (lvalue);
+			Add (index);
 		}
 
 		public override void Visit (IAstVisitor visitor)

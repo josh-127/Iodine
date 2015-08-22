@@ -43,12 +43,12 @@ namespace Iodine.Runtime
 		public IodineName (string val)
 			: base (NameTypeDef)
 		{
-			this.Value = val;
+			Value = val;
 		}
 
 		public override string ToString ()
 		{
-			return this.Value;
+			return Value;
 		}
 
 		public override int GetHashCode ()

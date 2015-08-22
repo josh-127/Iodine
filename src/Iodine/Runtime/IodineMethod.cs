@@ -40,8 +40,8 @@ namespace Iodine.Runtime
 
 		public IodineLabel (int labelID)
 		{
-			this._LabelID = labelID;
-			this._Position = 0;
+			_LabelID = labelID;
+			_Position = 0;
 		}
 	}
 
@@ -122,12 +122,12 @@ namespace Iodine.Runtime
 		public IodineMethod (IodineModule module, string name, bool isInstance, int parameterCount,
 		                     int localCount) : base (MethodTypeDef)
 		{
-			this.Name = name;
-			this.ParameterCount = parameterCount;
-			this.Module = module;
-			this.LocalCount = localCount;
-			this.InstanceMethod = isInstance;
-			this.Parameters = new Dictionary<string, int> ();
+			Name = name;
+			ParameterCount = parameterCount;
+			Module = module;
+			LocalCount = localCount;
+			InstanceMethod = isInstance;
+			Parameters = new Dictionary<string, int> ();
 		}
 
 		public IodineMethod (IodineMethod parent, IodineModule module, string name, bool isInstance, int parameterCount,
@@ -138,41 +138,41 @@ namespace Iodine.Runtime
 
 		public void EmitInstruction (Opcode opcode)
 		{
-			this.instructions.Add (new Instruction (new Location (0, 0, ""), opcode));
+			instructions.Add (new Instruction (new Location (0, 0, ""), opcode));
 		}
 
 		public void EmitInstruction (Opcode opcode, int arg)
 		{
-			this.instructions.Add (new Instruction (new Location (0, 0, ""), opcode, arg));
+			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, arg));
 		}
 
 		public void EmitInstruction (Opcode opcode, IodineLabel label)
 		{
-			this.labelReferences [this.instructions.Count] = label;
-			this.instructions.Add (new Instruction (new Location (0, 0, ""), opcode, 0));
+			labelReferences [instructions.Count] = label;
+			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, 0));
 		}
 
 		public void EmitInstruction (Location loc, Opcode opcode)
 		{
-			this.instructions.Add (new Instruction (loc, opcode));
+			instructions.Add (new Instruction (loc, opcode));
 		}
 
 		public void EmitInstruction (Location loc, Opcode opcode, int arg)
 		{
-			this.instructions.Add (new Instruction (loc, opcode, arg));
+			instructions.Add (new Instruction (loc, opcode, arg));
 		}
 
 		public void EmitInstruction (Location loc, Opcode opcode, IodineLabel label)
 		{
-			this.labelReferences [this.instructions.Count] = label;
-			this.instructions.Add (new Instruction (loc, opcode, 0));
+			labelReferences [instructions.Count] = label;
+			instructions.Add (new Instruction (loc, opcode, 0));
 		}
 
 		public int CreateTemporary ()
 		{
-			if (this.parent != null)
-				this.parent.CreateTemporary ();
-			return this.LocalCount++;
+			if (parent != null)
+				parent.CreateTemporary ();
+			return LocalCount++;
 		}
 
 		public IodineLabel CreateLabel ()
@@ -182,14 +182,15 @@ namespace Iodine.Runtime
 
 		public void MarkLabelPosition (IodineLabel label)
 		{
-			label._Position = this.instructions.Count;
+			label._Position = instructions.Count;
 		}
 
 		public void FinalizeLabels ()
 		{
-			foreach (int position in this.labelReferences.Keys) {
-				this.instructions [position] = new Instruction (this.instructions [position].Location,
-					this.instructions [position].OperationCode, this.labelReferences [position]._Position);
+			foreach (int position in labelReferences.Keys) {
+				instructions [position] = new Instruction (instructions [position].Location,
+					instructions [position].OperationCode,
+					labelReferences [position]._Position);
 			}
 		}
 

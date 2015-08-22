@@ -35,13 +35,13 @@ namespace Iodine.Compiler.Ast
 	{
 		public AstNode GivenValue {
 			get {
-				return this.Children [0];
+				return Children [0];
 			}
 		}
 
 		public AstNode CaseStatements {
 			get {
-				return this.Children [1];
+				return Children [1];
 			}
 		}
 

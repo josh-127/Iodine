@@ -42,7 +42,7 @@ namespace Iodine.Compiler.Ast
 		public NodeString (Location location, string value)
 			: base (location)
 		{
-			this.Value = value;
+			Value = value;
 		}
 
 		public override void Visit (IAstVisitor visitor)

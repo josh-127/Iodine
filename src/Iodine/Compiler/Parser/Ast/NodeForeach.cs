@@ -40,13 +40,13 @@ namespace Iodine.Compiler.Ast
 
 		public AstNode Iterator {
 			get {
-				return this.Children[0];
+				return Children [0];
 			}
 		}
 
 		public AstNode Body {
 			get {
-				return this.Children[1];
+				return Children [1];
 			}
 		}
 
@@ -63,7 +63,7 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstNode Parse (TokenStream stream) 
+		public static AstNode Parse (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "foreach");
 			stream.Expect (TokenClass.OpenParan);
@@ -72,7 +72,6 @@ namespace Iodine.Compiler.Ast
 			AstNode expr = NodeExpr.Parse (stream);
 			stream.Expect (TokenClass.CloseParan);
 			AstNode body = NodeStmt.Parse (stream);
-
 			return new NodeForeach (stream.Location, identifier.Value, expr, body);
 
 		}

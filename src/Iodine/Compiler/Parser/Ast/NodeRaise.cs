@@ -35,14 +35,14 @@ namespace Iodine.Compiler.Ast
 	{
 		public AstNode Value {
 			get {
-				return this.Children[0];
+				return Children [0];
 			}
 		}
 
 		public NodeRaiseStmt (Location location, AstNode val)
 			: base (location)
 		{
-			this.Add (val);
+			Add (val);
 		}
 
 		public override void Visit (IAstVisitor visitor)

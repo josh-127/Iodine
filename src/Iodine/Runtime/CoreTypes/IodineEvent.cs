@@ -39,7 +39,7 @@ namespace Iodine.Runtime
 
 		class EventTypeDef : IodineTypeDefinition
 		{
-			public EventTypeDef () 
+			public EventTypeDef ()
 				: base ("Event")
 			{
 			}
@@ -61,10 +61,10 @@ namespace Iodine.Runtime
 		{
 			switch (binop) {
 			case BinaryOperation.Add:
-				this.handlers.Add (rvalue);
+				handlers.Add (rvalue);
 				break;
 			case BinaryOperation.Sub:
-				this.handlers.Remove (rvalue);
+				handlers.Remove (rvalue);
 				break;
 			default:
 				return base.PerformBinaryOperation (vm, binop, rvalue);
@@ -74,7 +74,7 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			foreach (IodineObject obj in this.handlers) {
+			foreach (IodineObject obj in handlers) {
 				obj.Invoke (vm, arguments);
 			}
 			return null;

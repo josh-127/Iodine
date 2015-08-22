@@ -35,7 +35,7 @@ namespace Iodine.Compiler.Ast
 	{
 		public AstNode Target {
 			get {
-				return this.Children[0];
+				return Children [0];
 			}
 		}
 
@@ -47,8 +47,8 @@ namespace Iodine.Compiler.Ast
 		public NodeGetAttr (Location location, AstNode target, string field)
 			: base (location)
 		{
-			this.Add(target);
-			this.Field = field;
+			Add (target);
+			Field = field;
 		}
 
 		public override void Visit (IAstVisitor visitor)

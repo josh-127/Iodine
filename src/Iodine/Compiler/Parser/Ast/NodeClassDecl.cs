@@ -46,21 +46,21 @@ namespace Iodine.Compiler.Ast
 
 		public NodeFuncDecl Constructor {
 			get {
-				return (NodeFuncDecl)this.Children[0];
+				return (NodeFuncDecl)Children [0];
 			}
 			set {
-				this.Children[0] = value;
+				this.Children [0] = value;
 			}
 		}
 
 		public NodeClassDecl (Location location, string name, List<string> baseClass)
 			: base (location)
 		{
-			this.Name = name;
-			this.Base = baseClass;
+			Name = name;
+			Base = baseClass;
 			NodeFuncDecl dummyCtor = new NodeFuncDecl (location, name, true, false, new List<string> ());
 			dummyCtor.Add (new NodeStmt (location));
-			this.Add (dummyCtor);
+			Add (dummyCtor);
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -86,8 +86,8 @@ namespace Iodine.Compiler.Ast
 			stream.Expect (TokenClass.OpenBrace);
 
 			while (!stream.Match (TokenClass.CloseBrace)) {
-				if (stream.Match (TokenClass.Keyword, "func")  || stream.Match (TokenClass.Operator,
-					"@")) {
+				if (stream.Match (TokenClass.Keyword, "func") || stream.Match (TokenClass.Operator,
+					    "@")) {
 					NodeFuncDecl func = NodeFuncDecl.Parse (stream, false, clazz) as NodeFuncDecl;
 					if (func.Name == name) {
 						clazz.Constructor = func;
