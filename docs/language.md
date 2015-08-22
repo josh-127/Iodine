@@ -92,8 +92,8 @@ Inside instance methods, the self reference points to the current object instanc
 
 #### 2.2 Statements
 
-##### 2.2.1 Class definitions
-Classes in Iodine are defined using the class keyword. The syntax for declaring a class is 
+##### 2.2.1 Class Declaration
+Classes in Iodine are defined using the ```class``` keyword. The syntax for declaring a class is 
 ```
  class MyClass {
  
@@ -107,8 +107,8 @@ class MyClass : BaseClass {
 ```
 Classes may contain function definitions. A class can extend another class, or multiple interfaces seperated by a comma
 
-##### 2.2.2 Interface definitions
-Interfaces in Iodine are defined using the interface keyword. The syntax for declaring a interface is
+##### 2.2.2 Interface Declaration
+Interfaces in Iodine are defined using the ```interface``` keyword. The syntax for declaring a interface is
 ```
 interface IMyInterface {
     func aFunction ();
@@ -116,8 +116,8 @@ interface IMyInterface {
 ```
 Only function prototypes are allowed inside the interface body. An inteface may not extend another class or interface.
 
-##### 2.2.3 Enum definitions
-Enumerations in Iodine are defined using the enum keyword. The syntax for declaring an enum is
+##### 2.2.3 Enum Declaration
+Enumerations in Iodine are defined using the ```'enum``` keyword. The syntax for declaring an ```enum``` is
 ```
 enum MyEnum {
     VALUE_1,
@@ -131,8 +131,8 @@ enum MyEnum {
     VALUE_2 = 1
 }
 ```
-##### 2.2.4 Function definitions
-Functions can be declared using the func keyword. A function contain a list of statements. In Iodine, control statements are only valid inside functions. Classes, enums, and interfaces however may also be declared inside a function. The syntax for declaring a function is
+##### 2.2.4 Function Declarations
+Functions can be declared using the ```func``` keyword. A function contain a list of statements. In Iodine, control statements are only valid inside functions. Classes, enums, and interfaces however may also be declared inside a function. The syntax for declaring a function is
 ```
 func myFunction () {
 
@@ -144,21 +144,22 @@ func myFunction (param1, param2) {
 
 }
 ```
-If the first parameter is named self, then the function is an instance method. Instance methods are typically declared inside classes, however they are also valid outside classes. When calling instances methods, the self parameter can be ignored.
+If the first parameter is named ```self```, then the function is an instance method. Instance methods are typically declared inside classes, however they are also valid outside classes. When calling instances methods, the ```self``` parameter can be ignored.
 ```
 func instanceMethod (self) {
 
 }
 ```
-Variadic functions are supported by using the params keyword.
+Variadic functions are supported by using the ```params``` keyword.
 ```
 func variadicFunction (params args) {
 
 }
 ```
 The params keyword must be used on the final parameter. The final parameter will be a tuple containing all extra arguments that were passed to the function.
-##### 2.2.5 If Statement
-The if statement can be used to test if a condition is true or false. If the condition is true, the body of the if statement wil be executed. If false, the optional else body will be executed. The syntax for the if statement is
+
+##### 2.2.5 ```if``` statement
+The ```if``` statement can be used to test if a condition is true or false. If the condition is true, the body of the if statement wil be executed. If false, the optional else body will be executed. The syntax for the if statement is
 ```
 if (expression) 
     statement;
@@ -166,23 +167,70 @@ else
     statement;
 ```
 
-##### 2.2.6 While Loop
-The while loop can be used to continuously execute a block of code while a condition remains true.  The syntax for a while loop is 
+##### 2.2.6 ```while``` Statement
+The ```while``` loop can be used to continuously execute a block of code while a condition remains true.  The syntax for a while loop is 
 ```
 while (expression)
     statement;
 ```
 
-##### 2.2.7 For Loop
-The for loop can be used to continuously execute a block of code while a condintion remains true while executing a single expression. The syntax for a for loop is
+##### 2.2.7 ```for``` Statement
+The ```for``` loop can be used to continuously execute a block of code while a condition remains true while executing a single expression. The syntax for a for loop is
 ```
-for (expression; expression; expression)
+for (initializer; condition; afterthought)
     statement;
 ````
 
-##### 2.2.8 Foreach Loop
-The foreach loop can be used to iterate through an iterable object. The syntax for the foreach loop is
+##### 2.2.8 ```foreach``` Statement
+The ```foreach``` loop can be used to iterate through an iterable object. The syntax for the foreach loop is
 ```
 foreach (identifier in expression) 
     statement;
 ```
+##### 2.2.9 ```switch``` Statement
+The switch/case statement can be used to test a given value against a series of possible values. In the event that a value is not present, the default statement (If it exists) will be executed.
+```
+switch (expression) {
+    case (expression)
+        statement;
+    case (expression)
+        statement;
+    default
+        statement
+}
+```
+##### 2.2.10 ```try``` Statement
+The try/except statement can be used to catch an exception if raised inside the try block. The syntax is
+```
+try
+    statement;
+except
+    statement;
+```
+Additionally, if an exception is thrown it can be stored in a local variable. This is declared in the except statement.
+```
+try
+    statement;
+except (identifier)
+    statement;
+```
+The except block can also be written to only catch certain exceptions. The syntax of this is
+```
+try
+    statement;
+except (identifier as Type)
+    statement;
+```
+Where identifier is the name of the variable the current exception is to be stored in and Type is the type of the exception that is expected. Multiple types can be specified.
+```
+try
+    statement;
+except (identifier as Type1, Type2)
+    statement;
+```
+##### 2.2.11 ```raise``` Statement
+The raise statement can be used to throw an exception. The syntax for raise is
+```
+raise expression;
+```
+With expression being an expression that returns a value deriving Exception.
