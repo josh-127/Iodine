@@ -44,7 +44,7 @@ namespace Iodine
 			int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
 			int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
 			Console.WriteLine ("Iodine v{0}.{1}.{2}", major, minor, patch);
-
+			Console.WriteLine ("Enter expressions to have them be evaluated");
 			engine ["prompt"] = ">>> ";
 			while (true) {
 				Console.Write (engine ["prompt"].ToString ());

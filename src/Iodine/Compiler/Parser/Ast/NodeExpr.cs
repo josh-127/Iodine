@@ -284,6 +284,7 @@ namespace Iodine.Compiler.Ast
 			} else if (stream.Match (TokenClass.Keyword, "lambda")) {
 				return NodeLambda.Parse (stream);
 			}
+			stream.MakeError ();
 			return null;
 		}
 	}

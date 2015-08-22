@@ -40,7 +40,6 @@ namespace Iodine.Runtime
 			: base ("sys")
 		{
 			this.SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
-
 			this.SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
 			this.SetAttribute ("exit", new InternalMethodCallback (exit, this));
 		}

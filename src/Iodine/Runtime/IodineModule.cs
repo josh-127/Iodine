@@ -44,9 +44,15 @@ namespace Iodine.Runtime
 			get;
 		}
 
+		public bool Global {
+			private set;
+			get;
+		}
+
 		public IodineBuiltinModule (string moduleName, bool existsInGlobalNamespace = false)
 		{
 			this.Name = moduleName;
+			this.Global = existsInGlobalNamespace;
 		}
 	}
 
@@ -81,6 +87,11 @@ namespace Iodine.Runtime
 
 		public IList<string> Imports {
 			private set;
+			get;
+		}
+
+		public bool ExistsInGlobalNamespace {
+			protected set;
 			get;
 		}
 

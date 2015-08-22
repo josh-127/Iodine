@@ -42,6 +42,7 @@ namespace Iodine.Runtime
 			: base ("random")
 		{
 			this.SetAttribute ("rand", new InternalMethodCallback (rand, this));
+			this.SetAttribute ("randInt", new InternalMethodCallback (randInt, this));
 			this.SetAttribute ("choice", new InternalMethodCallback (choice, this));
 			this.SetAttribute ("cryptoString", new InternalMethodCallback (cryptoString, this));
 		}
@@ -49,6 +50,34 @@ namespace Iodine.Runtime
 		private IodineObject rand (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineFloat (rgn.NextDouble ());
+		}
+
+		private IodineObject randInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				return new IodineInteger (rgn.Next (Int32.MinValue, Int32.MaxValue));
+			} else {
+				int start = 0;
+				int end = 0;
+				if (args.Length <= 1) {
+					IodineInteger integer = args [0] as IodineInteger;
+					if (integer == null) {
+						vm.RaiseException (new IodineTypeException ("Int"));
+						return null;
+					}
+					end = (int)integer.Value;
+				} else {
+					IodineInteger startInteger = args [0] as IodineInteger;
+					IodineInteger endInteger = args [1] as IodineInteger;
+					if (startInteger == null || endInteger == null) {
+						vm.RaiseException (new IodineTypeException ("Int"));
+						return null;
+					}
+					start = (int)startInteger.Value;
+					end = (int)endInteger.Value;
+				}
+				return new IodineInteger (rgn.Next (start, end));
+			}
 		}
 
 		private IodineObject cryptoString (VirtualMachine vm, IodineObject self, IodineObject[] args)

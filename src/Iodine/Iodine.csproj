@@ -62,8 +62,6 @@
     <Compile Include="Runtime\CoreTypes\IodineName.cs" />
     <Compile Include="Runtime\CoreTypes\IodineList.cs" />
     <Compile Include="Runtime\IodineClass.cs" />
-    <Compile Include="Runtime\IIodineExtension.cs" />
-    <Compile Include="Runtime\BuiltinFunctions.cs" />
     <Compile Include="Runtime\CoreTypes\IodineMap.cs" />
     <Compile Include="Runtime\IodineClosure.cs" />
     <Compile Include="Runtime\IodineException.cs" />
@@ -167,6 +165,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\Parser\Ast\NodeSwitchStmt.cs" />
     <Compile Include="Compiler\Parser\Ast\NodeCaseStmt.cs" />
+    <Compile Include="Runtime\CoreModules\BuiltinsModule.cs" />
+    <Compile Include="Compiler\Lexer\Matchers\MatchHexNumber.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

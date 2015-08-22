@@ -145,6 +145,19 @@ namespace Iodine.Runtime
 			return null;
 		}
 
+		public virtual IodineObject ToString (VirtualMachine vm)
+		{
+			return new IodineString (ToString ());
+		}
+
+		public virtual IodineObject Represent (VirtualMachine vm)
+		{
+			if (this.attributes.ContainsKey ("__repr__")) {
+				return this.attributes ["__repr__"].Invoke (vm, new IodineObject[] { });
+			}
+			return ToString (vm);
+		}
+
 		public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
 			

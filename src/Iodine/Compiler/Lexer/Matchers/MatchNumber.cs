@@ -42,6 +42,7 @@ namespace Iodine.Compiler
 		public Token ScanToken (ErrorLog errLog, InputStream inputStream)
 		{
 			StringBuilder accum = new StringBuilder ();
+
 			while (IsNum ((char)inputStream.PeekChar ())) {
 				accum.Append ((char)inputStream.ReadChar ());
 			}

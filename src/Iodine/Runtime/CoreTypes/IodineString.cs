@@ -162,6 +162,11 @@ namespace Iodine.Runtime
 			this.iterIndex = 0;
 		}
 
+		public override IodineObject Represent (VirtualMachine vm)
+		{
+			return new IodineString (String.Format ("\"{0}\"", this.Value));
+		}
+
 		private IodineObject toUpper (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineString (this.Value.ToUpper ());

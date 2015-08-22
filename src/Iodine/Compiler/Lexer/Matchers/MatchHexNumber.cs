@@ -28,16 +28,37 @@
 **/
 
 using System;
-using System.Collections.Generic;
+using System.Text;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler
 {
-	/*
-	 * This really should be gotten ridden of...
-	 */
-	public interface IIodineExtension
+	public class MatchHexNumber : IMatcher
 	{
-		void Initialize (Dictionary<string, IodineObject> globalDict);
+		const string HEX_DIGITS = "abcdefABCDEF";
+
+		public bool IsMatchImpl (InputStream inputStream)
+		{
+			return inputStream.MatchString ("0x");
+		}
+
+		public Token ScanToken (ErrorLog errLog, InputStream inputStream)
+		{
+			StringBuilder accum = new StringBuilder ();
+			inputStream.ReadChar (); // 0
+			inputStream.ReadChar (); // x
+
+			while (IsHexNum ((char)inputStream.PeekChar ())) {
+				accum.Append ((char)inputStream.ReadChar ());
+			}
+
+			return Token.Create (TokenClass.IntLiteral, Int32.Parse (accum.ToString (),
+				System.Globalization.NumberStyles.HexNumber).ToString (), inputStream);
+		}
+
+		private static bool IsHexNum (char c)
+		{
+			return char.IsDigit (c) || HEX_DIGITS.Contains (c.ToString ());
+		}
 	}
 }
 

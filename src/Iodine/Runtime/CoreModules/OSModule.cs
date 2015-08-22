@@ -67,7 +67,6 @@ namespace Iodine.Runtime
 			this.SetAttribute ("userDir", new IodineString (Environment.GetFolderPath (
 				Environment.SpecialFolder.UserProfile)));
 			this.SetAttribute ("envSep", new IodineChar (Path.PathSeparator));
-
 			this.SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
 			this.SetAttribute ("getEnv", new InternalMethodCallback (getEnv, this));
 			this.SetAttribute ("setEnv", new InternalMethodCallback (setEnv, this));

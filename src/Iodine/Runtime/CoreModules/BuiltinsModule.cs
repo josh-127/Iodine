@@ -34,7 +34,8 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class BuiltinFunctions : IIodineExtension
+	[IodineBuiltinModule ("__builtins__", true)]
+	public class BuiltinsModule : IodineModule
 	{
 		class RangeIterator : IodineObject
 		{
@@ -74,40 +75,43 @@ namespace Iodine.Runtime
 
 		}
 
-		public void Initialize (Dictionary<string, IodineObject> globalDict)
+		public BuiltinsModule ()
+			: base ("__builtins__")
 		{
-			globalDict ["stdin"] = new IodineStream (Console.OpenStandardInput (), false, true);
-			globalDict ["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
-			globalDict ["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
-			globalDict ["eval"] = new InternalMethodCallback (eval, null);
-			globalDict ["print"] = new InternalMethodCallback (print, null);
-			globalDict ["input"] = new InternalMethodCallback (input, null);
-			globalDict ["Int"] = IodineInteger.TypeDefinition;
-			globalDict ["Float"] = IodineFloat.TypeDefinition;
-			globalDict ["Str"] = IodineString.TypeDefinition;
-			globalDict ["ByteStr"] = IodineByteString.TypeDefinition;
-			globalDict ["Bool"] = IodineBool.TypeDefinition;
-			globalDict ["Char"] = IodineChar.TypeDefinition;
-			globalDict ["Tuple"] = IodineTuple.TypeDefinition;
-			globalDict ["List"] = IodineList.TypeDefinition;
-			globalDict ["Event"] = IodineEvent.TypeDefinition;
-			globalDict ["Object"] = new InternalMethodCallback (Object, null);
-			globalDict ["HashMap"] = IodineMap.TypeDefinition;
-			globalDict ["filter"] = new InternalMethodCallback (filter, null);
-			globalDict ["map"] = new InternalMethodCallback (map, null); 
-			globalDict ["reduce"] = new InternalMethodCallback (reduce, null);
-			globalDict ["range"] = new InternalMethodCallback (range, null);
-			globalDict ["open"] = new InternalMethodCallback (open, null);
-			globalDict ["Exception"] = IodineException.TypeDefinition;
-			globalDict ["TypeException"] = IodineTypeException.TypeDefinition;
-			globalDict ["ArgumentException"] = IodineArgumentException.TypeDefinition;
-			globalDict ["InternalException"] = IodineInternalErrorException.TypeDefinition;
-			globalDict ["IndexException"] = IodineIndexException.TypeDefinition;
-			globalDict ["IOException"] = IodineIOException.TypeDefinition;
-			globalDict ["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
-			globalDict ["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
-			globalDict ["SyntaxException"] = IodineSyntaxException.TypeDefinition;
-			globalDict ["NotSupportedException"] = IodineNotSupportedException.TypeDefinition;
+			this.attributes ["stdin"] = new IodineStream (Console.OpenStandardInput (), false, true);
+			this.attributes ["stdout"] = new IodineStream (Console.OpenStandardOutput (), true, false);
+			this.attributes ["stderr"] = new IodineStream (Console.OpenStandardError (), true, false);
+			this.attributes ["eval"] = new InternalMethodCallback (eval, null);
+			this.attributes ["print"] = new InternalMethodCallback (print, null);
+			this.attributes ["input"] = new InternalMethodCallback (input, null);
+			this.attributes ["Int"] = IodineInteger.TypeDefinition;
+			this.attributes ["Float"] = IodineFloat.TypeDefinition;
+			this.attributes ["Str"] = IodineString.TypeDefinition;
+			this.attributes ["ByteStr"] = IodineByteString.TypeDefinition;
+			this.attributes ["Bool"] = IodineBool.TypeDefinition;
+			this.attributes ["Char"] = IodineChar.TypeDefinition;
+			this.attributes ["Tuple"] = IodineTuple.TypeDefinition;
+			this.attributes ["List"] = IodineList.TypeDefinition;
+			this.attributes ["Event"] = IodineEvent.TypeDefinition;
+			this.attributes ["Object"] = new InternalMethodCallback (Object, null);
+			this.attributes ["HashMap"] = IodineMap.TypeDefinition;
+			this.attributes ["repr"] = new InternalMethodCallback (repr, null);
+			this.attributes ["filter"] = new InternalMethodCallback (filter, null);
+			this.attributes ["map"] = new InternalMethodCallback (map, null); 
+			this.attributes ["reduce"] = new InternalMethodCallback (reduce, null);
+			this.attributes ["range"] = new InternalMethodCallback (range, null);
+			this.attributes ["open"] = new InternalMethodCallback (open, null);
+			this.attributes ["Exception"] = IodineException.TypeDefinition;
+			this.attributes ["TypeException"] = IodineTypeException.TypeDefinition;
+			this.attributes ["ArgumentException"] = IodineArgumentException.TypeDefinition;
+			this.attributes ["InternalException"] = IodineInternalErrorException.TypeDefinition;
+			this.attributes ["IndexException"] = IodineIndexException.TypeDefinition;
+			this.attributes ["IOException"] = IodineIOException.TypeDefinition;
+			this.attributes ["KeyNotFoundException"] = IodineKeyNotFound.TypeDefinition;
+			this.attributes ["AttributeNotFoundException"] = IodineAttributeNotFoundException.TypeDefinition;
+			this.attributes ["SyntaxException"] = IodineSyntaxException.TypeDefinition;
+			this.attributes ["NotSupportedException"] = IodineNotSupportedException.TypeDefinition;
+			this.ExistsInGlobalNamespace = true;
 		}
 
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -165,7 +169,6 @@ namespace Iodine.Runtime
 			foreach (IodineObject arg in args) {
 				Console.WriteLine (arg.ToString ());
 			}
-
 			return null;
 		}
 
@@ -181,6 +184,15 @@ namespace Iodine.Runtime
 		private IodineObject Object (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineObject (IodineObject.ObjectTypeDef);
+		}
+
+		private IodineObject repr (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			return args [0].Represent (vm);
 		}
 
 		private IodineObject filter (VirtualMachine vm, IodineObject self, IodineObject[] args)

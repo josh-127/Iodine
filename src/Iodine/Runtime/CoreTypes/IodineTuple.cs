@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Iodine.Runtime
@@ -92,6 +93,12 @@ namespace Iodine.Runtime
 		public override void IterReset (VirtualMachine vm)
 		{
 			iterIndex = 0;
+		}
+
+		public override IodineObject Represent (VirtualMachine vm)
+		{
+			string repr = String.Join (", ", this.Objects.Select (p => p.Represent (vm).ToString ()));
+			return new IodineString (String.Format ("({0})", repr));
 		}
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)

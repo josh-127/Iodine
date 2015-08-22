@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using Iodine.Compiler;
@@ -137,6 +138,12 @@ namespace Iodine.Runtime
 		public override void IterReset (VirtualMachine vm)
 		{
 			iterIndex = 0;
+		}
+
+		public override IodineObject Represent (VirtualMachine vm)
+		{
+			string repr = String.Join (", ", this.Objects.Select (p => p.Represent (vm).ToString ()));
+			return new IodineString (String.Format ("{{0}}", repr));
 		}
 
 		public void Add (IodineObject obj)
@@ -264,7 +271,6 @@ namespace Iodine.Runtime
 
 			return retList;
 		}
-
 
 		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{

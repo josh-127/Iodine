@@ -45,6 +45,7 @@ namespace Iodine.Compiler
 		static Lexer ()
 		{
 			matchers.Add (new MatchKeyword ());
+			matchers.Add (new MatchHexNumber ());
 			matchers.Add (new MatchNumber ());
 			matchers.Add (new MatchStringLit ());
 			matchers.Add (new MatchGrouping ());

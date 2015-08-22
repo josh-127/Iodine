@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Iodine.Compiler;
 
@@ -57,7 +58,12 @@ namespace Iodine.Runtime
 		public VirtualMachine ()
 		{
 			this.Stack = new IodineStack ();
-			LoadExtension (new BuiltinFunctions ());
+			var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
+			foreach (IodineModule module in modules) {
+				foreach (KeyValuePair<string, IodineObject> val in module.Attributes) {
+					Globals [val.Key] = val.Value;
+				}
+			}
 		}
 
 		public VirtualMachine (Dictionary<string, IodineObject> globals)
@@ -125,11 +131,6 @@ namespace Iodine.Runtime
 			IodineObject retVal = Stack.Last == null ? IodineNull.Instance : Stack.Last;
 			Stack.EndFrame ();
 			return retVal;
-		}
-
-		public void LoadExtension (IIodineExtension extension)
-		{
-			extension.Initialize (globalDict);
 		}
 
 		public void RaiseException (string message, params object[] args)

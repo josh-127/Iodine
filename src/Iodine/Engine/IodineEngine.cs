@@ -106,7 +106,7 @@ namespace Iodine
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
 			IodineCompiler compiler = new IodineCompiler (errorLog, symTab, "");
-			module.Initializer.Body.Clear ();
+			module.Initializer = new IodineMethod (module, "__init__", false, 0, 9999);
 			compiler.CompileAst (module, root);
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
