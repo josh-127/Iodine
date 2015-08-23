@@ -124,6 +124,10 @@ namespace Iodine.Compiler
 				binop.Right.Visit (this);
 				binop.Left.Visit (this);
 				methodBuilder.EmitInstruction (binop.Location, Opcode.DynamicCast);
+			}  else if (binop.Operation == BinaryOperation.NullCoalescing) {
+				binop.Right.Visit (this);
+				binop.Left.Visit (this);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.NullCoalesce);
 			} else {
 				IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
 				IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();

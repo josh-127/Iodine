@@ -411,6 +411,17 @@ namespace Iodine.Runtime
 					}
 					break;
 				}
+			case Opcode.NullCoalesce:
+				{
+					IodineObject o1 = Stack.Pop ();
+					IodineObject o2 = Stack.Pop ();
+					if (o1 is IodineNull) {
+						Stack.Push (o2);
+					} else {
+						Stack.Push (o1);
+					}
+					break;
+				}
 			case Opcode.BeginExcept:
 				{
 					bool rethrow = true;

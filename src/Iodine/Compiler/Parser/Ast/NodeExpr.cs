@@ -91,6 +91,8 @@ namespace Iodine.Compiler.Ast
 			AstNode left = ParseBoolAnd (stream);
 			if (stream.Accept (TokenClass.Operator, "||")) {
 				return new NodeBinOp (stream.Location, BinaryOperation.BoolOr, left, ParseBoolOr (stream));
+			} else if (stream.Accept (TokenClass.Operator, "??")) {
+				return new NodeBinOp (stream.Location, BinaryOperation.NullCoalescing, left, ParseBoolOr (stream));
 			}
 			return left;
 		}

@@ -54,7 +54,8 @@ namespace Iodine.Compiler
 		Mod,
 		InstanceOf,
 		NotInstanceOf,
-		DynamicCast
+		DynamicCast,
+		NullCoalescing
 	}
 }
 

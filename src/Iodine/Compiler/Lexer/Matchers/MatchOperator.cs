@@ -36,7 +36,7 @@ namespace Iodine.Compiler
 	{
 		public bool IsMatchImpl (InputStream inputStream)
 		{
-			return IsOperator ((char)inputStream.PeekChar ());
+			return IsOperator ((char)inputStream.PeekChar ()) || inputStream.MatchString ("??");
 		}
 
 		public Token ScanToken (ErrorLog errLog, InputStream inputStream)
@@ -98,6 +98,9 @@ namespace Iodine.Compiler
 			} else if (inputStream.MatchString ("|=")) {
 				inputStream.ReadChars (2);
 				return Token.Create (TokenClass.Operator, "|=", inputStream);
+			} else if (inputStream.MatchString ("??")) {
+				inputStream.ReadChars (2);
+				return Token.Create (TokenClass.Operator, "??", inputStream);
 			} else if (inputStream.MatchString ("<<=")) {
 				inputStream.ReadChars (3);
 				return Token.Create (TokenClass.Operator, "<<=", inputStream);

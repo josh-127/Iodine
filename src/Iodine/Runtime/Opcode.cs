@@ -76,7 +76,8 @@ namespace Iodine.Runtime
 		Import,
 		ImportFrom,
 		ImportAll,
-		SwitchLookup
+		SwitchLookup,
+		NullCoalesce
 	}
 }
 
