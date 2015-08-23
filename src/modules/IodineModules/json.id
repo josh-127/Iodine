@@ -60,7 +60,7 @@ class JSONParser {
     func JSONParser (self, input) {
         self.input = input.trim ();
         self.position = 0;
-        self.length = input.getSize ();
+        self.length = self.input.getSize ();
         self.tokenStream = JSONTokenStream ();
     }
     
@@ -178,7 +178,10 @@ class JSONParser {
     }
     
     func peekChar (self) {
-        return self.input [self.position];
+        if (self.position < self.length) {
+            return self.input [self.position];
+        }
+        return "";
     }
 }
 
