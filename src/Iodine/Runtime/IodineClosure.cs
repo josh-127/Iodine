@@ -44,6 +44,11 @@ namespace Iodine.Runtime
 			this.target = target;
 		}
 
+		public override bool IsCallable ()
+		{
+			return true;
+		}
+
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			return vm.InvokeMethod (target, frame.Duplicate (vm.Stack.Top), frame.Self, arguments);

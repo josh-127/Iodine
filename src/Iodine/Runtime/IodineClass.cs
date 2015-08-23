@@ -56,6 +56,11 @@ namespace Iodine.Runtime
 			InstanceMethods.Add (method);
 		}
 
+		public override bool IsCallable ()
+		{
+			return true;
+		}
+
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			IodineObject obj = new IodineObject (this);

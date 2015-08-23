@@ -53,6 +53,11 @@ namespace Iodine.Runtime
 			Callback = callback;
 		}
 
+		public override bool IsCallable ()
+		{
+			return true;
+		}
+
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			//vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));

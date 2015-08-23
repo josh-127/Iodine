@@ -125,6 +125,11 @@ namespace Iodine.Runtime
 			return null;
 		}
 
+		public virtual bool IsCallable ()
+		{
+			return attributes.ContainsKey ("__invoke__") && attributes ["__invoke__"].IsCallable ();
+		}
+
 		public virtual IodineObject GetAttribute (VirtualMachine vm, string name)
 		{
 			if (attributes.ContainsKey (name))

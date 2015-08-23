@@ -81,6 +81,8 @@ namespace Iodine.Runtime
 			SetAttribute ("stdout", new IodineStream (Console.OpenStandardOutput (), true, false));
 			SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
 			SetAttribute ("eval", new InternalMethodCallback (eval, null));
+			SetAttribute ("type", new InternalMethodCallback (type, null));
+			SetAttribute ("typecast", new InternalMethodCallback (typecast, null));
 			SetAttribute ("print", new InternalMethodCallback (print, null));
 			SetAttribute ("input", new InternalMethodCallback (input, null));
 			SetAttribute ("Int", IodineInteger.TypeDefinition);
@@ -160,6 +162,35 @@ namespace Iodine.Runtime
 				return null;
 			}
 			return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{ });
+		}
+
+		private IodineObject type (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			return args [0].TypeDef;
+		}
+
+		private IodineObject typecast (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			IodineTypeDefinition typedef = args [0] as IodineTypeDefinition;
+			if (typedef == null) {
+				vm.RaiseException (new IodineTypeException ("TypeDef"));
+				return null;
+			}
+
+			if (!args [1].InstanceOf (typedef)) {
+				vm.RaiseException (new IodineTypeException (typedef.ToString ()));
+				return null;
+			}
+
+			return args [1];
 		}
 
 		private IodineObject print (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -302,11 +333,8 @@ namespace Iodine.Runtime
 			IodineString filePath = args [0] as IodineString;
 			IodineString mode = args [1] as IodineString;
 
-			if (filePath == null) {
-				vm.RaiseException ("Expected filePath to be of type string!");
-				return null;
-			} else if (mode == null) {
-				vm.RaiseException ("Expected mode to be of type string!");
+			if (filePath == null || mode == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
 

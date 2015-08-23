@@ -66,6 +66,11 @@ namespace Iodine.Runtime
 			Self = self;
 		}
 
+		public override bool IsCallable ()
+		{
+			return true;
+		}
+
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			if (Method.Generator)
@@ -202,6 +207,11 @@ namespace Iodine.Runtime
 					instructions [position].OperationCode,
 					labelReferences [position]._Position);
 			}
+		}
+
+		public override bool IsCallable ()
+		{
+			return true;
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)

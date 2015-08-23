@@ -59,6 +59,11 @@ namespace Iodine.Runtime
 			self.Base = obj;
 		}
 
+		public override bool IsCallable ()
+		{
+			return true;
+		}
+
 		public override string ToString ()
 		{
 			return this.Name;
