@@ -56,7 +56,7 @@ Punctuators are special characters that are used for separation, or grouping. Th
 #### 1.7 Operators
 Operators are used in expressions and are either unary or binary. The following are operators in iodine
 ```
-== != <= >= => = && || << >> += -= *= /= &= ^= |= <<= >>= + - / * % & ^ | 
+== != <= >= => = && || << >> += -= *= /= &= ^= |= <<= >>= + - / * % & ^ |  ?? is isnot as
 ```
 ### 2. Semantic Units
 
@@ -71,13 +71,13 @@ An iodine expression is a sequence of operators, operands and constants that ret
 | 3 |*<br>/<br>%          | Left to right|
 | 5 |+<br>-               | Left to right|
 | 6 |<<<br>>>             | Left to right|
-| 7 |<<br>><br><=<br>>=<br>is | Left to right|
+| 7 |<<br>><br><=<br>>=<br>is isnot as| Left to right|
 | 8 |==<br>!=             | Left to right|
 | 9 |&                    | Left to right|
 | 10 |^                   | Left to right|
 | 11 |&#124;              | Left to right|
 | 12 |&&                  | Left to right|
-| 13 |&#124;&#124;        |Left to right|
+| 13 |&#124;&#124;<br>??        |Left to right|
 | 14 |=<br>+=<br>-=<br>*=<br>/=<br>%=<br><<=<br>>>=<br>&#124;=<br>&=<br>^=   |Left to right|
 
 ##### 2.1.2 Lambda Expressions
