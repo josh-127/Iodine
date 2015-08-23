@@ -111,7 +111,7 @@ namespace Iodine.Runtime
 		{
 			IodineObject[] keys = new IodineObject[Keys.Count];
 			Keys.Values.CopyTo (keys, 0);
-			return Keys [iterIndex - 1];
+			return keys [iterIndex - 1];
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)

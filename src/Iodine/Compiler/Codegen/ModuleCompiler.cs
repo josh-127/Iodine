@@ -171,9 +171,9 @@ namespace Iodine.Compiler
 		public void Accept (NodeUseStatement useStmt)
 		{
 			module.Imports.Add (useStmt.Module);
-			string import = !useStmt.Relative ? useStmt.Module : String.Format ("{0}{1}{2}",
+
+			string import = !useStmt.Relative ? useStmt.Module : Path.Combine (
 				                Path.GetDirectoryName (useStmt.Location.File),
-				                Path.DirectorySeparatorChar,
 				                useStmt.Module);
 			
 			if (useStmt.Wildcard) {

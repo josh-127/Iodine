@@ -1,4 +1,3 @@
-﻿
 ###
 # Name          : json
 # Author        : @GruntTheDivine
@@ -35,7 +34,7 @@ class JSONTokenStream {
     }
     
     func match (self, type) {
-        return self.peekToken ().type == type;
+        return self.peekToken () != null && self.peekToken ().type == type;
     }
     
     func expect (self, type) {
@@ -45,7 +44,10 @@ class JSONTokenStream {
     }
     
     func peekToken (self) {
-        return self.tokens [self.position];
+        if (self.position < self.tokens.getSize ()) {
+            return self.tokens [self.position];
+        }
+        return null;
     }
     
     func readToken (self) {
@@ -56,13 +58,16 @@ class JSONTokenStream {
 
 class JSONParser {
     func JSONParser (self, input) {
-        self.input = input;
+        self.input = input.trim ();
         self.position = 0;
         self.length = input.getSize ();
         self.tokenStream = JSONTokenStream ();
     }
     
     func parse (self) {
+        if (self.length == 0) {
+            return List ();
+        }
         return self.parseJsonItem (self.scan ());
     }
     
