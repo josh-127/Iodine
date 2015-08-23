@@ -89,9 +89,7 @@ namespace Iodine.Modules.Extras
 
 			private static bool ValidateServerCertificate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
 			{
-				if (sslPolicyErrors == SslPolicyErrors.None)
-					return true;
-				throw new Exception ("Invalid certificate: " + sslPolicyErrors.ToString ());
+				return true;
 			}
 
 			public IodineSocket (Socket sock)

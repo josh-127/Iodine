@@ -46,7 +46,7 @@ namespace Iodine.Modules.Extras
 		public SslModule ()
 			: base ("ssl")
 		{
-			SetAttribute ("wrapSsl", new InternalMethodCallback (wrapSsl, null));
+			SetAttribute ("wrapStream", new InternalMethodCallback (wrapSsl, null));
 		}
 
 		private IodineObject wrapSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -55,13 +55,19 @@ namespace Iodine.Modules.Extras
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			SocketModule.IodineSocket sock = args [0] as SocketModule.IodineSocket;
-			if (sock == null) {
-				vm.RaiseException (new IodineTypeException ("Socket"));
+			IodineStream rawStream = args [0] as IodineStream;
+			if (rawStream == null) {
+				vm.RaiseException (new IodineTypeException ("Stream"));
 				return null;
 			}
-			SslStream stream = new SslStream (new NetworkStream (sock.Socket));
+			SslStream stream = new SslStream (rawStream.File, false, ValidateServerCertificate);
+			stream.AuthenticateAsClient ("int0x10.com");
 			return new IodineStream (stream, true, true);
+		}
+
+		private static bool ValidateServerCertificate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+		{
+			return true;
 		}
 	}
 }
