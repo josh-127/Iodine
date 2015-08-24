@@ -82,7 +82,7 @@ namespace Iodine.Compiler.Ast
 		public static UseStatement Parse (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "use");
-			bool relative = stream.Accept (TokenClass.Dot);
+			bool relative = stream.Accept (TokenClass.Operator, ".");
 			string ident = "";
 			if (!stream.Match (TokenClass.Operator, "*"))
 				ident = ParseModuleName (stream);
@@ -105,7 +105,7 @@ namespace Iodine.Compiler.Ast
 				}
 				stream.Expect (TokenClass.Keyword, "from");
 
-				relative = stream.Accept (TokenClass.Dot);
+				relative = stream.Accept (TokenClass.Operator, ".");
 				string module = ParseModuleName (stream);
 				return new UseStatement (stream.Location, module, items, wildcard, relative);
 			}
@@ -116,10 +116,10 @@ namespace Iodine.Compiler.Ast
 		{
 			Token initIdent = stream.Expect (TokenClass.Identifier);
 
-			if (stream.Match (TokenClass.Dot)) {
+			if (stream.Match (TokenClass.Operator, ".")) {
 				StringBuilder accum = new StringBuilder ();
 				accum.Append (initIdent.Value);
-				while (stream.Accept (TokenClass.Dot)) {
+				while (stream.Accept (TokenClass.Operator, ".")) {
 					Token ident = stream.Expect (TokenClass.Identifier);
 					accum.Append (Path.DirectorySeparatorChar);
 					accum.Append (ident.Value);

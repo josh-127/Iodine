@@ -98,16 +98,7 @@
     <Compile Include="Compiler\Analyser\FunctionVisitor.cs" />
     <Compile Include="Compiler\Analyser\RootVisitor.cs" />
     <Compile Include="Compiler\Analyser\SemanticAnalyser.cs" />
-    <Compile Include="Compiler\Lexer\IMatcher.cs" />
-    <Compile Include="Compiler\Lexer\InputStream.cs" />
     <Compile Include="Compiler\Lexer\Lexer.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchComment.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchGrouping.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchIdent.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchKeyword.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchNumber.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchOperator.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchStringLit.cs" />
     <Compile Include="Compiler\Lexer\Token.cs" />
     <Compile Include="Compiler\Lexer\TokenClass.cs" />
     <Compile Include="Compiler\Lexer\TokenStream.cs" />
@@ -128,7 +119,6 @@
     <Compile Include="ExtraModules\WinRegModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\CoreModules\BuiltinsModule.cs" />
-    <Compile Include="Compiler\Lexer\Matchers\MatchHexNumber.cs" />
     <Compile Include="Runtime\CoreTypes\IodineGenerator.cs" />
     <Compile Include="ExtraModules\SslModule.cs" />
     <Compile Include="Compiler\Parser\Ast\ArgumentList.cs" />

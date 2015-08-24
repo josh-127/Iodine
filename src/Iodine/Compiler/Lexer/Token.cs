@@ -102,8 +102,6 @@ namespace Iodine.Compiler
 				return ")";
 			case TokenClass.OpenParan:
 				return "(";
-			case TokenClass.Dot:
-				return ".";
 			case TokenClass.Comma:
 				return ",";
 			case TokenClass.OpenBracket:
@@ -117,27 +115,6 @@ namespace Iodine.Compiler
 			default:
 				return clazz.ToString ();
 			}
-		}
-
-		/// <summary>
-		/// Create a new Token object.
-		/// </summary>
-		/// <param name="clazz">The token's slass.</param>
-		/// <param name="stream">The inputstream we are scanning.</param>
-		public static Token Create (TokenClass clazz, InputStream stream) 
-		{
-			return new Token (clazz, ClassToString (clazz), stream.Location);
-		}
-
-		/// <summary>
-		/// Create a new Token object.
-		/// </summary>
-		/// <param name="clazz">The token's slass.</param>
-		/// <param name="value">Value.</param>
-		/// <param name="stream">The inputstream we are scanning.</param>
-		public static Token Create (TokenClass clazz, string value, InputStream stream) 
-		{
-			return new Token (clazz, value, stream.Location);
 		}
 	}
 }

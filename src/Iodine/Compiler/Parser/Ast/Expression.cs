@@ -248,7 +248,7 @@ namespace Iodine.Compiler.Ast
 					ArgumentList.Parse (stream)));
 			} else if (stream.Match (TokenClass.OpenBracket)) {
 				return ParseCallSubscriptAccess (stream, IndexerExpression.Parse (lvalue, stream));
-			} else if (stream.Match (TokenClass.Dot)) {
+			} else if (stream.Match (TokenClass.Operator, ".")) {
 				return ParseCallSubscriptAccess (stream, GetExpression.Parse (lvalue, stream));
 			}
 			return lvalue;

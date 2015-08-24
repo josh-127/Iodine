@@ -51,8 +51,7 @@ namespace Iodine.Compiler
 		SemiColon,
 		Colon,
 		Operator,
-		Comma,
-		Dot
+		Comma
 	}
 }
 

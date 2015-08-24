@@ -113,9 +113,9 @@ namespace Iodine.Compiler.Ast
 			do {
 				string attr = stream.Expect (TokenClass.Identifier).Value;
 				ret.Append (attr);
-				if (stream.Match (TokenClass.Dot))
+				if (stream.Match (TokenClass.Operator, "."))
 					ret.Append ('.');
-			} while (stream.Accept (TokenClass.Dot));
+			} while (stream.Accept (TokenClass.Operator, "."));
 			return ret.ToString ();
 		}
 	}
