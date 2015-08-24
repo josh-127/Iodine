@@ -71,8 +71,6 @@ namespace Iodine.Compiler
 				matchString (inputStream, "break") ||
 				matchString (inputStream, "from") ||
 				matchString (inputStream, "continue") ||
-				matchString (inputStream, "params") ||
-				matchString (inputStream, "keyword") ||
 				matchString (inputStream, "super") ||
 				matchString (inputStream, "is") ||
 				matchString (inputStream, "isnot") ||
