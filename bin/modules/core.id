@@ -14,14 +14,14 @@ use * from reflection
 
 # format  : object || string
 # args    : object || tuple
-func printf (format, params args) {
+func printf (format, *args) {
     print (sprintf_t (format, args))
 }
 
 # format    : Object || Str
 # args      : Object || Tuple
 # returns   : Str
-func sprintf (format, params args) {
+func sprintf (format, *args) {
     return sprintf_t (format, args)
 }
 
@@ -33,7 +33,7 @@ func printr (obj) {
 # format  : object || string
 # args    : additional arguments
 # returns : string
-func format (format, params args) {
+func format (format, *args) {
     return sprintf_t (format, args)
 }
 

@@ -35,7 +35,7 @@ class CommandLineOptions {
         self.verbs = HashMap ();
     }
     
-    func addArgument (self, name, params args) {
+    func addArgument (self, name, *args) {
         if (args.getSize () == 0) {
             self.arguments [name] = CommandLineOptions.CommandLineArgument (false, false);
         } else if (args.getSize () == 1) {
@@ -45,7 +45,7 @@ class CommandLineOptions {
         }
     }
     
-    func addOption (self, name, params args) {
+    func addOption (self, name, *args) {
         if (args.getSize () == 0) {
             self.options [name] = CommandLineOptions.CommandLineOption (false, false);
         } else if (args.getSize () == 1) {

@@ -61,7 +61,8 @@ namespace Iodine.Compiler.Ast
 			stream.Expect (TokenClass.Keyword, "case");
 			AstNode value = NodeExpr.Parse (stream);
 			AstNode body = NodeStmt.Parse (stream);
-			AstNode lambda = new NodeLambda (body.Location, false, new System.Collections.Generic.List<string> ());
+			AstNode lambda = new NodeLambda (body.Location, false, false, false,
+				new System.Collections.Generic.List<string> ());
 			lambda.Add (body);
 			caseStmt.Add (value);
 			caseStmt.Add (lambda);

@@ -83,6 +83,7 @@ namespace Iodine.Runtime
 			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			SetAttribute ("clear", new InternalMethodCallback (clear, this));
 			SetAttribute ("set", new InternalMethodCallback (set, this));
+			SetAttribute ("get", new InternalMethodCallback (get, this));
 			SetAttribute ("remove", new InternalMethodCallback (remove, this));
 		}
 
@@ -170,6 +171,27 @@ namespace Iodine.Runtime
 			}
 			vm.RaiseException (new IodineArgumentException (2));
 			return null;
+		}
+
+		private IodineObject get (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			if (arguments.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			} else if (arguments.Length == 1) {
+				int hash = arguments [0].GetHashCode ();
+				if (Dict.ContainsKey (hash)) {
+					return Dict [hash];
+				}
+				vm.RaiseException (new IodineKeyNotFound ());
+				return null;
+			} else {
+				int hash = arguments [0].GetHashCode ();
+				if (Dict.ContainsKey (hash)) {
+					return Dict [hash];
+				}
+				return arguments [1];
+			}
 		}
 
 		private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)

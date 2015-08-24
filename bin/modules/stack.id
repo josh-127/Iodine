@@ -29,7 +29,7 @@ class Stack {
 
     # So.. this is REALLY hacky.
     # The lookahead parameter is optional.
-    func peek (self, params args) {
+    func peek (self, *args) {
         lookahead = 0
         if (len (args) > 0 && type (args[0]) == "Int")
             lookahead = args[0]

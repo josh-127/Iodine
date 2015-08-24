@@ -49,11 +49,22 @@ namespace Iodine.Compiler.Ast
 			get;
 		}
 
-		public NodeLambda (Location location, bool isInstanceMethod, IList<string> parameters)
+		public bool AcceptsKeywordArguments {
+			private set;
+			get;
+		}
+
+		public NodeLambda (Location location,
+			bool isInstanceMethod,
+			bool variadic,
+			bool acceptsKeywordArguments,
+			IList<string> parameters)
 			: base (location)
 		{
 			Parameters = parameters;
 			InstanceMethod = isInstanceMethod;
+			Variadic = variadic;
+			AcceptsKeywordArguments = acceptsKeywordArguments;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -66,20 +77,26 @@ namespace Iodine.Compiler.Ast
 			stream.Expect (TokenClass.Keyword, "lambda");
 			bool isInstanceMethod;
 			bool isVariadic;
-			List<string> parameters = ParseFuncParameters (stream, out isInstanceMethod, out isVariadic);
+			bool acceptsKwargs;
+
+			List<string> parameters = ParseFuncParameters (stream,
+				out isInstanceMethod,
+				out isVariadic,
+				out acceptsKwargs);
+			
 			stream.Expect (TokenClass.Operator, "=>");
-			NodeLambda decl = new NodeLambda (stream.Location, isInstanceMethod, parameters);
-			decl.Variadic = isVariadic;
+			NodeLambda decl = new NodeLambda (stream.Location, isInstanceMethod, isVariadic, acceptsKwargs, parameters);
 			decl.Add (NodeStmt.Parse (stream));
 			return decl;
 		}
 
-
-		private static List<string> ParseFuncParameters (TokenStream stream,
-		                                                 out bool isInstanceMethod,
-		                                                 out bool isVariadic)
+		private static List<string> ParseFuncParameters (TokenStream stream, out bool isInstanceMethod,
+			out bool isVariadic,
+			out bool hasKeywordArgs)
 		{
 			isVariadic = false;
+			hasKeywordArgs = false;
+			isInstanceMethod = false;
 			List<string> ret = new List<string> ();
 			stream.Expect (TokenClass.OpenParan);
 			if (stream.Accept (TokenClass.Keyword, "self")) {
@@ -88,19 +105,30 @@ namespace Iodine.Compiler.Ast
 					stream.Expect (TokenClass.CloseParan);
 					return ret;
 				}
-			} else {
-				isInstanceMethod = false;
 			}
 			while (!stream.Match (TokenClass.CloseParan)) {
-				if (stream.Accept (TokenClass.Keyword, "params")) {
-					isVariadic = true;
-					Token ident = stream.Expect (TokenClass.Identifier);
-					ret.Add (ident.Value);
-					stream.Expect (TokenClass.CloseParan);
-					return ret;
+				if (!hasKeywordArgs && stream.Accept (TokenClass.Operator, "*")) {
+					if (stream.Accept (TokenClass.Operator, "*")) {
+						hasKeywordArgs = true;
+						Token ident = stream.Expect (TokenClass.Identifier);
+						ret.Add (ident.Value);
+					} else {
+						isVariadic = true;
+						Token ident = stream.Expect (TokenClass.Identifier);
+						ret.Add (ident.Value);
+					}
+				} else {
+					if (hasKeywordArgs) {
+						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
+							"Argument after keyword arguments!");
+					}
+					if (isVariadic) {
+						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
+							"Argument after params keyword!");
+					}
+					Token param = stream.Expect (TokenClass.Identifier);
+					ret.Add (param.Value);
 				}
-				Token param = stream.Expect (TokenClass.Identifier);
-				ret.Add (param.Value);
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
