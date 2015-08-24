@@ -28,56 +28,38 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class TryExceptStatement : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
+		public string ExceptionIdentifier {
 			private set;
 			get;
 		}
 
-		public IList<AstNode> Children {
+		public AstNode TryBody {
 			get {
-				return this.children;
+				return Children [0];
 			}
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
+		public AstNode ExceptBody {
+			get {
+				return Children [1];
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
+		public AstNode TypeList {
+			get {
+				return Children [2];
+			}
 		}
-	}
 
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public TryExceptStatement (Location location, string ident)
 			: base (location)
 		{
+			this.ExceptionIdentifier = ident;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -85,13 +67,39 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
+			TryExceptStatement retVal = null;
+			stream.Expect (TokenClass.Keyword, "try");
+			AstNode tryBody = Statement.Parse (stream);
+			AstNode typeList = new ArgumentList (stream.Location);
+			stream.Expect (TokenClass.Keyword, "except");
+			if (stream.Accept (TokenClass.OpenParan)) {
+				Token ident = stream.Expect (TokenClass.Identifier);
+				if (stream.Accept (TokenClass.Keyword, "as")) {
+					typeList = ParseTypeList (stream);
+				}
+				stream.Expect (TokenClass.CloseParan);
+				retVal = new TryExceptStatement (stream.Location, ident.Value);
+			} else {
+				retVal = new TryExceptStatement (stream.Location, null);
 			}
-			return root;
+			retVal.Add (tryBody);
+			retVal.Add (Statement.Parse (stream));
+			retVal.Add (typeList);
+			return retVal;
+		}
+
+		private static ArgumentList ParseTypeList (TokenStream stream)
+		{
+			ArgumentList argList = new ArgumentList (stream.Location);
+			while (!stream.Match (TokenClass.CloseParan)) {
+				argList.Add (Expression.Parse (stream));
+				if (!stream.Accept (TokenClass.Comma)) {
+					break;
+				}
+			}
+			return argList;
 		}
 	}
 }

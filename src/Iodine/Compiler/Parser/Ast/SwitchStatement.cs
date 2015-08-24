@@ -28,54 +28,30 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class SwitchStatement : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
-			private set;
-			get;
-		}
-
-		public IList<AstNode> Children {
+		public AstNode GivenValue {
 			get {
-				return this.children;
+				return Children [0];
 			}
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
+		public AstNode CaseStatements {
+			get {
+				return Children [1];
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
+		public AstNode DefaultStatement {
+			get {
+				return Children [2];
+			}
 		}
-	}
 
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public SwitchStatement (Location location)
 			: base (location)
 		{
 		}
@@ -85,13 +61,26 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
+			SwitchStatement switchStmt = new SwitchStatement (stream.Location);
+			stream.Expect (TokenClass.Keyword, "switch");
+			stream.Expect (TokenClass.OpenParan);
+			switchStmt.Add (Expression.Parse (stream));
+			stream.Expect (TokenClass.CloseParan);
+			stream.Expect (TokenClass.OpenBrace);
+			AstNode defaultBlock = new AstRoot (stream.Location);
+			AstRoot caseStatements = new AstRoot (stream.Location);
+			while (!stream.EndOfStream && !stream.Match (TokenClass.CloseBrace)) {
+				caseStatements.Add (CaseStatement.Parse (stream));
+				if (stream.Accept (TokenClass.Keyword, "default")) {
+					defaultBlock = Statement.Parse (stream); 
+				}
 			}
-			return root;
+			switchStmt.Add (caseStatements);
+			switchStmt.Add (defaultBlock);
+			stream.Expect (TokenClass.CloseBrace);
+			return switchStmt;
 		}
 	}
 }

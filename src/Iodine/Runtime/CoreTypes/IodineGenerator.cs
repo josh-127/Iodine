@@ -33,7 +33,7 @@ namespace Iodine.Runtime
 {
 	public class IodineGenerator : IodineObject
 	{
-		private static readonly IodineTypeDefinition TypeDef = new IodineTypeDefinition ("Generator");
+		private static new readonly IodineTypeDefinition TypeDef = new IodineTypeDefinition ("Generator");
 
 		private IodineMethod baseMethod;
 		private IodineObject self;

@@ -44,17 +44,17 @@ namespace Iodine.Compiler
 			this.symbolTable = symbolTable;
 		}
 
-		public void Accept (NodeUseStatement useStmt)
+		public void Accept (UseStatement useStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
 				"use statement not valid inside function body!");
 		}
 
-		public void Accept (NodeBinOp binop)
+		public void Accept (BinaryExpression binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
-				if (binop.Left is NodeIdent) {
-					NodeIdent ident = (NodeIdent)binop.Left;
+				if (binop.Left is NameExpression) {
+					NameExpression ident = (NameExpression)binop.Left;
 					if (!this.symbolTable.IsSymbolDefined (ident.Value)) {
 						this.symbolTable.AddSymbol (ident.Value);
 					}
@@ -63,24 +63,24 @@ namespace Iodine.Compiler
 			this.visitSubnodes (binop);
 		}
 
-		public void Accept (NodeInterfaceDecl interfaceDecl)
+		public void Accept (InterfaceDeclaration interfaceDecl)
 		{
 			symbolTable.AddSymbol (interfaceDecl.Name);
 		}
 
-		public void Accept (NodeClassDecl classDecl)
+		public void Accept (ClassDeclaration classDecl)
 		{
 			symbolTable.AddSymbol (classDecl.Name);
 			RootVisitor visitor = new RootVisitor (errorLog, symbolTable);
 			classDecl.Visit (visitor);
 		}
 
-		public void Accept (NodeEnumDecl enumDecl)
+		public void Accept (EnumDeclaration enumDecl)
 		{
 			symbolTable.AddSymbol (enumDecl.Name);
 		}
 
-		public void Accept (NodeFuncDecl funcDecl)
+		public void Accept (FunctionDeclaration funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);
 			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
@@ -94,14 +94,14 @@ namespace Iodine.Compiler
 			symbolTable.EndScope ();
 		}
 
-		public void Accept (NodeForeach foreachStmt)
+		public void Accept (ForeachStatement foreachStmt)
 		{
 			symbolTable.AddSymbol (foreachStmt.Item);
 			foreachStmt.Iterator.Visit (this);
 			foreachStmt.Body.Visit (this);
 		}
 
-		public void Accept (NodeLambda lambda)
+		public void Accept (LambdaExpression lambda)
 		{
 			symbolTable.BeginScope ();
 			foreach (string param in lambda.Parameters) {
@@ -112,14 +112,14 @@ namespace Iodine.Compiler
 			symbolTable.EndScope ();
 		}
 
-		public void Accept (NodeScope scope)
+		public void Accept (CodeBlock scope)
 		{
 			symbolTable.BeginScope ();
 			visitSubnodes (scope);
 			symbolTable.EndScope ();
 		}
 
-		public void Accept (NodeTryExcept tryExcept)
+		public void Accept (TryExceptStatement tryExcept)
 		{
 			tryExcept.TryBody.Visit (this);
 			if (tryExcept.ExceptionIdentifier != null) {
@@ -138,147 +138,147 @@ namespace Iodine.Compiler
 			visitSubnodes (ast);
 		}
 
-		public void Accept (NodeExpr expr)
+		public void Accept (Expression expr)
 		{
 			visitSubnodes (expr);
 		}
 
-		public void Accept (NodeRaiseStmt raise)
+		public void Accept (RaiseStatement raise)
 		{
 			visitSubnodes (raise);
 		}
 
-		public void Accept (NodeSuperCall super)
+		public void Accept (SuperCallExpression super)
 		{
 			visitSubnodes (super);
 		}
 
-		public void Accept (NodeReturnStmt returnStmt)
+		public void Accept (ReturnStatement returnStmt)
 		{
 			visitSubnodes (returnStmt);
 		}
 
-		public void Accept (NodeYieldStmt yieldStmt)
+		public void Accept (YieldStatement yieldStmt)
 		{
 			visitSubnodes (yieldStmt);
 		}
 
-		public void Accept (NodeList list)
+		public void Accept (ListExpression list)
 		{
 			visitSubnodes (list);
 		}
 
-		public void Accept (NodeHash hash)
+		public void Accept (HashExpression hash)
 		{
 			visitSubnodes (hash);
 		}
 
-		public void Accept (NodeIndexer indexer)
+		public void Accept (IndexerExpression indexer)
 		{
 			visitSubnodes (indexer);
 		}
 
-		public void Accept (NodeTuple tuple)
+		public void Accept (TupleExpression tuple)
 		{
 			visitSubnodes (tuple);
 		}
 
-		public void Accept (NodeUnaryOp unaryop)
+		public void Accept (UnaryExpression unaryop)
 		{
 			visitSubnodes (unaryop);
 		}
 
-		public void Accept (NodeCall call)
+		public void Accept (CallExpression call)
 		{
 			visitSubnodes (call);
 		}
 
-		public void Accept (NodeArgList arglist)
+		public void Accept (ArgumentList arglist)
 		{
 			visitSubnodes (arglist);
 		}
 
-		public void Accept (NodeKeywordArgList kwargs)
+		public void Accept (KeywordArgumentList kwargs)
 		{
 			visitSubnodes (kwargs);
 		}
 
-		public void Accept (NodeGetAttr getAttr)
+		public void Accept (GetExpression getAttr)
 		{
 			visitSubnodes (getAttr);
 		}
 
-		public void Accept (NodeIfStmt ifStmt)
+		public void Accept (IfStatement ifStmt)
 		{
 			visitSubnodes (ifStmt);
 		}
 
-		public void Accept (NodeSwitchStmt switchStmt)
+		public void Accept (SwitchStatement switchStmt)
 		{
 			visitSubnodes (switchStmt);
 		}
 
-		public void Accept (NodeCaseStmt caseStmt)
+		public void Accept (CaseStatement caseStmt)
 		{
 			visitSubnodes (caseStmt);
 		}
 
-		public void Accept (NodeWhileStmt whileStmt)
+		public void Accept (WhileStatement whileStmt)
 		{
 			visitSubnodes (whileStmt);
 		}
 
-		public void Accept (NodeDoStmt doStmt)
+		public void Accept (DoStatement doStmt)
 		{
 			visitSubnodes (doStmt);
 		}
 
-		public void Accept (NodeForStmt forStmt)
+		public void Accept (ForStatement forStmt)
 		{
 			visitSubnodes (forStmt);
 		}
 
-		public void Accept (NodeStmt stmt)
+		public void Accept (Statement stmt)
 		{
 		}
 
-		public void Accept (NodeIdent ident)
+		public void Accept (NameExpression ident)
 		{
 		}
 
-		public void Accept (NodeInteger integer)
+		public void Accept (IntegerExpression integer)
 		{
 		}
 
-		public void Accept (NodeFloat num)
+		public void Accept (FloatExpression num)
 		{
 		}
 
-		public void Accept (NodeString str)
+		public void Accept (StringExpression str)
 		{
 		}
 
-		public void Accept (NodeSelf self)
+		public void Accept (SelfStatement self)
 		{
 		}
 
-		public void Accept (NodeTrue ntrue)
+		public void Accept (TrueExpression ntrue)
 		{
 		}
 
-		public void Accept (NodeFalse nfalse)
+		public void Accept (FalseExpression nfalse)
 		{
 		}
 
-		public void Accept (NodeNull nil)
+		public void Accept (NullExpression nil)
 		{
 		}
 
-		public void Accept (NodeBreak brk)
+		public void Accept (BreakStatement brk)
 		{
 		}
 
-		public void Accept (NodeContinue cont)
+		public void Accept (ContinueStatement cont)
 		{
 		}
 

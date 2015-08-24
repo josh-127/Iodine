@@ -28,56 +28,27 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class GetExpression : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
+		public AstNode Target {
+			get {
+				return Children [0];
+			}
+		}
 
-		public Location Location {
+		public string Field {
 			private set;
 			get;
 		}
 
-		public IList<AstNode> Children {
-			get {
-				return this.children;
-			}
-		}
-
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public GetExpression (Location location, AstNode target, string field)
 			: base (location)
 		{
+			Add (target);
+			Field = field;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -85,13 +56,11 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (AstNode lvalue, TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
-			}
-			return root;
+			stream.Expect (TokenClass.Dot);
+			Token ident = stream.Expect (TokenClass.Identifier);
+			return new GetExpression (stream.Location, lvalue, ident.Value);
 		}
 	}
 }

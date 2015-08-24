@@ -71,23 +71,23 @@ namespace Iodine.Compiler
 			visitSubnodes (ast);
 		}
 
-		public void Accept (NodeExpr expr)
+		public void Accept (Expression expr)
 		{
 			visitSubnodes (expr);
 			methodBuilder.EmitInstruction (Opcode.Pop);
 		}
 
-		public void Accept (NodeStmt stmt)
+		public void Accept (Statement stmt)
 		{
 			visitSubnodes (stmt);
 		}
 
-		public void Accept (NodeBinOp binop)
+		public void Accept (BinaryExpression binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
 				binop.Right.Visit (this);
-				if (binop.Left is NodeIdent) {
-					NodeIdent ident = (NodeIdent)binop.Left;
+				if (binop.Left is NameExpression) {
+					NameExpression ident = (NameExpression)binop.Left;
 					Symbol sym = symbolTable.GetSymbol (ident.Value);
 					if (sym.Type == SymbolType.Local) {
 						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreLocal, sym.Index);
@@ -97,15 +97,15 @@ namespace Iodine.Compiler
 						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreGlobal, globalIndex);
 						methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalIndex);
 					}
-				} else if (binop.Left is NodeGetAttr) {
-					NodeGetAttr getattr = binop.Left as NodeGetAttr;
+				} else if (binop.Left is GetExpression) {
+					GetExpression getattr = binop.Left as GetExpression;
 					getattr.Target.Visit (this);
 					int attrIndex = methodBuilder.Module.DefineConstant (new IodineName (getattr.Field));
 					methodBuilder.EmitInstruction (getattr.Location, Opcode.StoreAttribute, attrIndex);
 					getattr.Target.Visit (this);
 					methodBuilder.EmitInstruction (getattr.Location, Opcode.LoadAttribute, attrIndex);
-				} else if (binop.Left is NodeIndexer) {
-					NodeIndexer indexer = binop.Left as NodeIndexer;
+				} else if (binop.Left is IndexerExpression) {
+					IndexerExpression indexer = binop.Left as IndexerExpression;
 					indexer.Target.Visit (this);
 					indexer.Index.Visit (this);
 					methodBuilder.EmitInstruction (indexer.Location, Opcode.StoreIndex);
@@ -162,13 +162,13 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void Accept (NodeUnaryOp unaryop)
+		public void Accept (UnaryExpression unaryop)
 		{
 			visitSubnodes (unaryop);
 			methodBuilder.EmitInstruction (unaryop.Location, Opcode.UnaryOp, (int)unaryop.Operation);
 		}
 
-		public void Accept (NodeIdent ident)
+		public void Accept (NameExpression ident)
 		{
 			if (symbolTable.IsSymbolDefined (ident.Value)) {
 				Symbol sym = symbolTable.GetSymbol (ident.Value);
@@ -184,7 +184,7 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void Accept (NodeCall call)
+		public void Accept (CallExpression call)
 		{
 			call.Arguments.Visit (this);
 			call.Target.Visit (this);
@@ -198,12 +198,12 @@ namespace Iodine.Compiler
 			
 		}
 
-		public void Accept (NodeArgList arglist)
+		public void Accept (ArgumentList arglist)
 		{
 			visitSubnodes (arglist);
 		}
 
-		public void Accept (NodeKeywordArgList kwargs)
+		public void Accept (KeywordArgumentList kwargs)
 		{
 			for (int i = 0; i < kwargs.Keywords.Count; i++) {
 				string kw = kwargs.Keywords [i];
@@ -219,26 +219,26 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (Opcode.Invoke, 1);
 		}
 
-		public void Accept (NodeGetAttr getAttr)
+		public void Accept (GetExpression getAttr)
 		{
 			getAttr.Target.Visit (this);
 			methodBuilder.EmitInstruction (getAttr.Location, Opcode.LoadAttribute,
 				methodBuilder.Module.DefineConstant (new IodineName (getAttr.Field)));
 		}
 
-		public void Accept (NodeInteger integer)
+		public void Accept (IntegerExpression integer)
 		{
 			methodBuilder.EmitInstruction (integer.Location, Opcode.LoadConst, 
 				methodBuilder.Module.DefineConstant (new IodineInteger (integer.Value)));
 		}
 
-		public void Accept (NodeFloat num)
+		public void Accept (FloatExpression num)
 		{
 			methodBuilder.EmitInstruction (num.Location, Opcode.LoadConst, 
 				methodBuilder.Module.DefineConstant (new IodineFloat (num.Value)));
 		}
 
-		public void Accept (NodeIfStmt ifStmt)
+		public void Accept (IfStatement ifStmt)
 		{
 			IodineLabel elseLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
@@ -251,7 +251,7 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
-		public void Accept (NodeWhileStmt whileStmt)
+		public void Accept (WhileStatement whileStmt)
 		{
 			IodineLabel whileLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
@@ -268,7 +268,7 @@ namespace Iodine.Compiler
 			continueLabels.Pop ();
 		}
 
-		public void Accept (NodeDoStmt doStmt)
+		public void Accept (DoStatement doStmt)
 		{
 			IodineLabel doLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
@@ -284,7 +284,7 @@ namespace Iodine.Compiler
 			continueLabels.Pop ();
 		}
 
-		public void Accept (NodeForStmt forStmt)
+		public void Accept (ForStatement forStmt)
 		{
 			IodineLabel forLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
@@ -302,7 +302,7 @@ namespace Iodine.Compiler
 			continueLabels.Pop ();
 		}
 
-		public void Accept (NodeForeach foreachStmt)
+		public void Accept (ForeachStatement foreachStmt)
 		{
 			IodineLabel foreachLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
@@ -330,10 +330,10 @@ namespace Iodine.Compiler
 			continueLabels.Pop ();
 		}
 
-		public void Accept (NodeSwitchStmt switchStmt)
+		public void Accept (SwitchStatement switchStmt)
 		{
 			foreach (AstNode node in switchStmt.CaseStatements.Children) {
-				NodeCaseStmt caseStmt = node as NodeCaseStmt;
+				CaseStatement caseStmt = node as CaseStatement;
 				caseStmt.Values.Visit (this);
 				caseStmt.Body.Visit (this);
 			}
@@ -345,11 +345,11 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
-		public void Accept (NodeCaseStmt caseStmt)
+		public void Accept (CaseStatement caseStmt)
 		{
 		}
 
-		public void Accept (NodeFuncDecl funcDecl)
+		public void Accept (FunctionDeclaration funcDecl)
 		{
 			symbolTable.NextScope ();
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, funcDecl.InstanceMethod, 
@@ -371,7 +371,7 @@ namespace Iodine.Compiler
 			symbolTable.LeaveScope ();
 		}
 
-		public void Accept (NodeScope scope)
+		public void Accept (CodeBlock scope)
 		{
 			symbolTable.NextScope ();
 
@@ -383,7 +383,7 @@ namespace Iodine.Compiler
 			symbolTable.LeaveScope ();
 		}
 
-		public void Accept (NodeString str)
+		public void Accept (StringExpression str)
 		{
 			visitSubnodes (str);
 			methodBuilder.EmitInstruction (str.Location, Opcode.LoadConst, 
@@ -395,12 +395,12 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void Accept (NodeUseStatement useStmt)
+		public void Accept (UseStatement useStmt)
 		{
 			
 		}
 
-		public void Accept (NodeClassDecl classDecl)
+		public void Accept (ClassDeclaration classDecl)
 		{
 			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, methodBuilder.Module);
 			IodineClass clazz = compiler.CompileClass (classDecl);
@@ -408,11 +408,11 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (classDecl.Name).Index);
 		}
 
-		public void Accept (NodeInterfaceDecl contractDecl)
+		public void Accept (InterfaceDeclaration contractDecl)
 		{
 			IodineInterface contract = new IodineInterface (contractDecl.Name);
 			foreach (AstNode node in contractDecl.Children) {
-				NodeFuncDecl decl = node as NodeFuncDecl;
+				FunctionDeclaration decl = node as FunctionDeclaration;
 				contract.AddMethod (new IodineMethod (methodBuilder.Module, decl.Name, decl.InstanceMethod,
 					decl.Parameters.Count, 0));
 			}
@@ -420,7 +420,7 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (contractDecl.Name).Index);
 		}
 
-		public void Accept (NodeEnumDecl enumDecl)
+		public void Accept (EnumDeclaration enumDecl)
 		{
 			IodineEnum ienum = new IodineEnum (enumDecl.Name);
 			foreach (string name in enumDecl.Items.Keys) {
@@ -430,59 +430,59 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (enumDecl.Name).Index);
 		}
 
-		public void Accept (NodeReturnStmt returnStmt)
+		public void Accept (ReturnStatement returnStmt)
 		{
 			visitSubnodes (returnStmt);
 			methodBuilder.EmitInstruction (returnStmt.Location, Opcode.Return);
 		}
 
-		public void Accept (NodeYieldStmt yieldStmt)
+		public void Accept (YieldStatement yieldStmt)
 		{
 			visitSubnodes (yieldStmt);
 			methodBuilder.Generator = true;
 			methodBuilder.EmitInstruction (yieldStmt.Location, Opcode.Yield);
 		}
 
-		public void Accept (NodeIndexer indexer)
+		public void Accept (IndexerExpression indexer)
 		{
 			indexer.Target.Visit (this);
 			indexer.Index.Visit (this);
 			methodBuilder.EmitInstruction (indexer.Location, Opcode.LoadIndex);
 		}
 
-		public void Accept (NodeList list)
+		public void Accept (ListExpression list)
 		{
 			visitSubnodes (list);
 			methodBuilder.EmitInstruction (list.Location, Opcode.BuildList, list.Children.Count);
 		}
 
-		public void Accept (NodeHash hash)
+		public void Accept (HashExpression hash)
 		{
 			visitSubnodes (hash);
 			methodBuilder.EmitInstruction (hash.Location, Opcode.BuildHash, hash.Children.Count / 2);
 		}
 
-		public void Accept (NodeSelf self)
+		public void Accept (SelfStatement self)
 		{
 			methodBuilder.EmitInstruction (self.Location, Opcode.LoadSelf);
 		}
 
-		public void Accept (NodeTrue ntrue)
+		public void Accept (TrueExpression ntrue)
 		{
 			methodBuilder.EmitInstruction (ntrue.Location, Opcode.LoadTrue);
 		}
 
-		public void Accept (NodeFalse nfalse)
+		public void Accept (FalseExpression nfalse)
 		{
 			methodBuilder.EmitInstruction (nfalse.Location, Opcode.LoadFalse);
 		}
 
-		public void Accept (NodeNull nil)
+		public void Accept (NullExpression nil)
 		{
 			methodBuilder.EmitInstruction (nil.Location, Opcode.LoadNull);
 		}
 
-		public void Accept (NodeLambda lambda)
+		public void Accept (LambdaExpression lambda)
 		{
 			symbolTable.NextScope ();
 
@@ -507,7 +507,7 @@ namespace Iodine.Compiler
 		}
 
 
-		public void Accept (NodeTryExcept tryExcept)
+		public void Accept (TryExceptStatement tryExcept)
 		{
 			IodineLabel exceptLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
@@ -530,19 +530,19 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
-		public void Accept (NodeRaiseStmt raise)
+		public void Accept (RaiseStatement raise)
 		{
 			raise.Value.Visit (this);
 			methodBuilder.EmitInstruction (Opcode.Raise);
 		}
 
-		public void Accept (NodeTuple tuple)
+		public void Accept (TupleExpression tuple)
 		{
 			visitSubnodes (tuple);
 			methodBuilder.EmitInstruction (tuple.Location, Opcode.BuildTuple, tuple.Children.Count);
 		}
 
-		public void Accept (NodeSuperCall super)
+		public void Accept (SuperCallExpression super)
 		{
 			string[] subclass = super.Parent.Base [0].Split ('.');
 			super.Arguments.Visit (this);
@@ -566,12 +566,12 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void Accept (NodeBreak brk)
+		public void Accept (BreakStatement brk)
 		{
 			methodBuilder.EmitInstruction (brk.Location, Opcode.Jump, breakLabels.Peek ());
 		}
 
-		public void Accept (NodeContinue cont)
+		public void Accept (ContinueStatement cont)
 		{
 			methodBuilder.EmitInstruction (cont.Location, Opcode.Jump, continueLabels.Peek ());
 		}

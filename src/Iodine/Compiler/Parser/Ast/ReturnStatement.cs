@@ -28,56 +28,21 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class ReturnStatement : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
-			private set;
-			get;
-		}
-
-		public IList<AstNode> Children {
+		public AstNode Value {
 			get {
-				return this.children;
+				return Children [0];
 			}
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public ReturnStatement (Location location, AstNode val)
 			: base (location)
 		{
+			Add (val);
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -85,13 +50,14 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
+			stream.Expect (TokenClass.Keyword, "return");
+			if (stream.Accept (TokenClass.SemiColon)) {
+				return new ReturnStatement (stream.Location, new CodeBlock (stream.Location));
+			} else {
+				return new ReturnStatement (stream.Location, Expression.Parse (stream));
 			}
-			return root;
 		}
 	}
 }

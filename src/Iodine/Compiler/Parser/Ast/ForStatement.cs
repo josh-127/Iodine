@@ -28,54 +28,37 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class ForStatement : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
-			private set;
-			get;
-		}
-
-		public IList<AstNode> Children {
+		public AstNode Initializer {
 			get {
-				return this.children;
+				return Children [0];
 			}
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
+		public AstNode Condition {
+			get {
+				return Children [1];
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
+		public AstNode AfterThought {
+			get {
+				return Children [2];
+			}
 
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		}
+
+		public AstNode Body {
+			get {
+				return Children [3];
+			}
+		}
+
+		public ForStatement (Location location)
 			: base (location)
 		{
 		}
@@ -85,13 +68,19 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
-			}
-			return root;
+			ForStatement ret = new ForStatement (stream.Location);
+			stream.Expect (TokenClass.Keyword, "for");
+			stream.Expect (TokenClass.OpenParan);
+			ret.Add (Expression.Parse (stream));
+			stream.Expect (TokenClass.SemiColon);
+			ret.Add (Expression.Parse (stream));
+			stream.Expect (TokenClass.SemiColon);
+			ret.Add (Expression.Parse (stream));
+			stream.Expect (TokenClass.CloseParan);
+			ret.Add (Statement.Parse (stream));
+			return ret;
 		}
 	}
 }

@@ -43,67 +43,67 @@ namespace Iodine.Compiler
 			this.symbolTable = symbolTable;
 		}
 
-		public void Accept (NodeIfStmt ifStmt)
+		public void Accept (IfStatement ifStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, ifStmt.Location, 
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeWhileStmt whileStmt)
+		public void Accept (WhileStatement whileStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, whileStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeDoStmt doStmt)
+		public void Accept (DoStatement doStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, doStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeForStmt forStmt)
+		public void Accept (ForStatement forStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, forStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeForeach foreachStmt)
+		public void Accept (ForeachStatement foreachStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, foreachStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeContinue cont)
+		public void Accept (ContinueStatement cont)
 		{
 			errorLog.AddError (ErrorType.ParserError, cont.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeBreak brk)
+		public void Accept (BreakStatement brk)
 		{
 			errorLog.AddError (ErrorType.ParserError, brk.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeTryExcept tryExcept)
+		public void Accept (TryExceptStatement tryExcept)
 		{
 			errorLog.AddError (ErrorType.ParserError, tryExcept.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeRaiseStmt raise)
+		public void Accept (RaiseStatement raise)
 		{
 			errorLog.AddError (ErrorType.ParserError, raise.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeSwitchStmt switchStmt)
+		public void Accept (SwitchStatement switchStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, switchStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (NodeCaseStmt caseStmt)
+		public void Accept (CaseStatement caseStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, caseStmt.Location,
 				"Statement not allowed outside function body!");
@@ -119,16 +119,16 @@ namespace Iodine.Compiler
 			visitSubnodes (ast);
 		}
 
-		public void Accept (NodeClassDecl classDecl)
+		public void Accept (ClassDeclaration classDecl)
 		{
 			visitSubnodes (classDecl);
 		}
 
-		public void Accept (NodeInterfaceDecl interfaceDecl)
+		public void Accept (InterfaceDeclaration interfaceDecl)
 		{
 		}
 
-		public void Accept (NodeFuncDecl funcDecl)
+		public void Accept (FunctionDeclaration funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);
 			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
@@ -142,26 +142,26 @@ namespace Iodine.Compiler
 			symbolTable.EndScope (true);
 		}
 
-		public void Accept (NodeExpr expr)
+		public void Accept (Expression expr)
 		{
 			visitSubnodes (expr);
 		}
 
-		public void Accept (NodeStmt stmt)
+		public void Accept (Statement stmt)
 		{
 			visitSubnodes (stmt);
 		}
 
-		public void Accept (NodeSuperCall super)
+		public void Accept (SuperCallExpression super)
 		{
 			visitSubnodes (super);
 		}
 
-		public void Accept (NodeBinOp binop)
+		public void Accept (BinaryExpression binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
-				if (binop.Left is NodeIdent) {
-					NodeIdent ident = (NodeIdent)binop.Left;
+				if (binop.Left is NameExpression) {
+					NameExpression ident = (NameExpression)binop.Left;
 					if (!this.symbolTable.IsSymbolDefined (ident.Value)) {
 						this.symbolTable.AddSymbol (ident.Value);
 					}
@@ -170,77 +170,77 @@ namespace Iodine.Compiler
 			binop.Right.Visit (this);
 		}
 
-		public void Accept (NodeUnaryOp unaryop)
+		public void Accept (UnaryExpression unaryop)
 		{
 			visitSubnodes (unaryop);
 		}
 
-		public void Accept (NodeCall call)
+		public void Accept (CallExpression call)
 		{
 			visitSubnodes (call);
 		}
 
-		public void Accept (NodeArgList arglist)
+		public void Accept (ArgumentList arglist)
 		{
 			visitSubnodes (arglist);
 		}
 
-		public void Accept (NodeKeywordArgList kwargs)
+		public void Accept (KeywordArgumentList kwargs)
 		{
 			visitSubnodes (kwargs);
 		}
 
-		public void Accept (NodeGetAttr getAttr)
+		public void Accept (GetExpression getAttr)
 		{
 			visitSubnodes (getAttr);
 		}
 
-		public void Accept (NodeScope scope)
+		public void Accept (CodeBlock scope)
 		{
 			visitSubnodes (scope);
 		}
 
-		public void Accept (NodeReturnStmt returnStmt)
+		public void Accept (ReturnStatement returnStmt)
 		{
 			visitSubnodes (returnStmt);
 		}
 
-		public void Accept (NodeYieldStmt yieldStmt)
+		public void Accept (YieldStatement yieldStmt)
 		{
 			visitSubnodes (yieldStmt);
 		}
 
-		public void Accept (NodeIndexer indexer)
+		public void Accept (IndexerExpression indexer)
 		{
 			visitSubnodes (indexer);
 		}
 
-		public void Accept (NodeList list)
+		public void Accept (ListExpression list)
 		{
 			visitSubnodes (list);
 		}
 
-		public void Accept (NodeHash hash)
+		public void Accept (HashExpression hash)
 		{
 			visitSubnodes (hash);
 		}
 
-		public void Accept (NodeSelf self)
+		public void Accept (SelfStatement self)
 		{
 			visitSubnodes (self);
 		}
 
-		public void Accept (NodeTrue ntrue)
+		public void Accept (TrueExpression ntrue)
 		{
 			visitSubnodes (ntrue);
 		}
 
-		public void Accept (NodeTuple tuple)
+		public void Accept (TupleExpression tuple)
 		{
 			visitSubnodes (tuple);
 		}
 
-		public void Accept (NodeLambda lambda)
+		public void Accept (LambdaExpression lambda)
 		{
 			symbolTable.BeginScope (true);
 
@@ -253,35 +253,35 @@ namespace Iodine.Compiler
 			symbolTable.EndScope (true);
 		}
 
-		public void Accept (NodeEnumDecl enumDecl)
+		public void Accept (EnumDeclaration enumDecl)
 		{
 		}
 
-		public void Accept (NodeIdent ident)
+		public void Accept (NameExpression ident)
 		{
 		}
 
-		public void Accept (NodeString str)
+		public void Accept (StringExpression str)
 		{
 		}
 
-		public void Accept (NodeUseStatement useStmt)
+		public void Accept (UseStatement useStmt)
 		{
 		}
 
-		public void Accept (NodeFalse nfalse)
+		public void Accept (FalseExpression nfalse)
 		{
 		}
 
-		public void Accept (NodeNull nil)
+		public void Accept (NullExpression nil)
 		{
 		}
 
-		public void Accept (NodeInteger integer)
+		public void Accept (IntegerExpression integer)
 		{
 		}
 
-		public void Accept (NodeFloat num)
+		public void Accept (FloatExpression num)
 		{
 		}
 

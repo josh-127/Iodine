@@ -60,120 +60,120 @@ namespace Iodine.Compiler
 			visitSubnodes (ast);
 		}
 
-		public void Accept (NodeExpr expr)
+		public void Accept (Expression expr)
 		{
 			visitSubnodes (expr);
 		}
 
-		public void Accept (NodeStmt stmt)
+		public void Accept (Statement stmt)
 		{
 			stmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeBinOp binop)
+		public void Accept (BinaryExpression binop)
 		{
 			binop.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeUnaryOp unaryop)
+		public void Accept (UnaryExpression unaryop)
 		{
 			unaryop.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeIdent ident)
+		public void Accept (NameExpression ident)
 		{
 			ident.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeCall call)
+		public void Accept (CallExpression call)
 		{
 			call.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeArgList arglist)
+		public void Accept (ArgumentList arglist)
 		{
 			arglist.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeKeywordArgList kwargs)
+		public void Accept (KeywordArgumentList kwargs)
 		{
 			kwargs.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeGetAttr getAttr)
+		public void Accept (GetExpression getAttr)
 		{
 			getAttr.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeInteger integer)
+		public void Accept (IntegerExpression integer)
 		{
 			integer.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeFloat num)
+		public void Accept (FloatExpression num)
 		{
 			num.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeString str)
+		public void Accept (StringExpression str)
 		{
 			str.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeIfStmt ifStmt)
+		public void Accept (IfStatement ifStmt)
 		{
 			ifStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeWhileStmt whileStmt)
+		public void Accept (WhileStatement whileStmt)
 		{
 			whileStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeDoStmt doStmt)
+		public void Accept (DoStatement doStmt)
 		{
 			doStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeForStmt forStmt)
+		public void Accept (ForStatement forStmt)
 		{
 			forStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeForeach foreachStmt)
+		public void Accept (ForeachStatement foreachStmt)
 		{
 			foreachStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeTuple tuple)
+		public void Accept (TupleExpression tuple)
 		{
 			tuple.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeContinue cont)
+		public void Accept (ContinueStatement cont)
 		{
 			cont.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeSwitchStmt switchStmt)
+		public void Accept (SwitchStatement switchStmt)
 		{
 		}
 
-		public void Accept (NodeCaseStmt caseStmt)
+		public void Accept (CaseStatement caseStmt)
 		{
 		}
 
-		public void Accept (NodeFuncDecl funcDecl)
+		public void Accept (FunctionDeclaration funcDecl)
 		{
 			module.AddMethod (compileMethod (funcDecl));
 		}
 
-		public void Accept (NodeScope scope)
+		public void Accept (CodeBlock scope)
 		{
 			scope.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeUseStatement useStmt)
+		public void Accept (UseStatement useStmt)
 		{
 			module.Imports.Add (useStmt.Module);
 
@@ -199,83 +199,83 @@ namespace Iodine.Compiler
 			
 		}
 
-		public void Accept (NodeClassDecl classDecl)
+		public void Accept (ClassDeclaration classDecl)
 		{
 			module.SetAttribute (classDecl.Name, CompileClass (classDecl));
 		}
 
-		public void Accept (NodeInterfaceDecl contractDecl)
+		public void Accept (InterfaceDeclaration contractDecl)
 		{
 			IodineInterface contract = new IodineInterface (contractDecl.Name);
 			foreach (AstNode node in contractDecl.Children) {
-				NodeFuncDecl decl = node as NodeFuncDecl;
+				FunctionDeclaration decl = node as FunctionDeclaration;
 				contract.AddMethod (new IodineMethod (module, decl.Name, decl.InstanceMethod,
 					decl.Parameters.Count, 0));
 			}
 			module.SetAttribute (contractDecl.Name, contract);
 		}
 
-		public void Accept (NodeReturnStmt returnStmt)
+		public void Accept (ReturnStatement returnStmt)
 		{
 			returnStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeYieldStmt yieldStmt)
+		public void Accept (YieldStatement yieldStmt)
 		{
 			yieldStmt.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeIndexer indexer)
+		public void Accept (IndexerExpression indexer)
 		{
 			indexer.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeList list)
+		public void Accept (ListExpression list)
 		{
 			list.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeHash hash)
+		public void Accept (HashExpression hash)
 		{
 			hash.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeSelf self)
+		public void Accept (SelfStatement self)
 		{
 			self.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeTrue ntrue)
+		public void Accept (TrueExpression ntrue)
 		{
 			ntrue.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeFalse nfalse)
+		public void Accept (FalseExpression nfalse)
 		{
 			nfalse.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeNull nil)
+		public void Accept (NullExpression nil)
 		{
 			nil.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeLambda lambda)
+		public void Accept (LambdaExpression lambda)
 		{
 			lambda.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeTryExcept tryExcept)
+		public void Accept (TryExceptStatement tryExcept)
 		{
 			tryExcept.Visit (functionCompiler);
 		}
 
-		public void Accept (NodeRaiseStmt raise)
+		public void Accept (RaiseStatement raise)
 		{
 			raise.Value.Visit (this);
 		}
 
-		public void Accept (NodeBreak brk)
+		public void Accept (BreakStatement brk)
 		{
 			brk.Visit (functionCompiler);
 		}
@@ -287,12 +287,12 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void Accept (NodeSuperCall super)
+		public void Accept (SuperCallExpression super)
 		{
 		}
 
 
-		public void Accept (NodeEnumDecl enumDecl)
+		public void Accept (EnumDeclaration enumDecl)
 		{
 			IodineEnum ienum = new IodineEnum (enumDecl.Name);
 			foreach (string name in enumDecl.Items.Keys) {
@@ -301,11 +301,11 @@ namespace Iodine.Compiler
 			this.module.SetAttribute (enumDecl.Name, ienum);
 		}
 
-		public IodineClass CompileClass (NodeClassDecl classDecl)
+		public IodineClass CompileClass (ClassDeclaration classDecl)
 		{
 			IodineMethod constructor = compileMethod (classDecl.Constructor);
 			if (classDecl.Constructor.Children [0].Children.Count == 0 ||
-				!(classDecl.Constructor.Children [0].Children [0] is NodeSuperCall)) {
+				!(classDecl.Constructor.Children [0].Children [0] is SuperCallExpression)) {
 				if (classDecl.Base.Count > 0) {
 					foreach (string subclass in classDecl.Base) {
 						string[] contract = subclass.Split ('.');
@@ -322,22 +322,22 @@ namespace Iodine.Compiler
 			IodineClass clazz = new IodineClass (classDecl.Name, constructor);
 
 			for (int i = 1; i < classDecl.Children.Count; i++) {
-				if (classDecl.Children [i] is NodeFuncDecl) {
-					NodeFuncDecl func = classDecl.Children [i] as NodeFuncDecl;
+				if (classDecl.Children [i] is FunctionDeclaration) {
+					FunctionDeclaration func = classDecl.Children [i] as FunctionDeclaration;
 					if (func.InstanceMethod)
 						clazz.AddInstanceMethod (compileMethod (func));
 					else {
 						clazz.SetAttribute (func.Name, compileMethod (func));
 					}
-				} else if (classDecl.Children [i] is NodeClassDecl) {
-					NodeClassDecl subclass = classDecl.Children [i] as NodeClassDecl;
+				} else if (classDecl.Children [i] is ClassDeclaration) {
+					ClassDeclaration subclass = classDecl.Children [i] as ClassDeclaration;
 					clazz.SetAttribute (subclass.Name, CompileClass (subclass));
 				}
 			}
 			return clazz;
 		}
 
-		private IodineMethod compileMethod (NodeFuncDecl funcDecl)
+		private IodineMethod compileMethod (FunctionDeclaration funcDecl)
 		{
 			symbolTable.NextScope ();
 			IodineMethod methodBuilder = new IodineMethod (module, funcDecl.Name, funcDecl.InstanceMethod,

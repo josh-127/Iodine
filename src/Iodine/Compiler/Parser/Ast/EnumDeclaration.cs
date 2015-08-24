@@ -28,56 +28,27 @@
 **/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class EnumDeclaration : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
+		public string Name {
 			private set;
 			get;
 		}
 
-		public IList<AstNode> Children {
-			get {
-				return this.children;
-			}
+		public Dictionary<string, int> Items {
+			private set;
+			get;
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public EnumDeclaration (Location location, string name)
 			: base (location)
 		{
+			this.Name = name;
+			this.Items = new Dictionary<string, int> ();
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -85,13 +56,35 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
+			stream.Expect (TokenClass.Keyword, "enum");
+			string name = stream.Expect (TokenClass.Identifier).Value;
+			EnumDeclaration decl = new EnumDeclaration (stream.Location, name);
+
+			stream.Expect (TokenClass.OpenBrace);
+			int defaultVal = -1;
+
+			while (!stream.Match (TokenClass.CloseBrace)) {
+				string ident = stream.Expect (TokenClass.Identifier).Value;
+				if (stream.Accept (TokenClass.Operator, "=")) {
+					string val = stream.Expect (TokenClass.IntLiteral).Value;
+					int numVal = 0;
+					if (val != "") {
+						numVal = Int32.Parse (val);
+					}
+					decl.Items [ident] = numVal;
+				} else {
+					decl.Items [ident] = defaultVal--;
+				}
+				if (!stream.Accept (TokenClass.Comma)) {
+					break;
+				}
 			}
-			return root;
+
+			stream.Expect (TokenClass.CloseBrace);
+
+			return decl;
 		}
 	}
 }

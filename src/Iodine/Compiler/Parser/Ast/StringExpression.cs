@@ -28,56 +28,21 @@
 **/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class StringExpression : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
+		public string Value {
 			private set;
 			get;
 		}
 
-		public IList<AstNode> Children {
-			get {
-				return this.children;
-			}
-		}
-
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public StringExpression (Location location, string value)
 			: base (location)
 		{
+			Value = value;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -85,13 +50,31 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (Location loc, string str)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
+			int pos = 0;
+			string accum = "";
+			List<string> vars = new List<string> ();
+			while (pos < str.Length) {
+				if (str [pos] == '#' && str.Length != pos + 1 && str [pos + 1] == '{') {
+					string substr = str.Substring (pos + 2);
+					if (substr.IndexOf ('}') == -1)
+						return null;
+					substr = substr.Substring (0, substr.IndexOf ('}'));
+					pos += substr.Length + 3;
+					vars.Add (substr);
+					accum += "{}";
+
+				} else {
+					accum += str [pos++];
+				}
 			}
-			return root;
+			StringExpression ret = new StringExpression (loc, accum);
+
+			foreach (string name in vars) {
+				ret.Add (new NameExpression (loc, name));
+			}
+			return ret;
 		}
 	}
 }

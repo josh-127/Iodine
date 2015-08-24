@@ -28,56 +28,22 @@
 **/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class KeywordArgumentList : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
+		public List<string> Keywords {
 			private set;
 			get;
+
 		}
 
-		public IList<AstNode> Children {
-			get {
-				return this.children;
-			}
-		}
-
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public KeywordArgumentList (Location location)
 			: base (location)
 		{
+			this.Keywords = new List<string> ();
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -85,13 +51,10 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public void Add (string kw, AstNode child)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
-			}
-			return root;
+			this.Keywords.Add (kw);
+			this.Children.Add (child);
 		}
 	}
 }

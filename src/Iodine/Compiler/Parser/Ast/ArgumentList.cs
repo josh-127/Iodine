@@ -28,56 +28,20 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class ArgumentList : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
-			private set;
+		public bool Packed {
+			protected set;
 			get;
 		}
 
-		public IList<AstNode> Children {
-			get {
-				return this.children;
-			}
-		}
-
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public ArgumentList (Location location)
 			: base (location)
 		{
+
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -85,13 +49,43 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
+			ArgumentList argList = new ArgumentList (stream.Location);
+			stream.Expect (TokenClass.OpenParan);
+			KeywordArgumentList kwargs = null;
+			while (!stream.Match (TokenClass.CloseParan)) {
+				if (stream.Accept (TokenClass.Operator, "*")) {
+					argList.Packed = true;
+					argList.Add (Expression.Parse (stream));
+					break;
+				}
+				AstNode arg = Expression.Parse (stream);
+				if (stream.Accept (TokenClass.Colon)) {
+					if (kwargs == null) {
+						kwargs = new KeywordArgumentList (arg.Location);
+					}
+					NameExpression ident = arg as NameExpression;
+					AstNode val = Expression.Parse (stream);
+					if (ident == null) {
+						stream.ErrorLog.AddError (ErrorType.ParserError, arg.Location,
+							"Keyword must be a valid identifier");
+					} else {
+						kwargs.Add (ident.Value, val);
+					}
+				} else
+					argList.Add (arg);
+				if (!stream.Accept (TokenClass.Comma)) {
+					break;
+				}
+
 			}
-			return root;
+			if (kwargs != null) {
+				argList.Add (kwargs);
+			}
+			stream.Expect (TokenClass.CloseParan);
+			return argList;
+
 		}
 	}
 }

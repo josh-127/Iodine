@@ -28,70 +28,39 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class BinaryExpression : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
+		public BinaryOperation Operation {
 			private set;
 			get;
 		}
 
-		public IList<AstNode> Children {
+		public AstNode Left {
 			get {
-				return this.children;
+				return Children[0];
 			}
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
+		public AstNode Right {
+			get {
+				return Children[1];
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public BinaryExpression (Location location, BinaryOperation op, AstNode left, AstNode right)
 			: base (location)
 		{
+			Operation = op;
+			Add (left);
+			Add (right);
 		}
 
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
-		}
-
-		public static AstRoot Parse (TokenStream inputStream)
-		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
-			}
-			return root;
 		}
 	}
 }

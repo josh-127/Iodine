@@ -28,54 +28,24 @@
 **/
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public class CaseStatement : AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
-		public Location Location {
-			private set;
-			get;
-		}
-
-		public IList<AstNode> Children {
+		public AstNode Values {
 			get {
-				return this.children;
+				return Children[0];
 			}
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
-
-		public AstNode (Location location)
-		{
-			Location = location;
-		}
-
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
+		public AstNode Body {
+			get {
+				return Children[1];
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (Location location)
+		public CaseStatement (Location location)
 			: base (location)
 		{
 		}
@@ -85,13 +55,18 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstRoot Parse (TokenStream inputStream)
+		public static AstNode Parse (TokenStream stream)
 		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
-			}
-			return root;
+			CaseStatement caseStmt = new CaseStatement (stream.Location);
+			stream.Expect (TokenClass.Keyword, "case");
+			AstNode value = Expression.Parse (stream);
+			AstNode body = Statement.Parse (stream);
+			AstNode lambda = new LambdaExpression (body.Location, false, false, false,
+				new System.Collections.Generic.List<string> ());
+			lambda.Add (body);
+			caseStmt.Add (value);
+			caseStmt.Add (lambda);
+			return caseStmt;
 		}
 	}
 }
