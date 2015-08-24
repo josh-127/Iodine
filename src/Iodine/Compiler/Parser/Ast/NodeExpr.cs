@@ -272,8 +272,10 @@ namespace Iodine.Compiler.Ast
 				return val;
 			} else if (stream.Accept (TokenClass.StringLiteral, ref token)) {
 				return new NodeString (stream.Location, token.Value);
-			} else if (stream.Match (TokenClass.OpenBrace)) {
+			} else if (stream.Match (TokenClass.OpenBracket)) {
 				return NodeList.Parse (stream);
+			} else if (stream.Match (TokenClass.OpenBrace)) {
+				return NodeHash.Parse (stream);
 			} else if (stream.Accept (TokenClass.OpenParan)) {
 				AstNode expr = NodeExpr.Parse (stream);
 				if (stream.Accept (TokenClass.Comma)) {

@@ -60,6 +60,7 @@ namespace Iodine.Runtime
 		JumpIfTrue,
 		JumpIfFalse,
 		Jump,
+		BuildHash,
 		BuildList,
 		BuildTuple,
 		BuildClosure,

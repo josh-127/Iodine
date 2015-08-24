@@ -171,6 +171,7 @@
     <Compile Include="ExtraModules\SslModule.cs" />
     <Compile Include="Compiler\Parser\Ast\NodeDoStmt.cs" />
     <Compile Include="Compiler\Parser\Ast\NodeKeywordArglist.cs" />
+    <Compile Include="Compiler\Parser\Ast\NodeHash.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

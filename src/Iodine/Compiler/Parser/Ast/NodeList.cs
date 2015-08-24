@@ -45,15 +45,15 @@ namespace Iodine.Compiler.Ast
 
 		public static AstNode Parse (TokenStream stream)
 		{
-			stream.Expect (TokenClass.OpenBrace);
+			stream.Expect (TokenClass.OpenBracket);
 			NodeList ret = new NodeList (stream.Location);
-			while (!stream.Match (TokenClass.CloseBrace)) {
+			while (!stream.Match (TokenClass.CloseBracket)) {
 				ret.Add (NodeExpr.Parse (stream));
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
 			}
-			stream.Expect (TokenClass.CloseBrace);
+			stream.Expect (TokenClass.CloseBracket);
 			return ret;
 		}
 	}

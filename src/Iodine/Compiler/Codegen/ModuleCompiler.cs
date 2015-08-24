@@ -235,6 +235,11 @@ namespace Iodine.Compiler
 			list.Visit (functionCompiler);
 		}
 
+		public void Accept (NodeHash hash)
+		{
+			hash.Visit (functionCompiler);
+		}
+
 		public void Accept (NodeSelf self)
 		{
 			self.Visit (functionCompiler);

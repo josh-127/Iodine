@@ -220,6 +220,11 @@ namespace Iodine.Compiler
 			visitSubnodes (list);
 		}
 
+		public void Accept (NodeHash hash)
+		{
+			visitSubnodes (hash);
+		}
+
 		public void Accept (NodeSelf self)
 		{
 			visitSubnodes (self);

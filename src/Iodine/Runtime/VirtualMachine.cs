@@ -336,6 +336,17 @@ namespace Iodine.Runtime
 					Stack.Top.InstructionPointer = ins.Argument;
 					break;
 				}
+			case Opcode.BuildHash:
+				{
+					IodineMap hash = new IodineMap ();
+					for (int i = 0; i < ins.Argument; i++) {
+						IodineObject key = Stack.Pop ();
+						IodineObject val = Stack.Pop ();
+						hash.Set (key, val);
+					}
+					Stack.Push (hash);
+					break;
+				}
 			case Opcode.BuildList:
 				{
 					IodineObject[] items = new IodineObject[ins.Argument];

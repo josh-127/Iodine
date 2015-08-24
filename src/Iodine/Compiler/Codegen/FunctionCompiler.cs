@@ -455,6 +455,12 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (list.Location, Opcode.BuildList, list.Children.Count);
 		}
 
+		public void Accept (NodeHash hash)
+		{
+			visitSubnodes (hash);
+			methodBuilder.EmitInstruction (hash.Location, Opcode.BuildHash, hash.Children.Count / 2);
+		}
+
 		public void Accept (NodeSelf self)
 		{
 			methodBuilder.EmitInstruction (self.Location, Opcode.LoadSelf);
