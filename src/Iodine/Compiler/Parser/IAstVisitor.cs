@@ -42,6 +42,7 @@ namespace Iodine.Compiler
 		void Accept (NodeIdent ident);
 		void Accept (NodeCall call);
 		void Accept (NodeArgList arglist);
+		void Accept (NodeKeywordArgList kwargs);
 		void Accept (NodeGetAttr getAttr);
 		void Accept (NodeInteger integer);
 		void Accept (NodeIfStmt ifStmt);

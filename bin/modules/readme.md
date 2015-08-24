@@ -16,3 +16,7 @@ You can find examples and documentation for this module [here](../../docs/testin
 A library for working with URLs.  
 This library is still in a very early stage and we don't recommend using it yet.  
 However, you can find some documentation [here](../../docs/urllib.md).
+
+### argparse.id
+A library for parsing command line arguments.  
+This library is still in a very early stage and we don't recommend using it yet.  

@@ -203,6 +203,22 @@ namespace Iodine.Compiler
 			visitSubnodes (arglist);
 		}
 
+		public void Accept (NodeKeywordArgList kwargs)
+		{
+			for (int i = 0; i < kwargs.Keywords.Count; i++) {
+				string kw = kwargs.Keywords [i];
+				AstNode val = kwargs.Children [i];
+				methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (
+					new IodineString (kw)));
+				val.Visit (this);
+				methodBuilder.EmitInstruction (Opcode.BuildTuple, 2);
+			}
+			methodBuilder.EmitInstruction (Opcode.BuildList, kwargs.Keywords.Count);
+			methodBuilder.EmitInstruction (Opcode.LoadGlobal, methodBuilder.Module.DefineConstant (
+				new IodineName ("HashMap")));
+			methodBuilder.EmitInstruction (Opcode.Invoke, 1);
+		}
+
 		public void Accept (NodeGetAttr getAttr)
 		{
 			getAttr.Target.Visit (this);

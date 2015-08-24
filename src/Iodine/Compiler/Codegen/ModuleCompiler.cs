@@ -95,6 +95,11 @@ namespace Iodine.Compiler
 			arglist.Visit (functionCompiler);
 		}
 
+		public void Accept (NodeKeywordArgList kwargs)
+		{
+			kwargs.Visit (functionCompiler);
+		}
+
 		public void Accept (NodeGetAttr getAttr)
 		{
 			getAttr.Visit (functionCompiler);

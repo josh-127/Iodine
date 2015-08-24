@@ -28,20 +28,22 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class NodeArgList : AstNode
+	public class NodeKeywordArgList : AstNode
 	{
-		public bool Packed {
-			protected set;
+		public List<string> Keywords {
+			private set;
 			get;
+
 		}
 
-		public NodeArgList (Location location)
+		public NodeKeywordArgList (Location location)
 			: base (location)
 		{
-
+			this.Keywords = new List<string> ();
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -49,43 +51,10 @@ namespace Iodine.Compiler.Ast
 			visitor.Accept (this);
 		}
 
-		public static AstNode Parse (TokenStream stream)
+		public void Add (string kw, AstNode child)
 		{
-			NodeArgList argList = new NodeArgList (stream.Location);
-			stream.Expect (TokenClass.OpenParan);
-			NodeKeywordArgList kwargs = null;
-			while (!stream.Match (TokenClass.CloseParan)) {
-				if (stream.Accept (TokenClass.Operator, "*")) {
-					argList.Packed = true;
-					argList.Add (NodeExpr.Parse (stream));
-					break;
-				}
-				AstNode arg = NodeExpr.Parse (stream);
-				if (stream.Accept (TokenClass.Colon)) {
-					if (kwargs == null) {
-						kwargs = new NodeKeywordArgList (arg.Location);
-					}
-					NodeIdent ident = arg as NodeIdent;
-					AstNode val = NodeExpr.Parse (stream);
-					if (ident == null) {
-						stream.ErrorLog.AddError (ErrorType.ParserError, arg.Location,
-							"Keyword must be a valid identifier");
-					} else {
-						kwargs.Add (ident.Value, val);
-					}
-				} else
-					argList.Add (arg);
-				if (!stream.Accept (TokenClass.Comma)) {
-					break;
-				}
-
-			}
-			if (kwargs != null) {
-				argList.Add (kwargs);
-			}
-			stream.Expect (TokenClass.CloseParan);
-			return argList;
-
+			this.Keywords.Add (kw);
+			this.Children.Add (child);
 		}
 	}
 }

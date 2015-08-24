@@ -193,6 +193,11 @@ namespace Iodine.Compiler
 			visitSubnodes (arglist);
 		}
 
+		public void Accept (NodeKeywordArgList kwargs)
+		{
+			visitSubnodes (kwargs);
+		}
+
 		public void Accept (NodeGetAttr getAttr)
 		{
 			visitSubnodes (getAttr);
