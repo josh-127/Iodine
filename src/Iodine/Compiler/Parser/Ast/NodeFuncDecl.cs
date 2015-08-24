@@ -54,7 +54,16 @@ namespace Iodine.Compiler.Ast
 			get;
 		}
 
-		public NodeFuncDecl (Location location, string name, bool isInstanceMethod, bool isVariadic,
+		public bool AcceptsKeywordArgs {
+			private set;
+			get;
+		}
+
+		public NodeFuncDecl (Location location,
+		                     string name,
+		                     bool isInstanceMethod,
+		                     bool isVariadic,
+		                     bool hasKeywordArgs,
 		                     IList<string> parameters)
 			: base (location)
 		{
@@ -62,6 +71,7 @@ namespace Iodine.Compiler.Ast
 			Parameters = parameters;
 			InstanceMethod = isInstanceMethod;
 			Variadic = isVariadic;
+			AcceptsKeywordArgs = hasKeywordArgs;
 		}
 
 		public override void Visit (IAstVisitor visitor)
@@ -104,10 +114,15 @@ namespace Iodine.Compiler.Ast
 			stream.Expect (TokenClass.Keyword, "func");
 			bool isInstanceMethod;
 			bool isVariadic;
+			bool hasKeywordArgs;
 			Token ident = stream.Expect (TokenClass.Identifier);
-			List<string> parameters = ParseFuncParameters (stream, out isInstanceMethod, out isVariadic);
+			List<string> parameters = ParseFuncParameters (stream,
+				                          out isInstanceMethod,
+				                          out isVariadic,
+				                          out hasKeywordArgs);
+			
 			NodeFuncDecl decl = new NodeFuncDecl (stream.Location, ident != null ? ident.Value : "",
-				                    isInstanceMethod, isVariadic, parameters);
+				                    isInstanceMethod, isVariadic, hasKeywordArgs, parameters);
 			if (!prototype) {
 				stream.Expect (TokenClass.OpenBrace);
 				NodeScope scope = new NodeScope (stream.Location);
@@ -127,9 +142,12 @@ namespace Iodine.Compiler.Ast
 		}
 
 		private static List<string> ParseFuncParameters (TokenStream stream, out bool isInstanceMethod,
-		                                                 out bool isVariadic)
+		                                                 out bool isVariadic,
+		                                                 out bool hasKeywordArgs)
 		{
 			isVariadic = false;
+			hasKeywordArgs = false;
+			isInstanceMethod = false;
 			List<string> ret = new List<string> ();
 			stream.Expect (TokenClass.OpenParan);
 			if (stream.Accept (TokenClass.Keyword, "self")) {
@@ -138,19 +156,30 @@ namespace Iodine.Compiler.Ast
 					stream.Expect (TokenClass.CloseParan);
 					return ret;
 				}
-			} else {
-				isInstanceMethod = false;
 			}
 			while (!stream.Match (TokenClass.CloseParan)) {
-				if (stream.Accept (TokenClass.Keyword, "params")) {
-					isVariadic = true;
-					Token ident = stream.Expect (TokenClass.Identifier);
-					ret.Add (ident.Value);
-					stream.Expect (TokenClass.CloseParan);
-					return ret;
+				if (!hasKeywordArgs && stream.Accept (TokenClass.Operator, "*")) {
+					if (stream.Accept (TokenClass.Operator, "*")) {
+						hasKeywordArgs = true;
+						Token ident = stream.Expect (TokenClass.Identifier);
+						ret.Add (ident.Value);
+					} else {
+						isVariadic = true;
+						Token ident = stream.Expect (TokenClass.Identifier);
+						ret.Add (ident.Value);
+					}
+				} else {
+					if (hasKeywordArgs) {
+						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
+							"Argument after keyword arguments!");
+					}
+					if (isVariadic) {
+						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
+							"Argument after params keyword!");
+					}
+					Token param = stream.Expect (TokenClass.Identifier);
+					ret.Add (param.Value);
 				}
-				Token param = stream.Expect (TokenClass.Identifier);
-				ret.Add (param.Value);
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}

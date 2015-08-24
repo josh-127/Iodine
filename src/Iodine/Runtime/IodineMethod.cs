@@ -119,6 +119,11 @@ namespace Iodine.Runtime
 			get;
 		}
 
+		public bool AcceptsKeywordArgs {
+			set;
+			get;
+		}
+
 		public bool Generator {
 			set;
 			get;

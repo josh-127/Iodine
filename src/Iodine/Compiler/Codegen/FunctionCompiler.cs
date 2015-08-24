@@ -362,6 +362,7 @@ namespace Iodine.Compiler
 			funcDecl.Children [0].Visit (compiler);
 			anonMethod.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
 			anonMethod.Variadic = funcDecl.Variadic;
+			anonMethod.AcceptsKeywordArgs = funcDecl.AcceptsKeywordArgs;
 			anonMethod.FinalizeLabels ();
 			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadConst,
 				methodBuilder.Module.DefineConstant (anonMethod));

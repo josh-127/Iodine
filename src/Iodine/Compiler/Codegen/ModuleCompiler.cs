@@ -346,6 +346,7 @@ namespace Iodine.Compiler
 			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, 
 				                            methodBuilder);
 			methodBuilder.Variadic = funcDecl.Variadic;
+			methodBuilder.AcceptsKeywordArgs = funcDecl.AcceptsKeywordArgs;
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
 				methodBuilder.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
 					(funcDecl.Parameters [i]).Index;

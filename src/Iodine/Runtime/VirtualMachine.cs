@@ -74,8 +74,9 @@ namespace Iodine.Runtime
 
 		public IodineObject InvokeMethod (IodineMethod method, IodineObject self, IodineObject[] arguments)
 		{
-			if ((method.Variadic && arguments.Length + 1 < method.ParameterCount) ||
-			    (!method.Variadic && arguments.Length < method.ParameterCount)) {
+			int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 : method.ParameterCount;
+			if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
+				(!method.Variadic && arguments.Length < requiredArgs)) {
 				RaiseException (new IodineArgumentException (method.ParameterCount));
 				return null;
 			}
@@ -88,9 +89,9 @@ namespace Iodine.Runtime
 		public IodineObject InvokeMethod (IodineMethod method, StackFrame frame, IodineObject self,
 		                                  IodineObject[] arguments)
 		{
-
-			if ((method.Variadic && arguments.Length + 1 < method.ParameterCount) ||
-			    (!method.Variadic && arguments.Length < method.ParameterCount)) {
+			int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 : method.ParameterCount;
+			if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
+				(!method.Variadic && arguments.Length < requiredArgs)) {
 				RaiseException (new IodineArgumentException (method.ParameterCount));
 				return null;
 			}
@@ -108,10 +109,17 @@ namespace Iodine.Runtime
 			int insCount = method.Body.Count;
 			int i = 0;
 			foreach (string param in method.Parameters.Keys) {
-				if (i == method.Parameters.Keys.Count - 1 && method.Variadic) {
+				if (method.Variadic && (method.AcceptsKeywordArgs ? i == method.Parameters.Keys.Count - 2 :
+					i == method.Parameters.Keys.Count - 1)) {
 					IodineObject[] tupleItems = new IodineObject[arguments.Length - i];
 					Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
 					Stack.StoreLocal (method.Parameters [param], new IodineTuple (tupleItems));
+				} else if (i == method.Parameters.Keys.Count - 1 && method.AcceptsKeywordArgs) {
+					if (i < arguments.Length && arguments [i] is IodineMap) {
+						Stack.StoreLocal (method.Parameters [param], arguments [i]);
+					} else {
+						Stack.StoreLocal (method.Parameters [param], new IodineMap ());
+					}
 				} else {
 					Stack.StoreLocal (method.Parameters [param], arguments [i++]);
 				}

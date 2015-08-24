@@ -59,7 +59,7 @@ namespace Iodine.Compiler.Ast
 		{
 			Name = name;
 			Base = baseClass;
-			NodeFuncDecl dummyCtor = new NodeFuncDecl (location, name, true, false, new List<string> ());
+			NodeFuncDecl dummyCtor = new NodeFuncDecl (location, name, true, false, false, new List<string> ());
 			dummyCtor.Add (new NodeStmt (location));
 			Add (dummyCtor);
 		}
