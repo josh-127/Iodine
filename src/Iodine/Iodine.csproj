@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -65,7 +65,6 @@
     <Compile Include="Runtime\CoreTypes\IodineMap.cs" />
     <Compile Include="Runtime\IodineClosure.cs" />
     <Compile Include="Runtime\IodineException.cs" />
-    <Compile Include="Runtime\IodineExceptionHandler.cs" />
     <Compile Include="Runtime\IodineTypeDefinition.cs" />
     <Compile Include="Runtime\CoreTypes\IodineEvent.cs" />
     <Compile Include="Runtime\CoreTypes\IodineTuple.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="Runtime\CoreModules\SysModule.cs" />
     <Compile Include="Runtime\CoreModules\MathModule.cs" />
     <Compile Include="Runtime\IodineCachedModule.cs" />
+    <Compile Include="Runtime\IodineExceptionHandler.cs" />
     <Compile Include="Runtime\IodineInterface.cs" />
     <Compile Include="Runtime\CoreModules\StructModule.cs" />
     <Compile Include="Runtime\CoreTypes\IodineByteString.cs" />
@@ -98,7 +98,6 @@
     <Compile Include="Compiler\Analyser\FunctionVisitor.cs" />
     <Compile Include="Compiler\Analyser\RootVisitor.cs" />
     <Compile Include="Compiler\Analyser\SemanticAnalyser.cs" />
-    <Compile Include="Compiler\Lexer\Lexer.cs" />
     <Compile Include="Compiler\Lexer\Token.cs" />
     <Compile Include="Compiler\Lexer\TokenClass.cs" />
     <Compile Include="Compiler\Lexer\TokenStream.cs" />
@@ -162,6 +161,7 @@
     <Compile Include="Compiler\Parser\Ast\UseStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\WhileStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\YieldStatement.cs" />
+    <Compile Include="Compiler\Lexer\Tokenizer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

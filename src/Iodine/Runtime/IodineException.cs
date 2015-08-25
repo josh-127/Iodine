@@ -296,7 +296,7 @@ namespace Iodine.Runtime
 
 	public class UnhandledIodineExceptionException : Exception
 	{
-		public IodineException OriginalException {
+		public IodineObject OriginalException {
 			private set;
 			get;
 		}
@@ -306,7 +306,7 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		public UnhandledIodineExceptionException (StackFrame frame, IodineException original)
+		public UnhandledIodineExceptionException (StackFrame frame, IodineObject original)
 		{
 			OriginalException = original;
 			Frame = frame;

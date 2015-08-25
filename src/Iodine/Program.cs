@@ -97,7 +97,7 @@ namespace Iodine
 					}
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.Error.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);
-					Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.Message);
+					Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.GetAttribute ("message").ToString ());
 					Console.WriteLine ();
 					ex.PrintStack ();
 					Console.Error.WriteLine ();

@@ -49,7 +49,7 @@ namespace Iodine.Runtime
 
 		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			IodineObject obj = new IodineObject (this);
+			IodineObject obj = this.Invoke (vm, arguments);
 			foreach (string attr in attributes.Keys) {
 				if (!self.HasAttribute (attr))
 					self.SetAttribute (attr, attributes [attr]);

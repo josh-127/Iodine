@@ -41,7 +41,7 @@ namespace Iodine.Runtime
 
 		private Dictionary<string, IodineObject> globalDict = new Dictionary<string, IodineObject> ();
 		private Stack<IodineExceptionHandler> exceptionHandlers = new Stack<IodineExceptionHandler> ();
-		private IodineException lastException = null;
+		private IodineObject lastException = null;
 		private Location currLoc;
 
 		public IodineStack Stack {
@@ -146,7 +146,7 @@ namespace Iodine.Runtime
 			RaiseException (new IodineException (message, args));
 		}
 
-		public void RaiseException (IodineException ex)
+		public void RaiseException (IodineObject ex)
 		{
 			if (exceptionHandlers.Count == 0) {
 				throw new UnhandledIodineExceptionException (Stack.Top, ex);
@@ -463,8 +463,8 @@ namespace Iodine.Runtime
 				}
 			case Opcode.Raise:
 				{
-					IodineException e = Stack.Pop () as IodineException;
-					if (e != null) {
+					IodineObject e = Stack.Pop ();
+					if (e.InstanceOf (IodineException.TypeDefinition)) {
 						RaiseException (e);
 					} else {
 						RaiseException (new IodineTypeException ("Exception"));

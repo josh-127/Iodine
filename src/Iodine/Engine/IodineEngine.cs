@@ -92,7 +92,7 @@ namespace Iodine
 		private dynamic doString (IodineModule module, string source)
 		{
 			ErrorLog errorLog = new ErrorLog ();
-			Lexer lex = new Lexer (errorLog, source);
+			Tokenizer lex = new Tokenizer (errorLog, source);
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
 			Parser parser = new Parser (lex.Scan ());

@@ -145,7 +145,7 @@ namespace Iodine.Runtime
 						}
 					}
 				}
-				Lexer lexer = new Lexer (errorLog, File.ReadAllText (FindModule (file)), file);
+				Tokenizer lexer = new Tokenizer (errorLog, File.ReadAllText (FindModule (file)), file);
 				TokenStream tokenStream = lexer.Scan ();
 				if (errorLog.ErrorCount > 0)
 					return null;
@@ -179,7 +179,7 @@ namespace Iodine.Runtime
 
 		public static IodineModule CompileModuleFromSource (ErrorLog errorLog, string source)
 		{
-			Lexer lexer = new Lexer (errorLog, source);
+			Tokenizer lexer = new Tokenizer (errorLog, source);
 			TokenStream tokenStream = lexer.Scan ();
 			if (errorLog.ErrorCount > 0)
 				return null;

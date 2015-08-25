@@ -36,7 +36,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Iodine lexer class, tokenizes our source into a list of Token objects represented as a TokenStream object.
 	/// </summary>
-	public sealed class Lexer
+	public sealed class Tokenizer
 	{
 		private int position;
 		private int sourceLen;
@@ -45,7 +45,7 @@ namespace Iodine.Compiler
 		private ErrorLog errorLog;
 		private Location location;
 
-		public Lexer (ErrorLog errorLog, string source, string file = "")
+		public Tokenizer (ErrorLog errorLog, string source, string file = "")
 		{
 			this.errorLog = errorLog;
 			this.source = source;
