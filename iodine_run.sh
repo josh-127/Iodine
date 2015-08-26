@@ -1,2 +1,2 @@
 #!/bin/sh
-/usr/bin/mono /usr/lib/iodine/iodine.exe "$@"
+/usr/bin/mono /usr/lib/iodine/bin/iodine.exe "$@"

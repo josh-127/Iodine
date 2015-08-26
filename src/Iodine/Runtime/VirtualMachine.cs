@@ -348,8 +348,8 @@ namespace Iodine.Runtime
 				{
 					IodineHashMap hash = new IodineHashMap ();
 					for (int i = 0; i < ins.Argument; i++) {
-						IodineObject key = Stack.Pop ();
 						IodineObject val = Stack.Pop ();
+						IodineObject key = Stack.Pop ();
 						hash.Set (key, val);
 					}
 					Stack.Push (hash);
@@ -487,6 +487,8 @@ namespace Iodine.Runtime
 								fullPath), module);
 							ModuleCache [fullPath] = module;
 							module.Initializer.Invoke (this, new IodineObject[] { });
+						} else {
+							RaiseException (new IodineSyntaxException (errLog));
 						}
 					}
 					break;
@@ -502,13 +504,16 @@ namespace Iodine.Runtime
 					} else {
 						ErrorLog errLog = new ErrorLog ();
 						module = IodineModule.LoadModule (errLog, name);
-						ModuleCache [fullPath] = module;
-						module.Initializer.Invoke (this, new IodineObject[] { });
-					}
-					if (module != null) {
-						foreach (IodineObject item in names.Objects) {
-							this.Stack.Top.Module.SetAttribute (this, item.ToString (),
-								module.GetAttribute (item.ToString ()));
+					
+						if (module != null) {
+							ModuleCache [fullPath] = module;
+							module.Initializer.Invoke (this, new IodineObject[] { });
+							foreach (IodineObject item in names.Objects) {
+								this.Stack.Top.Module.SetAttribute (this, item.ToString (),
+									module.GetAttribute (item.ToString ()));
+							}
+						} else {
+							RaiseException (new IodineSyntaxException (errLog));
 						}
 					}
 					break;

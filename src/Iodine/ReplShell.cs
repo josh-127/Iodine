@@ -34,7 +34,7 @@ using Iodine.Runtime;
 
 namespace Iodine
 {
-	public class ReplShell
+	public sealed class ReplShell
 	{
 		private IodineEngine engine = new IodineEngine ();
 

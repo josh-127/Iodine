@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using System.Collections.Generic;
 using Iodine.Runtime;
 
@@ -38,11 +39,20 @@ namespace Iodine
 	{
 		class IodineOptions
 		{
-			public string FileName { get; set; }
+			public string FileName {
+				get; 
+				set;
+			}
 
-			public bool DisplayAst { set; get; }
+			public IodineList Arguments {
+				set;
+				get;
+			}
 
-			public IodineList Arguments { set; get; }
+			public bool ShowVersion {
+				set;
+				get;
+			}
 
 			public static IodineOptions Parse (string[] args)
 			{
@@ -82,6 +92,15 @@ namespace Iodine
 			}
 
 			IodineOptions options = IodineOptions.Parse (args);
+
+			if (options.ShowVersion) {
+				int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
+				int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
+				int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
+				Console.WriteLine ("Iodine v{0}.{1}.{2}", major, minor, patch);
+				Environment.Exit (0);
+			}
+
 			ErrorLog errorLog = new ErrorLog ();
 			IodineModule module = IodineModule.LoadModule (errorLog, options.FileName);
 
