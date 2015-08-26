@@ -62,7 +62,6 @@
     <Compile Include="Runtime\CoreTypes\IodineName.cs" />
     <Compile Include="Runtime\CoreTypes\IodineList.cs" />
     <Compile Include="Runtime\IodineClass.cs" />
-    <Compile Include="Runtime\CoreTypes\IodineMap.cs" />
     <Compile Include="Runtime\IodineClosure.cs" />
     <Compile Include="Runtime\IodineException.cs" />
     <Compile Include="Runtime\IodineTypeDefinition.cs" />
@@ -162,6 +161,7 @@
     <Compile Include="Compiler\Parser\Ast\WhileStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\YieldStatement.cs" />
     <Compile Include="Compiler\Lexer\Tokenizer.cs" />
+    <Compile Include="Runtime\CoreTypes\IodineHashMap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -43,7 +43,7 @@ namespace ModuleReflection
 				return null;
 			}
 			IodineObject o1 = args [0];
-			IodineMap map = new IodineMap ();
+			IodineHashMap map = new IodineHashMap ();
 			foreach (string key in o1.Attributes.Keys) {
 				map.Set (new IodineString (key), o1.Attributes [key]);
 			}

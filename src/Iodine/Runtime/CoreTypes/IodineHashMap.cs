@@ -29,10 +29,11 @@
 
 using System;
 using System.Collections.Generic;
+using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class IodineMap : IodineObject
+	public class IodineHashMap : IodineObject
 	{
 		public static readonly IodineTypeDefinition TypeDefinition = new MapTypeDef ();
 
@@ -47,7 +48,7 @@ namespace Iodine.Runtime
 			{
 				if (args.Length >= 1) {
 					IodineList inputList = args [0] as IodineList;
-					IodineMap ret = new IodineMap ();
+					IodineHashMap ret = new IodineHashMap ();
 					if (inputList != null) {
 						foreach (IodineObject item in inputList.Objects) {
 							IodineTuple kv = item as IodineTuple;
@@ -58,7 +59,7 @@ namespace Iodine.Runtime
 					} 
 					return ret;
 				}
-				return new IodineMap ();
+				return new IodineHashMap ();
 			}
 		}
 
@@ -74,7 +75,7 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		public IodineMap ()
+		public IodineHashMap ()
 			: base (TypeDefinition)
 		{
 			Dict = new Dictionary<int, IodineObject> ();
@@ -101,6 +102,20 @@ namespace Iodine.Runtime
 		{
 			Dict [key.GetHashCode ()] = value;
 			Keys [key.GetHashCode ()] = key;
+		}
+
+		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject right)
+		{
+			switch (binop) {
+			case BinaryOperation.Equals:
+				IodineHashMap hash = right as IodineHashMap;
+				if (hash == null) {
+					vm.RaiseException (new IodineTypeException ("HashMap"));
+					return null;
+				}
+				return new IodineBool (compareTo (hash));
+			}
+			return base.PerformBinaryOperation (vm, binop, right);
 		}
 
 		public override int GetHashCode ()
@@ -137,6 +152,19 @@ namespace Iodine.Runtime
 		public IodineObject Get (IodineObject key)
 		{
 			return Dict [key.GetHashCode ()];
+		}
+
+		private bool compareTo (IodineHashMap hash)
+		{
+			if (hash.Keys.Count != this.Keys.Count)
+				return false;
+			foreach (int key in Keys.Keys) {
+				if (!hash.Keys.ContainsKey (key))
+					return false;
+				if (hash.Dict [key].GetHashCode () != Dict [key].GetHashCode ())
+					return false;
+			}
+			return true;
 		}
 
 		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)

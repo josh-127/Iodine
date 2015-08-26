@@ -107,11 +107,6 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineIndexException ());
 		}
 
-		public override IodineObject IterGetNext (VirtualMachine vm)
-		{
-			return Objects [iterIndex - 1];
-		}
-
 		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject collection)
 		{
 			switch (binop) {
@@ -123,8 +118,20 @@ namespace Iodine.Runtime
 					list.Add (o);
 				}
 				return list;
+			case BinaryOperation.Equals:
+				IodineList left = collection as IodineList;
+				if (left == null) {
+					vm.RaiseException (new IodineTypeException ("List"));
+					return null;
+				}
+				return new IodineBool (compare (this, left));
 			}
 			return base.PerformBinaryOperation (vm, binop, collection);
+		}
+
+		public override IodineObject IterGetNext (VirtualMachine vm)
+		{
+			return Objects [iterIndex - 1];
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
@@ -149,6 +156,17 @@ namespace Iodine.Runtime
 		public void Add (IodineObject obj)
 		{
 			Objects.Add (obj);
+		}
+
+		private bool compare (IodineList list1, IodineList list2)
+		{
+			if (list1.Objects.Count != list2.Objects.Count)
+				return false;
+			for (int i = 0; i < list1.Objects.Count; i++) {
+				if (list1.Objects [i].GetHashCode () != list2.Objects [i].GetHashCode ())
+					return false;
+			}
+			return true;
 		}
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)

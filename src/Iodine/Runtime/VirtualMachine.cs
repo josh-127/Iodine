@@ -115,10 +115,10 @@ namespace Iodine.Runtime
 					Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
 					Stack.StoreLocal (method.Parameters [param], new IodineTuple (tupleItems));
 				} else if (i == method.Parameters.Keys.Count - 1 && method.AcceptsKeywordArgs) {
-					if (i < arguments.Length && arguments [i] is IodineMap) {
+					if (i < arguments.Length && arguments [i] is IodineHashMap) {
 						Stack.StoreLocal (method.Parameters [param], arguments [i]);
 					} else {
-						Stack.StoreLocal (method.Parameters [param], new IodineMap ());
+						Stack.StoreLocal (method.Parameters [param], new IodineHashMap ());
 					}
 				} else {
 					Stack.StoreLocal (method.Parameters [param], arguments [i++]);
@@ -346,7 +346,7 @@ namespace Iodine.Runtime
 				}
 			case Opcode.BuildHash:
 				{
-					IodineMap hash = new IodineMap ();
+					IodineHashMap hash = new IodineHashMap ();
 					for (int i = 0; i < ins.Argument; i++) {
 						IodineObject key = Stack.Pop ();
 						IodineObject val = Stack.Pop ();

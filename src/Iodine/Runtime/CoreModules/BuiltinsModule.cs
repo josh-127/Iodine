@@ -94,7 +94,7 @@ namespace Iodine.Runtime
 			SetAttribute ("List", IodineList.TypeDefinition);
 			SetAttribute ("Event", IodineEvent.TypeDefinition);
 			SetAttribute ("Object", new InternalMethodCallback (Object, null));
-			SetAttribute ("HashMap", IodineMap.TypeDefinition);
+			SetAttribute ("HashMap", IodineHashMap.TypeDefinition);
 			SetAttribute ("repr", new InternalMethodCallback (repr, null));
 			SetAttribute ("filter", new InternalMethodCallback (filter, null));
 			SetAttribute ("map", new InternalMethodCallback (map, null)); 
@@ -122,14 +122,14 @@ namespace Iodine.Runtime
 			}
 
 			IodineString str = args [0] as IodineString;
-			IodineMap map = null;
+			IodineHashMap map = null;
 			if (str == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
 
 			if (args.Length >= 2) {
-				map = args [1] as IodineMap;
+				map = args [1] as IodineHashMap;
 				if (map == null) {
 					vm.RaiseException (new IodineTypeException ("HashMap"));
 					return null;
@@ -139,7 +139,7 @@ namespace Iodine.Runtime
 			return eval (vm, str.ToString (), map);
 		}
 
-		private IodineObject eval (VirtualMachine host, string source, IodineMap dict)
+		private IodineObject eval (VirtualMachine host, string source, IodineHashMap dict)
 		{
 			VirtualMachine vm = host;
 
