@@ -12,8 +12,8 @@ fi
 
 echo "Using prefix $prefix"
 
-mkdir -p $PREFIX/iodine
-mkdir -p $PREFIX/iodine/bin
+mkdir -p $prefix/iodine
+mkdir -p $prefix/iodine/bin
 cp ./bin/iodine.exe $prefix/iodine/bin/iodine.exe
 cp -r ./bin/modules $prefix/iodine/bin
 cp -r ./bin/extensions $prefix/iodine/bin
