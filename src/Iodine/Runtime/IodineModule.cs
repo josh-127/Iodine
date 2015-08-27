@@ -210,9 +210,9 @@ namespace Iodine.Runtime
 				string dir = Path.GetDirectoryName (fullPath);
 				if (!containsPath (dir)) {
 					SearchPaths.Add (new IodineString (dir));
-
-					if (Directory.Exists (Path.Combine (dir, ".deps"))) {
-						SearchPaths.Add (new IodineString (Path.Combine (dir, ".deps")));
+					string depPath = Path.Combine (dir, ".deps");
+					if (!containsPath (depPath)) {
+						SearchPaths.Add (new IodineString (depPath));
 					}
 				}
 				return CompileModule (errLog, FindModule (path));
