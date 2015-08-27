@@ -23,25 +23,26 @@ class CommandLineOptions {
     }
     
     class CommandLineArgument {
-        func CommandLineArgument (self, defaultvalue, required) {
-            self.defaultValue = defaultValue;
+        func CommandLineArgument (self, name, defaultValue, required) {
+           	self.name = name;
+			self.defaultValue = defaultValue;
             self.required = required;
         }
     }
     
     func CommandLineOptions (self) {
-        self.arguments = HashMap ();
+        self.arguments = List ();
         self.options = HashMap ();
         self.verbs = HashMap ();
     }
     
     func addArgument (self, name, *args) {
         if (args.getSize () == 0) {
-            self.arguments [name] = CommandLineOptions.CommandLineArgument (false, false);
+            self.arguments.add (CommandLineOptions.CommandLineArgument (name, false, false));
         } else if (args.getSize () == 1) {
-            self.arguments [name] = CommandLineOptions.CommandLineArgument (args [0], false);
+            self.arguments.add (CommandLineOptions.CommandLineArgument (name, args [0], false));
         } else {
-            self.arguments [name] = CommandLineOptions.CommandLineArgument (args [0], args [1]);
+            self.arguments.add (CommandLineOptions.CommandLineArgument (name, args [0], args [1]));
         }
     }
     
@@ -115,7 +116,7 @@ func parseArgs (options, args) {
             }
             verb.callback (parseArgs (verb.options, verbArgs));
         } else if (currentArgument < argCount) {
-            reflection.setAttribute (ret, arg, options.arguments [currentArgument]);
+            reflection.setAttribute (ret, options.arguments [currentArgument].name, arg);
             currentArgument += 1;
         }
     }
