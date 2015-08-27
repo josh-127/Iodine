@@ -29,6 +29,8 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
@@ -266,11 +268,18 @@ namespace Iodine.Runtime
 			public IodineFile ()
 				: base (FileTypeDef)
 			{
+				SetAttribute ("join", new InternalMethodCallback (join, this));
 				SetAttribute ("remove", new InternalMethodCallback (remove, this));
 				SetAttribute ("exists", new InternalMethodCallback (exists, this));
 				SetAttribute ("getNameWithoutExt", new InternalMethodCallback (getNameWithoutExt, this));
 				SetAttribute ("getName", new InternalMethodCallback (getName, this));
 				SetAttribute ("copy", new InternalMethodCallback (copy, this));
+			}
+
+			private IodineObject join (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				string[] paths = args.Select (p => p.ToString ()).ToArray ();
+				return new IodineString (Path.Combine (paths));
 			}
 
 			private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] args)

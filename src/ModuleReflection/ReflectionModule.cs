@@ -15,6 +15,7 @@ namespace ModuleReflection
 			SetAttribute ("hasAttribute", new InternalMethodCallback (hasAttribute, this));
 			SetAttribute ("setAttribute", new InternalMethodCallback (setAttribute, this));
 			SetAttribute ("getAttributes", new InternalMethodCallback (getAttributes, this));
+			SetAttribute ("getInterfaces", new InternalMethodCallback (getInterfaces, this));
 			SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
 			SetAttribute ("compileModule", new InternalMethodCallback (compileModule, this));
 			SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
@@ -48,6 +49,17 @@ namespace ModuleReflection
 				map.Set (new IodineString (key), o1.Attributes [key]);
 			}
 			return map;
+		}
+
+		private IodineObject getInterfaces (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineObject o1 = args [0];
+			IodineList list = new IodineList (o1.Interfaces.ToArray ());
+			return list;
 		}
 
 		private IodineObject setAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)

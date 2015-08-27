@@ -74,13 +74,12 @@ namespace Iodine.Runtime
 
 		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			IodineObject obj = new IodineObject (this);
+			IodineObject obj = Invoke (vm, arguments);
 			foreach (IodineMethod method in this.InstanceMethods) {
 				if (!self.HasAttribute (method.Name))
 					self.SetAttribute (method.Name, method);
 				obj.SetAttribute (method.Name, method);
 			}
-			vm.InvokeMethod (Constructor, self, arguments);
 			self.SetAttribute ("__super__", obj);
 			self.Base = obj;
 		}

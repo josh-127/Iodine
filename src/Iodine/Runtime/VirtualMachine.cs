@@ -505,16 +505,16 @@ namespace Iodine.Runtime
 						ErrorLog errLog = new ErrorLog ();
 						module = IodineModule.LoadModule (errLog, name);
 					
-						if (module != null) {
-							ModuleCache [fullPath] = module;
-							module.Initializer.Invoke (this, new IodineObject[] { });
-							foreach (IodineObject item in names.Objects) {
-								this.Stack.Top.Module.SetAttribute (this, item.ToString (),
-									module.GetAttribute (item.ToString ()));
-							}
-						} else {
+						if (module == null) {
 							RaiseException (new IodineSyntaxException (errLog));
+							break;
 						}
+						ModuleCache [fullPath] = module;
+						module.Initializer.Invoke (this, new IodineObject[] { });
+					}
+					foreach (IodineObject item in names.Objects) {
+						this.Stack.Top.Module.SetAttribute (this, item.ToString (),
+							module.GetAttribute (item.ToString ()));
 					}
 					break;
 				}

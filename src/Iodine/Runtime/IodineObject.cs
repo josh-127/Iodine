@@ -79,23 +79,14 @@ namespace Iodine.Runtime
 		{
 			if (Base != null && !attributes.ContainsKey (name)) {
 				if (Base.HasAttribute (name)) {
+					Console.WriteLine (name + " " + Base.GetAttribute (vm, name).ToString ());
 					Base.SetAttribute (vm, name, value);
+					Console.WriteLine (name + " " + Base.GetAttribute (vm, name).ToString ());
 					return;
 				}
 			}
 
-			if (attributes.ContainsKey ("__setAttribute__")) {
-				IodineInstanceMethodWrapper method = this.attributes ["__setAttribute__"] as
-					IodineInstanceMethodWrapper;
-				if (method == null) {
-					vm.RaiseException (new IodineTypeException ("Method"));
-				} else if (method.Method.ParameterCount < 2 && !method.Method.Variadic) {
-					vm.RaiseException (new IodineArgumentException (2));
-				}
-				method.Invoke (vm, new IodineObject[] { new IodineString (name), value });
-			} else {
-				SetAttribute (name, value);
-			}
+			SetAttribute (name, value);
 		}
 
 
@@ -319,7 +310,9 @@ namespace Iodine.Runtime
 			int accum = 17;
 			unchecked {
 				foreach (IodineObject obj in attributes.Values) {
-					accum += 529 * obj.GetHashCode ();
+					if (obj != null) {
+						accum += 529 * obj.GetHashCode ();
+					}
 				}
 			}
 			return accum;

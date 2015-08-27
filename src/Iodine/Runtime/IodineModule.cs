@@ -207,8 +207,14 @@ namespace Iodine.Runtime
 					FindExtension (path));
 			} else if (FindModule (path) != null) {
 				string fullPath = FindModule (path);
-				if (!containsPath (Path.GetDirectoryName (fullPath)))
-					SearchPaths.Add (new IodineString (Path.GetDirectoryName (fullPath)));
+				string dir = Path.GetDirectoryName (fullPath);
+				if (!containsPath (dir)) {
+					SearchPaths.Add (new IodineString (dir));
+
+					if (Directory.Exists (Path.Combine (dir, ".deps"))) {
+						SearchPaths.Add (new IodineString (Path.Combine (dir, ".deps")));
+					}
+				}
 				return CompileModule (errLog, FindModule (path));
 			} else if (BuiltInModules.Modules.ContainsKey (path)) {
 				return BuiltInModules.Modules [path];
