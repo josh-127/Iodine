@@ -113,13 +113,25 @@ describe('Iodine', lambda(test) => {
         test.it('should work with no parameters', lambda() => {
             expect(four()).to.equal(4);
         });
+
+        test.it('should work with a parameter for the decorator', lambda() => {
+            expect(six()).to.equal(6);
+        });
     });
 });
 
-func doubleDecorator() {
+func doubleDecorator(function) {
+    func inner() {
+        res = function() * 2;
+        return res;
+    }
+    return inner;
+}
+
+func multiplyDecorator(times) {
     func wrapper(function) {
         func inner() {
-            res = function() * 2;
+            res = function() * times;
             return res;
         }
         return inner;
@@ -129,5 +141,10 @@ func doubleDecorator() {
 
 @doubleDecorator
 func four() {
+    return 2;
+}
+
+@multiplyDecorator(3)
+func six() {
     return 2;
 }
