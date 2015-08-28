@@ -79,9 +79,7 @@ namespace Iodine.Runtime
 		{
 			if (Base != null && !attributes.ContainsKey (name)) {
 				if (Base.HasAttribute (name)) {
-					Console.WriteLine (name + " " + Base.GetAttribute (vm, name).ToString ());
 					Base.SetAttribute (vm, name, value);
-					Console.WriteLine (name + " " + Base.GetAttribute (vm, name).ToString ());
 					return;
 				}
 			}
