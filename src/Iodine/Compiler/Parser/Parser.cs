@@ -360,8 +360,10 @@ namespace Iodine.Compiler
 				case "try":
 					return ParseTryExcept (stream);
 				case "break":
+					stream.Accept (TokenClass.Keyword);
 					return new BreakStatement (stream.Location);
 				case "continue":
+					stream.Accept (TokenClass.Keyword);
 					return new ContinueStatement (stream.Location);
 				case "super":
 					stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
