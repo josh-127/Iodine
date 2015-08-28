@@ -320,7 +320,7 @@ namespace Iodine.Runtime
 			switch (type) {
 			case '?':
 				{
-					return new IodineBool (br.ReadBoolean ());
+					return IodineBool.Create (br.ReadBoolean ());
 				}
 			case 'b':
 				{

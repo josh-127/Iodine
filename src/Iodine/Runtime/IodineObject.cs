@@ -196,13 +196,13 @@ namespace Iodine.Runtime
 					methodName = "__equals__";
 					break;
 				}
-				return new IodineBool (this == rvalue);
+				return IodineBool.Create (this == rvalue);
 			case BinaryOperation.NotEquals:
 				if (HasAttribute ("__notEquals__")) {
 					methodName = "__notEquals__";
 					break;
 				}
-				return new IodineBool (this != rvalue);
+				return IodineBool.Create (this != rvalue);
 			case BinaryOperation.RightShift:
 				methodName = "__rightShift__";
 				break;

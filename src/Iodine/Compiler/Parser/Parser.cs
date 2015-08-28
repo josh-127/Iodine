@@ -327,49 +327,52 @@ namespace Iodine.Compiler
 
 		private static AstNode ParseStatement (TokenStream stream) 
 		{
-			if (stream.Match (TokenClass.Keyword, "class")) {
-				return ParseClass (stream);
-			} else if (stream.Match (TokenClass.Keyword, "enum")) {
-				return ParseEnum (stream);
-			} else if (stream.Match (TokenClass.Keyword, "interface")) {
-				return ParseInterface (stream);
-			} else if (stream.Match (TokenClass.Keyword, "func") ||
-				stream.Match (TokenClass.Operator, "@")) {
-				return ParseFunction (stream);
-			} else if (stream.Match (TokenClass.Keyword, "if")) {
-				return ParseIf (stream);
-			} else if (stream.Match (TokenClass.Keyword, "switch")) {
-				return ParseSwitch (stream);
-			} else if (stream.Match (TokenClass.Keyword, "for")) {
-				return ParseFor (stream);
-			} else if (stream.Match (TokenClass.Keyword, "foreach")) {
-				return ParseForeach (stream);
-			} else if (stream.Match (TokenClass.Keyword, "while")) {
-				return ParseWhile (stream);
-			} else if (stream.Match (TokenClass.Keyword, "do")) {
-				return ParseDoWhile (stream);
-			} else if (stream.Match (TokenClass.Keyword, "use")) {
-				return ParseUse (stream);
-			} else if (stream.Match (TokenClass.Keyword, "return")) {
-				return ParseReturn (stream);
-			} else if (stream.Match (TokenClass.Keyword, "yield")) {
-				return ParseYield (stream);
-			} else if (stream.Match (TokenClass.Keyword, "raise")) {
-				return ParseRaise (stream);
-			} else if (stream.Match (TokenClass.Keyword, "try")) {
-				return ParseTryExcept (stream);
-			} else if (stream.Accept (TokenClass.Keyword, "break")) {
-				return new BreakStatement (stream.Location);
-			} else if (stream.Accept (TokenClass.Keyword, "continue")) {
-				return new ContinueStatement (stream.Location);
-			} else if (stream.Accept (TokenClass.Keyword, "super")) {
-				stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
-					"super () constructor must be called first!");
-				return ParseSuperCall (stream, new ClassDeclaration (stream.Location, "", null));
-			} else if (stream.Match (TokenClass.OpenBrace)) {
+			if (stream.Match (TokenClass.Keyword)) {
+				switch (stream.Current.Value) {
+				case "class":
+					return ParseClass (stream);
+				case "enum":
+					return ParseEnum (stream);
+				case "interface":
+					return ParseInterface (stream);
+				case "func":
+					return ParseFunction (stream);
+				case "if":
+					return ParseIf (stream);
+				case "switch":
+					return ParseSwitch (stream);
+				case "for":
+					return ParseFor (stream);
+				case "foreach":
+					return ParseForeach (stream);
+				case "while":
+					return ParseWhile (stream);
+				case "do":
+					return ParseDoWhile (stream);
+				case "use":
+					return ParseUse (stream);
+				case "return":
+					return ParseReturn (stream);
+				case "yield":
+					return ParseYield (stream);
+				case "try":
+					return ParseTryExcept (stream);
+				case "break":
+					return new BreakStatement (stream.Location);
+				case "continue":
+					return new ContinueStatement (stream.Location);
+				case "super":
+					stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
+						"super () constructor must be called first!");
+					return ParseSuperCall (stream, new ClassDeclaration (stream.Location, "", null));
+				}
+			}
+			if (stream.Match (TokenClass.OpenBrace)) {
 				return ParseBlock (stream);
 			} else if (stream.Accept (TokenClass.SemiColon)) {
 				return new Statement (stream.Location);
+			} else if (stream.Match (TokenClass.Operator, "@")) {
+				return ParseFunction (stream);
 			} else {
 				AstNode node = ParseExpression (stream);
 				if (node == null) {

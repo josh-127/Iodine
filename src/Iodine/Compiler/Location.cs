@@ -34,7 +34,7 @@ namespace Iodine
 	/// <summary>
 	/// Represents a location inside an Iodine source file
 	/// </summary>
-	public struct Location
+	public class Location
 	{
 		/// <summary>
 		/// Gets or sets the line.
@@ -70,7 +70,6 @@ namespace Iodine
 		/// <param name="column">Column.</param>
 		/// <param name="file">File.</param>
 		public Location (int line, int column, string file)
-			: this ()
 		{
 			Line = line;
 			Column = column;

@@ -52,7 +52,7 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineBool (Boolean.Parse (args [0].ToString ()));
+				return IodineBool.Create (Boolean.Parse (args [0].ToString ()));
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		public IodineBool (bool val)
+		protected IodineBool (bool val)
 			: base (TypeDefinition)
 		{
 			this.Value = val;
@@ -72,13 +72,13 @@ namespace Iodine.Runtime
 			IodineBool boolVal = rvalue as IodineBool;
 			switch (binop) {
 			case BinaryOperation.Equals:
-				return new IodineBool (boolVal.Value == Value);
+				return IodineBool.Create (boolVal.Value == Value);
 			case BinaryOperation.NotEquals:
-				return new IodineBool (boolVal.Value == Value);
+				return IodineBool.Create (boolVal.Value == Value);
 			case BinaryOperation.BoolAnd:
-				return new IodineBool (boolVal.Value && Value);
+				return IodineBool.Create (boolVal.Value && Value);
 			case BinaryOperation.BoolOr:
-				return new IodineBool (boolVal.Value || Value);
+				return IodineBool.Create (boolVal.Value || Value);
 			}
 			return base.PerformBinaryOperation (vm, binop, rvalue);
 		}
@@ -87,7 +87,7 @@ namespace Iodine.Runtime
 		{
 			switch (op) {
 			case UnaryOperation.BoolNot:
-				return new IodineBool (!Value);
+				return IodineBool.Create (!Value);
 			}
 			return null;
 		}
@@ -105,6 +105,11 @@ namespace Iodine.Runtime
 		public override int GetHashCode ()
 		{
 			return Value.GetHashCode ();
+		}
+
+		public static IodineBool Create (bool val)
+		{
+			return val ? IodineBool.True : IodineBool.False;
 		}
 	}
 }

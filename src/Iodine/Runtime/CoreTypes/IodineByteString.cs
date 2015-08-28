@@ -96,9 +96,9 @@ namespace Iodine.Runtime
 
 			switch (binop) {
 			case BinaryOperation.Equals:
-				return new IodineBool (Enumerable.SequenceEqual<byte> (strVal, Value));
+				return IodineBool.Create (Enumerable.SequenceEqual<byte> (strVal, Value));
 			case BinaryOperation.NotEquals:
-				return new IodineBool (!Enumerable.SequenceEqual<byte> (strVal, Value));
+				return IodineBool.Create (!Enumerable.SequenceEqual<byte> (strVal, Value));
 			case BinaryOperation.Add:
 				byte[] newArr = new byte[str.Value.Length + Value.Length];
 				Array.Copy (Value, newArr, Value.Length);

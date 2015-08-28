@@ -35,7 +35,7 @@ namespace Iodine.Runtime
 {
 	public class IodineStack
 	{
-		private Stack<StackFrame> frames = new Stack<StackFrame> ();
+		private LinkedStack<StackFrame> frames = new LinkedStack<StackFrame> ();
 		private StackFrame top = null;
 
 		public IodineObject Last {
@@ -178,7 +178,7 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		private Stack<IodineObject> stack = new Stack<IodineObject> ();
+		private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();
 		private IodineObject[] locals;
 		private IodineObject[] parentLocals = null;
 

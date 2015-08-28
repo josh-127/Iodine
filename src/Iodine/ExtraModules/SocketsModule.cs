@@ -128,7 +128,7 @@ namespace Iodine.Modules.Extras
 				try {
 					var result = !((Socket.Poll (1000, SelectMode.SelectRead)
 					             && (Socket.Available == 0)) || !Socket.Connected);
-					return new IodineBool (result);
+					return IodineBool.Create (result);
 				} catch {
 					return IodineBool.False;
 				}

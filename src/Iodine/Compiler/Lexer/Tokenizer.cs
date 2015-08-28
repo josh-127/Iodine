@@ -52,6 +52,7 @@ namespace Iodine.Compiler
 			this.file = file;
 			position = 0;
 			sourceLen = source.Length;
+			location = new Location (0, 0, file);
 		}
 
 		public TokenStream Scan ()

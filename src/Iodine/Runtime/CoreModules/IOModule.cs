@@ -164,7 +164,7 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				return new IodineBool (Directory.Exists (args [0].ToString ()));
+				return IodineBool.Create (Directory.Exists (args [0].ToString ()));
 			}
 
 			private IodineObject create (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -317,7 +317,7 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				return new IodineBool (File.Exists (args [0].ToString ()));
+				return IodineBool.Create (File.Exists (args [0].ToString ()));
 			}
 
 			private IodineObject getNameWithoutExt (VirtualMachine vm, IodineObject self, IodineObject[] args)

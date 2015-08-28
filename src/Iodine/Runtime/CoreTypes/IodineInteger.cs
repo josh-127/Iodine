@@ -94,17 +94,17 @@ namespace Iodine.Runtime
 			case BinaryOperation.RightShift:
 				return new IodineInteger (Value >> (int)intVal.Value);
 			case BinaryOperation.Equals:
-				return new IodineBool (Value == intVal.Value);
+				return IodineBool.Create (Value == intVal.Value);
 			case BinaryOperation.NotEquals:
-				return new IodineBool (Value != intVal.Value);
+				return IodineBool.Create (Value != intVal.Value);
 			case BinaryOperation.GreaterThan:
-				return new IodineBool (Value > intVal.Value);
+				return IodineBool.Create (Value > intVal.Value);
 			case BinaryOperation.GreaterThanOrEqu:
-				return new IodineBool (Value >= intVal.Value);
+				return IodineBool.Create (Value >= intVal.Value);
 			case BinaryOperation.LessThan:
-				return new IodineBool (Value < intVal.Value);
+				return IodineBool.Create (Value < intVal.Value);
 			case BinaryOperation.LessThanOrEqu:
-				return new IodineBool (Value <= intVal.Value);
+				return IodineBool.Create (Value <= intVal.Value);
 			default:
 				return base.PerformBinaryOperation (vm, binop, rvalue);
 			}
