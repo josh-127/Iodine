@@ -1,0 +1,101 @@
+use describe, expect from espresso;
+
+class A {
+    func A(self, x) {
+        self.x = x;
+    }
+
+    func foo(self) {
+        return 1;
+    }
+}
+
+class B : A {
+    func B(self) {
+        super(2);
+    }
+
+    func bar(self) {
+        return 2;
+    }
+}
+
+class C : B {
+    # Empty
+}
+
+class D {
+    func x(self) {
+        return 2;
+    }
+}
+
+class E : D {
+    # Empty
+}
+
+describe('Iodine', lambda(test) => {
+    test.describe('Inheritance', lambda(test) => {
+        test.describe('A', lambda(test) => {
+            test.it('should have attributes x and foo', lambda() => {
+                obj = A(1);
+                expect(obj).to.have.attribute('x');
+                expect(obj.x).to.equal(1);
+
+                expect(obj).to.have.attribute('foo');
+                expect(obj.foo()).to.equal(1);
+            });
+
+            test.it('should not have attribute bar', lambda() => {
+                obj = A(1);
+                expect(obj).not().to.have.attribute('bar');
+            });
+        });
+
+        test.describe('B', lambda(test) => {
+            test.it('should have attributes x, foo and bar', lambda() => {
+                obj = B();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x).to.equal(2);
+
+                expect(obj).to.have.attribute('foo');
+                expect(obj.foo()).to.equal(1);
+
+                expect(obj).to.have.attribute('bar');
+                expect(obj.bar()).to.equal(2);
+            });
+        });
+
+        test.describe('C', lambda(test) => {
+            test.it('should have attributes x, foo and bar without ' +
+                'calling super', lambda() => {
+                # Objects with empty constructors don't need to call super();
+                obj = C();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x()).to.equal(2);
+
+                expect(obj).to.have.attribute('foo');
+                expect(obj.foo()).to.equal(1);
+
+                expect(obj).to.have.attribute('bar');
+                expect(obj.bar()).to.equal(2);
+            });
+        });
+
+        test.describe('D', lambda(test) => {
+            test.it('should have attribute x', lambda() => {
+                obj = D();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x()).to.equal(2);
+            });
+        });
+
+        test.describe('E', lambda(test) => {
+            test.it('should have attribute x without super call', lambda() => {
+                obj = E();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x()).to.equal(2);
+            });
+        });
+    });
+});

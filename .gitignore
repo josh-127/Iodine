@@ -16,6 +16,10 @@ bld/
 *.sln.docstates
 *.userprefs
 *.usertasks
+*.mdb
 
 # @SplittyDev's personal files
 bin/splitty/
+
+# .deps for tests/
+tests/.deps
