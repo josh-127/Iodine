@@ -46,6 +46,11 @@ describe('Iodine', lambda(test) => {
                 expect(obj.foo()).to.equal(1);
             });
 
+            test.it('should be an "A"', lambda() => {
+                obj = A(1);
+                expect(obj).to.be.an('A');
+            });
+
             test.it('should not have attribute bar', lambda() => {
                 obj = A(1);
                 expect(obj).not().to.have.attribute('bar');
@@ -64,6 +69,11 @@ describe('Iodine', lambda(test) => {
                 expect(obj).to.have.attribute('bar');
                 expect(obj.bar()).to.equal(2);
             });
+
+            test.it('should be a "B"', lambda() => {
+                obj = B();
+                expect(obj).to.be.a('B');
+            });
         });
 
         test.describe('C', lambda(test) => {
@@ -72,7 +82,7 @@ describe('Iodine', lambda(test) => {
                 # Objects with empty constructors don't need to call super();
                 obj = C();
                 expect(obj).to.have.attribute('x');
-                expect(obj.x()).to.equal(2);
+                expect(obj.x).to.equal(2);
 
                 expect(obj).to.have.attribute('foo');
                 expect(obj.foo()).to.equal(1);
@@ -98,4 +108,26 @@ describe('Iodine', lambda(test) => {
             });
         });
     });
+
+    test.describe('Decorators', lambda(test) => {
+        test.it('should work with no parameters', lambda() => {
+            expect(four()).to.equal(4);
+        });
+    });
 });
+
+func doubleDecorator() {
+    func wrapper(function) {
+        func inner() {
+            res = function() * 2;
+            return res;
+        }
+        return inner;
+    }
+    return wrapper;
+}
+
+@doubleDecorator
+func four() {
+    return 2;
+}
