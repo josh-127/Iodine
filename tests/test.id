@@ -1,5 +1,6 @@
 use describe, expect from espresso;
 
+# Class tests
 class A {
     func A(self, x) {
         self.x = x;
@@ -32,6 +33,36 @@ class D {
 
 class E : D {
     # Empty
+}
+
+# Decorator tests
+func doubleDecorator(function) {
+    func inner() {
+        res = function() * 2;
+        return res;
+    }
+    return inner;
+}
+
+func multiplyDecorator(times) {
+    func wrapper(function) {
+        func inner() {
+            res = function() * times;
+            return res;
+        }
+        return inner;
+    }
+    return wrapper;
+}
+
+@doubleDecorator
+func four() {
+    return 2;
+}
+
+@multiplyDecorator(3)
+func six() {
+    return 2;
 }
 
 describe('Iodine', lambda(test) => {
@@ -109,7 +140,7 @@ describe('Iodine', lambda(test) => {
         });
     });
 
-    test.describe('Decorators', lambda(test) => {
+    test.describe('Decorator', lambda(test) => {
         test.it('should work with no parameters', lambda() => {
             expect(four()).to.equal(4);
         });
@@ -118,33 +149,52 @@ describe('Iodine', lambda(test) => {
             expect(six()).to.equal(6);
         });
     });
+
+    test.describe('Closure', lambda(test) => {
+        test.it('should be created, stored and calculate the correct ' +
+            'value', lambda() => {
+            func startAt(x) {
+                func incrementBy(y) {
+                    return x + y;
+                }
+                return incrementBy;
+            }
+            closure1 = startAt(1);
+            closure2 = startAt(5);
+            expect(closure1(3)).to.equal(4);
+            expect(closure2(3)).to.equal(8);
+        });
+    });
+
+    test.describe('HashMap', lambda(test) => {
+        test.it('should be created using {}', lambda() => {
+            map = {};
+            expect(map).to.be.a('HashMap');
+        });
+
+        test.it('should index using keys', lambda() => {
+            map = {
+                'x': 1,
+                'y': 'x'
+            };
+
+            expect(map).to.have.key('x');
+            expect(map['x']).to.equal(1);
+        });
+
+        test.describe('contains', lambda(test) => {
+            test.it('should search through keys with .contains', lambda() => {
+                map = {
+                    'a': 1,
+                    'b': 3,
+                    'c': 5,
+                    'aa': 7
+                };
+
+                expect(map.contains('a')).to.be._true();
+                expect(map.contains('aaa')).to.be._false();
+                expect(map.contains(7)).to.be._false();
+            });
+        });
+    });
 });
-
-func doubleDecorator(function) {
-    func inner() {
-        res = function() * 2;
-        return res;
-    }
-    return inner;
-}
-
-func multiplyDecorator(times) {
-    func wrapper(function) {
-        func inner() {
-            res = function() * times;
-            return res;
-        }
-        return inner;
-    }
-    return wrapper;
-}
-
-@doubleDecorator
-func four() {
-    return 2;
-}
-
-@multiplyDecorator(3)
-func six() {
-    return 2;
-}
