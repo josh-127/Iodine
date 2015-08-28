@@ -353,6 +353,8 @@ namespace Iodine.Compiler
 					return ParseUse (stream);
 				case "return":
 					return ParseReturn (stream);
+				case "raise":
+					return ParseRaise (stream);
 				case "yield":
 					return ParseYield (stream);
 				case "try":

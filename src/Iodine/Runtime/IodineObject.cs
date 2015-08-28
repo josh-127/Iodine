@@ -123,18 +123,8 @@ namespace Iodine.Runtime
 		{
 			if (attributes.ContainsKey (name))
 				return attributes [name];
-			else if (Base != null && Base.Attributes.ContainsKey (name))
+			else if (Base != null && Base.HasAttribute (name))
 				return Base.GetAttribute (name);
-			else if (attributes.ContainsKey ("__getAttribute__")) {
-				IodineInstanceMethodWrapper method = attributes ["__getAttribute__"]
-					as IodineInstanceMethodWrapper;
-				if (method == null) {
-					vm.RaiseException (new IodineTypeException ("Method"));
-				} else if (method.Method.ParameterCount < 1 && !method.Method.Variadic) {
-					vm.RaiseException (new IodineArgumentException (1));
-				}
-				return method.Invoke (vm, new IodineObject[] { new IodineString (name) });
-			}
 			vm.RaiseException (new IodineAttributeNotFoundException (name));
 			return null;
 		}
