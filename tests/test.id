@@ -1,0 +1,200 @@
+use describe, expect from espresso;
+
+# Class tests
+class A {
+    func A(self, x) {
+        self.x = x;
+    }
+
+    func foo(self) {
+        return 1;
+    }
+}
+
+class B : A {
+    func B(self) {
+        super(2);
+    }
+
+    func bar(self) {
+        return 2;
+    }
+}
+
+class C : B {
+    # Empty
+}
+
+class D {
+    func x(self) {
+        return 2;
+    }
+}
+
+class E : D {
+    # Empty
+}
+
+# Decorator tests
+func doubleDecorator(function) {
+    func inner() {
+        res = function() * 2;
+        return res;
+    }
+    return inner;
+}
+
+func multiplyDecorator(times) {
+    func wrapper(function) {
+        func inner() {
+            res = function() * times;
+            return res;
+        }
+        return inner;
+    }
+    return wrapper;
+}
+
+@doubleDecorator
+func four() {
+    return 2;
+}
+
+@multiplyDecorator(3)
+func six() {
+    return 2;
+}
+
+describe('Iodine', lambda(test) => {
+    test.describe('Inheritance', lambda(test) => {
+        test.describe('A', lambda(test) => {
+            test.it('should have attributes x and foo', lambda() => {
+                obj = A(1);
+                expect(obj).to.have.attribute('x');
+                expect(obj.x).to.equal(1);
+
+                expect(obj).to.have.attribute('foo');
+                expect(obj.foo()).to.equal(1);
+            });
+
+            test.it('should be an "A"', lambda() => {
+                obj = A(1);
+                expect(obj).to.be.an('A');
+            });
+
+            test.it('should not have attribute bar', lambda() => {
+                obj = A(1);
+                expect(obj).not().to.have.attribute('bar');
+            });
+        });
+
+        test.describe('B', lambda(test) => {
+            test.it('should have attributes x, foo and bar', lambda() => {
+                obj = B();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x).to.equal(2);
+
+                expect(obj).to.have.attribute('foo');
+                expect(obj.foo()).to.equal(1);
+
+                expect(obj).to.have.attribute('bar');
+                expect(obj.bar()).to.equal(2);
+            });
+
+            test.it('should be a "B"', lambda() => {
+                obj = B();
+                expect(obj).to.be.a('B');
+            });
+        });
+
+        test.describe('C', lambda(test) => {
+            test.it('should have attributes x, foo and bar without ' +
+                'calling super', lambda() => {
+                # Objects with empty constructors don't need to call super();
+                obj = C();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x).to.equal(2);
+
+                expect(obj).to.have.attribute('foo');
+                expect(obj.foo()).to.equal(1);
+
+                expect(obj).to.have.attribute('bar');
+                expect(obj.bar()).to.equal(2);
+            });
+        });
+
+        test.describe('D', lambda(test) => {
+            test.it('should have attribute x', lambda() => {
+                obj = D();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x()).to.equal(2);
+            });
+        });
+
+        test.describe('E', lambda(test) => {
+            test.it('should have attribute x without super call', lambda() => {
+                obj = E();
+                expect(obj).to.have.attribute('x');
+                expect(obj.x()).to.equal(2);
+            });
+        });
+    });
+
+    test.describe('Decorator', lambda(test) => {
+        test.it('should work with no parameters', lambda() => {
+            expect(four()).to.equal(4);
+        });
+
+        test.it('should work with a parameter for the decorator', lambda() => {
+            expect(six()).to.equal(6);
+        });
+    });
+
+    test.describe('Closure', lambda(test) => {
+        test.it('should be created, stored and calculate the correct ' +
+            'value', lambda() => {
+            func startAt(x) {
+                func incrementBy(y) {
+                    return x + y;
+                }
+                return incrementBy;
+            }
+            closure1 = startAt(1);
+            closure2 = startAt(5);
+            expect(closure1(3)).to.equal(4);
+            expect(closure2(3)).to.equal(8);
+        });
+    });
+
+    test.describe('HashMap', lambda(test) => {
+        test.it('should be created using {}', lambda() => {
+            map = {};
+            expect(map).to.be.a('HashMap');
+        });
+
+        test.it('should index using keys', lambda() => {
+            map = {
+                'x': 1,
+                'y': 'x'
+            };
+
+            expect(map).to.have.key('x');
+            expect(map['x']).to.equal(1);
+        });
+
+        test.describe('contains', lambda(test) => {
+            test.it('should search through keys with .contains', lambda() => {
+                map = {
+                    'a': 1,
+                    'b': 3,
+                    'c': 5,
+                    'aa': 7
+                };
+
+                expect(map.contains('a')).to.be._true();
+                expect(map.contains('aaa')).to.be._false();
+                expect(map.contains(7)).to.be._false();
+            });
+        });
+    });
+});
