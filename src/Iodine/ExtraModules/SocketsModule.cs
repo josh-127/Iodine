@@ -75,6 +75,11 @@ namespace Iodine.Modules.Extras
 			}
 		}
 
+		public class IodineSocketException : IodineException
+		{
+			
+		}
+
 		public class IodineSocket : IodineObject
 		{
 			private static IodineTypeDefinition SocketTypeDef = new IodineTypeDefinition ("Socket");
@@ -106,11 +111,10 @@ namespace Iodine.Modules.Extras
 				SetAttribute ("receive", new InternalMethodCallback (receive, this));
 				SetAttribute ("receiveRaw", new InternalMethodCallback (receiveRaw, this));
 				SetAttribute ("getBytesAvailable", new InternalMethodCallback (getBytesAvailable, this));
-				SetAttribute ("readLine", new InternalMethodCallback (readLine, this));
 				SetAttribute ("getStream", new InternalMethodCallback (getStream, this));
 				SetAttribute ("close", new InternalMethodCallback (close, this));
 				SetAttribute ("setHost", new InternalMethodCallback (setHost, this));
-				SetAttribute ("connected", new InternalMethodCallback (connected, this));
+				SetAttribute ("isConnected", new InternalMethodCallback (connected, this));
 				host = string.Empty;
 			}
 
@@ -125,15 +129,23 @@ namespace Iodine.Modules.Extras
 					var result = !((Socket.Poll (1000, SelectMode.SelectRead)
 					             && (Socket.Available == 0)) || !Socket.Connected);
 					return new IodineBool (result);
-				} catch (Exception e) {
-					vm.RaiseException (e.Message);
-					return null;
+				} catch {
+					return IodineBool.False;
 				}
 			}
 
 			private IodineObject setHost (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+					return null;
+				}
 				IodineString hostObj = args [0] as IodineString;
+
+				if (hostObj == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+				}
+
 				host = hostObj.ToString ();
 				return null;
 			}
@@ -147,16 +159,32 @@ namespace Iodine.Modules.Extras
 
 			private IodineObject bind (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
-				IodineString ipAddrStr = args [0] as IodineString;
-				IodineInteger portObj = args [1] as IodineInteger;
-				IPAddress ipAddr;
-				int port = (int)portObj.Value;
-				if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
-					vm.RaiseException ("Invalid IP address!");
+				if (args.Length < 2) {
+					vm.RaiseException (new IodineArgumentException (2));
 					return null;
 				}
+
+				IodineString ipAddrStr = args [0] as IodineString;
+				IodineInteger portObj = args [1] as IodineInteger;
+
+				if (ipAddrStr == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				} else if (portObj == null) {
+					vm.RaiseException (new IodineTypeException ("Int"));
+					return null;
+				}
+
+				IPAddress ipAddr;
+				int port = (int)portObj.Value;
+				EndPoint endPoint = null;
+				if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
+					endPoint = new IPEndPoint (DnsLookUp (ipAddrStr.ToString ()), port);
+				} else {
+					endPoint = new IPEndPoint (ipAddr, port);
+				}
 				try {
-					Socket.Bind (new IPEndPoint (ipAddr, port));
+					Socket.Bind (endPoint);
 				} catch {
 					vm.RaiseException ("Could not bind to socket!");
 					return null;
@@ -199,16 +227,19 @@ namespace Iodine.Modules.Extras
 				IodineInteger portObj = args [1] as IodineInteger;
 				IPAddress ipAddr;
 				int port = (int)portObj.Value;
+
+				EndPoint endPoint = null;
 				if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
-					vm.RaiseException ("Invalid IP address!");
-					return null;
+					endPoint = new IPEndPoint (DnsLookUp (ipAddrStr.ToString ()), port);
+				} else {
+					endPoint = new IPEndPoint (ipAddr, port);
 				}
 
 				try {
-					Socket.Connect (ipAddr, port);
+					Socket.Connect (endPoint);
 					stream = new NetworkStream (this.Socket);
-				} catch {
-					vm.RaiseException ("Could not connect to socket!");
+				} catch (Exception ex) {
+					vm.RaiseException ("Could not connect to socket! (Reason: {0})", ex.Message);
 					return null;
 				}
 
@@ -221,13 +252,16 @@ namespace Iodine.Modules.Extras
 				IodineInteger portObj = args [1] as IodineInteger;
 				IPAddress ipAddr;
 				int port = (int)portObj.Value;
+
+				EndPoint endPoint = null;
 				if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
-					vm.RaiseException ("Invalid IP address!");
-					return null;
+					endPoint = new IPEndPoint (DnsLookUp (ipAddrStr.ToString ()), port);
+				} else {
+					endPoint = new IPEndPoint (ipAddr, port);
 				}
 
 				try {
-					Socket.Connect (ipAddr, port);
+					Socket.Connect (endPoint);
 				} catch {
 					vm.RaiseException ("Could not connect to socket!");
 					return null;
@@ -305,6 +339,17 @@ namespace Iodine.Modules.Extras
 					b = stream.ReadByte ();
 				}
 				return new IodineString (accum.ToString ());
+			}
+
+			/*
+			 * I have no idea why, but for some reason using DnsEndPoint for establishing a 
+			 * socket connection throws a FeatureNotImplemented exception on Mono 4.0.3 so
+			 * this will have to do 
+			 */
+			private static IPAddress DnsLookUp (string host)
+			{
+				IPHostEntry entries = Dns.GetHostEntry (host);
+				return entries.AddressList [0];
 			}
 		}
 

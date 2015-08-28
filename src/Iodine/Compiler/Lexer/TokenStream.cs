@@ -48,6 +48,12 @@ namespace Iodine.Compiler
 			get;
 		}
 
+		public Token Current {
+			get {
+				return peekToken ();
+			}
+		}
+
 		public Location Location {
 			get {
 				if (peekToken () != null)

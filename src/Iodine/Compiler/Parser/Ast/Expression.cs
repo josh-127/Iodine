@@ -49,162 +49,275 @@ namespace Iodine.Compiler.Ast
 
 		private static AstNode ParseAssign (TokenStream stream)
 		{
-			AstNode left = ParseBoolOr (stream);
-			if (stream.Accept (TokenClass.Operator, "=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left, ParseAssign (stream));
-			} else if (stream.Accept (TokenClass.Operator, "+=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.Add, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "-=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.Sub, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "*=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.Mul, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "/=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.Div, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "%=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.Mod, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "^=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.Xor, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "&=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.And, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "|=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.Or, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, "<<=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.LeftShift, left, ParseAssign (stream)));
-			} else if (stream.Accept (TokenClass.Operator, ">>=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Assign, left,
-					new BinaryExpression (stream.Location, BinaryOperation.RightShift, left, ParseAssign (stream)));
+			AstNode expr = ParseBoolOr (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign,
+						expr, ParseBoolOr (stream));
+					continue;
+				case "+=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.Add, expr, ParseBoolOr (stream)));
+					continue;
+				case "-=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.Sub, expr, ParseBoolOr (stream)));
+					continue;
+				case "*=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.Mul, expr, ParseBoolOr (stream)));
+					continue;
+				case "/=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.Div, expr, ParseBoolOr (stream)));
+					continue;
+				case "%=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.Mod, expr, ParseBoolOr (stream)));
+					continue;
+				case "^=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.Xor, expr, ParseBoolOr (stream)));
+					continue;
+				case "&=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.And, expr, ParseBoolOr (stream)));
+					continue;
+				case "|=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.Or, expr, ParseBoolOr (stream)));
+					continue;
+				case "<<=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.LeftShift, expr, ParseBoolOr (stream)));
+					continue;
+				case ">>=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
+						new BinaryExpression (stream.Location, BinaryOperation.RightShift, expr, ParseBoolOr (stream)));
+					continue;
+				default:
+					break;
+				}
+				break;
 			}
-			return left;
+			return expr;
 		}
 
 		private static AstNode ParseBoolOr (TokenStream stream) 
 		{
-			AstNode left = ParseBoolAnd (stream);
-			if (stream.Accept (TokenClass.Operator, "||")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.BoolOr, left, ParseBoolOr (stream));
-			} else if (stream.Accept (TokenClass.Operator, "??")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.NullCoalescing, left, ParseBoolOr (stream));
+			AstNode expr = ParseBoolAnd (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "||":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.BoolOr, expr,
+						ParseBoolAnd (stream));
+					continue;
+				case "??":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.NullCoalescing, expr,
+						ParseBoolAnd (stream));
+					continue;
+				default:
+					break;
+				}
+				break;
 			}
-			return left;
+			return expr;
 		}
 
 		private static AstNode ParseBoolAnd (TokenStream stream)
 		{
-			AstNode left = ParseOr (stream);
-			if (stream.Accept (TokenClass.Operator, "&&")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.BoolAnd, left, ParseBoolAnd (stream));
+			AstNode expr = ParseOr (stream);
+			while (stream.Accept (TokenClass.Operator, "&&")) {
+				expr = new BinaryExpression (stream.Location, BinaryOperation.BoolAnd, expr, ParseOr (stream));
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseOr (TokenStream stream)
 		{
-			AstNode left = ParseXor (stream);
-			if (stream.Accept (TokenClass.Operator, "|")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Or, left, ParseOr (stream));
+			AstNode expr = ParseXor (stream);
+			while (stream.Accept (TokenClass.Operator, "|")) {
+				expr = new BinaryExpression (stream.Location, BinaryOperation.Or, expr, ParseXor (stream));
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseXor (TokenStream stream)
 		{
-			AstNode left = ParseAnd (stream);
-			if (stream.Accept (TokenClass.Operator, "^")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Xor, left, ParseXor (stream));
+			AstNode expr = ParseAnd (stream);
+			while (stream.Accept (TokenClass.Operator, "^")) {
+				expr = new BinaryExpression (stream.Location, BinaryOperation.Or, expr, ParseAnd (stream));
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseAnd (TokenStream stream)
 		{
-			AstNode left = ParseEquals (stream);
-			if (stream.Accept (TokenClass.Operator, "&")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.And, left, ParseAnd (stream));
+			AstNode expr = ParseEquals (stream);
+			while (stream.Accept (TokenClass.Operator, "&")) {
+				expr = new BinaryExpression (stream.Location, BinaryOperation.Add, expr,
+					ParseEquals (stream));
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseEquals (TokenStream stream)
 		{
-			AstNode left = ParseRelationalOp (stream);
-			if (stream.Accept (TokenClass.Operator, "==")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Equals, left, ParseEquals (stream));
-			} else if (stream.Accept (TokenClass.Operator, "!=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.NotEquals, left, ParseEquals (stream));
+			AstNode expr = ParseRelationalOp (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "==":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Equals, expr,
+						ParseRelationalOp (stream));
+					continue;
+				case "!=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.NotEquals, expr,
+						ParseRelationalOp (stream));
+					continue;
+				default:
+					break;
+				}
+				break;
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseRelationalOp (TokenStream stream)
 		{
-			AstNode left = ParseBitshift (stream);
-			if (stream.Accept (TokenClass.Operator, ">")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.GreaterThan, left, ParseRelationalOp (stream));
-			} else if (stream.Accept (TokenClass.Operator, "<")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.LessThan, left, ParseRelationalOp (stream));
-			} else if (stream.Accept (TokenClass.Operator, ">=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.GreaterThanOrEqu, left,
-					ParseRelationalOp (stream));
-			} else if (stream.Accept (TokenClass.Operator, "<=")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.LessThanOrEqu, left,
-					ParseRelationalOp (stream));
-			} else if (stream.Accept (TokenClass.Keyword, "is")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.InstanceOf, left,
-					ParseRelationalOp (stream));
-			} else if (stream.Accept (TokenClass.Keyword, "isnot")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.NotInstanceOf, left,
-					ParseRelationalOp (stream));
-			} else if (stream.Accept (TokenClass.Keyword, "as")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.DynamicCast, left,
-					ParseRelationalOp (stream));
+			AstNode expr = ParseBitshift (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case ">":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.GreaterThan, expr,
+						ParseBitshift (stream));
+					continue;
+				case "<":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.LessThan, expr,
+						ParseBitshift (stream));
+					continue;
+				case ">=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.LessThanOrEqu, expr,
+						ParseBitshift (stream));
+					continue;
+				case "<=":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.GreaterThanOrEqu, expr,
+						ParseBitshift (stream));
+					continue;
+				case "is":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.InstanceOf, expr,
+						ParseBitshift (stream));
+					continue;
+				case "isnot":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.NotInstanceOf, expr,
+						ParseBitshift (stream));
+					continue;
+				case "as":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.DynamicCast, expr,
+						ParseBitshift (stream));
+					continue;
+				default:
+					break;
+				}
+				break;
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseBitshift (TokenStream stream)
 		{
-			AstNode left = ParseAddSub (stream);
-			if (stream.Accept (TokenClass.Operator, "<<")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.LeftShift, left, ParseBitshift (
-					stream));
-			} else  if (stream.Accept (TokenClass.Operator, ">>")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.RightShift, left, ParseBitshift (
-					stream));
+			AstNode expr = ParseAddSub (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "<<":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.LeftShift, expr,
+						ParseAddSub (stream));
+					continue;
+				case ">>":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.RightShift, expr,
+						ParseAddSub (stream));
+					continue;
+				default:
+					break;
+				}
+				break;
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseAddSub (TokenStream stream)
 		{
-			AstNode left = ParseMulDivMod (stream);
-			if (stream.Accept (TokenClass.Operator, "+")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Add, left, ParseAddSub (stream));
-			} else if (stream.Accept (TokenClass.Operator, "-")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Sub, left, ParseAddSub (stream));
+			AstNode expr = ParseMulDivMod (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "+":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Add, expr,
+						ParseMulDivMod (stream));
+					continue;
+				case "-":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Sub, expr,
+						ParseMulDivMod (stream));
+					continue;
+				default:
+					break;
+				}
+				break;
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseMulDivMod (TokenStream stream)
 		{
-			AstNode left = ParseIncDecNot (stream);
-			if (stream.Accept (TokenClass.Operator, "*")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Mul, left, ParseMulDivMod (stream));
-			} else  if (stream.Accept (TokenClass.Operator, "/")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Div, left, ParseMulDivMod (stream));
-			} else  if (stream.Accept (TokenClass.Operator, "%")) {
-				return new BinaryExpression (stream.Location, BinaryOperation.Mod, left, ParseMulDivMod (stream));
+			AstNode expr = ParseIncDecNot (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "*":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Mul, expr,
+						ParseIncDecNot (stream));
+					continue;
+				case "/":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Div, expr,
+						ParseIncDecNot (stream));
+					continue;
+				case "%":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.Mod, expr,
+						ParseIncDecNot (stream));
+					continue;
+				default:
+					break;
+				}
+				break;
 			}
-			return left;
+			return expr;
 		}
 
 		public static AstNode ParseIncDecNot (TokenStream stream)
