@@ -270,9 +270,6 @@ namespace Iodine.Compiler
 			case "from":
 			case "continue":
 			case "super":
-			case "is":
-			case "isnot":
-			case "as":
 			case "enum":
 			case "raise":
 			case "interface":
@@ -282,6 +279,10 @@ namespace Iodine.Compiler
 			case "default":
 			case "return":
 				return new Token (TokenClass.Keyword, accum.ToString (), location);
+			case "is":
+			case "isnot":
+			case "as":
+				return new Token (TokenClass.Operator, accum.ToString (), location);
 			default:
 				return new Token (TokenClass.Identifier, accum.ToString (), location);
 			}
