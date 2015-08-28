@@ -54,20 +54,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			CaseStatement caseStmt = new CaseStatement (stream.Location);
-			stream.Expect (TokenClass.Keyword, "case");
-			AstNode value = Expression.Parse (stream);
-			AstNode body = Statement.Parse (stream);
-			AstNode lambda = new LambdaExpression (body.Location, false, false, false,
-				new System.Collections.Generic.List<string> ());
-			lambda.Add (body);
-			caseStmt.Add (value);
-			caseStmt.Add (lambda);
-			return caseStmt;
-		}
 	}
 }
 

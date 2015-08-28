@@ -68,55 +68,5 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "class");
-			string name = stream.Expect (TokenClass.Identifier).Value;
-
-			List<string> baseClass = new List<string> ();
-			if (stream.Accept (TokenClass.Colon)) {
-				do {
-					baseClass.Add (ParseClassName (stream));
-				} while (stream.Accept (TokenClass.Comma));
-			}
-
-			ClassDeclaration clazz = new ClassDeclaration (stream.Location, name, baseClass);
-
-			stream.Expect (TokenClass.OpenBrace);
-
-			while (!stream.Match (TokenClass.CloseBrace)) {
-				if (stream.Match (TokenClass.Keyword, "func") || stream.Match (TokenClass.Operator,
-					    "@")) {
-					FunctionDeclaration func = FunctionDeclaration.Parse (stream, false, clazz) as FunctionDeclaration;
-					if (func.Name == name) {
-						clazz.Constructor = func;
-					} else {
-						clazz.Add (func);
-					}
-				} else if (stream.Match (TokenClass.Keyword, "class")) {
-					ClassDeclaration subclass = ClassDeclaration.Parse (stream) as ClassDeclaration;
-					clazz.Add (subclass);
-				} else {
-					stream.Expect (TokenClass.Keyword, "func");
-				}
-			}
-
-			stream.Expect (TokenClass.CloseBrace);
-
-			return clazz;
-		}
-
-		private static string ParseClassName (TokenStream stream)
-		{
-			StringBuilder ret = new StringBuilder ();
-			do {
-				string attr = stream.Expect (TokenClass.Identifier).Value;
-				ret.Append (attr);
-				if (stream.Match (TokenClass.Operator, "."))
-					ret.Append ('.');
-			} while (stream.Accept (TokenClass.Operator, "."));
-			return ret.ToString ();
-		}
 	}
 }

@@ -49,16 +49,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "return");
-			if (stream.Accept (TokenClass.SemiColon)) {
-				return new ReturnStatement (stream.Location, new CodeBlock (stream.Location));
-			} else {
-				return new ReturnStatement (stream.Location, Expression.Parse (stream));
-			}
-		}
 	}
 }
 

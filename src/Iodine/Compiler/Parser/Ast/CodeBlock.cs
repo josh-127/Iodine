@@ -42,19 +42,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			CodeBlock ret = new CodeBlock (stream.Location);
-			stream.Expect (TokenClass.OpenBrace);
-
-			while (!stream.Match (TokenClass.CloseBrace)) {
-				ret.Add (Statement.Parse (stream));
-			}
-
-			stream.Expect (TokenClass.CloseBrace);
-			return ret;
-		}
 	}
 }
 

@@ -78,58 +78,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static UseStatement Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "use");
-			bool relative = stream.Accept (TokenClass.Operator, ".");
-			string ident = "";
-			if (!stream.Match (TokenClass.Operator, "*"))
-				ident = ParseModuleName (stream);
-			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma) ||
-			    stream.Match (TokenClass.Operator, "*")) {
-				List<string> items = new List<string> ();
-				bool wildcard = false;
-				if (!stream.Accept (TokenClass.Operator, "*")) {
-					items.Add (ident);
-					stream.Accept (TokenClass.Comma);
-					while (!stream.Match (TokenClass.Keyword, "from")) {
-						Token item = stream.Expect (TokenClass.Identifier);
-						items.Add (item.Value);
-						if (!stream.Accept (TokenClass.Comma)) {
-							break;
-						}
-					}
-				} else {
-					wildcard = true;
-				}
-				stream.Expect (TokenClass.Keyword, "from");
-
-				relative = stream.Accept (TokenClass.Operator, ".");
-				string module = ParseModuleName (stream);
-				return new UseStatement (stream.Location, module, items, wildcard, relative);
-			}
-			return new UseStatement (stream.Location, ident, relative);
-		}
-
-		private static string ParseModuleName (TokenStream stream)
-		{
-			Token initIdent = stream.Expect (TokenClass.Identifier);
-
-			if (stream.Match (TokenClass.Operator, ".")) {
-				StringBuilder accum = new StringBuilder ();
-				accum.Append (initIdent.Value);
-				while (stream.Accept (TokenClass.Operator, ".")) {
-					Token ident = stream.Expect (TokenClass.Identifier);
-					accum.Append (Path.DirectorySeparatorChar);
-					accum.Append (ident.Value);
-				}
-				return accum.ToString ();
-
-			} else {
-				return initIdent.Value;
-			}
-		}
 	}
 }
 

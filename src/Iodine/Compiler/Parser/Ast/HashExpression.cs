@@ -42,22 +42,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.OpenBrace);
-			HashExpression ret = new HashExpression (stream.Location);
-			while (!stream.Match (TokenClass.CloseBrace)) {
-				ret.Add (Expression.Parse (stream));
-				stream.Expect (TokenClass.Colon);
-				ret.Add (Expression.Parse (stream));
-				if (!stream.Accept (TokenClass.Comma)) {
-					break;
-				}
-			}
-			stream.Expect (TokenClass.CloseBrace);
-			return ret;
-		}
 	}
 }
 

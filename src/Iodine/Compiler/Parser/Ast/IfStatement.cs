@@ -60,22 +60,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			IfStatement ifStmt = new IfStatement (stream.Location);
-			stream.Expect (TokenClass.Keyword, "if");
-			stream.Expect (TokenClass.OpenParan);
-			ifStmt.Add (Expression.Parse (stream));
-			stream.Expect (TokenClass.CloseParan);
-			ifStmt.Add (Statement.Parse (stream));
-			if (stream.Accept (TokenClass.Keyword, "else")) {
-				ifStmt.Add (Statement.Parse (stream));
-			} else {
-				ifStmt.Add (new CodeBlock (stream.Location));
-			}
-			return ifStmt;
-		}
 	}
 }
 

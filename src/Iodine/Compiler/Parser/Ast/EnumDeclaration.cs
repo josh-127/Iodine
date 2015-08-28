@@ -55,37 +55,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "enum");
-			string name = stream.Expect (TokenClass.Identifier).Value;
-			EnumDeclaration decl = new EnumDeclaration (stream.Location, name);
-
-			stream.Expect (TokenClass.OpenBrace);
-			int defaultVal = -1;
-
-			while (!stream.Match (TokenClass.CloseBrace)) {
-				string ident = stream.Expect (TokenClass.Identifier).Value;
-				if (stream.Accept (TokenClass.Operator, "=")) {
-					string val = stream.Expect (TokenClass.IntLiteral).Value;
-					int numVal = 0;
-					if (val != "") {
-						numVal = Int32.Parse (val);
-					}
-					decl.Items [ident] = numVal;
-				} else {
-					decl.Items [ident] = defaultVal--;
-				}
-				if (!stream.Accept (TokenClass.Comma)) {
-					break;
-				}
-			}
-
-			stream.Expect (TokenClass.CloseBrace);
-
-			return decl;
-		}
 	}
 }
 

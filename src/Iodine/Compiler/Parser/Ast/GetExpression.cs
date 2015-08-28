@@ -55,13 +55,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (AstNode lvalue, TokenStream stream)
-		{
-			stream.Expect (TokenClass.Operator, ".");
-			Token ident = stream.Expect (TokenClass.Identifier);
-			return new GetExpression (stream.Location, lvalue, ident.Value);
-		}
 	}
 }
 

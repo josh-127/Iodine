@@ -54,17 +54,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static SuperCallExpression Parse (TokenStream stream, ClassDeclaration parent)
-		{
-			SuperCallExpression ret = new SuperCallExpression (stream.Location);
-			stream.Expect (TokenClass.Keyword, "super");
-			ret.Parent = parent;
-			ret.Add (ArgumentList.Parse (stream));
-			while (stream.Accept (TokenClass.SemiColon))
-				;
-			return ret;
-		}
 	}
 }
 

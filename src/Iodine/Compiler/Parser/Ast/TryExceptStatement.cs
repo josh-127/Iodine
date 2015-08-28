@@ -66,41 +66,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			TryExceptStatement retVal = null;
-			stream.Expect (TokenClass.Keyword, "try");
-			AstNode tryBody = Statement.Parse (stream);
-			AstNode typeList = new ArgumentList (stream.Location);
-			stream.Expect (TokenClass.Keyword, "except");
-			if (stream.Accept (TokenClass.OpenParan)) {
-				Token ident = stream.Expect (TokenClass.Identifier);
-				if (stream.Accept (TokenClass.Operator, "as")) {
-					typeList = ParseTypeList (stream);
-				}
-				stream.Expect (TokenClass.CloseParan);
-				retVal = new TryExceptStatement (stream.Location, ident.Value);
-			} else {
-				retVal = new TryExceptStatement (stream.Location, null);
-			}
-			retVal.Add (tryBody);
-			retVal.Add (Statement.Parse (stream));
-			retVal.Add (typeList);
-			return retVal;
-		}
-
-		private static ArgumentList ParseTypeList (TokenStream stream)
-		{
-			ArgumentList argList = new ArgumentList (stream.Location);
-			while (!stream.Match (TokenClass.CloseParan)) {
-				argList.Add (Expression.Parse (stream));
-				if (!stream.Accept (TokenClass.Comma)) {
-					break;
-				}
-			}
-			return argList;
-		}
 	}
 }
 

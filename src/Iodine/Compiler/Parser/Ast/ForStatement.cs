@@ -67,21 +67,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			ForStatement ret = new ForStatement (stream.Location);
-			stream.Expect (TokenClass.Keyword, "for");
-			stream.Expect (TokenClass.OpenParan);
-			ret.Add (Expression.Parse (stream));
-			stream.Expect (TokenClass.SemiColon);
-			ret.Add (Expression.Parse (stream));
-			stream.Expect (TokenClass.SemiColon);
-			ret.Add (Expression.Parse (stream));
-			stream.Expect (TokenClass.CloseParan);
-			ret.Add (Statement.Parse (stream));
-			return ret;
-		}
 	}
 }
 

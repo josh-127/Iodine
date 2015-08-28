@@ -56,14 +56,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (AstNode lvalue, TokenStream stream)
-		{
-			stream.Expect (TokenClass.OpenBracket);
-			AstNode index = Expression.Parse (stream);
-			stream.Expect (TokenClass.CloseBracket);
-			return new IndexerExpression (stream.Location, lvalue, index);
-		}
 	}
 }
 

@@ -49,33 +49,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (Location loc, string str)
-		{
-			int pos = 0;
-			string accum = "";
-			List<string> vars = new List<string> ();
-			while (pos < str.Length) {
-				if (str [pos] == '#' && str.Length != pos + 1 && str [pos + 1] == '{') {
-					string substr = str.Substring (pos + 2);
-					if (substr.IndexOf ('}') == -1)
-						return null;
-					substr = substr.Substring (0, substr.IndexOf ('}'));
-					pos += substr.Length + 3;
-					vars.Add (substr);
-					accum += "{}";
-
-				} else {
-					accum += str [pos++];
-				}
-			}
-			StringExpression ret = new StringExpression (loc, accum);
-
-			foreach (string name in vars) {
-				ret.Add (new NameExpression (loc, name));
-			}
-			return ret;
-		}
 	}
 }
 

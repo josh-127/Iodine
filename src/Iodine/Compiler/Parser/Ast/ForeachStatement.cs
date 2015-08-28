@@ -62,19 +62,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "foreach");
-			stream.Expect (TokenClass.OpenParan);
-			Token identifier = stream.Expect (TokenClass.Identifier);
-			stream.Expect (TokenClass.Keyword, "in");
-			AstNode expr = Expression.Parse (stream);
-			stream.Expect (TokenClass.CloseParan);
-			AstNode body = Statement.Parse (stream);
-			return new ForeachStatement (stream.Location, identifier.Value, expr, body);
-
-		}
 	}
 }
 

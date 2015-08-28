@@ -35,7 +35,7 @@ namespace Iodine.Compiler.Ast
 	public class FunctionDeclaration : AstNode
 	{
 		public string Name {
-			protected set;
+			internal set;
 			get;
 		}
 
@@ -77,115 +77,6 @@ namespace Iodine.Compiler.Ast
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
-		}
-
-		public static AstNode Parse (TokenStream stream, bool prototype = false, ClassDeclaration cdecl =
-			null)
-		{
-			if (stream.Accept (TokenClass.Operator, "@")) {
-				/*
-				 * Function decorators in the form of 
-				 * @myDecorator
-				 * func foo () {
-				 * }
-				 * are merely syntatic sugar for
-				 * func foo () {
-				 * }
-				 * foo = myDecorator (foo)
-				 */
-				AstNode expr = Expression.Parse (stream); // Decorator expression 
-				/* This is the original function which is to be decorated */
-				FunctionDeclaration idecl = FunctionDeclaration.Parse (stream, prototype, cdecl) as FunctionDeclaration;
-				/* We must construct an arglist which will be passed to the decorator */
-				ArgumentList args = new ArgumentList (stream.Location);
-				args.Add (new NameExpression (stream.Location, idecl.Name));
-				/*
-				 * Since two values can not be returned, we must return a single node containing both
-				 * the function declaration and call to the decorator 
-				 */
-				AstRoot nodes = new AstRoot (stream.Location);
-				nodes.Add (idecl);
-				nodes.Add (new Expression (stream.Location, new BinaryExpression (stream.Location,
-					BinaryOperation.Assign,
-					new NameExpression (stream.Location, idecl.Name),
-					new CallExpression (stream.Location, expr, args))));
-				return nodes;
-			}
-			stream.Expect (TokenClass.Keyword, "func");
-			bool isInstanceMethod;
-			bool isVariadic;
-			bool hasKeywordArgs;
-			Token ident = stream.Expect (TokenClass.Identifier);
-			List<string> parameters = ParseFuncParameters (stream,
-				                          out isInstanceMethod,
-				                          out isVariadic,
-				                          out hasKeywordArgs);
-			
-			FunctionDeclaration decl = new FunctionDeclaration (stream.Location, ident != null ? ident.Value : "",
-				                    isInstanceMethod, isVariadic, hasKeywordArgs, parameters);
-			if (!prototype) {
-				stream.Expect (TokenClass.OpenBrace);
-				CodeBlock scope = new CodeBlock (stream.Location);
-
-				if (stream.Match (TokenClass.Keyword, "super")) {
-					scope.Add (SuperCallExpression.Parse (stream, cdecl));
-				}
-
-				while (!stream.Match (TokenClass.CloseBrace)) {
-					scope.Add (Statement.Parse (stream));
-				}
-
-				decl.Add (scope);
-				stream.Expect (TokenClass.CloseBrace);
-			}
-			return decl;
-		}
-
-		private static List<string> ParseFuncParameters (TokenStream stream, out bool isInstanceMethod,
-		                                                 out bool isVariadic,
-		                                                 out bool hasKeywordArgs)
-		{
-			isVariadic = false;
-			hasKeywordArgs = false;
-			isInstanceMethod = false;
-			List<string> ret = new List<string> ();
-			stream.Expect (TokenClass.OpenParan);
-			if (stream.Accept (TokenClass.Keyword, "self")) {
-				isInstanceMethod = true;
-				if (!stream.Accept (TokenClass.Comma)) {
-					stream.Expect (TokenClass.CloseParan);
-					return ret;
-				}
-			}
-			while (!stream.Match (TokenClass.CloseParan)) {
-				if (!hasKeywordArgs && stream.Accept (TokenClass.Operator, "*")) {
-					if (stream.Accept (TokenClass.Operator, "*")) {
-						hasKeywordArgs = true;
-						Token ident = stream.Expect (TokenClass.Identifier);
-						ret.Add (ident.Value);
-					} else {
-						isVariadic = true;
-						Token ident = stream.Expect (TokenClass.Identifier);
-						ret.Add (ident.Value);
-					}
-				} else {
-					if (hasKeywordArgs) {
-						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
-							"Argument after keyword arguments!");
-					}
-					if (isVariadic) {
-						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
-							"Argument after params keyword!");
-					}
-					Token param = stream.Expect (TokenClass.Identifier);
-					ret.Add (param.Value);
-				}
-				if (!stream.Accept (TokenClass.Comma)) {
-					break;
-				}
-			}
-			stream.Expect (TokenClass.CloseParan);
-			return ret;
 		}
 	}
 }

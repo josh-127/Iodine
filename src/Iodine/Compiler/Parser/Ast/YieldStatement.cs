@@ -49,12 +49,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "yield");
-			return new YieldStatement (stream.Location, Expression.Parse (stream));
-		}
 	}
 }
 

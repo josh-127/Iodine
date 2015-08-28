@@ -49,31 +49,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "interface");
-			string name = stream.Expect (TokenClass.Identifier).Value;
-
-			InterfaceDeclaration contract = new InterfaceDeclaration (stream.Location, name);
-
-			stream.Expect (TokenClass.OpenBrace);
-
-			while (!stream.Match (TokenClass.CloseBrace)) {
-				if (stream.Match (TokenClass.Keyword, "func")) {
-					FunctionDeclaration func = FunctionDeclaration.Parse (stream, true) as FunctionDeclaration;
-					contract.Add (func);
-				} else {
-					stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location, 
-						"Interface may only contain function prototypes!");
-				}
-				while (stream.Accept (TokenClass.SemiColon));
-			}
-
-			stream.Expect (TokenClass.CloseBrace);
-
-			return contract;
-		}
 	}
 }
 

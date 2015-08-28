@@ -34,7 +34,7 @@ namespace Iodine.Compiler.Ast
 	public class ArgumentList : AstNode
 	{
 		public bool Packed {
-			protected set;
+			internal set;
 			get;
 		}
 
@@ -47,45 +47,6 @@ namespace Iodine.Compiler.Ast
 		public override void Visit (IAstVisitor visitor)
 		{
 			visitor.Accept (this);
-		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			ArgumentList argList = new ArgumentList (stream.Location);
-			stream.Expect (TokenClass.OpenParan);
-			KeywordArgumentList kwargs = null;
-			while (!stream.Match (TokenClass.CloseParan)) {
-				if (stream.Accept (TokenClass.Operator, "*")) {
-					argList.Packed = true;
-					argList.Add (Expression.Parse (stream));
-					break;
-				}
-				AstNode arg = Expression.Parse (stream);
-				if (stream.Accept (TokenClass.Colon)) {
-					if (kwargs == null) {
-						kwargs = new KeywordArgumentList (arg.Location);
-					}
-					NameExpression ident = arg as NameExpression;
-					AstNode val = Expression.Parse (stream);
-					if (ident == null) {
-						stream.ErrorLog.AddError (ErrorType.ParserError, arg.Location,
-							"Keyword must be a valid identifier");
-					} else {
-						kwargs.Add (ident.Value, val);
-					}
-				} else
-					argList.Add (arg);
-				if (!stream.Accept (TokenClass.Comma)) {
-					break;
-				}
-
-			}
-			if (kwargs != null) {
-				argList.Add (kwargs);
-			}
-			stream.Expect (TokenClass.CloseParan);
-			return argList;
-
 		}
 	}
 }

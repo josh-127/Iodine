@@ -84,15 +84,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstRoot Parse (TokenStream inputStream)
-		{
-			AstRoot root = new AstRoot (inputStream.Location);
-			while (!inputStream.EndOfStream) {
-				root.Add (Statement.Parse (inputStream));
-			}
-			return root;
-		}
 	}
 }
 

@@ -42,20 +42,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (AstNode firstVal, TokenStream stream)
-		{
-			TupleExpression tuple = new TupleExpression (stream.Location);
-			tuple.Add (firstVal);
-			while (!stream.Match (TokenClass.CloseParan)) {
-				tuple.Add (Expression.Parse (stream));
-				if (!stream.Accept (TokenClass.Comma)) {
-					break;
-				}
-			}
-			stream.Expect (TokenClass.CloseParan);
-			return tuple;
-		}
 	}
 }
 

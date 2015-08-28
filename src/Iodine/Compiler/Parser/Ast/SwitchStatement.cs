@@ -60,28 +60,6 @@ namespace Iodine.Compiler.Ast
 		{
 			visitor.Accept (this);
 		}
-
-		public static AstNode Parse (TokenStream stream)
-		{
-			SwitchStatement switchStmt = new SwitchStatement (stream.Location);
-			stream.Expect (TokenClass.Keyword, "switch");
-			stream.Expect (TokenClass.OpenParan);
-			switchStmt.Add (Expression.Parse (stream));
-			stream.Expect (TokenClass.CloseParan);
-			stream.Expect (TokenClass.OpenBrace);
-			AstNode defaultBlock = new AstRoot (stream.Location);
-			AstRoot caseStatements = new AstRoot (stream.Location);
-			while (!stream.EndOfStream && !stream.Match (TokenClass.CloseBrace)) {
-				caseStatements.Add (CaseStatement.Parse (stream));
-				if (stream.Accept (TokenClass.Keyword, "default")) {
-					defaultBlock = Statement.Parse (stream); 
-				}
-			}
-			switchStmt.Add (caseStatements);
-			switchStmt.Add (defaultBlock);
-			stream.Expect (TokenClass.CloseBrace);
-			return switchStmt;
-		}
 	}
 }
 
