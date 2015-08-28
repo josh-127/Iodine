@@ -76,7 +76,7 @@ namespace Iodine.Compiler.Ast
 			stream.Expect (TokenClass.Keyword, "except");
 			if (stream.Accept (TokenClass.OpenParan)) {
 				Token ident = stream.Expect (TokenClass.Identifier);
-				if (stream.Accept (TokenClass.Keyword, "as")) {
+				if (stream.Accept (TokenClass.Operator, "as")) {
 					typeList = ParseTypeList (stream);
 				}
 				stream.Expect (TokenClass.CloseParan);
