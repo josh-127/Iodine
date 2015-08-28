@@ -294,23 +294,23 @@ namespace Iodine.Compiler.Ast
 
 		public static AstNode ParseMulDivMod (TokenStream stream)
 		{
-			AstNode expr = ParseIncDecNot (stream);
+			AstNode expr = ParseUnary (stream);
 			while (stream.Match (TokenClass.Operator)) {
 				switch (stream.Current.Value) {
 				case "*":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Mul, expr,
-						ParseIncDecNot (stream));
+						ParseUnary (stream));
 					continue;
 				case "/":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Div, expr,
-						ParseIncDecNot (stream));
+						ParseUnary (stream));
 					continue;
 				case "%":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Mod, expr,
-						ParseIncDecNot (stream));
+						ParseUnary (stream));
 					continue;
 				default:
 					break;
@@ -320,33 +320,26 @@ namespace Iodine.Compiler.Ast
 			return expr;
 		}
 
-		public static AstNode ParseIncDecNot (TokenStream stream)
+		public static AstNode ParseUnary (TokenStream stream)
 		{
-			if (stream.Accept (TokenClass.Operator, "++")) {
-				return new UnaryExpression (stream.Location, UnaryOperation.PrefixIncrement, ParseIncDecNot (
-					stream));
-			} else if (stream.Accept (TokenClass.Operator, "--")) {
-				return new UnaryExpression (stream.Location, UnaryOperation.PrefixDecrement, ParseIncDecNot (
-					stream));
-			} else if (stream.Accept (TokenClass.Operator, "-")) {
-				return new UnaryExpression (stream.Location, UnaryOperation.Negate, ParseIncDecNot (stream));
-			} else if (stream.Accept (TokenClass.Operator, "~")) {
-				return new UnaryExpression (stream.Location, UnaryOperation.Not, ParseIncDecNot (stream));
-			} else if (stream.Accept (TokenClass.Operator, "!")) {
-				return new UnaryExpression (stream.Location, UnaryOperation.BoolNot, ParseIncDecNot (stream));
-			}
-			return ParsePostIncDec (stream);
-		}
+			if (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "-":
+					stream.Accept (TokenClass.Operator);
+					return new UnaryExpression (stream.Location, UnaryOperation.Negate, ParseUnary (
+						stream));
+				case "~":
+					stream.Accept (TokenClass.Operator);
+					return new UnaryExpression (stream.Location, UnaryOperation.Not, ParseUnary (
+						stream));
+				case "!":
+					stream.Accept (TokenClass.Operator);
+					return new UnaryExpression (stream.Location, UnaryOperation.BoolNot, ParseUnary (
+						stream));
 
-		public static AstNode ParsePostIncDec (TokenStream stream)
-		{
-			AstNode value = ParseCallSubscriptAccess (stream);
-			if (stream.Accept (TokenClass.Operator, "++")) {
-				return new UnaryExpression (stream.Location, UnaryOperation.PostfixIncrement, value);
-			} else if (stream.Accept (TokenClass.Operator, "--")) {
-				return new UnaryExpression (stream.Location, UnaryOperation.PostfixDecrement, value);
+				}
 			}
-			return value;
+			return ParseCallSubscriptAccess (stream);
 		}
 
 		public static AstNode ParseCallSubscriptAccess (TokenStream stream)
