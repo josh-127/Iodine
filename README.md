@@ -1,4 +1,6 @@
 # Iodine Programming Language
+[![Build Status](https://travis-ci.org/IodineLang/Iodine.svg)](https://travis-ci.org/IodineLang/Iodine)
+
 Iodine is dynamically typed scripting language written in C# to enable rapid prototyping. As of right now, the project is a total work in progress. The syntax of the language is derived from several languages including Python, C#, and PHP. 
 ### What has been implemented so far?
 Currently, Iodine supports the following:
