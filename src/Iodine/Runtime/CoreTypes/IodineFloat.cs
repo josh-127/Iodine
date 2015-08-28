@@ -93,17 +93,17 @@ namespace Iodine.Runtime
 			case BinaryOperation.Mod:
 				return new IodineFloat (Value % op2);
 			case BinaryOperation.Equals:
-				return new IodineBool (Value == op2);
+				return IodineBool.Create (Value == op2);
 			case BinaryOperation.NotEquals:
-				return new IodineBool (Value != op2);
+				return IodineBool.Create (Value != op2);
 			case BinaryOperation.GreaterThan:
-				return new IodineBool (Value > op2);
+				return IodineBool.Create (Value > op2);
 			case BinaryOperation.GreaterThanOrEqu:
-				return new IodineBool (Value >= op2);
+				return IodineBool.Create (Value >= op2);
 			case BinaryOperation.LessThan:
-				return new IodineBool (Value < op2);
+				return IodineBool.Create (Value < op2);
 			case BinaryOperation.LessThanOrEqu:
-				return new IodineBool (Value <= op2);
+				return IodineBool.Create (Value <= op2);
 			default:
 				return base.PerformBinaryOperation (vm, binop, rvalue);
 			}

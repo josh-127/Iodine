@@ -107,9 +107,9 @@ namespace Iodine.Runtime
 
 			switch (binop) {
 			case BinaryOperation.Equals:
-				return new IodineBool (strVal == Value);
+				return IodineBool.Create (strVal == Value);
 			case BinaryOperation.NotEquals:
-				return new IodineBool (strVal != Value);
+				return IodineBool.Create (strVal != Value);
 			case BinaryOperation.Add:
 				return new IodineString (Value + strVal);
 			default:
@@ -236,7 +236,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return new IodineBool (Value.Contains (args [0].ToString ()));
+			return IodineBool.Create (Value.Contains (args [0].ToString ()));
 		}
 
 		private IodineObject startsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -245,7 +245,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return new IodineBool (Value.StartsWith (args [0].ToString ()));
+			return IodineBool.Create (Value.StartsWith (args [0].ToString ()));
 		}
 
 		private IodineObject endsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -254,7 +254,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return new IodineBool (Value.EndsWith (args [0].ToString ()));
+			return IodineBool.Create (Value.EndsWith (args [0].ToString ()));
 		}
 
 		private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -333,7 +333,7 @@ namespace Iodine.Runtime
 					return IodineBool.False;
 				}
 			}
-			return new IodineBool (result);
+			return IodineBool.Create (result);
 		}
 
 		private IodineObject isDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -344,7 +344,7 @@ namespace Iodine.Runtime
 					return IodineBool.False;
 				}
 			}
-			return new IodineBool (result);
+			return IodineBool.Create (result);
 		}
 
 		private IodineObject isLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -355,7 +355,7 @@ namespace Iodine.Runtime
 					return IodineBool.False;
 				}
 			}
-			return new IodineBool (result);
+			return IodineBool.Create (result);
 		}
 
 		private IodineObject isWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -366,7 +366,7 @@ namespace Iodine.Runtime
 					return IodineBool.False;
 				}
 			}
-			return new IodineBool (result);
+			return IodineBool.Create (result);
 		}
 
 		private IodineObject isSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -377,7 +377,7 @@ namespace Iodine.Runtime
 					return IodineBool.False;
 				}
 			}
-			return new IodineBool (result);
+			return IodineBool.Create (result);
 		}
 	}
 }

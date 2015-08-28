@@ -33,20 +33,11 @@ namespace Iodine.Runtime
 {
 	public struct Instruction
 	{
-		public Location Location {
-			set;
-			get;
-		}
+		public readonly Location Location;
 
-		public Opcode OperationCode {
-			private set;
-			get;
-		}
+		public readonly Opcode OperationCode;
 
-		public int Argument {
-			private set;
-			get;
-		}
+		public readonly int Argument;
 
 		public Instruction (Location location, Opcode opcode)
 			: this ()

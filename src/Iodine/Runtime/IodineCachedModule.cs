@@ -238,7 +238,7 @@ namespace Iodine.Runtime
 			IodineItemType itemType = (IodineItemType)br.ReadByte ();
 			switch (itemType) {
 			case IodineItemType.Bool:
-				return new IodineBool (br.ReadBoolean ());
+				return IodineBool.Create (br.ReadBoolean ());
 			case IodineItemType.Int:
 				return new IodineInteger (br.ReadInt64 ());
 			case IodineItemType.Float:

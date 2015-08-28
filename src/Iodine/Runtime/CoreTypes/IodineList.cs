@@ -124,7 +124,7 @@ namespace Iodine.Runtime
 					vm.RaiseException (new IodineTypeException ("List"));
 					return null;
 				}
-				return new IodineBool (compare (this, left));
+				return IodineBool.Create (compare (this, left));
 			}
 			return base.PerformBinaryOperation (vm, binop, collection);
 		}
@@ -245,7 +245,7 @@ namespace Iodine.Runtime
 				}
 			}
 
-			return new IodineBool (found);
+			return IodineBool.Create (found);
 		}
 
 		private IodineObject splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)

@@ -162,6 +162,7 @@
     <Compile Include="Compiler\Parser\Ast\YieldStatement.cs" />
     <Compile Include="Compiler\Lexer\Tokenizer.cs" />
     <Compile Include="Runtime\CoreTypes\IodineHashMap.cs" />
+    <Compile Include="Runtime\LinkedStack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

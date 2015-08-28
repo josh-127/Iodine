@@ -113,7 +113,7 @@ namespace Iodine.Runtime
 					vm.RaiseException (new IodineTypeException ("HashMap"));
 					return null;
 				}
-				return new IodineBool (compareTo (hash));
+				return IodineBool.Create (compareTo (hash));
 			}
 			return base.PerformBinaryOperation (vm, binop, right);
 		}
@@ -173,7 +173,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return new IodineBool (Dict.ContainsKey (args [0].GetHashCode ()));
+			return IodineBool.Create (Dict.ContainsKey (args [0].GetHashCode ()));
 		}
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)

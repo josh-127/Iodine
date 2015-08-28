@@ -82,7 +82,7 @@ namespace Iodine.Runtime
 					return null;
 				}
 
-				return new IodineBool (Value.IsMatch (expr.ToString ()));
+				return IodineBool.Create (Value.IsMatch (expr.ToString ()));
 			}
 
 			private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -121,7 +121,7 @@ namespace Iodine.Runtime
 			{
 				Value = val;
 				SetAttribute ("value", new IodineString (val.Value));
-				SetAttribute ("success", new IodineBool (val.Success));
+				SetAttribute ("success", IodineBool.Create (val.Success));
 				SetAttribute ("getNextMatch", new InternalMethodCallback (getNextMatch, this));
 			}
 
@@ -206,7 +206,7 @@ namespace Iodine.Runtime
 				return null;
 			}
 
-			return new IodineBool (Regex.IsMatch (data.ToString (), pattern.ToString ()));
+			return IodineBool.Create (Regex.IsMatch (data.ToString (), pattern.ToString ()));
 		}
 
 	}

@@ -34,7 +34,7 @@ namespace ModuleReflection
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
-			return new IodineBool (o1.HasAttribute (str.Value));
+			return IodineBool.Create (o1.HasAttribute (str.Value));
 		}
 
 		private IodineObject getAttributes (VirtualMachine vm, IodineObject self, IodineObject[] args)
