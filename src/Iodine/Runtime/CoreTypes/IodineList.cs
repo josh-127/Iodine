@@ -300,7 +300,15 @@ namespace Iodine.Runtime
 
 		public override int GetHashCode ()
 		{
-			return Objects.GetHashCode ();
+			int accum = 17;
+			unchecked {
+				foreach (IodineObject obj in Objects) {
+					if (obj != null) {
+						accum += 529 * obj.GetHashCode ();
+					}
+				}
+			}
+			return accum;
 		}
 	}
 }
