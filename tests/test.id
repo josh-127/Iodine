@@ -414,4 +414,39 @@ describe('Iodine', lambda(test) => {
             });
         });
     });
+
+    test.describe('Enum', lambda(test) => {
+        enum Test {
+            BAD,
+            OK,
+            GOOD,
+            GREAT
+        }
+
+        enum AnotherTest {
+            BAD = 1,
+            VERY_BAD = 2,
+            TERRIBLE = 4,
+            STRANGE = 8
+        }
+
+        test.it('should be created using the enum keyword', lambda() => {
+            val = Test.BAD;
+            expect(val).to.equal(Test.BAD);
+            expect(val).to.be.an('Int');
+        });
+
+        test.it('should assign each value a unique integer', lambda() => {
+            expect(Test.BAD).not().to.equal(Test.OK);
+        });
+
+        test.it('should respect values assigned explicitly', lambda() => {
+            expect(AnotherTest.BAD).to.equal(1);
+        });
+
+        test.it('should be able to work as a bitmask', lambda() => {
+            val = AnotherTest.BAD | AnotherTest.STRANGE;
+            expect(val & AnotherTest.STRANGE).to.equal(AnotherTest.STRANGE);
+        });
+    });
 });
