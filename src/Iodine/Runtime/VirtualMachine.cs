@@ -133,7 +133,7 @@ namespace Iodine.Runtime
 				return IodineNull.Instance;
 			}
 
-			IodineObject retVal = Stack.Last == null ? IodineNull.Instance : Stack.Last;
+			IodineObject retVal = Stack.Last ?? IodineNull.Instance;
 			Stack.EndFrame ();
 			return retVal;
 		}

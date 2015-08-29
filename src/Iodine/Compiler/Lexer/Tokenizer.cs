@@ -105,6 +105,7 @@ namespace Iodine.Compiler
 			case '|':
 			case '%':
 			case '@':
+			case '?':
 				return ReadOperator ();
 			case '{':
 				ReadChar ();
