@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Globalization;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime
@@ -48,7 +49,7 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineInteger (Int64.Parse (args [0].ToString ()));
+				return new IodineInteger (Int64.Parse (args [0].ToString (), NumberStyles.AllowLeadingSign));
 			}
 		}
 
