@@ -228,9 +228,14 @@ namespace Iodine.Runtime
 			return stack.Pop ();
 		}
 
-		public StackFrame Duplicate (StackFrame top)
+		public StackFrame Duplicate (StackFrame top, int localCount)
 		{
-			return new StackFrame (Method, top, Self, LocalCount, locals);
+			if (localCount > LocalCount) {
+				IodineObject[] oldLocals = locals;
+				locals = new IodineObject[localCount];
+				Array.Copy (oldLocals, locals, oldLocals.Length);
+			}
+			return new StackFrame (Method, top, Self, Math.Max (LocalCount, localCount), locals);
 		}
 	}
 

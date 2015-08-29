@@ -94,7 +94,12 @@ namespace ModuleReflection
 
 		private IodineObject getBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			
 			IodineMethod method = args [0] as IodineMethod;
+
+			if (method == null && args [0] is IodineClosure) {
+				method = ((IodineClosure)args [0]).Target;
+			}
 
 			IodineList ret = new IodineList (new IodineObject[] { });
 

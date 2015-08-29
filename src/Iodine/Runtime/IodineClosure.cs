@@ -33,15 +33,19 @@ namespace Iodine.Runtime
 {
 	public class IodineClosure : IodineObject
 	{
+		public IodineMethod Target {
+			private set;
+			get;
+		}
+
 		private static readonly IodineTypeDefinition ClosureTypeDef = new IodineTypeDefinition ("Closure");
 		private StackFrame frame;
-		private IodineMethod target;
 
 		public IodineClosure (StackFrame frame, IodineMethod target)
 			: base (ClosureTypeDef)
 		{
 			this.frame = frame;
-			this.target = target;
+			Target = target;
 		}
 
 		public override bool IsCallable ()
@@ -51,7 +55,8 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			return vm.InvokeMethod (target, frame.Duplicate (vm.Stack.Top), frame.Self, arguments);
+			return vm.InvokeMethod (Target, frame.Duplicate (vm.Stack.Top, Target.LocalCount),
+				frame.Self, arguments);
 		}
 	}
 }
