@@ -288,10 +288,14 @@ namespace Iodine.Compiler
 		{
 			IodineLabel forLabel = methodBuilder.CreateLabel ();
 			IodineLabel breakLabel = methodBuilder.CreateLabel ();
+			IodineLabel skipAfterThought = methodBuilder.CreateLabel ();
 			breakLabels.Push (breakLabel);
 			continueLabels.Push (forLabel);
 			forStmt.Initializer.Visit (this);
+			methodBuilder.EmitInstruction (Opcode.Jump, skipAfterThought);
 			methodBuilder.MarkLabelPosition (forLabel);
+			forStmt.AfterThought.Visit (this);
+			methodBuilder.MarkLabelPosition (skipAfterThought);
 			forStmt.Condition.Visit (this);
 			methodBuilder.EmitInstruction (forStmt.Condition.Location, Opcode.JumpIfFalse, breakLabel);
 			forStmt.Body.Visit (this);
