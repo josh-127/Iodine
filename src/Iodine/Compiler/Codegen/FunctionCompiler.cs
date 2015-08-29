@@ -300,7 +300,7 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (forStmt.Condition.Location, Opcode.JumpIfFalse, breakLabel);
 			forStmt.Body.Visit (this);
 			forStmt.AfterThought.Visit (this);
-			methodBuilder.EmitInstruction (forStmt.AfterThought.Location, Opcode.Jump, forLabel);
+			methodBuilder.EmitInstruction (forStmt.AfterThought.Location, Opcode.Jump, skipAfterThought);
 			methodBuilder.MarkLabelPosition (breakLabel);
 			breakLabels.Pop ();
 			continueLabels.Pop ();
