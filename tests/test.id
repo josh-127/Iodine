@@ -196,5 +196,82 @@ describe('Iodine', lambda(test) => {
                 expect(map.contains(7)).to.be._false();
             });
         });
+
+        test.it('should allow any value as a key', lambda() => {
+            _a = A(1);
+            _b = B();
+            _c = [1, 2];
+            map = {
+                _a: 'a',
+                _b: 'b',
+                1: 'c',
+                _c: 'd'
+            };
+
+            expect(map[_a]).to.equal('a');
+            expect(map[_b]).to.equal('b');
+            expect(map[1]).to.equal('c');
+            expect(map[_c]).to.equal('d');
+        });
+
+        test.it('should filter using keys and return list', lambda() => {
+            map = {
+                'a': 1,
+                'b': 2,
+                'c': 3
+            };
+
+            _map = filter(map, lambda(item) => {
+                if (item != 'a') {
+                    return true;
+                }
+                return false;
+            });
+
+            expect(_map).to.be.a('List');
+            expect(_map.contains('a')).not().to.be._true();
+        });
+
+        test.it('should map using keys and return list', lambda() => {
+            hmap = {
+                'a': 1,
+                'b': 2,
+                'c': 3
+            };
+
+            _map = map(hmap, lambda(item) => {
+                if (item != 'a') {
+                    return item;
+                }
+                return 'a' + item;
+            });
+
+            expect(_map.contains('aa')).to.be._true();
+            expect(_map.contains('a')).not().to.be._true();
+            expect(_map).to.be.a('List');
+            expect(_map.contains('b')).to.be._true();
+        });
+
+        test.it('should iterate through foreach using keys', lambda() => {
+            hash = {
+                'a': 1,
+                'b': 2,
+                'c': 3
+            };
+
+            _list = [];
+            foreach (item in hash) {
+                _list.add(item);
+            }
+
+            #expect(_list.contains('a')).to.be._true();
+            #expect(_list.contains('b')).to.be._true();
+            #expect(_list.contains('c')).to.be._true();
+            #expect(_list.contains(1)).to.be._false();
+        });
+    });
+
+    test.describe('List', lambda(test) => {
+
     });
 });
