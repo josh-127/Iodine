@@ -150,7 +150,7 @@ namespace Iodine.Runtime
 		public override IodineObject Represent (VirtualMachine vm)
 		{
 			string repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
-			return new IodineString (String.Format ("{{0}}", repr));
+			return new IodineString (String.Format ("[{0}]", repr));
 		}
 
 		public void Add (IodineObject obj)

@@ -166,7 +166,7 @@ namespace Iodine.Compiler
 					return ReadFloat (accum);
 				accum.Append ((char)ReadChar ());
 				ch = (char)PeekChar ();
-			} while (char.IsDigit (ch));
+			} while (char.IsDigit (ch) || ch == '.');
 			return new Token (TokenClass.IntLiteral, accum.ToString (), location);
 		}
 
@@ -190,6 +190,7 @@ namespace Iodine.Compiler
 		private Token ReadFloat (StringBuilder buffer)
 		{
 			ReadChar (); // .
+			buffer.Append (".");
 			char ch = (char)PeekChar ();
 			do {
 				buffer.Append ((char)ReadChar ());
