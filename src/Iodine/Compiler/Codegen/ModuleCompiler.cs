@@ -294,11 +294,7 @@ namespace Iodine.Compiler
 
 		public void Accept (EnumDeclaration enumDecl)
 		{
-			IodineEnum ienum = new IodineEnum (enumDecl.Name);
-			foreach (string name in enumDecl.Items.Keys) {
-				ienum.AddItem (name, enumDecl.Items [name]);
-			}
-			this.module.SetAttribute (enumDecl.Name, ienum);
+			this.module.SetAttribute (enumDecl.Name, CompileEnum (enumDecl));
 		}
 
 		public IodineClass CompileClass (ClassDeclaration classDecl)
@@ -332,9 +328,21 @@ namespace Iodine.Compiler
 				} else if (classDecl.Children [i] is ClassDeclaration) {
 					ClassDeclaration subclass = classDecl.Children [i] as ClassDeclaration;
 					clazz.SetAttribute (subclass.Name, CompileClass (subclass));
+				} else if (classDecl.Children [i] is EnumDeclaration) {
+					EnumDeclaration enumeration = classDecl.Children [i] as EnumDeclaration;
+					clazz.SetAttribute (enumeration.Name, CompileEnum (enumeration));
 				}
 			}
 			return clazz;
+		}
+
+		private IodineEnum CompileEnum (EnumDeclaration enumDecl)
+		{
+			IodineEnum ienum = new IodineEnum (enumDecl.Name);
+			foreach (string name in enumDecl.Items.Keys) {
+				ienum.AddItem (name, enumDecl.Items [name]);
+			}
+			return ienum;
 		}
 
 		private IodineMethod compileMethod (FunctionDeclaration funcDecl)

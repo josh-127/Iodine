@@ -324,7 +324,7 @@ namespace Iodine.Runtime
 					Console.WriteLine (" at {0} <internal method>", frame.NativeMethod.Callback.Method.Name);
 				} else {
 					Console.WriteLine (" at {0} (Module: {1}, Line: {2})", top.Method.Name, top.Module.Name,
-						top.Location.Line + 1);
+						0+ 1);
 				}
 				top = top.Parent;
 			}

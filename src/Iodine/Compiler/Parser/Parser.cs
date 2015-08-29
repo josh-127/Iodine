@@ -86,6 +86,9 @@ namespace Iodine.Compiler
 				} else if (stream.Match (TokenClass.Keyword, "class")) {
 					ClassDeclaration subclass = ParseClass (stream) as ClassDeclaration;
 					clazz.Add (subclass);
+				} else if (stream.Match (TokenClass.Keyword, "enum")) {
+					EnumDeclaration enumeration = ParseEnum (stream) as EnumDeclaration;
+					clazz.Add (enumeration);
 				} else {
 					stream.Expect (TokenClass.Keyword, "func");
 				}
