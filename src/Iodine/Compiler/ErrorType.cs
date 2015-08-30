@@ -39,5 +39,30 @@ namespace Iodine
 		LexerError,
 		ParserError,
 	}
+
+	public class Error
+	{
+		public string Text {
+			private set;
+			get;
+		}
+
+		public ErrorType ErrorType {
+			private set;
+			get;
+		}
+
+		public Location Location {
+			private set;
+			get;
+		}
+
+		public Error (ErrorType etype, Location location, string text)
+		{
+			ErrorType = etype;
+			Text = text;
+			Location = location;
+		}
+	}
 }
 

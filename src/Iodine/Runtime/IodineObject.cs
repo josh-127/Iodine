@@ -65,6 +65,9 @@ namespace Iodine.Runtime
 			TypeDef = typeDef;
 			Interfaces = new List<IodineInterface> ();
 			attributes ["typeDef"] = typeDef;
+			if (typeDef != null) {
+				typeDef.BindAttributes (this);
+			}
 		}
 
 		public bool HasAttribute (string name)
@@ -75,7 +78,7 @@ namespace Iodine.Runtime
 			return res;
 		}
 
-		public void SetAttribute (VirtualMachine vm, string name, IodineObject value)
+		public virtual void SetAttribute (VirtualMachine vm, string name, IodineObject value)
 		{
 			if (Base != null && !attributes.ContainsKey (name)) {
 				if (Base.HasAttribute (name)) {

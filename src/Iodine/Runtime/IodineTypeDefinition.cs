@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
@@ -47,6 +48,21 @@ namespace Iodine.Runtime
 			attributes ["name"] = new IodineString (name);
 		}
 
+		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+		{
+			return base.Invoke (vm, arguments);
+		}
+
+		public override bool IsCallable ()
+		{
+			return true;
+		}
+
+		public override string ToString ()
+		{
+			return this.Name;
+		}
+			
 		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			IodineObject obj = this.Invoke (vm, arguments);
@@ -59,15 +75,15 @@ namespace Iodine.Runtime
 			self.Base = obj;
 		}
 
-		public override bool IsCallable ()
+		public IodineObject BindAttributes (IodineObject obj)
 		{
-			return true;
+			foreach (KeyValuePair<string, IodineObject> kv in attributes) {
+				if (!obj.HasAttribute (kv.Key))
+					obj.SetAttribute (kv.Key, kv.Value);
+			}
+			return obj;
 		}
 
-		public override string ToString ()
-		{
-			return this.Name;
-		}
 	}
 }
 

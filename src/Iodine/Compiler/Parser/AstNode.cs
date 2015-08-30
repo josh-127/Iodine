@@ -60,6 +60,13 @@ namespace Iodine.Compiler.Ast
 			children.Add (node);
 		}
 
+		public void VisitChildren (IAstVisitor visitor)
+		{
+			foreach (AstNode child in this.Children) {
+				child.Visit (visitor);
+			}
+		}
+
 		public IEnumerator<AstNode> GetEnumerator ()
 		{
 			foreach (AstNode node in this.children) {

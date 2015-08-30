@@ -71,7 +71,7 @@ namespace Iodine.Runtime
 			SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			SetAttribute ("splice", new InternalMethodCallback (splice, this));
 			SetAttribute ("clear", new InternalMethodCallback (clear, this));
-			this.Objects = list;
+			Objects = list;
 		}
 
 		public IodineList (IodineObject[] items)

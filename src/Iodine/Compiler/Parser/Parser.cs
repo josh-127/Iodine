@@ -579,52 +579,81 @@ namespace Iodine.Compiler
 				case "+=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.Add, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.Add, expr,
+							ParseBoolOr (stream)));
 					continue;
 				case "-=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.Sub, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.Sub,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				case "*=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.Mul, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.Mul,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				case "/=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.Div, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.Div,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				case "%=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.Mod, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.Mod,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				case "^=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.Xor, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.Xor,
+							expr, 
+							ParseBoolOr (stream)));
 					continue;
 				case "&=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.And, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.And,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				case "|=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.Or, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.Or,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				case "<<=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.LeftShift, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.LeftShift,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				case ">>=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-						new BinaryExpression (stream.Location, BinaryOperation.RightShift, expr, ParseBoolOr (stream)));
+						new BinaryExpression (stream.Location,
+							BinaryOperation.RightShift,
+							expr,
+							ParseBoolOr (stream)));
 					continue;
 				default:
 					break;

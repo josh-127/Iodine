@@ -120,7 +120,17 @@ namespace Iodine.Runtime
 
 		public override int GetHashCode ()
 		{
-			return Dict.GetHashCode ();
+			int accum = 17;
+			unchecked {
+				foreach (int key in Dict.Keys) {
+					accum += 529 * key;
+					IodineObject obj = Dict [key];
+					if (obj != null) {
+						accum += 529 * obj.GetHashCode ();
+					}
+				}
+			}
+			return accum;
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)

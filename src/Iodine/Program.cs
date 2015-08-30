@@ -90,9 +90,7 @@ namespace Iodine
 				shell.Run ();
 				Environment.Exit (0);
 			}
-
 			IodineOptions options = IodineOptions.Parse (args);
-
 			if (options.ShowVersion) {
 				int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
 				int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
@@ -128,9 +126,7 @@ namespace Iodine
 					Console.Error.WriteLine ("\nIodine stack trace \n{0}", vm.Stack.Trace ());
 					Panic ("Program terminated.");
 				}
-
 			}
-
 		}
 
 		private static void DisplayErrors (ErrorLog errorLog)

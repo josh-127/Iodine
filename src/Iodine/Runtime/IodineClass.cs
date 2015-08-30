@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 			this.Constructor = constructor;
 			this.InstanceMethods = new List<IodineMethod> ();
 		}
-
+			
 		public void AddInstanceMethod (IodineMethod method)
 		{
 			InstanceMethods.Add (method);

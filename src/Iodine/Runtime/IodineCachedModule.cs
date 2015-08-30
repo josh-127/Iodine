@@ -139,10 +139,10 @@ namespace Iodine.Runtime
 		{
 			bw.Write (clazz.Name);
 			WriteObject (bw, clazz.Constructor);
-			bw.Write (clazz.InstanceMethods.Count);
-			foreach (IodineMethod meth in clazz.InstanceMethods) {
-				WriteObject (bw, meth);
-			}
+			//bw.Write (clazz.InstanceMethods.Count);
+			//foreach (IodineMethod meth in clazz.InstanceMethods) {
+			//	WriteObject (bw, meth);
+			//}
 			bw.Write (clazz.Attributes.Count);
 			foreach (string key in clazz.Attributes.Keys) {
 				bw.Write (key);
@@ -284,7 +284,7 @@ namespace Iodine.Runtime
 			IodineClass clazz = new IodineClass (name, (IodineMethod)ReadObject (module, br));
 			int instanceMethods = br.ReadInt32 ();
 			for (int i = 0; i < instanceMethods; i++) {
-				clazz.AddInstanceMethod (ReadObject (module, br) as IodineMethod);
+				//clazz.AddInstanceMethod (ReadObject (module, br) as IodineMethod);
 			}
 			int items = br.ReadInt32 ();
 			for (int i = 0; i < items; i++) {

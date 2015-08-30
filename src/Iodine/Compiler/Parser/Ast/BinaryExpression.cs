@@ -40,13 +40,13 @@ namespace Iodine.Compiler.Ast
 
 		public AstNode Left {
 			get {
-				return Children[0];
+				return Children [0];
 			}
 		}
 
 		public AstNode Right {
 			get {
-				return Children[1];
+				return Children [1];
 			}
 		}
 

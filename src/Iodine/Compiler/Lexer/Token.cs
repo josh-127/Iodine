@@ -31,10 +31,30 @@ using System;
 
 namespace Iodine.Compiler
 {
+	public enum TokenClass
+	{
+		Identifier,
+		StringLiteral,
+		InterpolatedStringLiteral,
+		IntLiteral,
+		FloatLiteral,
+		Keyword,
+		OpenParan,
+		CloseParan,
+		OpenBrace,
+		CloseBrace,
+		OpenBracket,
+		CloseBracket,
+		SemiColon,
+		Colon,
+		Operator,
+		Comma
+	}
+
 	/// <summary>
 	/// Token.
 	/// </summary>
-	public class Token
+	public sealed class Token
 	{
 		/// <summary>
 		/// Gets the token class.

@@ -34,37 +34,9 @@ using System.Collections.Generic;
 namespace Iodine
 {
 	/// <summary>
-	/// Represents a compiler error.
-	/// </summary>
-	public class Error
-	{
-		public string Text {
-			private set;
-			get;
-		}
-
-		public ErrorType EType {
-			private set;
-			get;
-		}
-
-		public Location Location {
-			private set;
-			get;
-		}
-
-		public Error (ErrorType etype, Location location, string text)
-		{
-			EType = etype;
-			Text = text;
-			Location = location;
-		}
-	}
-
-	/// <summary>
 	/// Error log.
 	/// </summary>
-	public class ErrorLog : IEnumerable <Error>
+	public sealed class ErrorLog : IEnumerable <Error>
 	{
 		private List<Error> errors = new List<Error> ();
 

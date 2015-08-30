@@ -233,6 +233,8 @@ namespace Iodine.Compiler
 				return '\r';
 			case 't':
 				return '\t';
+			case 'f':
+				return '\f';
 			case '\\':
 				return '\\';
 			}
