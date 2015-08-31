@@ -216,7 +216,11 @@ namespace Iodine.Compiler
 			if (ReadChar () == -1) {
 				errorLog.AddError (ErrorType.LexerError, location, "Unterminated string literal!");
 			}
-			return new Token (TokenClass.StringLiteral, accum.ToString (), location);
+			return new Token (ch == '"' ? 
+				TokenClass.InterpolatedStringLiteral :
+				TokenClass.StringLiteral,
+				accum.ToString (),
+				location);
 		}
 
 		private char ParseEscapeCode ()
