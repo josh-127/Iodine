@@ -103,6 +103,7 @@ namespace Iodine.Runtime
 			SetAttribute ("open", new InternalMethodCallback (open, null));
 			SetAttribute ("Exception", IodineException.TypeDefinition);
 			SetAttribute ("TypeException", IodineTypeException.TypeDefinition);
+			SetAttribute ("TypeCastException", IodineTypeCastException.TypeDefinition);
 			SetAttribute ("ArgumentException", IodineArgumentException.TypeDefinition);
 			SetAttribute ("InternalException", IodineInternalErrorException.TypeDefinition);
 			SetAttribute ("IndexException", IodineIndexException.TypeDefinition);

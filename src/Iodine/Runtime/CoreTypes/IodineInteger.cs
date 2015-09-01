@@ -49,7 +49,13 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineInteger (Int64.Parse (args [0].ToString (), NumberStyles.AllowLeadingSign));
+				long value;
+				if (!Int64.TryParse (args [0].ToString (), NumberStyles.AllowLeadingSign, out value)) {
+					vm.RaiseException (new IodineTypeCastException ("Int"));
+					return null;
+				} else {
+					return new IodineInteger (value);
+				}
 			}
 		}
 

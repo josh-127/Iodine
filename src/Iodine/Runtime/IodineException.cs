@@ -111,6 +111,33 @@ namespace Iodine.Runtime
 		}
 	}
 
+	public class IodineTypeCastException : IodineException
+	{
+		public static new readonly IodineTypeDefinition TypeDefinition = new TypeCastExceptionTypeDef ();
+
+		class TypeCastExceptionTypeDef : IodineTypeDefinition
+		{
+			public TypeCastExceptionTypeDef ()
+				: base ("TypeCastException")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				if (args.Length <= 0) {
+					vm.RaiseException (new IodineArgumentException (1));
+				}
+				return new IodineTypeCastException ();
+			}
+		}
+
+		public IodineTypeCastException (string expectedType)
+			: base (TypeDefinition, "Could not convert to type '{0}'!", expectedType)
+		{
+			this.Base = new IodineException ();
+		}
+	}
+
 	public class IodineIndexException : IodineException
 	{
 		public static new readonly IodineTypeDefinition TypeDefinition = new IndexExceptionTypeDef ();
