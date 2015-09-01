@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 					vm.RaiseException (new IodineArgumentException (1));
 				}
 				long value;
-				if (!Int64.TryParse (args [0].ToString (), NumberStyles.AllowLeadingSign, out value)) {
+				if (!Int64.TryParse (args [0].ToString (), NumberStyles.AllowLeadingSign, null, out value)) {
 					vm.RaiseException (new IodineTypeCastException ("Int"));
 					return null;
 				} else {

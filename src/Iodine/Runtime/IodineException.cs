@@ -127,7 +127,7 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineTypeCastException ();
+				return new IodineTypeCastException (args [0].ToString ());
 			}
 		}
 
