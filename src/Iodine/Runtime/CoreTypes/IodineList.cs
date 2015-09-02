@@ -107,26 +107,25 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineIndexException ());
 		}
 
-		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject collection)
+		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
-			switch (binop) {
-			case BinaryOperation.Add:
-				IodineList list = new IodineList (Objects.ToArray ());
-				collection.IterReset (vm);
-				while (collection.IterMoveNext (vm)) {
-					IodineObject o = collection.IterGetNext (vm);
-					list.Add (o);
-				}
-				return list;
-			case BinaryOperation.Equals:
-				IodineList left = collection as IodineList;
-				if (left == null) {
-					vm.RaiseException (new IodineTypeException ("List"));
-					return null;
-				}
-				return IodineBool.Create (compare (this, left));
+			IodineList list = new IodineList (Objects.ToArray ());
+			right.IterReset (vm);
+			while (right.IterMoveNext (vm)) {
+				IodineObject o = right.IterGetNext (vm);
+				list.Add (o);
 			}
-			return base.PerformBinaryOperation (vm, binop, collection);
+			return list;
+		}
+
+		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+		{
+			IodineList listVal = right as IodineList;
+			if (listVal == null) {
+				vm.RaiseException (new IodineTypeException ("List"));
+				return null;
+			}
+			return IodineBool.Create (compare (this, listVal));
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)

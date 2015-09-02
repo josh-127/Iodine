@@ -104,18 +104,14 @@ namespace Iodine.Runtime
 			Keys [key.GetHashCode ()] = key;
 		}
 
-		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject right)
+		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
 		{
-			switch (binop) {
-			case BinaryOperation.Equals:
-				IodineHashMap hash = right as IodineHashMap;
-				if (hash == null) {
-					vm.RaiseException (new IodineTypeException ("HashMap"));
-					return null;
-				}
-				return IodineBool.Create (compareTo (hash));
+			IodineHashMap hash = right as IodineHashMap;
+			if (hash == null) {
+				vm.RaiseException (new IodineTypeException ("HashMap"));
+				return null;
 			}
-			return base.PerformBinaryOperation (vm, binop, right);
+			return IodineBool.Create (compareTo (hash));
 		}
 
 		public override int GetHashCode ()

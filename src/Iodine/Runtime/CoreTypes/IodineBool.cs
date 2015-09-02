@@ -67,20 +67,44 @@ namespace Iodine.Runtime
 			this.Value = val;
 		}
 
-		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
+		public override IodineObject Equals (VirtualMachine vm, IodineObject left)
 		{
-			IodineBool boolVal = rvalue as IodineBool;
-			switch (binop) {
-			case BinaryOperation.Equals:
-				return IodineBool.Create (boolVal.Value == Value);
-			case BinaryOperation.NotEquals:
-				return IodineBool.Create (boolVal.Value == Value);
-			case BinaryOperation.BoolAnd:
-				return IodineBool.Create (boolVal.Value && Value);
-			case BinaryOperation.BoolOr:
-				return IodineBool.Create (boolVal.Value || Value);
+			IodineBool boolVal = left as IodineBool;
+			if (boolVal == null) {
+				vm.RaiseException ("Left hand side expected to be Bool!");
+				return null;
 			}
-			return base.PerformBinaryOperation (vm, binop, rvalue);
+			return IodineBool.Create (boolVal.Value == Value);
+		}
+
+		public override IodineObject NotEquals (VirtualMachine vm, IodineObject left)
+		{
+			IodineBool boolVal = left as IodineBool;
+			if (boolVal == null) {
+				vm.RaiseException ("Left hand side expected to be Bool!");
+				return null;
+			}
+			return IodineBool.Create (boolVal.Value != Value);
+		}
+			
+		public override IodineObject LogicalAnd (VirtualMachine vm, IodineObject left)
+		{
+			IodineBool boolVal = left as IodineBool;
+			if (boolVal == null) {
+				vm.RaiseException ("Left hand side expected to be Bool!");
+				return null;
+			}
+			return IodineBool.Create (boolVal.Value && Value);
+		}
+
+		public override IodineObject LogicalOr (VirtualMachine vm, IodineObject left)
+		{
+			IodineBool boolVal = left as IodineBool;
+			if (boolVal == null) {
+				vm.RaiseException ("Left hand side expected to be Bool!");
+				return null;
+			}
+			return IodineBool.Create (boolVal.Value || Value);
 		}
 
 		public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)

@@ -57,18 +57,15 @@ namespace Iodine.Runtime
 		{
 		}
 
-		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
+		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
-			switch (binop) {
-			case BinaryOperation.Add:
-				handlers.Add (rvalue);
-				break;
-			case BinaryOperation.Sub:
-				handlers.Remove (rvalue);
-				break;
-			default:
-				return base.PerformBinaryOperation (vm, binop, rvalue);
-			}
+			handlers.Add (right);
+			return this;
+		}
+
+		public override IodineObject Sub (VirtualMachine vm, IodineObject right)
+		{
+			handlers.Remove (right);
 			return this;
 		}
 

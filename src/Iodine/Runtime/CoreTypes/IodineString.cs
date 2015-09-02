@@ -89,32 +89,32 @@ namespace Iodine.Runtime
 			SetAttribute ("isSymbol", new InternalMethodCallback (isSymbol, this));
 		}
 
-		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
+		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
-			IodineString str = rvalue as IodineString;
-			string strVal = "";
-
+			IodineString str = right as IodineString;
 			if (str == null) {
-				if (rvalue is IodineNull) {
-					return base.PerformBinaryOperation (vm, binop, rvalue);
-				} else {
-					vm.RaiseException ("Right value must be of type string!");
-					return null;
-				}
-			} else {
-				strVal = str.Value;
+				vm.RaiseException ("Right hand value must be of type Str!");
+				return null;
 			}
+			return new IodineString (Value + str.Value);
+		}
 
-			switch (binop) {
-			case BinaryOperation.Equals:
-				return IodineBool.Create (strVal == Value);
-			case BinaryOperation.NotEquals:
-				return IodineBool.Create (strVal != Value);
-			case BinaryOperation.Add:
-				return new IodineString (Value + strVal);
-			default:
-				return base.PerformBinaryOperation (vm, binop, rvalue);
+		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+		{
+			IodineString str = right as IodineString;
+			if (str == null) {
+				return base.Equals (vm, right);
 			}
+			return IodineBool.Create (str.Value == Value);
+		}
+
+		public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
+		{
+			IodineString str = right as IodineString;
+			if (str == null) {
+				return base.NotEquals (vm, right);
+			}
+			return IodineBool.Create (str.Value != Value);
 		}
 
 		public override string ToString ()

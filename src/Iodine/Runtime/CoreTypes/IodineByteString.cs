@@ -78,35 +78,35 @@ namespace Iodine.Runtime
 			Value = Encoding.ASCII.GetBytes (val);
 		}
 
-		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
+		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
-			IodineByteString str = rvalue as IodineByteString;
-			byte[] strVal = null;
-
+			IodineByteString str = right as IodineByteString;
 			if (str == null) {
-				if (rvalue is IodineNull) {
-					return base.PerformBinaryOperation (vm, binop, rvalue);
-				} else {
-					vm.RaiseException ("Right value must be of type ByteStr!");
-					return null;
-				}
-			} else {
-				strVal = str.Value;
+				vm.RaiseException ("Right hand value must be of type Str!");
+				return null;
 			}
+			byte[] newArr = new byte[str.Value.Length + Value.Length];
+			Array.Copy (Value, newArr, Value.Length);
+			Array.Copy (str.Value, 0, newArr, Value.Length, str.Value.Length);
+			return new IodineByteString (newArr);
+		}
 
-			switch (binop) {
-			case BinaryOperation.Equals:
-				return IodineBool.Create (Enumerable.SequenceEqual<byte> (strVal, Value));
-			case BinaryOperation.NotEquals:
-				return IodineBool.Create (!Enumerable.SequenceEqual<byte> (strVal, Value));
-			case BinaryOperation.Add:
-				byte[] newArr = new byte[str.Value.Length + Value.Length];
-				Array.Copy (Value, newArr, Value.Length);
-				Array.Copy (strVal, 0, newArr, Value.Length, strVal.Length);
-				return new IodineByteString (newArr);
-			default:
-				return base.PerformBinaryOperation (vm, binop, rvalue);
+		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+		{
+			IodineByteString str = right as IodineByteString;
+			if (str == null) {
+				return base.Equals (vm, right);
 			}
+			return IodineBool.Create (Enumerable.SequenceEqual<byte> (str.Value, Value));
+		}
+
+		public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
+		{
+			IodineByteString str = right as IodineByteString;
+			if (str == null) {
+				return base.NotEquals (vm, right);
+			}
+			return IodineBool.Create (!Enumerable.SequenceEqual<byte> (str.Value, Value));
 		}
 
 		public override string ToString ()

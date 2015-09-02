@@ -301,6 +301,23 @@ namespace Iodine.Compiler
 		{
 			char op = (char)ReadChar ();
 			string nextTwoChars = op + ((char)PeekChar ()).ToString ();
+			string nextThreeChars = op + ((char)PeekChar ()).ToString () + ((char)PeekChar (1)).ToString ();
+
+			switch (nextThreeChars) {
+			case "<<=":
+				ReadChar ();
+				ReadChar ();
+				return new Token (TokenClass.Operator, nextThreeChars, location);
+			case ">>=":
+				ReadChar ();
+				ReadChar ();
+				return new Token (TokenClass.Operator, nextThreeChars, location);
+			case "...":
+				ReadChar ();
+				ReadChar ();
+				return new Token (TokenClass.Operator, nextThreeChars, location);
+			}
+
 			switch (nextTwoChars) {
 			case ">>":
 				ReadChar ();
@@ -356,18 +373,9 @@ namespace Iodine.Compiler
 			case "??":
 				ReadChar ();
 				return new Token (TokenClass.Operator, nextTwoChars, location);
-			}
-
-			string nextThreeChars = op + ((char)PeekChar ()).ToString () + ((char)PeekChar (1)).ToString ();
-			switch (nextThreeChars) {
-			case "<<=":
+			case "..":
 				ReadChar ();
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextThreeChars, location);
-			case ">>=":
-				ReadChar ();
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextThreeChars, location);
+				return new Token (TokenClass.Operator, nextTwoChars, location);
 			default:
 				return new Token (TokenClass.Operator, op.ToString (), location);
 			}

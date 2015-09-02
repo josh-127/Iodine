@@ -55,7 +55,9 @@ namespace Iodine.Compiler
 		InstanceOf,
 		NotInstanceOf,
 		DynamicCast,
-		NullCoalescing
+		NullCoalescing,
+		ClosedRange,
+		HalfRange
 	}
 }
 

@@ -64,51 +64,117 @@ namespace Iodine.Runtime
 			Value = val;
 		}
 
-		public override IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
+		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
-			IodineFloat floatVal = rvalue as IodineFloat;
-
-			double op2 = 0;
+			IodineFloat floatVal = right as IodineFloat;
 			if (floatVal == null) {
-				if (rvalue is IodineInteger) {
-					IodineInteger intVal = rvalue as IodineInteger;
-					op2 = (double)intVal.Value;
-				} else {
-					vm.RaiseException (new IodineTypeException ("Float"));
-					return null;
-				}
-			} else {
-				op2 = floatVal.Value;
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
 			}
-
-			switch (binop) {
-			case BinaryOperation.Add:
-				return new IodineFloat (Value + op2);
-			case BinaryOperation.Sub:
-				return new IodineFloat (Value - op2);
-			case BinaryOperation.Mul:
-				return new IodineFloat (Value * op2);
-			case BinaryOperation.Div:
-				return new IodineFloat (Value / op2);
-			case BinaryOperation.Mod:
-				return new IodineFloat (Value % op2);
-			case BinaryOperation.Equals:
-				return IodineBool.Create (Value == op2);
-			case BinaryOperation.NotEquals:
-				return IodineBool.Create (Value != op2);
-			case BinaryOperation.GreaterThan:
-				return IodineBool.Create (Value > op2);
-			case BinaryOperation.GreaterThanOrEqu:
-				return IodineBool.Create (Value >= op2);
-			case BinaryOperation.LessThan:
-				return IodineBool.Create (Value < op2);
-			case BinaryOperation.LessThanOrEqu:
-				return IodineBool.Create (Value <= op2);
-			default:
-				return base.PerformBinaryOperation (vm, binop, rvalue);
-			}
+			return new IodineFloat (Value + floatVal.Value);
 		}
 
+		public override IodineObject Sub (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return new IodineFloat (Value - floatVal.Value);
+		}
+
+		public override IodineObject Div (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return new IodineFloat (Value / floatVal.Value);
+		}
+
+		public override IodineObject Mod (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return new IodineFloat (Value % floatVal.Value);
+		}
+
+		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return IodineBool.Create (Value == floatVal.Value);
+		}
+
+		public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return IodineBool.Create (Value != floatVal.Value);
+		}
+
+
+		public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return IodineBool.Create (Value > floatVal.Value);
+		}
+
+
+		public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return IodineBool.Create (Value >= floatVal.Value);
+		}
+			
+		public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return IodineBool.Create (Value < floatVal.Value);
+		}
+			
+		public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
+		{
+			IodineFloat floatVal = right as IodineFloat;
+			if (floatVal == null) {
+				vm.RaiseException (new IodineTypeException (
+					"Right hand value expected to be of type Float"));
+				return null;
+			}
+			return IodineBool.Create (Value <= floatVal.Value);
+		}
 
 		public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
 		{

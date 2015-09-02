@@ -568,20 +568,20 @@ namespace Iodine.Compiler
 
 		private static AstNode ParseAssign (TokenStream stream)
 		{
-			AstNode expr = ParseBoolOr (stream);
+			AstNode expr = ParseRange (stream);
 			while (stream.Match (TokenClass.Operator)) {
 				switch (stream.Current.Value) {
 				case "=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign,
-						expr, ParseBoolOr (stream));
+						expr, ParseRange (stream));
 					continue;
 				case "+=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Add, expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "-=":
 					stream.Accept (TokenClass.Operator);
@@ -589,7 +589,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Sub,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "*=":
 					stream.Accept (TokenClass.Operator);
@@ -597,7 +597,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Mul,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "/=":
 					stream.Accept (TokenClass.Operator);
@@ -605,7 +605,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Div,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "%=":
 					stream.Accept (TokenClass.Operator);
@@ -613,7 +613,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Mod,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "^=":
 					stream.Accept (TokenClass.Operator);
@@ -621,7 +621,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Xor,
 							expr, 
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "&=":
 					stream.Accept (TokenClass.Operator);
@@ -629,7 +629,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.And,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "|=":
 					stream.Accept (TokenClass.Operator);
@@ -637,7 +637,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Or,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case "<<=":
 					stream.Accept (TokenClass.Operator);
@@ -645,7 +645,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.LeftShift,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
 					continue;
 				case ">>=":
 					stream.Accept (TokenClass.Operator);
@@ -653,7 +653,30 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.RightShift,
 							expr,
-							ParseBoolOr (stream)));
+							ParseRange (stream)));
+					continue;
+				default:
+					break;
+				}
+				break;
+			}
+			return expr;
+		}
+
+		private static AstNode ParseRange (TokenStream stream)
+		{
+			AstNode expr = ParseBoolOr (stream);
+			while (stream.Match (TokenClass.Operator)) {
+				switch (stream.Current.Value) {
+				case "...":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.ClosedRange, expr,
+						ParseBoolOr (stream));
+					continue;
+				case "..":
+					stream.Accept (TokenClass.Operator);
+					expr = new BinaryExpression (stream.Location, BinaryOperation.HalfRange, expr,
+						ParseBoolOr (stream));
 					continue;
 				default:
 					break;

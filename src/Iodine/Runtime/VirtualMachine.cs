@@ -251,7 +251,7 @@ namespace Iodine.Runtime
 				{
 					IodineObject target = Stack.Pop ();
 					string attribute = ((IodineName)Stack.Top.Module.ConstantPool [instruction.Argument]).Value;
-					if (target.Attributes.ContainsKey  (attribute) &&
+					if (target.Attributes.ContainsKey (attribute) &&
 						target.Attributes [attribute] is IIodineProperty) {
 						IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
 						Stack.Push (property.Get (this));
@@ -517,7 +517,6 @@ namespace Iodine.Runtime
 					
 						if (module == null) {
 							throw new SyntaxException (errLog);
-							break;
 						}
 						ModuleCache [fullPath] = module;
 						module.Initializer.Invoke (this, new IodineObject[] { });
