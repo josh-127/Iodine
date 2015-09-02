@@ -132,6 +132,8 @@ namespace Iodine.Runtime
 
 	public class StackFrame
 	{
+		public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
+
 		public int LocalCount {
 			private set;
 			get;

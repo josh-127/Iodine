@@ -268,6 +268,16 @@ namespace Iodine.Compiler
 			continueLabels.Pop ();
 		}
 
+		public void Accept (WithStatement withStmt)
+		{
+			symbolTable.NextScope ();
+			withStmt.Expression.Visit (this);
+			methodBuilder.EmitInstruction (Opcode.BeginWith);
+			withStmt.Body.Visit (this);
+			methodBuilder.EmitInstruction (Opcode.EndWith);
+			symbolTable.LeaveScope ();
+		}
+
 		public void Accept (DoStatement doStmt)
 		{
 			IodineLabel doLabel = methodBuilder.CreateLabel ();

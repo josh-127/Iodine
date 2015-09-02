@@ -36,17 +36,18 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class VirtualMachine
+	public sealed class VirtualMachine
 	{
 		public static readonly Dictionary<string, IodineModule> ModuleCache = new Dictionary<string, IodineModule> ();
-	
+
+		public readonly IodineStack Stack = new IodineStack ();
+
 		private Dictionary<string, IodineObject> globalDict = new Dictionary<string, IodineObject> ();
 		private Stack<IodineExceptionHandler> exceptionHandlers = new Stack<IodineExceptionHandler> ();
 		private IodineObject lastException = null;
 		private Location currLoc;
 		private Instruction instruction;
 
-		public readonly IodineStack Stack = new IodineStack ();
 
 		public Dictionary <string, IodineObject> Globals {
 			get {
@@ -127,6 +128,10 @@ namespace Iodine.Runtime
 				instruction = method.Body [Stack.Top.InstructionPointer++];
 				ExecuteInstruction ();
 				top.Location = currLoc;
+			}
+
+			while (top.DisposableObjects.Count > 0) {
+				top.DisposableObjects.Pop ().Exit (this);
 			}
 
 			if (top.AbortExecution) {
@@ -279,7 +284,8 @@ namespace Iodine.Runtime
 				{
 					IodineObject op2 = Stack.Pop ();
 					IodineObject op1 = Stack.Pop ();
-					Stack.Push (op1.PerformBinaryOperation (this, (BinaryOperation)instruction.Argument,
+					Stack.Push (op1.PerformBinaryOperation (this,
+						(BinaryOperation)instruction.Argument,
 						op2));
 					break;
 				}
@@ -563,6 +569,18 @@ namespace Iodine.Runtime
 					} else {
 						Stack.Push (IodineBool.False);
 					}
+					break;
+				}
+			case Opcode.BeginWith:
+				{
+					IodineObject obj = Stack.Pop ();
+					obj.Enter (this);
+					Stack.Top.DisposableObjects.Push (obj);
+					break;
+				}
+			case Opcode.EndWith:
+				{
+					Stack.Top.DisposableObjects.Pop ().Exit (this);
 					break;
 				}
 			}

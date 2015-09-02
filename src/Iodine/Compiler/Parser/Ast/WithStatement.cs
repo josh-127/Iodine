@@ -29,44 +29,30 @@
 
 using System;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler.Ast
 {
-	public class IodineProperty : IodineObject, IIodineProperty
+	public class WithStatement : AstNode
 	{
-		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Property");
-
-		public readonly IodineObject Setter;
-		public readonly IodineObject Getter;
-
-		private IodineObject self;
-
-		public IodineProperty (IodineObject getter, IodineObject setter, IodineObject self)
-			: base (TypeDefinition) {
-			Setter = setter;
-			Getter = getter;
-			this.self = self;
+		public AstNode Expression {
+			get {
+				return Children [0];
+			}
 		}
 
-		public IodineObject Set (VirtualMachine vm, IodineObject value)
-		{
-			if (Setter is IodineMethod) {
-				return vm.InvokeMethod ((IodineMethod)Setter, self, new IodineObject[] { value });
-			} else if (Setter is IodineInstanceMethodWrapper) {
-				return vm.InvokeMethod (((IodineInstanceMethodWrapper)Setter).Method, self,
-					new IodineObject[] { value });
+		public AstNode Body {
+			get {
+				return Children [1];
 			}
-			return Setter.Invoke (vm, new IodineObject[] { value });
 		}
 
-		public IodineObject Get (VirtualMachine vm)
+		public WithStatement (Location location)
+			: base (location)
 		{
-			if (Getter is IodineMethod) {
-				return vm.InvokeMethod ((IodineMethod)Getter, self, new IodineObject[0]);
-			} else if (Getter is IodineInstanceMethodWrapper) {
-				return vm.InvokeMethod (((IodineInstanceMethodWrapper)Getter).Method, self,
-					new IodineObject[0]);
-			}
-			return Getter.Invoke (vm, new IodineObject[0]);
+		}
+
+		public override void Visit (IAstVisitor visitor)
+		{
+			visitor.Accept (this);
 		}
 	}
 }

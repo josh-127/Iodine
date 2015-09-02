@@ -164,6 +164,7 @@
     <Compile Include="Runtime\LinkedStack.cs" />
     <Compile Include="Runtime\CoreTypes\IodineProperty.cs" />
     <Compile Include="Runtime\IIodineProperty.cs" />
+    <Compile Include="Compiler\Parser\Ast\WithStatement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

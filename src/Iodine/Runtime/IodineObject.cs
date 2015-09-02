@@ -86,10 +86,8 @@ namespace Iodine.Runtime
 					return;
 				}
 			}
-
 			SetAttribute (name, value);
 		}
-
 
 		public void SetAttribute (string name, IodineObject value)
 		{
@@ -103,6 +101,9 @@ namespace Iodine.Runtime
 			} else if (value is IodineInstanceMethodWrapper) {
 				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
 				attributes [name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
+			} else if (value is IodineProperty) {
+				IodineProperty property = (IodineProperty)value;
+				attributes [name] = new IodineProperty (property.Getter, property.Setter, this); 
 			} else {
 				attributes [name] = value;
 			}
@@ -134,6 +135,9 @@ namespace Iodine.Runtime
 
 		public virtual IodineObject ToString (VirtualMachine vm)
 		{
+			if (attributes.ContainsKey ("__toStr__")) {
+				return attributes ["__toStr__"].Invoke (vm, new IodineObject[] { });
+			}
 			return new IodineString (ToString ());
 		}
 
@@ -147,16 +151,23 @@ namespace Iodine.Runtime
 
 		public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
-			
+			if (attributes.ContainsKey ("__setIndex__")) {
+				attributes ["__setIndex__"].Invoke (vm, new IodineObject[] { key, value });
+			}
 		}
 
 		public virtual IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
+			if (attributes.ContainsKey ("__getIndex__")) {
+				return attributes ["__getIndex__"].Invoke (vm, new IodineObject[] { key });
+			}
 			return null;
 		}
 
 		[Obsolete("Overload the appropriate method for the specific binary operator you wish to overload instead")]
-		public virtual IodineObject PerformBinaryOperation (VirtualMachine vm, BinaryOperation binop, IodineObject rvalue)
+		public virtual IodineObject PerformBinaryOperation (VirtualMachine vm,
+			BinaryOperation binop,
+			IodineObject rvalue)
 		{
 			switch (binop) {
 			case BinaryOperation.Add:
@@ -236,7 +247,15 @@ namespace Iodine.Runtime
 
 		public virtual bool IsTrue ()
 		{
-			return false;
+			return true;
+		}
+
+		public virtual void Enter (VirtualMachine vm)
+		{
+		}
+
+		public virtual void Exit (VirtualMachine vm)
+		{
 		}
 
 		#region Unary Operator Stubs

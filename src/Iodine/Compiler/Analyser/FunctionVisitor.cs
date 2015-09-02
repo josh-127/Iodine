@@ -223,6 +223,13 @@ namespace Iodine.Compiler
 			caseStmt.VisitChildren (this);
 		}
 
+		public void Accept (WithStatement withStmt)
+		{
+			symbolTable.BeginScope ();
+			withStmt.VisitChildren (this);
+			symbolTable.EndScope ();
+		}
+
 		public void Accept (WhileStatement whileStmt)
 		{
 			whileStmt.VisitChildren (this);

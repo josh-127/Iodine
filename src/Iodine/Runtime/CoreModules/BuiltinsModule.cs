@@ -124,7 +124,7 @@ namespace Iodine.Runtime
 			}
 			IodineObject getter = args [0];
 			IodineObject setter = args.Length > 1 ? args [1] : null;
-			return new IodineProperty (getter, setter);
+			return new IodineProperty (getter, setter, null);
 		}
 
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)

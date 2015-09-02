@@ -34,26 +34,46 @@ namespace Iodine.Runtime
 {
 	public class IodineClass : IodineTypeDefinition
 	{
+		private bool initializerInvoked = false;
+
+		public IodineMethod Initializer {
+			private set;
+			get;
+		}
+
 		public IodineMethod Constructor {
 			private set;
 			get;
 		}
 
-		public IList<IodineMethod> InstanceMethods {
-			private set;
-			get;
-		}
-
-		public IodineClass (string name, IodineMethod constructor)
+		public IodineClass (string name, IodineMethod initializer, IodineMethod constructor)
 			: base (name)
 		{
-			this.Constructor = constructor;
-			this.InstanceMethods = new List<IodineMethod> ();
+			Constructor = constructor;
+			Initializer = initializer;
 		}
 			
 		public void AddInstanceMethod (IodineMethod method)
 		{
-			InstanceMethods.Add (method);
+			SetAttribute (method.Name, method);
+		}
+
+		public override IodineObject GetAttribute (VirtualMachine vm, string name)
+		{
+			if (!initializerInvoked) {
+				initializerInvoked = true;
+				Initializer.Invoke (vm, new IodineObject[] { });
+			}
+			return base.GetAttribute (vm, name);
+		}
+
+		public override void SetAttribute (VirtualMachine vm, string name, IodineObject value)
+		{
+			if (!initializerInvoked) {
+				initializerInvoked = true;
+				Initializer.Invoke (vm, new IodineObject[] { });
+			}
+			base.SetAttribute (vm, name, value);
 		}
 
 		public override bool IsCallable ()
@@ -63,22 +83,25 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			IodineObject obj = new IodineObject (this);
-			foreach (IodineMethod method in this.InstanceMethods) {
-				obj.SetAttribute (method.Name, method);
+			if (!initializerInvoked) {
+				initializerInvoked = true;
+				Initializer.Invoke (vm, new IodineObject[] { });
 			}
+			IodineObject obj = new IodineObject (this);
+			BindAttributes (obj);
 			vm.InvokeMethod (Constructor, obj, arguments);
-
 			return obj;
 		}
 
 		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			IodineObject obj = Invoke (vm, arguments);
-			foreach (IodineMethod method in this.InstanceMethods) {
-				if (!self.HasAttribute (method.Name))
-					self.SetAttribute (method.Name, method);
-				obj.SetAttribute (method.Name, method);
+
+			foreach (KeyValuePair<string, IodineObject> kv in attributes) {
+				if (!self.HasAttribute (kv.Key))
+					self.SetAttribute (kv.Key, kv.Value);
+				if (!obj.HasAttribute (kv.Key))
+					obj.SetAttribute (kv.Key, kv.Value);
 			}
 			self.SetAttribute ("__super__", obj);
 			self.Base = obj;

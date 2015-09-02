@@ -281,7 +281,7 @@ namespace Iodine.Runtime
 		private static IodineObject ReadClass (IodineModule module, BinaryReader br)
 		{
 			string name = br.ReadString ();
-			IodineClass clazz = new IodineClass (name, (IodineMethod)ReadObject (module, br));
+			//IodineClass clazz = new IodineClass (name, (IodineMethod)ReadObject (module, br));
 			int instanceMethods = br.ReadInt32 ();
 			for (int i = 0; i < instanceMethods; i++) {
 				//clazz.AddInstanceMethod (ReadObject (module, br) as IodineMethod);
@@ -290,9 +290,10 @@ namespace Iodine.Runtime
 			for (int i = 0; i < items; i++) {
 				string item = br.ReadString ();
 				IodineObject val = ReadObject (module, br);
-				clazz.SetAttribute (item, val);
+				//clazz.SetAttribute (item, val);
 			}
-			return clazz;
+			return null;
+			//return clazz;
 		}
 
 		private static IodineObject ReadInterface (IodineModule module, BinaryReader br)

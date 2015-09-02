@@ -280,6 +280,11 @@ namespace Iodine.Compiler
 			brk.Visit (functionCompiler);
 		}
 
+		public void Accept (WithStatement withStmt)
+		{
+			withStmt.Visit (functionCompiler);
+		}
+
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {
@@ -315,8 +320,11 @@ namespace Iodine.Compiler
 					}
 				}
 			}
-			IodineClass clazz = new IodineClass (classDecl.Name, constructor);
-
+			IodineMethod initializer = new IodineMethod (module, "__init__", false, 0, 0);
+			IodineClass clazz = new IodineClass (classDecl.Name, initializer, constructor);
+			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable,
+				clazz.Initializer);
+			
 			for (int i = 1; i < classDecl.Children.Count; i++) {
 				if (classDecl.Children [i] is FunctionDeclaration) {
 					FunctionDeclaration func = classDecl.Children [i] as FunctionDeclaration;
@@ -331,8 +339,19 @@ namespace Iodine.Compiler
 				} else if (classDecl.Children [i] is EnumDeclaration) {
 					EnumDeclaration enumeration = classDecl.Children [i] as EnumDeclaration;
 					clazz.SetAttribute (enumeration.Name, CompileEnum (enumeration));
+				} else if (classDecl.Children [i] is BinaryExpression) {
+					BinaryExpression expr = classDecl.Children [i] as BinaryExpression;
+					NameExpression name = expr.Left as NameExpression;
+					expr.Right.Visit (compiler);
+					initializer.EmitInstruction (Opcode.LoadGlobal, module.DefineConstant (new
+						IodineName (classDecl.Name)));
+					initializer.EmitInstruction (Opcode.StoreAttribute, module.DefineConstant (new
+						IodineName (name.Value)));
+				} else {
+					classDecl.Children [i].Visit (compiler);
 				}
 			}
+			clazz.Initializer.FinalizeLabels ();
 			return clazz;
 		}
 

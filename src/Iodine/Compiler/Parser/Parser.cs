@@ -76,21 +76,15 @@ namespace Iodine.Compiler
 
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				if (stream.Match (TokenClass.Keyword, "func") || stream.Match (TokenClass.Operator,
-					"@")) {
+					    "@")) {
 					FunctionDeclaration func = ParseFunction (stream, false, clazz) as FunctionDeclaration;
 					if (func.Name == name) {
 						clazz.Constructor = func;
 					} else {
 						clazz.Add (func);
 					}
-				} else if (stream.Match (TokenClass.Keyword, "class")) {
-					ClassDeclaration subclass = ParseClass (stream) as ClassDeclaration;
-					clazz.Add (subclass);
-				} else if (stream.Match (TokenClass.Keyword, "enum")) {
-					EnumDeclaration enumeration = ParseEnum (stream) as EnumDeclaration;
-					clazz.Add (enumeration);
 				} else {
-					stream.Expect (TokenClass.Keyword, "func");
+					clazz.Add (ParseStatement (stream));
 				}
 			}
 
@@ -348,6 +342,8 @@ namespace Iodine.Compiler
 					return ParseFor (stream);
 				case "foreach":
 					return ParseForeach (stream);
+				case "with":
+					return ParseWith (stream);
 				case "while":
 					return ParseWhile (stream);
 				case "do":
@@ -532,6 +528,17 @@ namespace Iodine.Compiler
 		{
 			WhileStatement ret = new WhileStatement (stream.Location);
 			stream.Expect (TokenClass.Keyword, "while");
+			stream.Expect (TokenClass.OpenParan);
+			ret.Add (ParseExpression (stream));
+			stream.Expect (TokenClass.CloseParan);
+			ret.Add (ParseStatement (stream));
+			return ret;
+		}
+			
+		private static AstNode ParseWith (TokenStream stream)
+		{
+			WithStatement ret = new WithStatement (stream.Location);
+			stream.Expect (TokenClass.Keyword, "with");
 			stream.Expect (TokenClass.OpenParan);
 			ret.Add (ParseExpression (stream));
 			stream.Expect (TokenClass.CloseParan);

@@ -34,7 +34,7 @@ namespace Iodine.Runtime
 	/// My own stack implementation, I don't know how well this will perform however I wrote this
 	/// as I am currently convinced that System.Collections.Generic.Stack doesn't cut it for Iodine
 	/// </summary>
-	internal class LinkedStack<T>
+	public class LinkedStack<T>
 	{
 		class StackItem<E>
 		{

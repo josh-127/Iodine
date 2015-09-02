@@ -287,6 +287,7 @@ namespace Iodine.Compiler
 			case "yield":
 			case "default":
 			case "return":
+			case "with":
 				return new Token (TokenClass.Keyword, accum.ToString (), location);
 			case "is":
 			case "isnot":

@@ -74,6 +74,14 @@ namespace Iodine.Runtime
 			SetAttribute ("readAllBytes", new InternalMethodCallback (readAllBytes, this));
 		}
 
+		public override void Exit (VirtualMachine vm)
+		{
+			if (!Closed) {
+				File.Close ();
+				File.Dispose ();
+			}
+		}
+
 		private IodineObject write (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (Closed) { 

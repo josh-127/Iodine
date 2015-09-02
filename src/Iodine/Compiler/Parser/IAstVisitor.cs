@@ -69,6 +69,7 @@ namespace Iodine.Compiler
 		void Accept (NullExpression nil);
 		void Accept (LambdaExpression lambda);
 		void Accept (TryExceptStatement tryCatch);
+		void Accept (WithStatement with);
 		void Accept (BreakStatement brk);
 		void Accept (ContinueStatement cont);
 		void Accept (TupleExpression tuple);
