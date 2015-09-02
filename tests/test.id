@@ -487,13 +487,32 @@ describe('Iodine', lambda(test) => {
         }
         list = [false, false];
         with(myClass = WithTestClass (list)) {
-
+            test.it('__enter__ should be called', lambda() => {
+                expect(list[0]).to.be._true();
+            });
+            test.it('__exit__ should not have been called yet', lambda() => {
+                expect(list[1]).to.be._false();
+            });
         }
-        test.it('__enter__ should be called', lambda() => {
-            expect(list[0]).to.be._true();
-        });
         test.it('__exit__ should be called', lambda() => {
             expect(list[1]).to.be._true();
+        });
+        list2 = [false, false];
+
+        func testWith() {
+            with(myClass = WithTestClass(list2)) {
+                return 12;
+            }
+        }
+
+        val = testWith();
+
+        test.it('testWith() should have returned 12', lambda() => {
+            expect(val).to.equal(12);
+        });
+
+        test.it('__exit__ should have been called on return', lambda() => {
+            expect(list2[1]).to.be._true();
         });
     });
 });

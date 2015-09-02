@@ -130,16 +130,20 @@ namespace Iodine.Runtime
 				top.Location = currLoc;
 			}
 
-			while (top.DisposableObjects.Count > 0) {
-				top.DisposableObjects.Pop ().Exit (this);
-			}
-
 			if (top.AbortExecution) {
+				while (top.DisposableObjects.Count > 0) {
+					top.DisposableObjects.Pop ().Exit (this);
+				}
 				return IodineNull.Instance;
 			}
 
 			IodineObject retVal = Stack.Last ?? IodineNull.Instance;
 			Stack.EndFrame ();
+
+			while (top.DisposableObjects.Count > 0) {
+				top.DisposableObjects.Pop ().Exit (this);
+			}
+
 			return retVal;
 		}
 

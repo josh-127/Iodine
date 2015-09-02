@@ -252,10 +252,16 @@ namespace Iodine.Runtime
 
 		public virtual void Enter (VirtualMachine vm)
 		{
+			if (Attributes.ContainsKey ("__enter__")) {
+				GetAttribute (vm, "__enter__").Invoke (vm, new IodineObject[] { });
+			}
 		}
 
 		public virtual void Exit (VirtualMachine vm)
 		{
+			if (Attributes.ContainsKey ("__exit__")) {
+				GetAttribute (vm, "__exit__").Invoke (vm, new IodineObject[] { });
+			}
 		}
 
 		#region Unary Operator Stubs
