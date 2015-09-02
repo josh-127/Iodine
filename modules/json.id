@@ -1,193 +1,268 @@
-###
-# Name          : json
-# Author        : @GruntTheDivine
-# Description   : Simpe JSON library
-####
 
-enum JSONTokenType {
-    OPEN_BRACE,
-    CLOSE_BRACE,
-    OPEN_BRACKET,
-    CLOSE_BRACKET,
-    COLON,
-    COMMA,
-    STRING_LIT,
-    INT_LIT,
-    BOOLEAN
-}
-
-class JSONToken {
-    func JSONToken (self, type, value) {
-        self.type = type;
-        self.value = value;
+class InvalidJsonException : Exception {
+    func InvalidJsonException (self) {
+        super ("Attempted to parse invalid JSON!");
     }
 }
 
-class JSONTokenStream {
-    func JSONTokenStream (self) {
-        self.tokens = List ();
+class JsonFile {
+    # JSON token types   
+    enum JsonTokenType {
+        BEGIN_ARRAY,
+        END_ARRAY,
+        BEGIN_OBJECT,
+        END_OBJECT,
+        NAME_SEPERATOR,
+        VALUE_SEPERATOR,
+        TRUE_LITERAL,
+        FALSE_LITERAL,
+        NULL_LITERAL,
+        NUMBER_LITERAL,
+        STRING_LITERAL
+    }
+
+    class JsonToken {
+        func JsonToken (self, type, value) {
+            self.type = type;
+            self.value = value;
+        }
+    }
+
+    # Static method parse, returns an object resulting from the 
+    # parsed json. 
+    # Throws InvalidJsonException
+    func parse (json) {
+        parser = JsonFile ();
+        tokens = parser._initialize (json);
+        return parser._parse (tokens);
+    }
+
+    func _initialize (self, source) {
         self.position = 0;
+        self.length = source.getSize ();
+        self.source = source;
     }
-    
-    func add (self, token) {
-        self.tokens.add (token);
-    }
-    
-    func match (self, type) {
-        return self.peekToken () != null && self.peekToken ().type == type;
-    }
-    
-    func expect (self, type) {
-        if (self.readToken ().type != type) {
-            raise Exception ("");
+
+    func _parse (self, tokens) {
+        
+        position = 0;
+        size = tokens.getSize ();
+
+        func match (type) {
+            if (position < size) {
+                return tokens [position].type == type;
+            }
+            return false;
         }
-    }
-    
-    func peekToken (self) {
-        if (self.position < self.tokens.getSize ()) {
-            return self.tokens [self.position];
+
+        func expect (type) {
+            if (match (type)) {
+                position += 1;
+                return tokens [position - 1];
+            }
+            raise InvalidJsonException ();
         }
-        return null;
+
+        func consumeToken () {
+            position += 1;
+            return tokens [position - 1];
+        }
+
+        func parseItem () {
+            token = tokens [position];
+            ret = null;
+            switch (token.type) {
+                case JsonFile.JsonTokenType.BEGIN_ARRAY {
+                    ret = [];
+                    expect (JsonFile.JsonTokenType.BEGIN_ARRAY);
+                    while (position < size && !match (JsonFile.JsonTokenType.END_ARRAY)) {
+                        ret.add (parseItem ());
+                        if (!match (JsonFile.JsonTokenType.VALUE_SEPERATOR)) {
+                            break;
+                        }
+                        consumeToken ();
+                    }
+                    expect (JsonFile.JsonTokenType.END_ARRAY);
+                }
+                case JsonFile.JsonTokenType.BEGIN_OBJECT {
+                    ret = {};
+                    expect (JsonFile.JsonTokenType.BEGIN_OBJECT);
+                    while (position < size && !match (JsonFile.JsonTokenType.END_OBJECT)) {
+                        name = expect (JsonFile.JsonTokenType.STRING_LITERAL).value;
+                        expect (JsonFile.JsonTokenType.NAME_SEPERATOR);
+                        value = parseItem ();
+                        ret [name] = value;
+                        if (!match (JsonFile.JsonTokenType.VALUE_SEPERATOR)) {
+                            break;
+                        }
+                        consumeToken ();
+                    }
+                    expect (JsonFile.JsonTokenType.END_OBJECT);
+                }
+                case JsonFile.JsonTokenType.NUMBER_LITERAL {
+                    ret = consumeToken ().value;
+                }
+                case JsonFile.JsonTokenType.STRING_LITERAL {
+                    ret = consumeToken ().value;
+                }
+                case JsonFile.JsonTokenType.TRUE_LITERAL {
+                    consumeToken ();
+                    ret = true;
+                }
+                case JsonFile.JsonTokenType.FALSE_LITERAL {
+                    consumeToken ();
+                    ret = false;
+                }
+                case JsonFile.JsonTokenType.NULL_LITERAL {
+                    consumeToken ();
+                    ret = null;
+                }
+                default {
+                    raise InvalidJsonException ();
+                }
+            }
+
+            return ret;
+        }
+        
+        return parseItem ();
     }
-    
-    func readToken (self) {
-        self.position += 1;
-        return self.tokens [self.position - 1];
+
+    func _tokenize (self) {
+        tokens = [];
+        position = 0;
+
+        func peekChar () {
+            if (position < self.length) {
+                return self.source [position];
+            }
+            return "";
+        }
+
+        func readChar () {
+            if (position < self.length) {
+                position += 1;
+                return self.source [position - 1];
+            }
+            return "";
+        }
+
+        func scanConstant () {
+            accum = "";
+            result = null;
+            while (peekChar ().isLetter ()) {
+                accum += readChar ();
+            }
+            switch (accum) {
+                case "true" {
+                    result = JsonFile.JsonToken (JsonFile.JsonTokenType.TRUE_LITERAL, true);
+                }
+                case "false" {
+                    result = JsonFile.JsonToken (JsonFile.JsonTokenType.FALSE_LITERAL, false);
+                }
+                case "null" {
+                    result = JsonFile.JsonToken (JsonFile.JsonTokenType.NULL_LITERAL, null);
+                }
+            }
+            return result;
+        }
+
+        func eatWhitespace () {
+            while (peekChar ().isWhiteSpace ()) {
+                readChar ();
+            }
+        }
+
+        func scanString () {
+            delim = readChar ();
+            accum = "";
+            while (peekChar () != "" && peekChar () != delim) {
+                if (peekChar () == "\\") {
+                    readChar (); 
+                    ch = readChar ();
+                    escapeVals = {"n" : "\n",
+                        "t" : "\t",
+                        "f" : "\f",
+                        "r" : "\r",
+                        "\"" : "\"",
+                        "\\" : "\\"};
+                    if (!escapeVals.contains (ch)) {
+                        raise InvalidJsonException ();
+                    }
+                    accum += escapeVals [ch];
+                } else {
+                    accum += readChar ();
+                }
+            }
+            readChar ();
+            return accum;
+        }
+
+        func scanNumber () {
+            accum = "";
+            ch = peekChar ();
+            do {
+                accum += readChar ();
+                ch = peekChar (); 
+            } while (ch.isDigit ());
+            return Int (accum);
+        }   
+
+        eatWhitespace ();
+        while (position < self.length) {
+            last = tokens.getSize ();
+            ch = peekChar ();
+            switch (ch) {
+                case "{" {
+                    readChar ();
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_OBJECT, "{"));
+                }
+                case "}" {
+                    readChar ();
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.END_OBJECT, "}"));
+                }
+                case "[" {
+                    readChar ();
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_ARRAY, "["));
+                }
+                case "]" {
+                    readChar ();
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.END_ARRAY, "]"));
+                }
+                case ":" {
+                    readChar ();
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NAME_SEPERATOR, ":"));
+                }
+                case "," {
+                    readChar ();
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.VALUE_SEPERATOR, ","));
+                }
+                case "-" {
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
+                }
+                case "\"" {
+                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.STRING_LITERAL, scanString ()));
+                }
+            }
+
+            if (ch.isDigit ()) {
+                tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
+            } else if (ch.isLetter ()) {
+                tokens.add (scanConstant ());           
+            } else if (tokens.getSize () == last) {
+                raise InvalidJsonException ();
+            }
+            eatWhitespace ();
+        }
+        return tokens;
     }
 }
 
-class JSONParser {
-    func JSONParser (self, input) {
-        self.input = input.trim ();
-        self.position = 0;
-        self.length = self.input.getSize ();
-        self.tokenStream = JSONTokenStream ();
-    }
-    
-    func parse (self) {
-        if (self.length == 0) {
-            return List ();
-        }
-        return self.parseJsonItem (self.scan ());
-    }
-    
-    func parseJsonItem (self) {
-        if (self.tokenStream.match (JSONTokenType.OPEN_BRACE)) {
-            return self.parseJsonMap (self.tokenStream);
-        } else if (self.tokenStream.match (JSONTokenType.OPEN_BRACKET)) {
-            return self.parseJsonList (self.tokenStream);
-        } else if (self.tokenStream.match (JSONTokenType.STRING_LIT)) {
-            return self.tokenStream.readToken ().value;
-        } else if (self.tokenStream.match (JSONTokenType.INT_LIT)) {
-            return self.tokenStream.readToken ().value;
-        } else if (self.tokenStream.match (JSONTokenType.BOOLEAN)) {
-            return self.tokenStream.readToken ().value;
-        } 
-        raise Exception ("Invalid or corrupted JSON file!");
-    }
-
-    func parseJsonList (self) {
-        self.tokenStream.expect (JSONTokenType.OPEN_BRACKET);
-        ret = List ();
-        while (!self.tokenStream.match (JSONTokenType.CLOSE_BRACKET)) {
-            ret.add (self.parseJsonItem (self.tokenStream));
-            if (self.tokenStream.match (JSONTokenType.COMMA)) {
-                self.tokenStream.readToken ();
-            } else {
-                break;
-            }
-        }
-        self.tokenStream.expect (JSONTokenType.CLOSE_BRACKET);
-        return ret;
-    }
-
-    func parseJsonMap (self) {
-        self.tokenStream.expect (JSONTokenType.OPEN_BRACE);
-        ret = HashMap ();
-        while (!self.tokenStream.match (JSONTokenType.CLOSE_BRACE)) {
-            if (self.tokenStream.match (JSONTokenType.STRING_LIT)) {
-                name = self.tokenStream.readToken ().value;
-                self.tokenStream.expect (JSONTokenType.COLON);
-                ret[name] = self.parseJsonItem (self.tokenStream);
-            } else if (self.tokenStream.match (JSONTokenType.COMMA)) {
-                self.tokenStream.readToken ();
-            } else {
-                break;
-            }
-        }
-        self.tokenStream.expect (JSONTokenType.CLOSE_BRACE);
-        return ret;
-    }
-    
-    func scan (self) {
-        while (self.length > self.position) {
-            if (self.peekChar () == "{") {
-                self.readChar ();
-                self.tokenStream.add (JSONToken (JSONTokenType.OPEN_BRACE, "{"));
-            } else if (self.peekChar () == "}") {
-                self.readChar ();
-                self.tokenStream.add (JSONToken (JSONTokenType.CLOSE_BRACE, "}"));
-            } else if (self.peekChar () == "[") {
-                self.readChar ();
-                self.tokenStream.add (JSONToken (JSONTokenType.OPEN_BRACKET, "["));
-            } else if (self.peekChar () == "]") {
-                self.readChar ();
-                self.tokenStream.add (JSONToken (JSONTokenType.CLOSE_BRACKET, "]"));
-            } else if (self.peekChar () == ":") {
-                self.readChar ();
-                self.tokenStream.add (JSONToken (JSONTokenType.COLON, ":"));
-            } else if (self.peekChar () == ",") {
-                self.readChar ();
-                self.tokenStream.add (JSONToken (JSONTokenType.COMMA, ","));
-            } else if (self.peekChar () == "\"") {
-                self.readChar ();
-                accum = "";
-                while (self.peekChar () != "\"") {
-                    accum += self.readChar ();
-                }
-                self.readChar ();
-                self.tokenStream.add (JSONToken (JSONTokenType.STRING_LIT, accum));
-            } else if (self.peekChar ().isDigit ()) {
-                accum = "";
-                while (self.peekChar ().isDigit ()) {
-                    accum += self.readChar ()
-                }
-                self.tokenStream.add (JSONToken (JSONTokenType.INT_LIT, Int (accum)));
-            } else if (self.peekChar ().isLetter ()) {
-                accum = "";
-                while (self.peekChar ().isLetter ()) {
-                    accum += self.readChar ();
-                }
-                if (accum == "true") {
-                    self.tokenStream.add (JSONToken (JSONTokenType.BOOLEAN, true));
-                } else if (accum == "false") {
-                    self.tokenStream.add (JSONToken (JSONTokenType.BOOLEAN, false));
-                }
-
-            } else if (self.peekChar ().isWhiteSpace ()) {
-                self.readChar ();
-            } else {
-                return;
-            }
-        }
-    }
-    
-    func readChar (self) {
-        self.position += 1;
-        return self.input [self.position - 1];
-    }
-    
-    func peekChar (self) {
-        if (self.position < self.length) {
-            return self.input [self.position];
-        }
-        return "";
-    }
-}
 
 func parse (json) {
-    myParser = JSONParser (json);
-    return myParser.parse ();
+    file = JsonFile ();
+    file._initialize (json);
+    return file._parse (file._tokenize ());
 }
 
 func dump (item) {
@@ -220,3 +295,4 @@ func _dump (item) {
 func _dumpList (item) {
     return "[{}]".format (",".join (item));
 }
+

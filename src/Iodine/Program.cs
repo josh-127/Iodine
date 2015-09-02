@@ -119,6 +119,8 @@ namespace Iodine
 					ex.PrintStack ();
 					Console.Error.WriteLine ();
 					Panic ("Program terminated.");
+				} catch (SyntaxException ex) {
+					DisplayErrors (ex.ErrorLog);
 				} catch (Exception e) {
 					Console.Error.WriteLine ("Fatal exception has occured!");
 					Console.Error.WriteLine (e.Message);

@@ -80,6 +80,7 @@ namespace Iodine.Runtime
 			SetAttribute ("stdin", new IodineStream (Console.OpenStandardInput (), false, true));
 			SetAttribute ("stdout", new IodineStream (Console.OpenStandardOutput (), true, false));
 			SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
+			SetAttribute ("property", new InternalMethodCallback (property, null));
 			SetAttribute ("eval", new InternalMethodCallback (eval, null));
 			SetAttribute ("type", new InternalMethodCallback (type, null));
 			SetAttribute ("typecast", new InternalMethodCallback (typecast, null));
@@ -113,6 +114,17 @@ namespace Iodine.Runtime
 			SetAttribute ("SyntaxException", IodineSyntaxException.TypeDefinition);
 			SetAttribute ("NotSupportedException", IodineNotSupportedException.TypeDefinition);
 			ExistsInGlobalNamespace = true;
+		}
+
+		private IodineObject property (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineObject getter = args [0];
+			IodineObject setter = args.Length > 1 ? args [1] : null;
+			return new IodineProperty (getter, setter);
 		}
 
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)

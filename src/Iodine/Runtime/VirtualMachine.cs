@@ -238,6 +238,12 @@ namespace Iodine.Runtime
 					IodineObject target = Stack.Pop ();
 					IodineObject value = Stack.Pop ();
 					string attribute = ((IodineName)Stack.Top.Module.ConstantPool [instruction.Argument]).Value;
+					if (target.Attributes.ContainsKey (attribute) &&
+						target.Attributes [attribute] is IIodineProperty) {
+						IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
+						property.Set (this, value);
+						break;
+					}
 					target.SetAttribute (this, attribute, value);
 					break;
 				}
@@ -245,6 +251,12 @@ namespace Iodine.Runtime
 				{
 					IodineObject target = Stack.Pop ();
 					string attribute = ((IodineName)Stack.Top.Module.ConstantPool [instruction.Argument]).Value;
+					if (target.Attributes.ContainsKey  (attribute) &&
+						target.Attributes [attribute] is IIodineProperty) {
+						IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
+						Stack.Push (property.Get (this));
+						break;
+					}
 					Stack.Push (target.GetAttribute (this, attribute));
 					break;
 				}
@@ -486,7 +498,7 @@ namespace Iodine.Runtime
 							ModuleCache [fullPath] = module;
 							module.Initializer.Invoke (this, new IodineObject[] { });
 						} else {
-							RaiseException (new IodineSyntaxException (errLog));
+							throw new SyntaxException (errLog);
 						}
 					}
 					break;
@@ -504,7 +516,7 @@ namespace Iodine.Runtime
 						module = IodineModule.LoadModule (errLog, name);
 					
 						if (module == null) {
-							RaiseException (new IodineSyntaxException (errLog));
+							throw new SyntaxException (errLog);
 							break;
 						}
 						ModuleCache [fullPath] = module;
