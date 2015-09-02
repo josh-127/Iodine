@@ -65,6 +65,13 @@ func six() {
     return 2;
 }
 
+# Generator tests
+func generatorTest () {
+    yield 1;
+    yield 2;
+    yield 3;
+}
+
 describe('Iodine', lambda(test) => {
     test.describe('Inheritance', lambda(test) => {
         test.describe('A', lambda(test) => {
@@ -164,6 +171,19 @@ describe('Iodine', lambda(test) => {
             expect(closure1(3)).to.equal(4);
             expect(closure2(3)).to.equal(8);
         });
+    });
+
+    test.describe('Generator', lambda(test) => {
+        test.it('should be able to iterate through all yielded values', 
+            lambda() => {
+                _list = [];
+                foreach (i in generatorTest ()) {
+                    _list.add (i);
+                }
+                expect(_list[0]).to.equal(1);
+                expect(_list[1]).to.equal(2);
+                expect(_list[2]).to.equal(3);
+            });
     });
 
     test.describe('HashMap', lambda(test) => {
@@ -447,6 +467,33 @@ describe('Iodine', lambda(test) => {
         test.it('should be able to work as a bitmask', lambda() => {
             val = AnotherTest.BAD | AnotherTest.STRANGE;
             expect(val & AnotherTest.STRANGE).to.equal(AnotherTest.STRANGE);
+        });
+    });
+
+    test.describe('with Statement', lambda(test) => {
+        class WithTestClass {
+
+            func WithTestClass (self, list) {
+                self.list = list;
+            }
+
+            func __enter__(self) {
+                self.list[0] = true;
+            }
+
+            func __exit__(self) {
+                self.list[1] = true;
+            }
+        }
+        list = [false, false];
+        with(myClass = WithTestClass (list)) {
+
+        }
+        test.it('__enter__ should be called', lambda() => {
+            expect(list[0]).to.be._true();
+        });
+        test.it('__exit__ should be called', lambda() => {
+            expect(list[1]).to.be._true();
         });
     });
 });
