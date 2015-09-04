@@ -41,6 +41,7 @@ namespace Iodine.Runtime
 		{
 			SetAttribute ("PI", new IodineFloat (Math.PI));
 			SetAttribute ("E", new IodineFloat (Math.E));
+			SetAttribute ("pow", new InternalMethodCallback (pow, this));
 			SetAttribute ("sin", new InternalMethodCallback (sin, this));
 			SetAttribute ("cos", new InternalMethodCallback (cos, this));
 			SetAttribute ("tan", new InternalMethodCallback (tan, this));
@@ -52,6 +53,35 @@ namespace Iodine.Runtime
 			SetAttribute ("floor", new InternalMethodCallback (floor, this));
 			SetAttribute ("ceiling", new InternalMethodCallback (ceiling, this));
 			SetAttribute ("log", new InternalMethodCallback (log, this));
+		}
+
+		private IodineObject pow (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+
+			double a1 = 0;
+			double a2 = 0;
+			if (args [0] is IodineInteger) {
+				a1 = (double)((IodineInteger)args [0]).Value;
+			} else if (args [0] is IodineFloat) {
+				a1 = ((IodineFloat)args [0]).Value;
+			} else {
+				vm.RaiseException (new IodineTypeException ("Float"));
+				return null;
+			}
+
+			if (args [1] is IodineInteger) {
+				a2 = (double)((IodineInteger)args [1]).Value;
+			} else if (args [1] is IodineFloat) {
+				a2 = ((IodineFloat)args [1]).Value;
+			} else {
+				vm.RaiseException (new IodineTypeException ("Float"));
+				return null;
+			}
+			return new IodineFloat (Math.Pow (a1, a2));
 		}
 
 		private IodineObject sin (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -490,11 +490,11 @@ namespace Iodine.Compiler
 			ForStatement ret = new ForStatement (stream.Location);
 			stream.Expect (TokenClass.Keyword, "for");
 			stream.Expect (TokenClass.OpenParan);
-			ret.Add (ParseExpression (stream));
+			ret.Add (new Expression (stream.Location, ParseExpression (stream)));
 			stream.Expect (TokenClass.SemiColon);
 			ret.Add (ParseExpression (stream));
 			stream.Expect (TokenClass.SemiColon);
-			ret.Add (ParseExpression (stream));
+			ret.Add (new Expression (stream.Location, ParseExpression (stream)));
 			stream.Expect (TokenClass.CloseParan);
 			ret.Add (ParseStatement (stream));
 			return ret;

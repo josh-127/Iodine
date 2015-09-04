@@ -68,6 +68,11 @@ namespace Iodine.Runtime
 			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 		}
 
+		public override IodineObject Len (VirtualMachine vm)
+		{
+			return new IodineInteger (Objects.Length);
+		}
+
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			IodineInteger index = key as IodineInteger;
@@ -75,11 +80,6 @@ namespace Iodine.Runtime
 				return Objects [(int)index.Value];
 			vm.RaiseException (new IodineIndexException ());
 			return null;
-		}
-
-		public override IodineObject Len (VirtualMachine vm)
-		{
-			return new IodineInteger (Objects.Length);
 		}
 
 		public override IodineObject IterGetNext (VirtualMachine vm)

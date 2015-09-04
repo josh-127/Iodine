@@ -49,6 +49,12 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
+
+				if (args [0] is IodineFloat) {
+					IodineFloat fp = args [0] as IodineFloat;
+					return new IodineInteger ((long)fp.Value);
+				}
+
 				long value;
 				if (!Int64.TryParse (args [0].ToString (), NumberStyles.AllowLeadingSign, null, out value)) {
 					vm.RaiseException (new IodineTypeCastException ("Int"));
