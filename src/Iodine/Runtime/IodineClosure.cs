@@ -55,7 +55,7 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			return vm.InvokeMethod (Target, frame.Duplicate (vm.Stack.Top, Target.LocalCount),
+			return vm.InvokeMethod (Target, frame.Duplicate (vm.Top, Target.LocalCount),
 				frame.Self, arguments);
 		}
 

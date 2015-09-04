@@ -27,6 +27,7 @@
 //   * DAMAGE.
 // /**
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Iodine.Runtime
 {
@@ -64,6 +65,7 @@ namespace Iodine.Runtime
 		{
 		}
 
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public void Push (T obj) 
 		{
 			if (top == null) {
@@ -74,6 +76,7 @@ namespace Iodine.Runtime
 			Count++;
 		}
 
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public T Pop ()
 		{
 			Count--;
@@ -82,6 +85,7 @@ namespace Iodine.Runtime
 			return ret;
 		}
 
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		public T Peek ()
 		{
 			return top.Item;

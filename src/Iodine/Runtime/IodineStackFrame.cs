@@ -30,114 +30,16 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Iodine.Runtime
 {
-	public class IodineStack
-	{
-		private LinkedStack<StackFrame> frames = new LinkedStack<StackFrame> ();
-		private StackFrame top = null;
-
-		public IodineObject Last {
-			private set;
-			get;
-		}
-
-		public StackFrame Top {
-			get {
-				return top;
-			}
-		}
-
-		public int Frames {
-			private set;
-			get;
-		}
-
-		public void NewFrame (StackFrame frame)
-		{
-			Frames++;
-			top = frame;
-			frames.Push (frame);
-		}
-
-		public void NewFrame (IodineMethod method, IodineObject self, int localCount)
-		{
-			Frames++;
-			top = new StackFrame (method, top, self, localCount);
-			frames.Push (top);
-		}
-
-		public void EndFrame ()
-		{
-			Frames--;
-			frames.Pop ();
-			if (frames.Count != 0) {
-				top = frames.Peek ();
-			} else {
-				top = null;
-			}
-		}
-
-		public void StoreLocal (int index, IodineObject obj)
-		{
-			top.StoreLocal (index, obj);
-		}
-
-		public IodineObject LoadLocal (int index)
-		{
-			return top.LoadLocal (index);
-		}
-
-		public void Push (IodineObject obj)
-		{
-			top.Push (obj);
-			Last = obj;
-		}
-
-		public IodineObject Pop ()
-		{
-			return top.Pop ();
-		}
-
-		public string Trace ()
-		{
-			StringBuilder accum = new StringBuilder ();
-			StackFrame top = this.top;
-			while (top != null) {
-				if (top is NativeStackFrame) {
-					NativeStackFrame frame = top as NativeStackFrame;
-
-					accum.AppendFormat (" at {0} <internal method>\n", frame.NativeMethod.Callback.Method.Name);
-				} else {
-					accum.AppendFormat (" at {0} (Module: {1}, Line: {2})\n", top.Method.Name, top.Module.Name,
-						top.Location.Line + 1);
-				}
-				top = top.Parent;
-			}
-
-			return accum.ToString ();
-		}
-
-		public void Unwind (int frames)
-		{
-			for (int i = 0; i < frames; i++) {
-				StackFrame frame = this.frames.Pop ();
-				frame.AbortExecution = true;
-			}
-			Frames -= frames;
-			this.top = this.frames.Peek ();
-		}
-	}
-
 	public class StackFrame
 	{
+		public readonly int LocalCount;
+		public readonly IodineMethod Method;
+		public readonly IodineObject Self;
 		public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
-
-		public int LocalCount {
-			private set;
-			get;
-		}
 
 		public bool AbortExecution {
 			set;
@@ -149,20 +51,11 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		public IodineMethod Method {
-			private set;
-			get;
-		}
 
 		public IodineModule Module {
 			get {
 				return Method.Module;
 			}
-		}
-
-		public IodineObject Self {
-			private set;
-			get;
 		}
 
 		public Location Location {
@@ -204,7 +97,8 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public void StoreLocal (int index, IodineObject obj)
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		internal void StoreLocal (int index, IodineObject obj)
 		{
 			if (parentLocals [index] != null) {
 				parentLocals [index] = obj;
@@ -212,25 +106,26 @@ namespace Iodine.Runtime
 			locals [index] = obj;
 		}
 
-		public IodineObject LoadLocal (int index)
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		internal IodineObject LoadLocal (int index)
 		{
 			return locals [index];
 		}
 
-		public void Push (IodineObject obj)
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		internal void Push (IodineObject obj)
 		{
-			if (obj != null)
-				stack.Push (obj);
-			else
-				stack.Push (IodineNull.Instance);
+			stack.Push (obj ?? IodineNull.Instance);
 		}
 
-		public IodineObject Pop ()
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		internal IodineObject Pop ()
 		{
 			return stack.Pop ();
 		}
 
-		public StackFrame Duplicate (StackFrame top, int localCount)
+		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		internal StackFrame Duplicate (StackFrame top, int localCount)
 		{
 			if (localCount > LocalCount) {
 				IodineObject[] oldLocals = locals;

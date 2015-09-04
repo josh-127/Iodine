@@ -65,7 +65,7 @@ namespace Iodine
 					Console.Error.WriteLine ("Fatal exception has occured!");
 					Console.Error.WriteLine (ex.Message);
 					Console.Error.WriteLine ("Stack trace: \n{0}", ex.StackTrace);
-					Console.Error.WriteLine ("\nIodine stack trace \n{0}", engine.VirtualMachine.Stack.Trace ());
+					Console.Error.WriteLine ("\nIodine stack trace \n{0}", engine.VirtualMachine.Trace ());
 				}
 			}
 		}

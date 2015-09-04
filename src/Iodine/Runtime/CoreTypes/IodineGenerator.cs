@@ -73,7 +73,7 @@ namespace Iodine.Runtime
 
 		public override void IterReset (VirtualMachine vm)
 		{
-			this.stackFrame = new StackFrame (baseMethod, vm.Stack.Top, null, this.baseMethod.LocalCount);
+			this.stackFrame = new StackFrame (baseMethod, vm.Top, null, this.baseMethod.LocalCount);
 		}
 	}
 }

@@ -74,7 +74,7 @@ namespace Iodine.Runtime
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			if (Method.Generator)
-				return new IodineGenerator (vm.Stack.Top, this, arguments);
+				return new IodineGenerator (vm.Top, this, arguments);
 			return vm.InvokeMethod (Method, Self, arguments);
 		}
 	}
@@ -222,7 +222,7 @@ namespace Iodine.Runtime
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			if (Generator)
-				return new IodineGenerator (vm.Stack.Top, this, arguments);
+				return new IodineGenerator (vm.Top, this, arguments);
 			return vm.InvokeMethod (this, null, arguments);
 		}
 

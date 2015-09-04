@@ -55,7 +55,6 @@
     <Compile Include="Runtime\InternalMethodCallback.cs" />
     <Compile Include="Runtime\VirtualMachine.cs" />
     <Compile Include="Runtime\IodineModule.cs" />
-    <Compile Include="Runtime\IodineStack.cs" />
     <Compile Include="Runtime\CoreTypes\IodineInteger.cs" />
     <Compile Include="Runtime\CoreTypes\IodineBool.cs" />
     <Compile Include="Runtime\CoreTypes\IodineString.cs" />
@@ -166,6 +165,7 @@
     <Compile Include="Runtime\IIodineProperty.cs" />
     <Compile Include="Compiler\Parser\Ast\WithStatement.cs" />
     <Compile Include="Runtime\CoreTypes\IodineRange.cs" />
+    <Compile Include="Runtime\IodineStackFrame.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
