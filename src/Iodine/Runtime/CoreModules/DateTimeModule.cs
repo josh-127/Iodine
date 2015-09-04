@@ -39,10 +39,7 @@ namespace Iodine.Runtime
 		{
 			public readonly static IodineTypeDefinition TimeStampTypeDef = new IodineTypeDefinition ("TimeStamp");
 
-			public DateTime Value {
-				private set;
-				get;
-			}
+			public DateTime Value { private set; get; }
 
 			public IodineTimeStamp (DateTime val)
 				: base (TimeStampTypeDef)

@@ -39,15 +39,9 @@ namespace Iodine.Runtime
 	[AttributeUsage (AttributeTargets.Class)]
 	public class IodineBuiltinModule : System.Attribute
 	{
-		public string Name {
-			private set;
-			get;
-		}
+		public string Name { private set; get; }
 
-		public bool Global {
-			private set;
-			get;
-		}
+		public bool Global { private set; get; }
 
 		public IodineBuiltinModule (string moduleName, bool existsInGlobalNamespace = false)
 		{
@@ -74,10 +68,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public string Name {
-			set;
-			get;
-		}
+		public string Name { set; get; }
 
 		public IList<IodineObject> ConstantPool {
 			get {
@@ -85,20 +76,14 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public IList<string> Imports {
-			private set;
-			get;
-		}
+		public IList<string> Imports { private set; get; }
 
 		public bool ExistsInGlobalNamespace {
 			protected set;
 			get;
 		}
 
-		public IodineMethod Initializer {
-			set;
-			get;
-		}
+		public IodineMethod Initializer { set; get; }
 
 		private List<IodineObject> constantPool = new List<IodineObject> ();
 

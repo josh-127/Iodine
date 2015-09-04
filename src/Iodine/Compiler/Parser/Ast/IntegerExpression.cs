@@ -33,10 +33,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class IntegerExpression : AstNode
 	{
-		public long Value {
-			private set;
-			get;
-		}
+		public long Value { private set; get; }
 
 		public IntegerExpression (Location location, long value)
 			: base (location)

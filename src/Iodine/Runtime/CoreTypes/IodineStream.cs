@@ -40,20 +40,11 @@ namespace Iodine.Runtime
 
 		public bool Closed { set; get; }
 
-		public Stream File {
-			private set;
-			get;
-		}
+		public Stream File { private set; get; }
 
-		public bool CanRead {
-			private set;
-			get;
-		}
+		public bool CanRead { private set; get; }
 
-		public bool CanWrite {
-			private set;
-			get;
-		}
+		public bool CanWrite { private set; get; }
 
 		public IodineStream (Stream file, bool canWrite, bool canRead)
 			: base (FileTypeDef)

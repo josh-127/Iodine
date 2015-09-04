@@ -37,15 +37,9 @@ namespace Iodine.Compiler
 	{
 		class ReachableRegion
 		{
-			public int Start {
-				private set;
-				get;
-			}
+			public int Start { private set; get; }
 
-			public int End {
-				private set;
-				get;
-			}
+			public int End { private set; get; }
 
 			public int Size {
 				get {

@@ -40,10 +40,7 @@ namespace Iodine.Runtime
 		{
 			public static readonly IodineTypeDefinition ProcTypeDef = new IodineTypeDefinition ("Proc");
 
-			public Process Value {
-				private set;
-				get;
-			}
+			public Process Value { private set; get; }
 
 			public IodineProc (Process proc)
 				: base (ProcTypeDef)

@@ -36,15 +36,9 @@ namespace Iodine.Runtime
 	{
 		private bool initializerInvoked = false;
 
-		public IodineMethod Initializer {
-			private set;
-			get;
-		}
+		public IodineMethod Initializer { private set; get; }
 
-		public IodineMethod Constructor {
-			private set;
-			get;
-		}
+		public IodineMethod Constructor { private set; get; }
 
 		public IodineClass (string name, IodineMethod initializer, IodineMethod constructor)
 			: base (name)

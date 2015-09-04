@@ -33,10 +33,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class FloatExpression : AstNode
 	{
-		public double Value {
-			private set;
-			get;
-		}
+		public double Value { private set; get; }
 
 		public FloatExpression (Location location, double value)
 			: base (location)

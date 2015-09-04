@@ -51,10 +51,7 @@ namespace Iodine.Modules.Extras
 				}
 			}
 
-			public RegistryKey Key {
-				private set;
-				get;
-			}
+			public RegistryKey Key { private set; get; }
 
 			public IodineRegistryKeyHandle (RegistryKey original)
 				: base (TypeDef)
@@ -105,10 +102,7 @@ namespace Iodine.Modules.Extras
 				}
 			}
 
-			public RegistryHive Hive {
-				private set;
-				get;
-			}
+			public RegistryHive Hive { private set; get; }
 
 			public IodineRegistryHive (RegistryHive original)
 				: base (TypeDef)

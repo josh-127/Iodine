@@ -40,28 +40,19 @@ namespace Iodine
 		/// Gets or sets the line.
 		/// </summary>
 		/// <value>The line.</value>
-		public int Line {
-			set;
-			get;
-		}
+		public int Line { set; get; }
 
 		/// <summary>
 		/// Gets or sets the column.
 		/// </summary>
 		/// <value>The column.</value>
-		public int Column {
-			set;
-			get;
-		}
+		public int Column { set; get; }
 
 		/// <summary>
 		/// Gets or sets the file.
 		/// </summary>
 		/// <value>The file.</value>
-		public string File {
-			set;
-			get;
-		}
+		public string File { set; get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Iodine.Location"/> struct.

@@ -44,15 +44,9 @@ namespace Iodine
 				set;
 			}
 
-			public IodineList Arguments {
-				set;
-				get;
-			}
+			public IodineList Arguments { private set; get; }
 
-			public bool ShowVersion {
-				set;
-				get;
-			}
+			public bool ShowVersion { private set; get; }
 
 			public static IodineOptions Parse (string[] args)
 			{

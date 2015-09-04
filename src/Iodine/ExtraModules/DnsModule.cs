@@ -43,10 +43,7 @@ namespace Iodine.Modules.Extras
 		{
 			private static readonly IodineTypeDefinition HostEntryTypeDef = new IodineTypeDefinition ("HostEntry");
 
-			public IPHostEntry Entry {
-				private set;
-				get;
-			}
+			public IPHostEntry Entry { private set; get; }
 
 			public IodineHostEntry (IPHostEntry host)
 				: base (HostEntryTypeDef)

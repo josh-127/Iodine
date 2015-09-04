@@ -56,10 +56,7 @@ namespace Iodine.Runtime
 
 		private int iterIndex = 0;
 
-		public IodineObject[] Objects {
-			private set;
-			get;
-		}
+		public IodineObject[] Objects { private set; get; }
 
 		public IodineTuple (IodineObject[] items)
 			: base (TypeDefinition)

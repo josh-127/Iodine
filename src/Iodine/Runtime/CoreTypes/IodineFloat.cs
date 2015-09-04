@@ -53,10 +53,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public double Value {
-			private set;
-			get;
-		}
+		public double Value { private set; get; }
 
 		public IodineFloat (double val)
 			: base (TypeDefinition)

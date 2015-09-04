@@ -56,10 +56,7 @@ namespace Iodine.Runtime
 
 		private StackItem<T> top;
 
-		public int Count {
-			private set;
-			get;
-		}
+		public int Count { private set; get; }
 
 		public LinkedStack ()
 		{

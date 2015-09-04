@@ -37,10 +37,7 @@ namespace ModuleReflection
 		}
 
 		public Opcode OperationCode
-		{
-			private set;
-			get;
-		}
+		{ private set; get; }
 
 		public IodineOpcode (Opcode opcode)
 			: base (OpcodeTypeDef)

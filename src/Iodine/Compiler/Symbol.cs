@@ -49,28 +49,19 @@ namespace Iodine.Compiler
 		/// Gets the name.
 		/// </summary>
 		/// <value>The name.</value>
-		public string Name {
-			private set;
-			get;
-		}
+		public string Name { private set; get; }
 
 		/// <summary>
 		/// Gets the index.
 		/// </summary>
 		/// <value>The index.</value>
-		public int Index {
-			private set;
-			get;
-		}
+		public int Index { private set; get; }
 
 		/// <summary>
 		/// Gets the type.
 		/// </summary>
 		/// <value>The type.</value>
-		public SymbolType Type {
-			private set;
-			get;
-		}
+		public SymbolType Type { private set; get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Iodine.Compiler.Symbol"/> class.

@@ -34,10 +34,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class InterfaceDeclaration : AstNode
 	{
-		public string Name {
-			private set;
-			get;
-		}
+		public string Name { private set; get; }
 
 		public InterfaceDeclaration (Location location, string name)
 			: base (location)

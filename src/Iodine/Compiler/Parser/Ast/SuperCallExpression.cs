@@ -40,10 +40,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public ClassDeclaration Parent {
-			set;
-			get;
-		}
+		public ClassDeclaration Parent { set; get; }
 
 		public SuperCallExpression (Location location)
 			: base (location)

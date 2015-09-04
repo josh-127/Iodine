@@ -41,36 +41,20 @@ namespace Iodine.Runtime
 		public readonly IodineObject Self;
 		public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
 
-		public bool AbortExecution {
-			set;
-			get;
-		}
+		public bool AbortExecution { set; get; }
 
-		public bool Yielded {
-			set;
-			get;
-		}
+		public bool Yielded { set; get; }
 
+		public Location Location { set; get; }
+
+		public int InstructionPointer { set; get; }
+
+		public StackFrame Parent { private set; get; }
 
 		public IodineModule Module {
 			get {
 				return Method.Module;
 			}
-		}
-
-		public Location Location {
-			set;
-			get;
-		}
-
-		public int InstructionPointer {
-			get;
-			set;
-		}
-
-		public StackFrame Parent {
-			private set;
-			get;
 		}
 
 		private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();
@@ -138,10 +122,7 @@ namespace Iodine.Runtime
 
 	public class NativeStackFrame : StackFrame
 	{
-		public InternalMethodCallback NativeMethod {
-			private set;
-			get;
-		}
+		public InternalMethodCallback NativeMethod { private set; get; }
 
 		public NativeStackFrame (InternalMethodCallback method, StackFrame parent)
 			: base (null, parent, null, 0)

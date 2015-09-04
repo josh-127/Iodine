@@ -33,10 +33,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class BinaryExpression : AstNode
 	{
-		public BinaryOperation Operation {
-			private set;
-			get;
-		}
+		public BinaryOperation Operation { private set; get; }
 
 		public AstNode Left {
 			get {

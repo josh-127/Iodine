@@ -35,15 +35,9 @@ namespace Iodine.Compiler.Ast
 {
 	public class ClassDeclaration : AstNode
 	{
-		public string Name {
-			private set;
-			get;
-		}
+		public string Name { private set; get; }
 
-		public List<string> Base {
-			private set;
-			get;
-		}
+		public List<string> Base { private set; get; }
 
 		public FunctionDeclaration Constructor {
 			get {

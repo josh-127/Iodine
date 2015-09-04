@@ -64,10 +64,7 @@ namespace Iodine.Runtime
 
 		private int iterIndex = 0;
 
-		public List<IodineObject> Objects {
-			private set;
-			get;
-		}
+		public List<IodineObject> Objects { private set; get; }
 
 
 		public IodineList (List<IodineObject> list)

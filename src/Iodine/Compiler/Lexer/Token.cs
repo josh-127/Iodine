@@ -60,28 +60,19 @@ namespace Iodine.Compiler
 		/// Gets the token class.
 		/// </summary>
 		/// <value>The class of the token.</value>
-		public TokenClass Class {
-			private set;
-			get;
-		}
+		public TokenClass Class { private set; get; }
 
 		/// <summary>
 		/// Gets the value.
 		/// </summary>
 		/// <value>The value.</value>
-		public string Value {
-			private set;
-			get;
-		}
+		public string Value { private set; get; }
 
 		/// <summary>
 		/// Gets the location.
 		/// </summary>
 		/// <value>The location.</value>
-		public Location Location {
-			private set;
-			get;
-		}
+		public Location Location { private set; get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Iodine.Compiler.Token"/> class.

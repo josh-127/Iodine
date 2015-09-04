@@ -39,10 +39,7 @@ namespace Iodine.Runtime
 		{
 			public static readonly IodineTypeDefinition RegexTypeDef = new IodineTypeDefinition ("Regex");
 
-			public Regex Value {
-				private set;
-				get;
-			}
+			public Regex Value { private set; get; }
 
 			public IodineRegex (Regex val)
 				: base (RegexTypeDef)
@@ -108,10 +105,7 @@ namespace Iodine.Runtime
 		{
 			public static readonly IodineTypeDefinition MatchTypeDef = new IodineTypeDefinition ("Match");
 
-			public Match Value {
-				private set;
-				get;
-			}
+			public Match Value { private set; get; }
 
 			private Match iterMatch;
 			private Match iterRet;

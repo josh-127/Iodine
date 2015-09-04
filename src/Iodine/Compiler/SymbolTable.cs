@@ -39,15 +39,9 @@ namespace Iodine.Compiler
 	{
 		class LocalScope
 		{
-			public int NextLocal {
-				set;
-				get;
-			}
+			public int NextLocal { set; get; }
 
-			public LocalScope ParentScope {
-				private set;
-				get;
-			}
+			public LocalScope ParentScope { private set; get; }
 
 			public LocalScope (LocalScope parentScope)
 			{
@@ -66,10 +60,7 @@ namespace Iodine.Compiler
 		/// Gets or sets the current scope.
 		/// </summary>
 		/// <value>The current scope.</value>
-		public Scope CurrentScope {
-			set;
-			get;
-		}
+		public Scope CurrentScope { set; get; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Iodine.Compiler.SymbolTable"/> class.
@@ -195,15 +186,9 @@ namespace Iodine.Compiler
 		private List<Symbol> symbols = new List<Symbol> ();
 		private List<Scope> childScopes = new List<Scope> ();
 
-		public Scope ParentScope {
-			private set;
-			get;
-		}
+		public Scope ParentScope { private set; get; }
 
-		public Scope NextScope {
-			set;
-			get;
-		}
+		public Scope NextScope { set; get; }
 
 		public IList<Scope> ChildScopes {
 			get {

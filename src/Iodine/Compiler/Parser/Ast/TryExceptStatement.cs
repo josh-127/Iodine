@@ -33,10 +33,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class TryExceptStatement : AstNode
 	{
-		public string ExceptionIdentifier {
-			private set;
-			get;
-		}
+		public string ExceptionIdentifier { private set; get; }
 
 		public AstNode TryBody {
 			get {

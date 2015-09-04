@@ -56,10 +56,7 @@ namespace Iodine.Runtime
 
 		private int iterIndex = 0;
 
-		public byte[] Value {
-			private set;
-			get;
-		}
+		public byte[] Value { private set; get; }
 
 		public IodineByteString ()
 			: base (TypeDefinition)

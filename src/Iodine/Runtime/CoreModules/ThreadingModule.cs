@@ -40,10 +40,7 @@ namespace Iodine.Runtime
 		{
 			public static readonly IodineTypeDefinition ThreadTypeDef = new IodineTypeDefinition ("Thread");
 
-			public Thread Value {
-				private set;
-				get;
-			}
+			public Thread Value { private set; get; }
 
 			public IodineThread (Thread t)
 				: base (ThreadTypeDef)

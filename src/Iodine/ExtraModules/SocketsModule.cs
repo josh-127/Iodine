@@ -47,10 +47,7 @@ namespace Iodine.Modules.Extras
 		{
 			private static IodineTypeDefinition SocketProtocalTypeTypeDef = new IodineTypeDefinition ("Socket");
 
-			public ProtocolType Type {
-				private set;
-				get;
-			}
+			public ProtocolType Type { private set; get; }
 
 			public IodineProtocolType (ProtocolType protoType)
 				: base (SocketProtocalTypeTypeDef)
@@ -63,10 +60,7 @@ namespace Iodine.Modules.Extras
 		{
 			private static IodineTypeDefinition SocketTypeTypeDef = new IodineTypeDefinition ("Socket");
 
-			public SocketType Type {
-				private set;
-				get;
-			}
+			public SocketType Type { private set; get; }
 
 			public IodineSocketType (SocketType sockType)
 				: base (SocketTypeTypeDef)
@@ -84,10 +78,7 @@ namespace Iodine.Modules.Extras
 		{
 			private static IodineTypeDefinition SocketTypeDef = new IodineTypeDefinition ("Socket");
 
-			public Socket Socket {
-				private set;
-				get;
-			}
+			public Socket Socket { private set; get; }
 
 			private System.IO.Stream stream;
 			private string host;

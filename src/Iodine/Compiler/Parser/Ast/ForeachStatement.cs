@@ -33,10 +33,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class ForeachStatement : AstNode
 	{
-		public string Item {
-			private set;
-			get;
-		}
+		public string Item { private set; get; }
 
 		public AstNode Iterator {
 			get {

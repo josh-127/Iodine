@@ -65,15 +65,9 @@ namespace Iodine.Runtime
 
 		private int iterIndex = 0;
 
-		public Dictionary <int, IodineObject> Dict {
-			private set;
-			get;
-		}
+		public Dictionary <int, IodineObject> Dict { private set; get; }
 
-		public Dictionary <int, IodineObject> Keys {
-			private set;
-			get;
-		}
+		public Dictionary <int, IodineObject> Keys { private set; get; }
 
 		public IodineHashMap ()
 			: base (TypeDefinition)

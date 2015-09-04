@@ -39,25 +39,13 @@ namespace Iodine.Compiler.Ast
 			get;
 		}
 
-		public IList<string> Parameters {
-			private set;
-			get;
-		}
+		public IList<string> Parameters { private set; get; }
 
-		public bool InstanceMethod {
-			private set;
-			get;
-		}
+		public bool InstanceMethod { private set; get; }
 
-		public bool Variadic {
-			private set;
-			get;
-		}
+		public bool Variadic { private set; get; }
 
-		public bool AcceptsKeywordArgs {
-			private set;
-			get;
-		}
+		public bool AcceptsKeywordArgs { private set; get; }
 
 		public FunctionDeclaration (Location location,
 		                     string name,

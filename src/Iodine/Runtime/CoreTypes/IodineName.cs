@@ -35,10 +35,7 @@ namespace Iodine.Runtime
 	{
 		private static readonly IodineTypeDefinition NameTypeDef = new IodineTypeDefinition ("Name"); 
 
-		public string Value {
-			private set;
-			get;
-		}
+		public string Value { private set; get; }
 
 		public IodineName (string val)
 			: base (NameTypeDef)

@@ -49,10 +49,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public byte[] Array {
-			private set;
-			get;
-		}
+		public byte[] Array { private set; get; }
 
 		private int iterIndex = 0;
 

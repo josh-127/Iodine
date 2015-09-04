@@ -60,10 +60,7 @@ namespace Iodine.Runtime
 
 		private int iterIndex = 0;
 
-		public string Value {
-			private set;
-			get;
-		}
+		public string Value { private set; get; }
 
 		public IodineString (string val)
 			: base (TypeDefinition)

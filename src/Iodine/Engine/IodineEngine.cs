@@ -40,10 +40,7 @@ namespace Iodine
 		private IodineModule defaultModule;
 		private StackFrame stackFrame;
 
-		public VirtualMachine VirtualMachine {
-			private set;
-			get;
-		}
+		public VirtualMachine VirtualMachine { private set; get; }
 
 		public IodineEngine ()
 		{
@@ -124,10 +121,7 @@ namespace Iodine
 
 	public class SyntaxException : Exception
 	{
-		public ErrorLog ErrorLog {
-			private set;
-			get;
-		}
+		public ErrorLog ErrorLog { private set; get; }
 
 		public SyntaxException (ErrorLog errLog)
 			: base ("Syntax Error")

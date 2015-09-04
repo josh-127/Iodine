@@ -9,10 +9,7 @@ namespace ModuleReflection
 		private static IodineTypeDefinition InstructionTypeDef = new IodineTypeDefinition ("Instruction");
 
 		public Instruction Instruction
-		{
-			private set;
-			get;
-		}
+		{ private set; get; }
 
 		private IodineMethod parentMethod;
 

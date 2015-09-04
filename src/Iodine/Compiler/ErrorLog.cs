@@ -44,19 +44,13 @@ namespace Iodine
 		/// Gets the error count.
 		/// </summary>
 		/// <value>The error count.</value>
-		public int ErrorCount {
-			private set;
-			get;
-		}
+		public int ErrorCount { private set; get; }
 
 		/// <summary>
 		/// Gets the warning count.
 		/// </summary>
 		/// <value>The warning count.</value>
-		public int WarningCount {
-			private set;
-			get;
-		}
+		public int WarningCount { private set; get; }
 
 		/// <summary>
 		/// Gets the errors.

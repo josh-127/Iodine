@@ -43,10 +43,7 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public int Position {
-			private set;
-			get;
-		}
+		public int Position { private set; get; }
 
 		public Token Current {
 			get {

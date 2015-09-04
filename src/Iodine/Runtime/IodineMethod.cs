@@ -49,15 +49,9 @@ namespace Iodine.Runtime
 	{
 		private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("InstanceMethod");
 
-		public IodineMethod Method {
-			private set;
-			get;
-		}
+		public IodineMethod Method { private set; get; }
 
-		public IodineObject Self {
-			private set;
-			get;
-		}
+		public IodineObject Self { private set; get; }
 
 		public IodineInstanceMethodWrapper (IodineObject self, IodineMethod method)
 			: base (InstanceTypeDef)
@@ -94,50 +88,23 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public string Name {
-			private set;
-			get;
-		}
+		public string Name { private set; get; }
 
-		public Dictionary <string, int> Parameters {
-			private set;
-			get;
-		}
+		public Dictionary <string, int> Parameters { private set; get; }
 
-		public int ParameterCount {
-			private set;
-			get;
-		}
+		public int ParameterCount { private set; get; }
 
-		public int LocalCount {
-			private set;
-			get;
-		}
+		public int LocalCount { private set; get; }
 
-		public bool Variadic {
-			set;
-			get;
-		}
+		public bool Variadic { set; get; }
 
-		public bool AcceptsKeywordArgs {
-			set;
-			get;
-		}
+		public bool AcceptsKeywordArgs { set; get; }
 
-		public bool Generator {
-			set;
-			get;
-		}
+		public bool Generator { set; get; }
 
-		public IodineModule Module {
-			private set;
-			get;
-		}
+		public IodineModule Module { private set; get; }
 
-		public bool InstanceMethod {
-			private set;
-			get;
-		}
+		public bool InstanceMethod { private set; get; }
 
 		public IodineMethod (IodineModule module, string name, bool isInstance, int parameterCount,
 		                     int localCount) : base (MethodTypeDef)

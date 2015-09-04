@@ -39,10 +39,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public string Field {
-			private set;
-			get;
-		}
+		public string Field { private set; get; }
 
 		public GetExpression (Location location, AstNode target, string field)
 			: base (location)

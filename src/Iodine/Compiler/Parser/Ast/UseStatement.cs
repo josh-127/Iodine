@@ -36,25 +36,13 @@ namespace Iodine.Compiler.Ast
 {
 	public class UseStatement : AstNode
 	{
-		public string Module {
-			private set;
-			get;
-		}
+		public string Module { private set; get; }
 
-		public List<string> Imports {
-			private set;
-			get;
-		}
+		public List<string> Imports { private set; get; }
 
-		public bool Wildcard {
-			private set;
-			get;
-		}
+		public bool Wildcard { private set; get; }
 
-		public bool Relative {
-			private set;
-			get;
-		}
+		public bool Relative { private set; get; }
 
 		public UseStatement (Location location, string module, bool relative = false)
 			: base (location)

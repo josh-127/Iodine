@@ -37,20 +37,11 @@ namespace Iodine.Runtime
 	{
 		public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
 
-		public IodineObject Base {
-			set;
-			get;
-		}
+		public IodineObject Base { set; get; }
 
-		public List<IodineInterface> Interfaces {
-			set;
-			get;
-		}
+		public List<IodineInterface> Interfaces { set; get; }
 
-		public IodineTypeDefinition TypeDef {
-			private set;
-			get;
-		}
+		public IodineTypeDefinition TypeDef { private set; get; }
 
 		public Dictionary<string, IodineObject> Attributes {
 			get {

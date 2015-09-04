@@ -53,15 +53,9 @@ namespace Iodine.Runtime
 
 		}
 
-		public string Message {
-			private set;
-			get;
-		}
+		public string Message { private set; get; }
 
-		public Location Location {
-			set;
-			get;
-		}
+		public Location Location { set; get; }
 
 		public IodineException ()
 			: base (TypeDefinition)
@@ -323,15 +317,9 @@ namespace Iodine.Runtime
 
 	public class UnhandledIodineExceptionException : Exception
 	{
-		public IodineObject OriginalException {
-			private set;
-			get;
-		}
+		public IodineObject OriginalException { private set; get; }
 
-		public StackFrame Frame {
-			private set;
-			get;
-		}
+		public StackFrame Frame { private set; get; }
 
 		public UnhandledIodineExceptionException (StackFrame frame, IodineObject original)
 		{

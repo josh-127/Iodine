@@ -34,10 +34,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class StringExpression : AstNode
 	{
-		public string Value {
-			private set;
-			get;
-		}
+		public string Value { private set; get; }
 
 		public StringExpression (Location location, string value)
 			: base (location)

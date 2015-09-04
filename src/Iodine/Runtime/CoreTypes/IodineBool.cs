@@ -56,10 +56,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public bool Value {
-			private set;
-			get;
-		}
+		public bool Value { private set; get; }
 
 		protected IodineBool (bool val)
 			: base (TypeDefinition)

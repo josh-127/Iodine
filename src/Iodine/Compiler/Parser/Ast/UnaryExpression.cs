@@ -33,10 +33,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class UnaryExpression : AstNode
 	{
-		public UnaryOperation Operation {
-			private set;
-			get;
-		}
+		public UnaryOperation Operation { private set; get; }
 
 		public AstNode Value {
 			get {
