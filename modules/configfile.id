@@ -25,22 +25,22 @@ class ConfigFile {
     }
 
     func save (self, path) {
-        file = open (path, "w");
-        foreach (section in self.sections) {
-            file.write ("[{}]\n".format (section));
-            dict = self.sections [section];
-            foreach (key in dict) {
-                file.write ("{}={}\n".format (key, dict [key]));
+        with (file = open (path, "w")) {
+            foreach (section in self.sections) {
+                file.write ("[{}]\n".format (section));
+                dict = self.sections [section];
+                foreach (key in dict) {
+                    file.write ("{}={}\n".format (key, dict [key]));
+                }
             }
         }
-        file.close ();
     }
 
     func open (file) {
-        fd = open (file, "r");
-        source = fd.readAllText ();
-        fd.close ();
-        return ConfigFile.parse (source);
+        with (fd = open (file, "r")) {
+            source = fd.readAllText ();
+            return ConfigFile.parse (source);
+        }
     }
 
     func parse (source) {
