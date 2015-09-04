@@ -89,6 +89,11 @@ namespace Iodine.Runtime
 			SetAttribute ("isSymbol", new InternalMethodCallback (isSymbol, this));
 		}
 
+		public override IodineObject Len (VirtualMachine vm)
+		{
+			return new IodineInteger (Value.Length);
+		}
+
 		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
 			IodineString str = right as IodineString;

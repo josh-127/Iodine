@@ -76,6 +76,11 @@ namespace Iodine.Runtime
 			}
 			return null;
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("Event ()");
+		}
 	}
 }
 

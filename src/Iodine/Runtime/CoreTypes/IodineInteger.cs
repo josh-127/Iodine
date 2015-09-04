@@ -33,7 +33,7 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class IodineInteger : IodineObject
+	public sealed class IodineInteger : IodineObject
 	{
 		public static readonly IodineTypeDefinition TypeDefinition = new IntTypeDef ();
 
@@ -59,10 +59,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public long Value {
-			private set;
-			get;
-		}
+		public readonly long Value;
 
 		public IodineInteger (long val)
 			: base (TypeDefinition)
@@ -237,11 +234,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
 				return null;
 			}
-			IodineList list = new IodineList (new IodineObject[0]);
-			for (long i = Value; i < intVal.Value; i++) {
-				list.Add (new IodineInteger (i));
-			}
-			return list;
+			return new IodineRange (Value, intVal.Value, 1);
 		}
 
 		public override IodineObject ClosedRange (VirtualMachine vm, IodineObject right)
@@ -251,11 +244,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
 				return null;
 			}
-			IodineList list = new IodineList (new IodineObject[0]);
-			for (long i = Value; i <= intVal.Value; i++) {
-				list.Add (new IodineInteger (i));
-			}
-			return list;
+			return new IodineRange (Value, intVal.Value + 1, 1);
 		}
 		#endregion
 

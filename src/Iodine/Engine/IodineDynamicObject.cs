@@ -95,7 +95,7 @@ namespace Iodine
 
 		public override string ToString ()
 		{
-			return internalObject.ToString ();
+			return internalObject.Represent (internalVm).ToString ();
 		}
 	}
 }

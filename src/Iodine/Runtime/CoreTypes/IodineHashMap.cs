@@ -88,6 +88,11 @@ namespace Iodine.Runtime
 			SetAttribute ("remove", new InternalMethodCallback (remove, this));
 		}
 
+		public override IodineObject Len (VirtualMachine vm)
+		{
+			return new IodineInteger (Keys.Count);
+		}
+
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			int hash = key.GetHashCode ();

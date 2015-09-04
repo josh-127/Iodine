@@ -37,49 +37,13 @@ namespace Iodine.Runtime
 	[IodineBuiltinModule ("__builtins__")]
 	public class BuiltinsModule : IodineModule
 	{
-		class RangeIterator : IodineObject
-		{
-			private static IodineTypeDefinition RangeIteratorTypeDef = new IodineTypeDefinition ("RangeIterator");
-			private long iterIndex = 0;
-			private long min;
-			private long end;
-			private long step;
-
-			public RangeIterator (long min, long max, long step)
-				: base (RangeIteratorTypeDef)
-			{
-				this.end = max;
-				this.step = step;
-				this.min = min;
-			}
-
-			public override IodineObject IterGetNext (VirtualMachine vm)
-			{
-				return new IodineInteger (iterIndex - 1);
-			}
-
-			public override bool IterMoveNext (VirtualMachine vm)
-			{
-				if (iterIndex >= this.end) {
-					return false;
-				}
-				iterIndex += this.step;
-				return true;
-			}
-
-			public override void IterReset (VirtualMachine vm)
-			{
-				this.iterIndex = min;
-			}
-
-		}
-
 		public BuiltinsModule ()
 			: base ("__builtins__")
 		{
 			SetAttribute ("stdin", new IodineStream (Console.OpenStandardInput (), false, true));
 			SetAttribute ("stdout", new IodineStream (Console.OpenStandardOutput (), true, false));
 			SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
+			SetAttribute ("len", new InternalMethodCallback (len, null));
 			SetAttribute ("property", new InternalMethodCallback (property, null));
 			SetAttribute ("eval", new InternalMethodCallback (eval, null));
 			SetAttribute ("type", new InternalMethodCallback (type, null));
@@ -100,6 +64,8 @@ namespace Iodine.Runtime
 			SetAttribute ("filter", new InternalMethodCallback (filter, null));
 			SetAttribute ("map", new InternalMethodCallback (map, null)); 
 			SetAttribute ("reduce", new InternalMethodCallback (reduce, null));
+			SetAttribute ("zip", new InternalMethodCallback (zip, null)); 
+			SetAttribute ("sum", new InternalMethodCallback (sum, null)); 
 			SetAttribute ("range", new InternalMethodCallback (range, null));
 			SetAttribute ("open", new InternalMethodCallback (open, null));
 			SetAttribute ("Exception", IodineException.TypeDefinition);
@@ -125,6 +91,15 @@ namespace Iodine.Runtime
 			IodineObject getter = args [0];
 			IodineObject setter = args.Length > 1 ? args [1] : null;
 			return new IodineProperty (getter, setter, null);
+		}
+
+		private IodineObject len (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			return args [0].Len (vm);
 		}
 
 		private IodineObject eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -199,7 +174,7 @@ namespace Iodine.Runtime
 			}
 
 			if (!args [1].InstanceOf (typedef)) {
-				vm.RaiseException (new IodineTypeException (typedef.ToString ()));
+				vm.RaiseException (new IodineTypeCastException (typedef.ToString ()));
 				return null;
 			}
 
@@ -283,9 +258,9 @@ namespace Iodine.Runtime
 				return null;
 			}
 
-			IodineObject result = null;
+			IodineObject result = args.Length > 2 ? args [1] : null;
 			IodineObject collection = args [0];
-			IodineObject func = args [1];
+			IodineObject func = args.Length > 2 ? args [2] : args [1];
 
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
@@ -295,6 +270,46 @@ namespace Iodine.Runtime
 				result = func.Invoke (vm, new IodineObject[] { result, o });
 			}
 			return result;
+		}
+
+		private IodineObject zip (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineList result = new IodineList (new IodineObject[0]);
+			foreach (IodineObject obj in args)
+				obj.IterReset (vm);
+			while (true) {
+				IodineObject[] objs = new IodineObject[args.Length];
+				for (int i = 0; i < args.Length; i++) {
+					if (!args [i].IterMoveNext (vm))
+						return result;
+					IodineObject o = args [i].IterGetNext (vm);
+					objs [i] = o;
+				}
+				result.Add (new IodineTuple (objs));
+			}
+		}
+
+		private IodineObject sum (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineObject initial = args.Length > 1 ? args [1] : new IodineInteger (0);
+			IodineObject collection = args [0];
+
+			collection.IterReset (vm);
+			while (collection.IterMoveNext (vm)) {
+				IodineObject o = collection.IterGetNext (vm);
+				initial = initial.Add (vm, o);
+			}
+			return initial;
 		}
 
 		private IodineObject range (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -334,7 +349,7 @@ namespace Iodine.Runtime
 				end = endObj.Value;
 				step = stepObj.Value;
 			}
-			return new RangeIterator (start, end, step);
+			return new IodineRange (start, end, step);
 		}
 
 		private IodineObject open (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -106,6 +106,16 @@ namespace Iodine.Runtime
 			self.SetAttribute ("__super__", obj);
 			self.Base = obj;
 		}
+
+		public override IodineObject Represent (VirtualMachine vm)
+		{
+			return new IodineString (string.Format ("<Class {0}>", Name));
+		}
+
+		public override string ToString ()
+		{
+			return Name;
+		}
 	}
 }
 

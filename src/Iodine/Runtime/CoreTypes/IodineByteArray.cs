@@ -63,6 +63,10 @@ namespace Iodine.Runtime
 			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 		}
 
+		public override IodineObject Len (VirtualMachine vm)
+		{
+			return new IodineInteger (Array.Length);
+		}
 
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{

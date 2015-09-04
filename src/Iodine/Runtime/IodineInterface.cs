@@ -70,6 +70,11 @@ namespace Iodine.Runtime
 			}
 			self.Interfaces.Add (this);
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("<Interface {0}>", Name);
+		}
 	}
 }
 

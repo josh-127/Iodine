@@ -40,6 +40,11 @@ namespace Iodine.Runtime
 			: base (NullTypeDef) {
 
 		}
+
+		public override string ToString ()
+		{
+			return "null";
+		}
 	}
 }
 

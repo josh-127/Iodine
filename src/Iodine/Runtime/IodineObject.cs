@@ -250,6 +250,15 @@ namespace Iodine.Runtime
 			return true;
 		}
 
+		public virtual IodineObject Len (VirtualMachine vm)
+		{
+			if (Attributes.ContainsKey ("__len__")) {
+				return GetAttribute (vm, "__len__").Invoke (vm, new IodineObject[] { });
+			}
+			vm.RaiseException (new IodineAttributeNotFoundException ("__len__"));
+			return null;
+		}
+
 		public virtual void Enter (VirtualMachine vm)
 		{
 			if (Attributes.ContainsKey ("__enter__")) {

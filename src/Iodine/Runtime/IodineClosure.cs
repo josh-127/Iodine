@@ -58,6 +58,11 @@ namespace Iodine.Runtime
 			return vm.InvokeMethod (Target, frame.Duplicate (vm.Stack.Top, Target.LocalCount),
 				frame.Self, arguments);
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("<Anonymous Function>");
+		}
 	}
 }
 

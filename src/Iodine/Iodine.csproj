@@ -165,6 +165,7 @@
     <Compile Include="Runtime\CoreTypes\IodineProperty.cs" />
     <Compile Include="Runtime\IIodineProperty.cs" />
     <Compile Include="Compiler\Parser\Ast\WithStatement.cs" />
+    <Compile Include="Runtime\CoreTypes\IodineRange.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

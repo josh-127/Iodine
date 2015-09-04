@@ -48,6 +48,11 @@ namespace Iodine.Runtime
 		{
 			SetAttribute (name, new IodineInteger (val));
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("<Enum {0}>", Name);
+		}
 	}
 }
 

@@ -78,6 +78,11 @@ namespace Iodine.Runtime
 			Value = Encoding.ASCII.GetBytes (val);
 		}
 
+		public override IodineObject Len (VirtualMachine vm)
+		{
+			return new IodineInteger (Value.Length);
+		}
+
 		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
 			IodineByteString str = right as IodineByteString;

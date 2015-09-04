@@ -225,6 +225,11 @@ namespace Iodine.Runtime
 				return new IodineGenerator (vm.Stack.Top, this, arguments);
 			return vm.InvokeMethod (this, null, arguments);
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("<Function {0}>", Name);
+		}
 	}
 }
 

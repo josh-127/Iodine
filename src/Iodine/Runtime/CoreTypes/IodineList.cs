@@ -48,7 +48,17 @@ namespace Iodine.Runtime
 
 			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
 			{
-				return new IodineList (args);
+				IodineList list = new IodineList (new IodineObject[0]);
+				if (args.Length > 0) {
+					foreach (IodineObject collection in args) {
+						collection.IterReset (vm);
+						while (collection.IterMoveNext (vm)) {
+							IodineObject o = collection.IterGetNext (vm);
+							list.Add (o);
+						}
+					}
+				}
+				return list;
 			}
 		}
 
@@ -77,6 +87,11 @@ namespace Iodine.Runtime
 		public IodineList (IodineObject[] items)
 			: this (new List<IodineObject> (items))
 		{
+		}
+
+		public override IodineObject Len (VirtualMachine vm)
+		{
+			return new IodineInteger (Objects.Count);
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
