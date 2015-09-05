@@ -117,17 +117,17 @@ namespace Iodine.Compiler
 
 		public void Accept (AstRoot ast)
 		{
-			visitSubnodes (ast);
+			ast.VisitChildren (this);
 		}
 
 		public void Accept (AstNode ast)
 		{
-			visitSubnodes (ast);
+			ast.VisitChildren (this);
 		}
 
 		public void Accept (ClassDeclaration classDecl)
 		{
-			visitSubnodes (classDecl);
+			classDecl.VisitChildren (this);
 		}
 
 		public void Accept (InterfaceDeclaration interfaceDecl)
@@ -150,17 +150,17 @@ namespace Iodine.Compiler
 
 		public void Accept (Expression expr)
 		{
-			visitSubnodes (expr);
+			expr.VisitChildren (this);
 		}
 
 		public void Accept (Statement stmt)
 		{
-			visitSubnodes (stmt);
+			stmt.VisitChildren (this);
 		}
 
 		public void Accept (SuperCallExpression super)
 		{
-			visitSubnodes (super);
+			super.VisitChildren (this);
 		}
 
 		public void Accept (BinaryExpression binop)
@@ -168,8 +168,8 @@ namespace Iodine.Compiler
 			if (binop.Operation == BinaryOperation.Assign) {
 				if (binop.Left is NameExpression) {
 					NameExpression ident = (NameExpression)binop.Left;
-					if (!this.symbolTable.IsSymbolDefined (ident.Value)) {
-						this.symbolTable.AddSymbol (ident.Value);
+					if (!symbolTable.IsSymbolDefined (ident.Value)) {
+						symbolTable.AddSymbol (ident.Value);
 					}
 				}
 			}
@@ -178,72 +178,70 @@ namespace Iodine.Compiler
 
 		public void Accept (UnaryExpression unaryop)
 		{
-			visitSubnodes (unaryop);
+			unaryop.VisitChildren (this);
 		}
 
 		public void Accept (CallExpression call)
 		{
-			visitSubnodes (call);
+			call.VisitChildren (this);
 		}
 
 		public void Accept (ArgumentList arglist)
 		{
-			visitSubnodes (arglist);
+			arglist.VisitChildren (this);
 		}
 
 		public void Accept (KeywordArgumentList kwargs)
 		{
-			visitSubnodes (kwargs);
+			kwargs.VisitChildren (this);
 		}
 
 		public void Accept (GetExpression getAttr)
 		{
-			visitSubnodes (getAttr);
+			getAttr.VisitChildren (this);
 		}
 
 		public void Accept (CodeBlock scope)
 		{
-			visitSubnodes (scope);
+			scope.VisitChildren (this);
 		}
 
 		public void Accept (ReturnStatement returnStmt)
 		{
-			visitSubnodes (returnStmt);
+			returnStmt.VisitChildren (this);
 		}
 
 		public void Accept (YieldStatement yieldStmt)
 		{
-			visitSubnodes (yieldStmt);
+			yieldStmt.Visit (this);
 		}
 
 		public void Accept (IndexerExpression indexer)
 		{
-			visitSubnodes (indexer);
+			indexer.VisitChildren (this);
 		}
 
 		public void Accept (ListExpression list)
 		{
-			visitSubnodes (list);
+			list.VisitChildren (this);
 		}
 
 		public void Accept (HashExpression hash)
 		{
-			visitSubnodes (hash);
+			hash.VisitChildren (this);
 		}
 
 		public void Accept (SelfStatement self)
 		{
-			visitSubnodes (self);
 		}
 
 		public void Accept (TrueExpression ntrue)
 		{
-			visitSubnodes (ntrue);
 		}
 
 		public void Accept (TupleExpression tuple)
 		{
-			visitSubnodes (tuple);
+			tuple.VisitChildren (this);
 		}
 
 		public void Accept (LambdaExpression lambda)
@@ -289,13 +287,6 @@ namespace Iodine.Compiler
 
 		public void Accept (FloatExpression num)
 		{
-		}
-
-		private void visitSubnodes (AstNode root)
-		{
-			foreach (AstNode node in root) {
-				node.Visit (this);
-			}
 		}
 	}
 }

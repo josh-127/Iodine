@@ -123,7 +123,8 @@ namespace Iodine.Runtime
 		public IodineObject InvokeMethod (IodineMethod method, StackFrame frame, IodineObject self,
 		                                  IodineObject[] arguments)
 		{
-			int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 : method.ParameterCount;
+			int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 :
+				method.ParameterCount;
 			if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
 				(!method.Variadic && arguments.Length < requiredArgs)) {
 				RaiseException (new IodineArgumentException (method.ParameterCount));
