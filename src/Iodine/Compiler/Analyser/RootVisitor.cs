@@ -115,6 +115,19 @@ namespace Iodine.Compiler
 				"Statement not allowed outside function body!");
 		}
 
+		public void Accept (ReturnStatement returnStmt)
+		{
+			errorLog.AddError (ErrorType.ParserError, returnStmt.Location,
+				"Statement not allowed outside function body!");
+		}
+
+		public void Accept (YieldStatement yieldStmt)
+		{
+			errorLog.AddError (ErrorType.ParserError, yieldStmt.Location,
+				"Statement not allowed outside function body!");
+		}
+
+
 		public void Accept (AstRoot ast)
 		{
 			ast.VisitChildren (this);
@@ -206,16 +219,6 @@ namespace Iodine.Compiler
 			scope.VisitChildren (this);
 		}
 
-		public void Accept (ReturnStatement returnStmt)
-		{
-			returnStmt.VisitChildren (this);
-		}
-
-		public void Accept (YieldStatement yieldStmt)
-		{
-			yieldStmt.Visit (this);
-		}
-
 		public void Accept (IndexerExpression indexer)
 		{
 			indexer.VisitChildren (this);
@@ -230,15 +233,6 @@ namespace Iodine.Compiler
 		{
 			hash.VisitChildren (this);
 		}
-
-		public void Accept (SelfStatement self)
-		{
-		}
-
-		public void Accept (TrueExpression ntrue)
-		{
-		}
-
 		public void Accept (TupleExpression tuple)
 		{
 			tuple.VisitChildren (this);
@@ -247,7 +241,6 @@ namespace Iodine.Compiler
 		public void Accept (LambdaExpression lambda)
 		{
 			symbolTable.BeginScope (true);
-
 			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
 			foreach (string param in lambda.Parameters) {
 				symbolTable.AddSymbol (param);
@@ -255,6 +248,14 @@ namespace Iodine.Compiler
 
 			lambda.Children [0].Visit (visitor);
 			symbolTable.EndScope (true);
+		}
+
+		public void Accept (SelfStatement self)
+		{
+		}
+
+		public void Accept (TrueExpression ntrue)
+		{
 		}
 
 		public void Accept (EnumDeclaration enumDecl)

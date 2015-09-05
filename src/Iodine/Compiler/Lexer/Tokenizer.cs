@@ -377,6 +377,9 @@ namespace Iodine.Compiler
 			case "..":
 				ReadChar ();
 				return new Token (TokenClass.Operator, nextTwoChars, location);
+			case "|>":
+				ReadChar ();
+				return new Token (TokenClass.Operator, nextTwoChars, location);
 			default:
 				return new Token (TokenClass.Operator, op.ToString (), location);
 			}

@@ -57,7 +57,8 @@ namespace Iodine.Compiler
 		DynamicCast,
 		NullCoalescing,
 		ClosedRange,
-		HalfRange
+		HalfRange,
+		Pipeline
 	}
 }
 
