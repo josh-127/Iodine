@@ -993,9 +993,58 @@ namespace Iodine.Compiler
 				return new NullExpression (stream.Location);
 			} else if (stream.Match (TokenClass.Keyword, "lambda")) {
 				return ParseLambda (stream);
+			} else if (stream.Match (TokenClass.Keyword, "match")) {
+				return ParseMatch (stream);
 			}
 			stream.MakeError ();
 			return null;
+		}
+
+		private static AstNode ParseMatch (TokenStream stream)
+		{
+			MatchExpression expr = new MatchExpression (stream.Location);
+			stream.Expect (TokenClass.Keyword, "match");
+			expr.Add (ParseExpression (stream));
+			while (stream.Accept (TokenClass.Keyword, "when")) {
+				AstNode pattern = ParseExpression (stream);
+				stream.Expect (TokenClass.Operator, "=>");
+				AstNode value = ParseExpression (stream);
+				expr.Children.Add (pattern);
+				expr.Children.Add (value);
+			}
+			return expr;
+		}
+
+		private static AstNode ParsePattern (TokenStream stream)
+		{
+			return ParsePatternOr (stream);
+		}
+
+		private static AstNode ParsePatternOr (TokenStream stream)
+		{
+			AstNode expr = ParsePatternAnd (stream);
+			while (stream.Match (TokenClass.Operator, "|")) {
+				stream.Accept (TokenClass.Operator);
+				expr = new BinaryExpression (stream.Location, BinaryOperation.Or, expr,
+					ParsePatternAnd (stream));
+			}
+			return expr;
+		}
+
+		private static AstNode ParsePatternAnd (TokenStream stream)
+		{
+			AstNode expr = ParsePatternTerm (stream);
+			while (stream.Match (TokenClass.Operator, "&")) {
+				stream.Accept (TokenClass.Operator);
+				expr = new BinaryPattern (stream.Location, BinaryOperation.And, expr,
+					ParsePatternTerm (stream));
+			}
+			return expr;
+		}
+
+		private static AstNode ParsePatternTerm (TokenStream stream)
+		{
+			return ParseTerm (stream);
 		}
 
 		private static AstNode ParseLambda (TokenStream stream)

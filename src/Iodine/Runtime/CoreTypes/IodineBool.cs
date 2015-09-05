@@ -104,6 +104,26 @@ namespace Iodine.Runtime
 			return IodineBool.Create (boolVal.Value || Value);
 		}
 
+		public override IodineObject And (VirtualMachine vm, IodineObject left)
+		{
+			IodineBool boolVal = left as IodineBool;
+			if (boolVal == null) {
+				vm.RaiseException ("Left hand side expected to be Bool!");
+				return null;
+			}
+			return IodineBool.Create (boolVal.Value && Value);
+		}
+
+		public override IodineObject Or (VirtualMachine vm, IodineObject left)
+		{
+			IodineBool boolVal = left as IodineBool;
+			if (boolVal == null) {
+				vm.RaiseException ("Left hand side expected to be Bool!");
+				return null;
+			}
+			return IodineBool.Create (boolVal.Value || Value);
+		}
+
 		public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
 		{
 			switch (op) {

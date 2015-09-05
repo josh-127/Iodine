@@ -590,6 +590,64 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (cont.Location, Opcode.Jump, continueLabels.Peek ());
 		}
 
+		public void Accept (MatchExpression match)
+		{
+			AstNode value = match.Children [0];
+			value.Visit (this);
+			int temporary = methodBuilder.CreateTemporary ();
+			methodBuilder.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
+			PatternCompiler compiler = new PatternCompiler (errorLog, methodBuilder, temporary, this);
+			IodineLabel nextLabel = methodBuilder.CreateLabel ();
+			IodineLabel endLabel = methodBuilder.CreateLabel ();
+			for (int i = 1; i < match.Children.Count; i += 2) {
+				if (i > 1) {
+					methodBuilder.MarkLabelPosition (nextLabel);
+					nextLabel = methodBuilder.CreateLabel ();
+				}
+				match.Children [i].Visit (compiler);
+				Console.WriteLine (match.Children [i].ToString ());
+				methodBuilder.EmitInstruction (match.Location, Opcode.JumpIfFalse, nextLabel);
+				match.Children [i + 1].Visit (this);
+				methodBuilder.EmitInstruction (match.Location, Opcode.Jump, endLabel);
+			}
+			methodBuilder.MarkLabelPosition (endLabel);
+		}
+
+		public void Accept (BinaryPattern pattern)
+		{
+			Console.WriteLine ("wtf");
+			IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
+			IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
+			IodineLabel endLabel = methodBuilder.CreateLabel ();
+			pattern.Left.Visit (this);
+			/*
+				 * Short circuit evaluation 
+				 */
+			switch (pattern.Operation) {
+			case BinaryOperation.And:
+				methodBuilder.EmitInstruction (pattern.Location, Opcode.Dup);
+				methodBuilder.EmitInstruction (pattern.Location, Opcode.JumpIfFalse,
+					shortCircuitFalseLabel);
+				break;
+			case BinaryOperation.Or:
+				methodBuilder.EmitInstruction (pattern.Location, Opcode.Dup);
+				methodBuilder.EmitInstruction (pattern.Location, Opcode.JumpIfTrue,
+					shortCircuitTrueLabel);
+				break;
+			}
+			pattern.Right.Visit (this);
+			methodBuilder.EmitInstruction (pattern.Location, Opcode.BinOp, (int)pattern.Operation);
+			methodBuilder.EmitInstruction (pattern.Location, Opcode.Jump, endLabel);
+			methodBuilder.MarkLabelPosition (shortCircuitTrueLabel);
+			methodBuilder.EmitInstruction (pattern.Location, Opcode.Pop);
+			methodBuilder.EmitInstruction (pattern.Location, Opcode.LoadTrue);
+			methodBuilder.EmitInstruction (pattern.Location, Opcode.Jump, endLabel);
+			methodBuilder.MarkLabelPosition (shortCircuitFalseLabel);
+			methodBuilder.EmitInstruction (pattern.Location, Opcode.Pop);
+			methodBuilder.EmitInstruction (pattern.Location, Opcode.LoadFalse);
+			methodBuilder.MarkLabelPosition (endLabel);
+		}
+
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {

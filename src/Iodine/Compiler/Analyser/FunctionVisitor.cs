@@ -245,6 +245,16 @@ namespace Iodine.Compiler
 			forStmt.VisitChildren (this);
 		}
 
+		public void Accept (MatchExpression match)
+		{
+			match.VisitChildren (this);
+		}
+
+		public void Accept (BinaryPattern pattern)
+		{
+			pattern.VisitChildren (this);
+		}
+
 		public void Accept (Statement stmt)
 		{
 		}

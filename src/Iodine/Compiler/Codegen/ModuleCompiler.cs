@@ -155,6 +155,16 @@ namespace Iodine.Compiler
 			cont.Visit (functionCompiler);
 		}
 
+		public void Accept (MatchExpression match)
+		{
+			match.VisitChildren (functionCompiler);
+		}
+
+		public void Accept (BinaryPattern pattern)
+		{
+			pattern.VisitChildren (functionCompiler);
+		}
+
 		public void Accept (SwitchStatement switchStmt)
 		{
 		}

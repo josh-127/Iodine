@@ -45,7 +45,7 @@ namespace Iodine.Runtime
 				: base (RegexTypeDef)
 			{
 				this.Value = val;
-				SetAttribute ("match", new InternalMethodCallback (match, this));
+				SetAttribute ("matchexp", new InternalMethodCallback (match, this));
 				SetAttribute ("isMatch", new InternalMethodCallback (isMatch, this));
 
 			}
@@ -149,7 +149,7 @@ namespace Iodine.Runtime
 			: base ("regex")
 		{
 			SetAttribute ("compile", new InternalMethodCallback (compile, this));
-			SetAttribute ("match", new InternalMethodCallback (match, this));
+			SetAttribute ("matchexp", new InternalMethodCallback (match, this));
 			SetAttribute ("isMatch", new InternalMethodCallback (isMatch, this));
 		}
 
