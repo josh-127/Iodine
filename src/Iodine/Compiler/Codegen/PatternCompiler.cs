@@ -41,14 +41,19 @@ namespace Iodine.Compiler
 		private IAstVisitor parentVisitor;
 		private ErrorLog errorLog;
 		private IodineMethod methodBuilder;
+		private SymbolTable symbolTable;
 		private int temporary;
 
-		public PatternCompiler (ErrorLog errorLog, IodineMethod methodBuilder, int temporary,
+		public PatternCompiler (ErrorLog errorLog,
+			SymbolTable symbolTable,
+			IodineMethod methodBuilder,
+			int temporary,
 			IAstVisitor parent)
 		{
 			parentVisitor = parent;
 			this.errorLog = errorLog;
 			this.methodBuilder = methodBuilder;
+			this.symbolTable = symbolTable;
 			this.temporary = temporary;
 		}
 
@@ -119,7 +124,9 @@ namespace Iodine.Compiler
 				methodBuilder.EmitInstruction (Opcode.LoadTrue);
 			} else {
 				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, temporary);
-				methodBuilder.EmitInstruction (ident.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
+				methodBuilder.EmitInstruction (ident.Location, Opcode.StoreLocal,
+					symbolTable.GetSymbol (ident.Value).Index);
+				methodBuilder.EmitInstruction (Opcode.LoadTrue);
 			}
 		}
 
@@ -291,7 +298,8 @@ namespace Iodine.Compiler
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
 			int item = methodBuilder.CreateTemporary ();
 
-			PatternCompiler compiler = new PatternCompiler (errorLog, methodBuilder, item,
+			PatternCompiler compiler = new PatternCompiler (errorLog, symbolTable, methodBuilder,
+				item,
 				parentVisitor);
 			
 			for (int i = 0; i < tuple.Children.Count; i++) {

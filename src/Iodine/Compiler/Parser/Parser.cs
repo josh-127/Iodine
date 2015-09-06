@@ -255,27 +255,38 @@ namespace Iodine.Compiler
 				out isVariadic,
 				out hasKeywordArgs);
 
-			FunctionDeclaration decl = new FunctionDeclaration (stream.Location, ident != null ? ident.Value : "",
-				isInstanceMethod, isVariadic, hasKeywordArgs, parameters);
+			FunctionDeclaration decl = new FunctionDeclaration (stream.Location, ident != null ?
+				ident.Value : "",
+				isInstanceMethod,
+				isVariadic,
+				hasKeywordArgs,
+				parameters);
+			
 			if (!prototype) {
-				stream.Expect (TokenClass.OpenBrace);
-				CodeBlock scope = new CodeBlock (stream.Location);
 
-				if (stream.Match (TokenClass.Keyword, "super")) {
-					scope.Add (ParseSuperCall (stream, cdecl));
+				if (stream.Accept (TokenClass.Operator, "=>")) {
+					decl.Add (new ReturnStatement (stream.Location, ParseExpression (stream)));
+				} else {
+					stream.Expect (TokenClass.OpenBrace);
+					CodeBlock scope = new CodeBlock (stream.Location);
+
+					if (stream.Match (TokenClass.Keyword, "super")) {
+						scope.Add (ParseSuperCall (stream, cdecl));
+					}
+
+					while (!stream.Match (TokenClass.CloseBrace)) {
+						scope.Add (ParseStatement (stream));
+					}
+
+					decl.Add (scope);
+					stream.Expect (TokenClass.CloseBrace);
 				}
-
-				while (!stream.Match (TokenClass.CloseBrace)) {
-					scope.Add (ParseStatement (stream));
-				}
-
-				decl.Add (scope);
-				stream.Expect (TokenClass.CloseBrace);
 			}
 			return decl;
 		}
 
-		private static List<string> ParseFuncParameters (TokenStream stream, out bool isInstanceMethod,
+		private static List<string> ParseFuncParameters (TokenStream stream,
+			out bool isInstanceMethod,
 			out bool isVariadic,
 			out bool hasKeywordArgs)
 		{
@@ -1059,9 +1070,11 @@ namespace Iodine.Compiler
 				out isVariadic,
 				out acceptsKwargs);
 
-			stream.Expect (TokenClass.Operator, "=>");
 			LambdaExpression decl = new LambdaExpression (stream.Location, isInstanceMethod, isVariadic, acceptsKwargs, parameters);
-			decl.Add (ParseStatement (stream));
+			if (stream.Accept (TokenClass.Operator, "=>"))
+				decl.Add (new ReturnStatement (stream.Location, ParseExpression (stream)));
+			else
+				decl.Add (ParseStatement (stream));
 			return decl;
 		}
 

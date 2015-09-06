@@ -72,10 +72,10 @@ func generatorTest () {
     yield 3;
 }
 
-describe('Iodine', lambda(test) => {
-    test.describe('Inheritance', lambda(test) => {
-        test.describe('A', lambda(test) => {
-            test.it('should have attributes x and foo', lambda() => {
+describe('Iodine', lambda(test) {
+    test.describe('Inheritance', lambda(test) {
+        test.describe('A', lambda(test) {
+            test.it('should have attributes x and foo', lambda() {
                 obj = A(1);
                 expect(obj).to.have.attribute('x');
                 expect(obj.x).to.equal(1);
@@ -84,19 +84,19 @@ describe('Iodine', lambda(test) => {
                 expect(obj.foo()).to.equal(1);
             });
 
-            test.it('should be an "A"', lambda() => {
+            test.it('should be an "A"', lambda() {
                 obj = A(1);
                 expect(obj).to.be.an('A');
             });
 
-            test.it('should not have attribute bar', lambda() => {
+            test.it('should not have attribute bar', lambda() {
                 obj = A(1);
                 expect(obj).not().to.have.attribute('bar');
             });
         });
 
-        test.describe('B', lambda(test) => {
-            test.it('should have attributes x, foo and bar', lambda() => {
+        test.describe('B', lambda(test) {
+            test.it('should have attributes x, foo and bar', lambda() {
                 obj = B();
                 expect(obj).to.have.attribute('x');
                 expect(obj.x).to.equal(2);
@@ -108,15 +108,15 @@ describe('Iodine', lambda(test) => {
                 expect(obj.bar()).to.equal(2);
             });
 
-            test.it('should be a "B"', lambda() => {
+            test.it('should be a "B"', lambda() {
                 obj = B();
                 expect(obj).to.be.a('B');
             });
         });
 
-        test.describe('C', lambda(test) => {
+        test.describe('C', lambda(test) {
             test.it('should have attributes x, foo and bar without ' +
-                'calling super', lambda() => {
+                'calling super', lambda() {
                 # Objects with empty constructors don't need to call super();
                 obj = C();
                 expect(obj).to.have.attribute('x');
@@ -130,16 +130,16 @@ describe('Iodine', lambda(test) => {
             });
         });
 
-        test.describe('D', lambda(test) => {
-            test.it('should have attribute x', lambda() => {
+        test.describe('D', lambda(test) {
+            test.it('should have attribute x', lambda() {
                 obj = D();
                 expect(obj).to.have.attribute('x');
                 expect(obj.x()).to.equal(2);
             });
         });
 
-        test.describe('E', lambda(test) => {
-            test.it('should have attribute x without super call', lambda() => {
+        test.describe('E', lambda(test) {
+            test.it('should have attribute x without super call', lambda() {
                 obj = E();
                 expect(obj).to.have.attribute('x');
                 expect(obj.x()).to.equal(2);
@@ -147,19 +147,19 @@ describe('Iodine', lambda(test) => {
         });
     });
 
-    test.describe('Decorator', lambda(test) => {
-        test.it('should work with no parameters', lambda() => {
+    test.describe('Decorator', lambda(test) {
+        test.it('should work with no parameters', lambda() {
             expect(four()).to.equal(4);
         });
 
-        test.it('should work with a parameter for the decorator', lambda() => {
+        test.it('should work with a parameter for the decorator', lambda() {
             expect(six()).to.equal(6);
         });
     });
 
-    test.describe('Closure', lambda(test) => {
+    test.describe('Closure', lambda(test) {
         test.it('should be created, stored and calculate the correct ' +
-            'value', lambda() => {
+            'value', lambda() {
             func startAt(x) {
                 func incrementBy(y) {
                     return x + y;
@@ -173,9 +173,9 @@ describe('Iodine', lambda(test) => {
         });
     });
 
-    test.describe('Generator', lambda(test) => {
+    test.describe('Generator', lambda(test) {
         test.it('should be able to iterate through all yielded values', 
-            lambda() => {
+            lambda() {
                 _list = [];
                 foreach (i in generatorTest ()) {
                     _list.add (i);
@@ -186,13 +186,13 @@ describe('Iodine', lambda(test) => {
             });
     });
 
-    test.describe('HashMap', lambda(test) => {
-        test.it('should be created using {}', lambda() => {
+    test.describe('HashMap', lambda(test) {
+        test.it('should be created using {}', lambda() {
             map = {};
             expect(map).to.be.a('HashMap');
         });
 
-        test.it('should index using keys', lambda() => {
+        test.it('should index using keys', lambda() {
             map = {
                 'x': 1,
                 'y': 'x'
@@ -202,8 +202,8 @@ describe('Iodine', lambda(test) => {
             expect(map['x']).to.equal(1);
         });
 
-        test.describe('contains', lambda(test) => {
-            test.it('should search through keys with .contains', lambda() => {
+        test.describe('contains', lambda(test) {
+            test.it('should search through keys with .contains', lambda() {
                 map = {
                     'a': 1,
                     'b': 3,
@@ -217,7 +217,7 @@ describe('Iodine', lambda(test) => {
             });
         });
 
-        test.it('should allow any value as a key', lambda() => {
+        test.it('should allow any value as a key', lambda() {
             _a = A(1);
             _b = B();
             _c = [1, 2];
@@ -234,14 +234,14 @@ describe('Iodine', lambda(test) => {
             expect(map[_c]).to.equal('d');
         });
 
-        test.it('should filter using keys and return list', lambda() => {
+        test.it('should filter using keys and return list', lambda() {
             map = {
                 'a': 1,
                 'b': 2,
                 'c': 3
             };
 
-            _map = filter(map, lambda(item) => {
+            _map = filter(map, lambda(item) {
                 if (item != 'a') {
                     return true;
                 }
@@ -252,14 +252,14 @@ describe('Iodine', lambda(test) => {
             expect(_map.contains('a')).not().to.be._true();
         });
 
-        test.it('should map using keys and return list', lambda() => {
+        test.it('should map using keys and return list', lambda() {
             hmap = {
                 'a': 1,
                 'b': 2,
                 'c': 3
             };
 
-            _map = map(hmap, lambda(item) => {
+            _map = map(hmap, lambda(item) {
                 if (item != 'a') {
                     return item;
                 }
@@ -272,7 +272,7 @@ describe('Iodine', lambda(test) => {
             expect(_map.contains('b')).to.be._true();
         });
 
-        test.it('should iterate through foreach using keys', lambda() => {
+        test.it('should iterate through foreach using keys', lambda() {
             hash = {
                 'a': 1,
                 'b': 2,
@@ -291,13 +291,13 @@ describe('Iodine', lambda(test) => {
         });
     });
 
-    test.describe('List', lambda(test) => {
-        test.it('should be created using []', lambda() => {
+    test.describe('List', lambda(test) {
+        test.it('should be created using []', lambda() {
             list = [];
             expect(list).to.be.a('List');
         });
 
-        test.it('should index using integers', lambda() => {
+        test.it('should index using integers', lambda() {
             list = [1, 2, 3];
             expect(list[0]).to.equal(1);
             try {
@@ -309,44 +309,44 @@ describe('Iodine', lambda(test) => {
             raise Exception('Expected exception to be thrown');
         });
 
-        test.describe('contains', lambda(test) => {
-            test.it('should search values', lambda() => {
+        test.describe('contains', lambda(test) {
+            test.it('should search values', lambda() {
                 list = [1, 2, 3, 4];
                 expect(list.contains(4)).to.be._true();
             });
         });
     });
 
-    test.describe('Int', lambda(test) => {
-        test.it('should be assignable to a variable', lambda() => {
+    test.describe('Int', lambda(test) {
+        test.it('should be assignable to a variable', lambda() {
             x = 5;
             expect(x).to.equal(5);
         });
 
-        test.it('should be able to store negative values', lambda() => {
+        test.it('should be able to store negative values', lambda() {
             x = -5;
             expect(x).to.equal(0 - 5);
         });
 
-        test.it('should be able to store large values', lambda() => {
+        test.it('should be able to store large values', lambda() {
             x = 100000000000000000;
             expect(x).to.equal(100000000000000000);
         });
 
-        test.it('should act as an integer type and not handle fractions', lambda() => {
+        test.it('should act as an integer type and not handle fractions', lambda() {
             x = 5 / 2;
             # floor
             expect(x).to.equal(2);
         });
     });
 
-    test.describe('Float', lambda(test) => {
+    test.describe('Float', lambda(test) {
 
     });
 
-    test.describe('Keyword', lambda(test) => {
-        test.describe('for', lambda(test) => {
-            test.it('should take a start, end and step value', lambda() => {
+    test.describe('Keyword', lambda(test) {
+        test.describe('for', lambda(test) {
+            test.it('should take a start, end and step value', lambda() {
                 j = 0;
                 for (i = 0; i < 10; i += 1) {
                     j += 1;
@@ -356,9 +356,9 @@ describe('Iodine', lambda(test) => {
             });
         });
 
-        test.describe('return', lambda(test) => {
-            test.it('should end the function', lambda() => {
-                y = lambda() => {
+        test.describe('return', lambda(test) {
+            test.it('should end the function', lambda() {
+                y = lambda() {
                     return;
                     raise Exception('Lambda did not return!');
                 };
@@ -366,16 +366,16 @@ describe('Iodine', lambda(test) => {
                 y();
             });
 
-            test.it('should return the function if no value', lambda() => {
-                y = lambda() => {
+            test.it('should return the function if no value', lambda() {
+                y = lambda() {
                     return;
                 };
 
                 expect(y()).to.equal(y);
             });
 
-            test.it('should return the specified value otherwise', lambda() => {
-                y = lambda() => {
+            test.it('should return the specified value otherwise', lambda() {
+                y = lambda() {
                     return 1;
                 };
 
@@ -383,8 +383,8 @@ describe('Iodine', lambda(test) => {
             });
         });
 
-        test.describe('break', lambda(test) => {
-            test.it('should exit a foreach loop', lambda() => {
+        test.describe('break', lambda(test) {
+            test.it('should exit a foreach loop', lambda() {
                 list = [1, 2, 3];
                 reachedThree = false;
                 foreach(item in list) {
@@ -398,7 +398,7 @@ describe('Iodine', lambda(test) => {
                 expect(reachedThree).to.be._false();
             });
 
-            test.it('should exit a for loop', lambda() => {
+            test.it('should exit a for loop', lambda() {
                 i = 0;
                 for (i = 0; i < 10; i += 1) {
                     if (i == 5) {
@@ -410,8 +410,8 @@ describe('Iodine', lambda(test) => {
             });
         });
 
-        test.describe('continue', lambda(test) => {
-            test.it('should skip an iteration of a for loop', lambda() => {
+        test.describe('continue', lambda(test) {
+            test.it('should skip an iteration of a for loop', lambda() {
                 j = 0;
                 for (i = 0; i < 10; i += 1) {
                     # TODO: FIX
@@ -422,7 +422,7 @@ describe('Iodine', lambda(test) => {
                 expect(j).to.equal(0);
             });
 
-            test.it('should skip an iteration of a foreach loop', lambda() => {
+            test.it('should skip an iteration of a foreach loop', lambda() {
                 j = 0;
                 list = [1, 2, 3];
                 foreach (item in list) {
@@ -435,7 +435,7 @@ describe('Iodine', lambda(test) => {
         });
     });
 
-    test.describe('Enum', lambda(test) => {
+    test.describe('Enum', lambda(test) {
         enum Test {
             BAD,
             OK,
@@ -450,27 +450,27 @@ describe('Iodine', lambda(test) => {
             STRANGE = 8
         }
 
-        test.it('should be created using the enum keyword', lambda() => {
+        test.it('should be created using the enum keyword', lambda() {
             val = Test.BAD;
             expect(val).to.equal(Test.BAD);
             expect(val).to.be.an('Int');
         });
 
-        test.it('should assign each value a unique integer', lambda() => {
+        test.it('should assign each value a unique integer', lambda() {
             expect(Test.BAD).not().to.equal(Test.OK);
         });
 
-        test.it('should respect values assigned explicitly', lambda() => {
+        test.it('should respect values assigned explicitly', lambda() {
             expect(AnotherTest.BAD).to.equal(1);
         });
 
-        test.it('should be able to work as a bitmask', lambda() => {
+        test.it('should be able to work as a bitmask', lambda() {
             val = AnotherTest.BAD | AnotherTest.STRANGE;
             expect(val & AnotherTest.STRANGE).to.equal(AnotherTest.STRANGE);
         });
     });
 
-    test.describe('with Statement', lambda(test) => {
+    test.describe('with Statement', lambda(test) {
         class WithTestClass {
 
             func WithTestClass (self, list) {
@@ -487,14 +487,14 @@ describe('Iodine', lambda(test) => {
         }
         list = [false, false];
         with(myClass = WithTestClass (list)) {
-            test.it('__enter__ should be called', lambda() => {
+            test.it('__enter__ should be called', lambda() {
                 expect(list[0]).to.be._true();
             });
-            test.it('__exit__ should not have been called yet', lambda() => {
+            test.it('__exit__ should not have been called yet', lambda() {
                 expect(list[1]).to.be._false();
             });
         }
-        test.it('__exit__ should be called', lambda() => {
+        test.it('__exit__ should be called', lambda() {
             expect(list[1]).to.be._true();
         });
         list2 = [false, false];
@@ -507,11 +507,11 @@ describe('Iodine', lambda(test) => {
 
         val = testWith();
 
-        test.it('testWith() should have returned 12', lambda() => {
+        test.it('testWith() should have returned 12', lambda() {
             expect(val).to.equal(12);
         });
 
-        test.it('__exit__ should have been called on return', lambda() => {
+        test.it('__exit__ should have been called on return', lambda() {
             expect(list2[1]).to.be._true();
         });
     });

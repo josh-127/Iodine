@@ -23,7 +23,7 @@ func firstExample (n) {
     # to each item in our result list. This will create a list
     # of results from the fizz buzz game. 
 
-    result = map (numbers, lambda (x) => {
+    result = map (numbers, lambda (x) {
         if (x % 3 == 0 && x % 5 == 0) {
             return "Fizz buzz!";
         } else if (x % 3 == 0) {

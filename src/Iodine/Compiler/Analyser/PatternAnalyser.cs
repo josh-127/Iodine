@@ -38,12 +38,14 @@ namespace Iodine.Compiler
 {
 	public sealed class PatternAnalyzer : IAstVisitor
 	{
-		private IAstVisitor parentVisitor;
 		private ErrorLog errorLog;
+		private SymbolTable symbolTable;
+		private IAstVisitor parentVisitor;
 
-		public PatternAnalyzer (ErrorLog errorLog, IAstVisitor parent)
+		public PatternAnalyzer (ErrorLog errorLog, SymbolTable symbolTable, IAstVisitor parent)
 		{
 			parentVisitor = parent;
+			this.symbolTable = symbolTable;
 			this.errorLog = errorLog;
 		}
 
@@ -87,6 +89,7 @@ namespace Iodine.Compiler
 
 		public void Accept (NameExpression ident)
 		{
+			symbolTable.AddSymbol (ident.Value);
 		}
 
 		public void Accept (CallExpression call)

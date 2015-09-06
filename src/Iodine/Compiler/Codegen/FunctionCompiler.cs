@@ -596,7 +596,9 @@ namespace Iodine.Compiler
 			value.Visit (this);
 			int temporary = methodBuilder.CreateTemporary ();
 			methodBuilder.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
-			PatternCompiler compiler = new PatternCompiler (errorLog, methodBuilder, temporary, this);
+			PatternCompiler compiler = new PatternCompiler (errorLog, symbolTable, methodBuilder,
+				temporary,
+				this);
 			IodineLabel nextLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
 			for (int i = 1; i < match.Children.Count; i += 2) {

@@ -38,7 +38,7 @@ class IterableList {
  
 func main (args) {
         myList = IterableList ({1, 2, 3, 4, 5, 6});
-	result = myList.filter (lambda (i) => { 
+	result = myList.filter (lambda (i) { 
 		return i % 2 == 0;
 	});
 

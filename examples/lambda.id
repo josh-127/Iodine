@@ -5,7 +5,7 @@ func main (args) {
 
 	print ("Map using lambda");
 
-	foreach (n in map (numberList, lambda (x) => return x + 10)) {
+	foreach (n in map (numberList, lambda (x) return x + 10)) {
 		print (n);
 	}
 

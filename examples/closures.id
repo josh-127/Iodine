@@ -7,7 +7,7 @@ func main (args) {
 }
 
 func startAt (x) {
-	return lambda (y) => {
+	return lambda (y) {
 		return x + y;
 	};
 }

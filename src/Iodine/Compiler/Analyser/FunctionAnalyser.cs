@@ -248,7 +248,7 @@ namespace Iodine.Compiler
 		public void Accept (MatchExpression match)
 		{
 			match.Children [0].Visit (this);
-			PatternAnalyzer analyzer = new PatternAnalyzer (errorLog, this);
+			PatternAnalyzer analyzer = new PatternAnalyzer (errorLog, symbolTable, this);
 			for (int i = 1; i < match.Children.Count; i += 2) {
 				match.Children [i].Visit (analyzer);
 				match.Children [i + 1].Visit (this);
