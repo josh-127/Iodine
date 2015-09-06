@@ -272,10 +272,10 @@ namespace Iodine.Runtime
 			case Opcode.LoadGlobal:
 				{
 					string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
-					if (globalDict.ContainsKey (name)) {
-						Push (globalDict [name]);
-					} else {
+					if (Top.Module.HasAttribute (name)) {
 						Push (Top.Module.GetAttribute (this, name));
+					} else {
+						Push (globalDict [name]);
 					}
 					break;
 				}
