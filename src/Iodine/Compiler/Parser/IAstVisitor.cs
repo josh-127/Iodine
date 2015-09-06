@@ -78,7 +78,7 @@ namespace Iodine.Compiler
 		void Accept (EnumDeclaration enumDecl);
 		void Accept (RaiseStatement raise);
 		void Accept (MatchExpression match);
-		void Accept (CaseExpession caseExpr);
+		void Accept (CaseExpression caseExpr);
 	}
 }
 

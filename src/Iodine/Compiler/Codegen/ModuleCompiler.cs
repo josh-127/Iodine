@@ -160,7 +160,7 @@ namespace Iodine.Compiler
 			match.VisitChildren (functionCompiler);
 		}
 
-		public void Accept (CaseExpession caseExpr)
+		public void Accept (CaseExpression caseExpr)
 		{
 			caseExpr.VisitChildren (functionCompiler);
 		}

@@ -250,7 +250,7 @@ namespace Iodine.Compiler
 			match.VisitChildren (this);
 		}
 
-		public void Accept (CaseExpession caseExpr)
+		public void Accept (CaseExpression caseExpr)
 		{
 			PatternAnalyzer analyzer = new PatternAnalyzer (errorLog, symbolTable, this);
 			caseExpr.Pattern.Visit (analyzer);

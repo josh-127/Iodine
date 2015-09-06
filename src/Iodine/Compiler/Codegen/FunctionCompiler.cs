@@ -606,7 +606,7 @@ namespace Iodine.Compiler
 					methodBuilder.MarkLabelPosition (nextLabel);
 					nextLabel = methodBuilder.CreateLabel ();
 				}
-				CaseExpession clause = match.Children [i] as CaseExpession;
+				CaseExpression clause = match.Children [i] as CaseExpression;
 				clause.Pattern.Visit (compiler);
 				methodBuilder.EmitInstruction (match.Location, Opcode.JumpIfFalse, nextLabel);
 				if (clause.Condition != null) {
@@ -619,7 +619,7 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
-		public void Accept (CaseExpession caseExpr)
+		public void Accept (CaseExpression caseExpr)
 		{
 		}
 

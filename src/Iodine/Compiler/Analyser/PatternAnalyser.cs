@@ -303,7 +303,7 @@ namespace Iodine.Compiler
 				"match expression can not exist inside pattern!");
 		}
 
-		public void Accept (CaseExpession caseExpr)
+		public void Accept (CaseExpression caseExpr)
 		{
 			errorLog.AddError (ErrorType.ParserError, caseExpr.Location,
 				"match expression can not exist inside pattern!");

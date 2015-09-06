@@ -184,7 +184,7 @@ namespace Iodine.Compiler
 			return null;
 		}
 
-		private Token ReadToken ()
+		public Token ReadToken ()
 		{
 			if (Position >= tokens.Count) {
 				return null;

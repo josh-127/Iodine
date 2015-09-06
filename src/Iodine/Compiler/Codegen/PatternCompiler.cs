@@ -339,7 +339,7 @@ namespace Iodine.Compiler
 		{
 		}
 
-		public void Accept (CaseExpession caseExpr)
+		public void Accept (CaseExpression caseExpr)
 		{
 		}
 

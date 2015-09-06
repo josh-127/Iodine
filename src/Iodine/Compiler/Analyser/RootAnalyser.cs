@@ -256,7 +256,7 @@ namespace Iodine.Compiler
 			match.Visit (visitor);
 		}
 
-		public void Accept (CaseExpession caseExpr)
+		public void Accept (CaseExpression caseExpr)
 		{
 		}
 
