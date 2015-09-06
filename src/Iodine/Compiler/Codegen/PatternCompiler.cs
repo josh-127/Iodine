@@ -339,6 +339,10 @@ namespace Iodine.Compiler
 		{
 		}
 
+		public void Accept (CaseExpession caseExpr)
+		{
+		}
+
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {

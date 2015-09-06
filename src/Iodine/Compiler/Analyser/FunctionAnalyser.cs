@@ -247,12 +247,17 @@ namespace Iodine.Compiler
 
 		public void Accept (MatchExpression match)
 		{
-			match.Children [0].Visit (this);
+			match.VisitChildren (this);
+		}
+
+		public void Accept (CaseExpession caseExpr)
+		{
 			PatternAnalyzer analyzer = new PatternAnalyzer (errorLog, symbolTable, this);
-			for (int i = 1; i < match.Children.Count; i += 2) {
-				match.Children [i].Visit (analyzer);
-				match.Children [i + 1].Visit (this);
+			caseExpr.Pattern.Visit (analyzer);
+			if (caseExpr.Condition != null) {
+				caseExpr.Condition.Visit (this);
 			}
+			caseExpr.Value.Visit (this);
 		}
 
 		public void Accept (Statement stmt)

@@ -1017,11 +1017,14 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.Keyword, "match");
 			expr.Add (ParseExpression (stream));
 			while (stream.Accept (TokenClass.Keyword, "case")) {
+				AstNode condition = null;
 				AstNode pattern = ParseExpression (stream);
+				if (stream.Accept (TokenClass.Keyword, "when")) {
+					condition = ParseExpression (stream);
+				}
 				stream.Expect (TokenClass.Operator, "=>");
 				AstNode value = ParseExpression (stream);
-				expr.Children.Add (pattern);
-				expr.Children.Add (value);
+				expr.Children.Add (new CaseExpession (pattern.Location, pattern, condition, value));
 			}
 			return expr;
 		}

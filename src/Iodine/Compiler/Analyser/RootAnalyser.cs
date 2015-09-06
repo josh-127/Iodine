@@ -252,7 +252,12 @@ namespace Iodine.Compiler
 
 		public void Accept (MatchExpression match)
 		{
-			match.VisitChildren (this);
+			FunctionAnalyser visitor = new FunctionAnalyser (errorLog, symbolTable);
+			match.Visit (visitor);
+		}
+
+		public void Accept (CaseExpession caseExpr)
+		{
 		}
 
 		public void Accept (SelfStatement self)

@@ -302,6 +302,12 @@ namespace Iodine.Compiler
 			errorLog.AddError (ErrorType.ParserError, match.Location,
 				"match expression can not exist inside pattern!");
 		}
+
+		public void Accept (CaseExpession caseExpr)
+		{
+			errorLog.AddError (ErrorType.ParserError, caseExpr.Location,
+				"match expression can not exist inside pattern!");
+		}
 	}
 }
 

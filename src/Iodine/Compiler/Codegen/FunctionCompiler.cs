@@ -601,18 +601,26 @@ namespace Iodine.Compiler
 				this);
 			IodineLabel nextLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
-			for (int i = 1; i < match.Children.Count; i += 2) {
+			for (int i = 1; i < match.Children.Count; i++) {
 				if (i > 1) {
 					methodBuilder.MarkLabelPosition (nextLabel);
 					nextLabel = methodBuilder.CreateLabel ();
 				}
-				match.Children [i].Visit (compiler);
-				Console.WriteLine (match.Children [i].ToString ());
+				CaseExpession clause = match.Children [i] as CaseExpession;
+				clause.Pattern.Visit (compiler);
 				methodBuilder.EmitInstruction (match.Location, Opcode.JumpIfFalse, nextLabel);
-				match.Children [i + 1].Visit (this);
+				if (clause.Condition != null) {
+					clause.Condition.Visit (this);
+					methodBuilder.EmitInstruction (match.Location, Opcode.JumpIfFalse, nextLabel);
+				}
+				clause.Value.Visit (this);
 				methodBuilder.EmitInstruction (match.Location, Opcode.Jump, endLabel);
 			}
 			methodBuilder.MarkLabelPosition (endLabel);
+		}
+
+		public void Accept (CaseExpession caseExpr)
+		{
 		}
 
 		private void visitSubnodes (AstNode root)
