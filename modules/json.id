@@ -48,7 +48,7 @@ class JsonFile {
         position = 0;
         size = tokens.getSize ();
 
-        func match (type) {
+        func matchToken (type) {
             if (position < size) {
                 return tokens [position].type == type;
             }
@@ -56,7 +56,7 @@ class JsonFile {
         }
 
         func expect (type) {
-            if (match (type)) {
+            if (matchToken (type)) {
                 position += 1;
                 return tokens [position - 1];
             }
@@ -71,49 +71,49 @@ class JsonFile {
         func parseItem () {
             token = tokens [position];
             ret = null;
-            switch (token.type) {
-                case JsonFile.JsonTokenType.BEGIN_ARRAY {
+            given (token.type) {
+                when JsonFile.JsonTokenType.BEGIN_ARRAY {
                     ret = [];
                     expect (JsonFile.JsonTokenType.BEGIN_ARRAY);
-                    while (position < size && !match (JsonFile.JsonTokenType.END_ARRAY)) {
+                    while (position < size && !matchToken (JsonFile.JsonTokenType.END_ARRAY)) {
                         ret.add (parseItem ());
-                        if (!match (JsonFile.JsonTokenType.VALUE_SEPERATOR)) {
+                        if (!matchToken (JsonFile.JsonTokenType.VALUE_SEPERATOR)) {
                             break;
                         }
                         consumeToken ();
                     }
                     expect (JsonFile.JsonTokenType.END_ARRAY);
                 }
-                case JsonFile.JsonTokenType.BEGIN_OBJECT {
+                when JsonFile.JsonTokenType.BEGIN_OBJECT {
                     ret = {};
                     expect (JsonFile.JsonTokenType.BEGIN_OBJECT);
-                    while (position < size && !match (JsonFile.JsonTokenType.END_OBJECT)) {
+                    while (position < size && !matchToken (JsonFile.JsonTokenType.END_OBJECT)) {
                         name = expect (JsonFile.JsonTokenType.STRING_LITERAL).value;
                         expect (JsonFile.JsonTokenType.NAME_SEPERATOR);
                         value = parseItem ();
                         ret [name] = value;
-                        if (!match (JsonFile.JsonTokenType.VALUE_SEPERATOR)) {
+                        if (!matchToken (JsonFile.JsonTokenType.VALUE_SEPERATOR)) {
                             break;
                         }
                         consumeToken ();
                     }
                     expect (JsonFile.JsonTokenType.END_OBJECT);
                 }
-                case JsonFile.JsonTokenType.NUMBER_LITERAL {
+                when JsonFile.JsonTokenType.NUMBER_LITERAL {
                     ret = consumeToken ().value;
                 }
-                case JsonFile.JsonTokenType.STRING_LITERAL {
+                when JsonFile.JsonTokenType.STRING_LITERAL {
                     ret = consumeToken ().value;
                 }
-                case JsonFile.JsonTokenType.TRUE_LITERAL {
+                when JsonFile.JsonTokenType.TRUE_LITERAL {
                     consumeToken ();
                     ret = true;
                 }
-                case JsonFile.JsonTokenType.FALSE_LITERAL {
+                when JsonFile.JsonTokenType.FALSE_LITERAL {
                     consumeToken ();
                     ret = false;
                 }
-                case JsonFile.JsonTokenType.NULL_LITERAL {
+                when JsonFile.JsonTokenType.NULL_LITERAL {
                     consumeToken ();
                     ret = null;
                 }
@@ -153,14 +153,14 @@ class JsonFile {
             while (peekChar ().isLetter ()) {
                 accum += readChar ();
             }
-            switch (accum) {
-                case "true" {
+            given (accum) {
+                when "true" {
                     result = JsonFile.JsonToken (JsonFile.JsonTokenType.TRUE_LITERAL, true);
                 }
-                case "false" {
+                when "false" {
                     result = JsonFile.JsonToken (JsonFile.JsonTokenType.FALSE_LITERAL, false);
                 }
-                case "null" {
+                when "null" {
                     result = JsonFile.JsonToken (JsonFile.JsonTokenType.NULL_LITERAL, null);
                 }
             }
@@ -212,35 +212,35 @@ class JsonFile {
         while (position < self.length) {
             last = tokens.getSize ();
             ch = peekChar ();
-            switch (ch) {
-                case "{" {
+            given (ch) {
+                when "{" {
                     readChar ();
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_OBJECT, "{"));
                 }
-                case "}" {
+                when "}" {
                     readChar ();
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.END_OBJECT, "}"));
                 }
-                case "[" {
+                when "[" {
                     readChar ();
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_ARRAY, "["));
                 }
-                case "]" {
+                when "]" {
                     readChar ();
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.END_ARRAY, "]"));
                 }
-                case ":" {
+                when ":" {
                     readChar ();
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NAME_SEPERATOR, ":"));
                 }
-                case "," {
+                when "," {
                     readChar ();
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.VALUE_SEPERATOR, ","));
                 }
-                case "-" {
+                when "-" {
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
                 }
-                case "\"" {
+                when "\"" {
                     tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.STRING_LITERAL, scanString ()));
                 }
             }
@@ -271,12 +271,12 @@ func dump (item) {
 
 func _dump (item) {
     if (item is List) {
-        items = map (item, lambda (x) => {
+        items = map (item, lambda (x) {
             return _dump (x);
         });
         return "[{}]".format (",".join (items));
     } else if (item is HashMap) {
-        items = map (item, lambda (x) => {
+        items = map (item, lambda (x) {
            return _dump (x) + " : " + _dump (item [x]);
         });
         return "{" + ",".join (items) + "}";
