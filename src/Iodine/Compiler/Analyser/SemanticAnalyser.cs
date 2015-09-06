@@ -44,7 +44,7 @@ namespace Iodine.Compiler
 		public SymbolTable Analyse (AstRoot ast)
 		{
 			SymbolTable retTable = new SymbolTable ();
-			RootVisitor visitor = new RootVisitor (errorLog, retTable);
+			RootAnalyser visitor = new RootAnalyser (errorLog, retTable);
 			ast.Visit (visitor);
 			return retTable;
 		}

@@ -32,12 +32,12 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-	public sealed class RootVisitor : IAstVisitor
+	public sealed class RootAnalyser : IAstVisitor
 	{
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
 
-		public RootVisitor (ErrorLog errorLog, SymbolTable symbolTable)
+		public RootAnalyser (ErrorLog errorLog, SymbolTable symbolTable)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
@@ -150,7 +150,7 @@ namespace Iodine.Compiler
 		public void Accept (FunctionDeclaration funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);
-			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
+			FunctionAnalyser visitor = new FunctionAnalyser (errorLog, symbolTable);
 			symbolTable.BeginScope (true);
 
 			foreach (string param in funcDecl.Parameters) {
@@ -241,7 +241,7 @@ namespace Iodine.Compiler
 		public void Accept (LambdaExpression lambda)
 		{
 			symbolTable.BeginScope (true);
-			FunctionVisitor visitor = new FunctionVisitor (errorLog, symbolTable);
+			FunctionAnalyser visitor = new FunctionAnalyser (errorLog, symbolTable);
 			foreach (string param in lambda.Parameters) {
 				symbolTable.AddSymbol (param);
 			}
