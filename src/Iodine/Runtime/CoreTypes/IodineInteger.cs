@@ -56,7 +56,18 @@ namespace Iodine.Runtime
 				}
 
 				long value;
-				if (!Int64.TryParse (args [0].ToString (), NumberStyles.AllowLeadingSign, null, out value)) {
+				NumberStyles style = NumberStyles.AllowLeadingSign;
+
+				if (args.Length > 1) {
+					IodineInteger basen = args [1] as IodineInteger;
+					switch (basen.Value) {
+					case 16:
+						style = NumberStyles.HexNumber;
+						break;
+					}
+				}
+
+				if (!Int64.TryParse (args [0].ToString (), style, null, out value)) {
 					vm.RaiseException (new IodineTypeCastException ("Int"));
 					return null;
 				} else {

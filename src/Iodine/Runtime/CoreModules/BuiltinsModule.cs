@@ -43,6 +43,7 @@ namespace Iodine.Runtime
 			SetAttribute ("stdin", new IodineStream (Console.OpenStandardInput (), false, true));
 			SetAttribute ("stdout", new IodineStream (Console.OpenStandardOutput (), true, false));
 			SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
+			SetAttribute ("chr", new InternalMethodCallback (chr, null));
 			SetAttribute ("len", new InternalMethodCallback (len, null));
 			SetAttribute ("property", new InternalMethodCallback (property, null));
 			SetAttribute ("eval", new InternalMethodCallback (eval, null));
@@ -91,6 +92,16 @@ namespace Iodine.Runtime
 			IodineObject getter = args [0];
 			IodineObject setter = args.Length > 1 ? args [1] : null;
 			return new IodineProperty (getter, setter, null);
+		}
+
+		private IodineObject chr (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineInteger ascii = args [0] as IodineInteger;
+			return new IodineString (((char)(int)ascii.Value).ToString ());
 		}
 
 		private IodineObject len (VirtualMachine vm, IodineObject self, IodineObject[] args)
