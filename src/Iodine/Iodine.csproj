@@ -167,8 +167,8 @@
     <Compile Include="Runtime\CoreTypes\IodineRange.cs" />
     <Compile Include="Runtime\IodineStackFrame.cs" />
     <Compile Include="Compiler\Parser\Ast\MatchExpression.cs" />
-    <Compile Include="Compiler\Parser\Ast\BinaryPattern.cs" />
     <Compile Include="Compiler\Codegen\PatternCompiler.cs" />
+    <Compile Include="Compiler\Analyser\PatternAnalyser.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

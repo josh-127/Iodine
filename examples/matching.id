@@ -1,0 +1,8 @@
+func main () {
+    opt = input ("Yes or no? ");
+    result = match opt
+        when "y" | "Y" => "Its a yes"
+        when "n" | "N" => "Its a no"
+        when _ => "I don't know";
+    print (result);
+}

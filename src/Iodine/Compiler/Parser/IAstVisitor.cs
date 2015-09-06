@@ -78,7 +78,6 @@ namespace Iodine.Compiler
 		void Accept (EnumDeclaration enumDecl);
 		void Accept (RaiseStatement raise);
 		void Accept (MatchExpression match);
-		void Accept (BinaryPattern pattern);
 	}
 }
 

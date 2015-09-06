@@ -160,11 +160,6 @@ namespace Iodine.Compiler
 			match.VisitChildren (functionCompiler);
 		}
 
-		public void Accept (BinaryPattern pattern)
-		{
-			pattern.VisitChildren (functionCompiler);
-		}
-
 		public void Accept (SwitchStatement switchStmt)
 		{
 		}

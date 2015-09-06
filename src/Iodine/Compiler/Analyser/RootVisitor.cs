@@ -32,7 +32,7 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-	public class RootVisitor : IAstVisitor
+	public sealed class RootVisitor : IAstVisitor
 	{
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
@@ -253,11 +253,6 @@ namespace Iodine.Compiler
 		public void Accept (MatchExpression match)
 		{
 			match.VisitChildren (this);
-		}
-
-		public void Accept (BinaryPattern pattern)
-		{
-			pattern.VisitChildren (this);
 		}
 
 		public void Accept (SelfStatement self)

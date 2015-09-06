@@ -1036,7 +1036,7 @@ namespace Iodine.Compiler
 			AstNode expr = ParsePatternTerm (stream);
 			while (stream.Match (TokenClass.Operator, "&")) {
 				stream.Accept (TokenClass.Operator);
-				expr = new BinaryPattern (stream.Location, BinaryOperation.And, expr,
+				expr = new BinaryExpression (stream.Location, BinaryOperation.And, expr,
 					ParsePatternTerm (stream));
 			}
 			return expr;
