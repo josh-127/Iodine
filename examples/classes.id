@@ -24,7 +24,7 @@ class Dog {
 
 # This class derives dog
 class BigDog : Dog {
-    func BigDog () {
+    func BigDog (self) {
         super ("Big Dog");	# In order to inherit everything from dog, we must
 				# explicitly invoke its constructor
     }
