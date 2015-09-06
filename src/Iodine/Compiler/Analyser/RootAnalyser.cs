@@ -97,13 +97,13 @@ namespace Iodine.Compiler
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (SwitchStatement switchStmt)
+		public void Accept (GivenStatement switchStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, switchStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (CaseStatement caseStmt)
+		public void Accept (WhenStatement caseStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, caseStmt.Location,
 				"Statement not allowed outside function body!");

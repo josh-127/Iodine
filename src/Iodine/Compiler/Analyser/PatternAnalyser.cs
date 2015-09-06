@@ -156,13 +156,13 @@ namespace Iodine.Compiler
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (SwitchStatement switchStmt)
+		public void Accept (GivenStatement switchStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, switchStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (CaseStatement caseStmt)
+		public void Accept (WhenStatement caseStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, caseStmt.Location,
 				"statement can not exist inside pattern!");

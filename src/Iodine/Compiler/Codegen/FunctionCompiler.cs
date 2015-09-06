@@ -344,22 +344,22 @@ namespace Iodine.Compiler
 			continueLabels.Pop ();
 		}
 
-		public void Accept (SwitchStatement switchStmt)
+		public void Accept (GivenStatement switchStmt)
 		{
-			foreach (AstNode node in switchStmt.CaseStatements.Children) {
-				CaseStatement caseStmt = node as CaseStatement;
+			foreach (AstNode node in switchStmt.WhenStatements.Children) {
+				WhenStatement caseStmt = node as WhenStatement;
 				caseStmt.Values.Visit (this);
 				caseStmt.Body.Visit (this);
 			}
 			switchStmt.GivenValue.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.SwitchLookup, switchStmt.CaseStatements.Children.Count);
+			methodBuilder.EmitInstruction (Opcode.SwitchLookup, switchStmt.WhenStatements.Children.Count);
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
 			methodBuilder.EmitInstruction (Opcode.JumpIfTrue, endLabel);
 			switchStmt.DefaultStatement.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
-		public void Accept (CaseStatement caseStmt)
+		public void Accept (WhenStatement caseStmt)
 		{
 		}
 

@@ -213,12 +213,12 @@ namespace Iodine.Compiler
 			ifStmt.VisitChildren (this);
 		}
 
-		public void Accept (SwitchStatement switchStmt)
+		public void Accept (GivenStatement switchStmt)
 		{
 			switchStmt.VisitChildren (this);
 		}
 
-		public void Accept (CaseStatement caseStmt)
+		public void Accept (WhenStatement caseStmt)
 		{
 			caseStmt.VisitChildren (this);
 		}

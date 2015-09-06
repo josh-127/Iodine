@@ -192,11 +192,11 @@ namespace Iodine.Compiler
 		{
 		}
 
-		public void Accept (SwitchStatement switchStmt)
+		public void Accept (GivenStatement switchStmt)
 		{
 		}
 
-		public void Accept (CaseStatement caseStmt)
+		public void Accept (WhenStatement caseStmt)
 		{
 		}
 

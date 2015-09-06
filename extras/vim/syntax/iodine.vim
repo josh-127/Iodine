@@ -13,7 +13,7 @@ syn match iodineNumber '[-+]\d\+\.\d*'
 
 syn region iodineString start='"' end='"' contains=iodineEscape
 
-syn keyword iodineKeyword if else for func class while do break lambda self use return true false null foreach from in as is isnot try except raise with super params interface enum yield switch case default
+syn keyword iodineKeyword if else for func class while do break lambda self use return true false null foreach from in as is isnot try except raise with super interface enum yield given when default match case
 
 syn keyword iodineFunctions print println input map filter
 

@@ -119,7 +119,6 @@
     <Compile Include="Compiler\Parser\Ast\BinaryExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\BreakStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\CallExpression.cs" />
-    <Compile Include="Compiler\Parser\Ast\CaseStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\ClassDeclaration.cs" />
     <Compile Include="Compiler\Parser\Ast\ContinueStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\DoStatement.cs" />
@@ -148,7 +147,6 @@
     <Compile Include="Compiler\Parser\Ast\Statement.cs" />
     <Compile Include="Compiler\Parser\Ast\StringExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\SuperCallExpression.cs" />
-    <Compile Include="Compiler\Parser\Ast\SwitchStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\TrueExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\TryExceptStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\TupleExpression.cs" />
@@ -169,6 +167,8 @@
     <Compile Include="Compiler\Analyser\PatternAnalyser.cs" />
     <Compile Include="Compiler\Analyser\RootAnalyser.cs" />
     <Compile Include="Compiler\Analyser\FunctionAnalyser.cs" />
+    <Compile Include="Compiler\Parser\Ast\GivenStatement.cs" />
+    <Compile Include="Compiler\Parser\Ast\WhenStatement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

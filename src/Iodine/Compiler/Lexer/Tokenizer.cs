@@ -282,7 +282,7 @@ namespace Iodine.Compiler
 			case "enum":
 			case "raise":
 			case "interface":
-			case "switch":
+			case "given":
 			case "case":
 			case "yield":
 			case "default":

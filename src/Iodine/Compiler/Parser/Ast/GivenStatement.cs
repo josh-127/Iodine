@@ -31,21 +31,27 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class CaseStatement : AstNode
+	public class GivenStatement : AstNode
 	{
-		public AstNode Values {
+		public AstNode GivenValue {
 			get {
-				return Children[0];
+				return Children [0];
 			}
 		}
 
-		public AstNode Body {
+		public AstNode WhenStatements {
 			get {
-				return Children[1];
+				return Children [1];
 			}
 		}
 
-		public CaseStatement (Location location)
+		public AstNode DefaultStatement {
+			get {
+				return Children [2];
+			}
+		}
+
+		public GivenStatement (Location location)
 			: base (location)
 		{
 		}

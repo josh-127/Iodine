@@ -50,8 +50,8 @@ namespace Iodine.Compiler
 		void Accept (DoStatement doStmt);
 		void Accept (ForStatement forStmt);
 		void Accept (ForeachStatement foreachStmt);
-		void Accept (SwitchStatement switchStmt);
-		void Accept (CaseStatement caseStmt);
+		void Accept (GivenStatement switchStmt);
+		void Accept (WhenStatement caseStmt);
 		void Accept (FunctionDeclaration funcDecl);
 		void Accept (CodeBlock scope);
 		void Accept (StringExpression stringConst);

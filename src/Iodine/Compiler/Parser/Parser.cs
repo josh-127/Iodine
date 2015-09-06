@@ -347,8 +347,8 @@ namespace Iodine.Compiler
 					return ParseFunction (stream);
 				case "if":
 					return ParseIf (stream);
-				case "switch":
-					return ParseSwitch (stream);
+				case "given":
+					return ParseGiven (stream);
 				case "for":
 					return ParseFor (stream);
 				case "foreach":
@@ -444,10 +444,10 @@ namespace Iodine.Compiler
 			return argList;
 		}
 
-		private static AstNode ParseSwitch (TokenStream stream)
+		private static AstNode ParseGiven (TokenStream stream)
 		{
-			SwitchStatement switchStmt = new SwitchStatement (stream.Location);
-			stream.Expect (TokenClass.Keyword, "switch");
+			GivenStatement switchStmt = new GivenStatement (stream.Location);
+			stream.Expect (TokenClass.Keyword, "given");
 			stream.Expect (TokenClass.OpenParan);
 			switchStmt.Add (ParseExpression (stream));
 			stream.Expect (TokenClass.CloseParan);
@@ -455,7 +455,7 @@ namespace Iodine.Compiler
 			AstNode defaultBlock = new AstRoot (stream.Location);
 			AstRoot caseStatements = new AstRoot (stream.Location);
 			while (!stream.EndOfStream && !stream.Match (TokenClass.CloseBrace)) {
-				caseStatements.Add (ParseCase (stream));
+				caseStatements.Add (ParseWhen (stream));
 				if (stream.Accept (TokenClass.Keyword, "default")) {
 					defaultBlock = ParseStatement (stream); 
 				}
@@ -466,10 +466,10 @@ namespace Iodine.Compiler
 			return switchStmt;
 		}
 
-		private static AstNode ParseCase (TokenStream stream)
+		private static AstNode ParseWhen (TokenStream stream)
 		{
-			CaseStatement caseStmt = new CaseStatement (stream.Location);
-			stream.Expect (TokenClass.Keyword, "case");
+			WhenStatement caseStmt = new WhenStatement (stream.Location);
+			stream.Expect (TokenClass.Keyword, "when");
 			AstNode value = ParseExpression (stream);
 			AstNode body = ParseStatement (stream);
 			AstNode lambda = new LambdaExpression (body.Location, false, false, false,
@@ -1016,7 +1016,7 @@ namespace Iodine.Compiler
 			MatchExpression expr = new MatchExpression (stream.Location);
 			stream.Expect (TokenClass.Keyword, "match");
 			expr.Add (ParseExpression (stream));
-			while (stream.Accept (TokenClass.Keyword, "when")) {
+			while (stream.Accept (TokenClass.Keyword, "case")) {
 				AstNode pattern = ParseExpression (stream);
 				stream.Expect (TokenClass.Operator, "=>");
 				AstNode value = ParseExpression (stream);
