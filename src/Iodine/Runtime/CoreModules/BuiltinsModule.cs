@@ -94,6 +94,22 @@ namespace Iodine.Runtime
 			return new IodineProperty (getter, setter, null);
 		}
 
+		private IodineObject sandbox (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineHashMap hash = args [0] as IodineHashMap;
+			Dictionary<string, IodineObject> items = new Dictionary<string, IodineObject> ();
+			foreach (KeyValuePair<int, IodineObject> kv in hash.Keys) {
+				//items [kv.Value.ToString ()] = hash.Dict [kv.Value];
+			}
+			VirtualMachine newVm = new VirtualMachine (items);
+			//args [0].Invoke (vm);
+			return null;
+		}
+
 		private IodineObject chr (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
