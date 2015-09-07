@@ -28,58 +28,87 @@
 **/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class IodineEvent : IodineObject
+	public class IodineEventEmitter : IodineObject
 	{
-		public static readonly IodineTypeDefinition TypeDefinition = new EventTypeDef ();
+		public static readonly IodineTypeDefinition TypeDefinition = new EventEmitterTypeDef ();
 
-		class EventTypeDef : IodineTypeDefinition
+		class EventEmitterTypeDef : IodineTypeDefinition
 		{
-			public EventTypeDef ()
-				: base ("Event")
+			public EventEmitterTypeDef ()
+				: base ("EventEmitter")
 			{
 			}
 
 			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
 			{
-				return new IodineEvent ();
+				return new IodineEventEmitter ();
+			}
+
+			public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+			{
+				self.Base = new IodineEventEmitter ();
 			}
 		}
 
-		private List<IodineObject> handlers = new List<IodineObject> ();
+		/*
+		 * This is ugly
+		 */
+		private Dictionary<string, List<IodineObject>> listeners = new Dictionary<string,
+			List<IodineObject>> ();
 
-		public IodineEvent ()
+		public IodineEventEmitter ()
 			: base (TypeDefinition)
 		{
-		}
-
-		public override IodineObject Add (VirtualMachine vm, IodineObject right)
-		{
-			handlers.Add (right);
-			return this;
-		}
-
-		public override IodineObject Sub (VirtualMachine vm, IodineObject right)
-		{
-			handlers.Remove (right);
-			return this;
-		}
-
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			foreach (IodineObject obj in handlers) {
-				obj.Invoke (vm, arguments);
-			}
-			return null;
+			SetAttribute ("on", new InternalMethodCallback (on, this));
+			SetAttribute ("emit", new InternalMethodCallback (emit, this));
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("Event ()");
+			return string.Format ("EventEmitter ()");
+		}
+
+		private IodineObject emit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineString e = args [0] as IodineString;
+			if (e == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+			if (listeners.ContainsKey (e.Value)) {
+				foreach (IodineObject obj in listeners [e.Value]) {
+					obj.Invoke (vm, args.Skip (1).ToArray ());
+				}
+			}
+			return null;
+		}
+
+		private IodineObject on (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 2) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			IodineString e = args [0] as IodineString;
+			if (e == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+			if (!listeners.ContainsKey (e.Value)) {
+				listeners.Add (e.Value, new List<IodineObject> ());
+			}
+			listeners [e.Value].Add (args [1]);
+			return null;
 		}
 	}
 }
