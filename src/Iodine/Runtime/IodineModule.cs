@@ -93,6 +93,7 @@ namespace Iodine.Runtime
 			Name = name;
 			Imports = new List<string> ();
 			Initializer = new IodineMethod (this, "__init__", false, 0, 0);
+			attributes ["__init__"] = Initializer;
 		}
 
 		public void AddMethod (IodineMethod method)

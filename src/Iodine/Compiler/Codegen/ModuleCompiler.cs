@@ -192,19 +192,30 @@ namespace Iodine.Compiler
 				                useStmt.Module);
 			
 			if (useStmt.Wildcard) {
-				module.Initializer.EmitInstruction (Opcode.ImportAll, module.DefineConstant (
-					new IodineName (import)));
+				module.Initializer.EmitInstruction (Opcode.LoadConst, module.DefineConstant (
+					new IodineString (import)));
+				module.Initializer.EmitInstruction (Opcode.BuildTuple, 0);
+				module.Initializer.EmitInstruction (Opcode.LoadGlobal, module.DefineConstant (
+					new IodineName ("require")));
+				module.Initializer.EmitInstruction (Opcode.Invoke, 2);
+				module.Initializer.EmitInstruction (Opcode.Pop);
 			} else {
 				IodineObject[] items = new IodineObject [useStmt.Imports.Count];
-				for (int i = 0; i < items.Length; i++) {
-					items [i] = new IodineString (useStmt.Imports [i]);
-				}
+
 				module.Initializer.EmitInstruction (Opcode.LoadConst, module.DefineConstant (
-					new IodineTuple (items)));
-				module.Initializer.EmitInstruction (Opcode.ImportFrom, module.DefineConstant (
-					new IodineName (import)));
-				module.Initializer.EmitInstruction (Opcode.Import, module.DefineConstant (
-					new IodineName (import)));
+					new IodineString (import)));
+				if (items.Length > 0) {
+					for (int i = 0; i < items.Length; i++) {
+						items [i] = new IodineString (useStmt.Imports [i]);
+						module.Initializer.EmitInstruction (Opcode.LoadConst, module.DefineConstant (
+							new IodineString (useStmt.Imports [i])));
+					}
+					module.Initializer.EmitInstruction (Opcode.BuildTuple, items.Length);
+				}
+				module.Initializer.EmitInstruction (Opcode.LoadGlobal, module.DefineConstant (
+					new IodineName ("require")));
+				module.Initializer.EmitInstruction (Opcode.Invoke, items.Length == 0 ? 1 : 2);
+				module.Initializer.EmitInstruction (Opcode.Pop);
 			}
 			
 		}

@@ -43,6 +43,8 @@ namespace Iodine.Runtime
 			SetAttribute ("stdin", new IodineStream (Console.OpenStandardInput (), false, true));
 			SetAttribute ("stdout", new IodineStream (Console.OpenStandardOutput (), true, false));
 			SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
+			SetAttribute ("sandbox", new InternalMethodCallback (sandbox, null));
+			SetAttribute ("require", new InternalMethodCallback (require, null));
 			SetAttribute ("chr", new InternalMethodCallback (chr, null));
 			SetAttribute ("len", new InternalMethodCallback (len, null));
 			SetAttribute ("property", new InternalMethodCallback (property, null));
@@ -94,20 +96,96 @@ namespace Iodine.Runtime
 			return new IodineProperty (getter, setter, null);
 		}
 
-		private IodineObject sandbox (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject require (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (args.Length <= 0) {
+			if (args.Length < 1) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineHashMap hash = args [0] as IodineHashMap;
+
+			IodineString path = args [0] as IodineString;
+
+			if (path == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			string name = path.Value;
+			string fullPath = Path.GetFullPath (name);
+
+			if (args.Length == 1) {
+				if (VirtualMachine.ModuleCache.ContainsKey (fullPath)) {
+					IodineModule module = VirtualMachine.ModuleCache [fullPath];
+					vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (fullPath),
+						module);
+				} else {
+					ErrorLog errLog = new ErrorLog ();
+					IodineModule module = IodineModule.LoadModule (errLog, name);
+					if (errLog.ErrorCount == 0 && module != null) {
+						vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (
+							fullPath), module);
+						VirtualMachine.ModuleCache [fullPath] = module;
+						module.Initializer.Invoke (vm, new IodineObject[] { });
+					} else {
+						throw new SyntaxException (errLog);
+					}
+				}
+			} else {
+				IodineTuple names = args [1] as IodineTuple;
+				if (names == null) {
+					vm.RaiseException (new IodineTypeCastException ("Tuple"));
+					return null;
+				}
+				IodineModule module = null;
+
+				if (VirtualMachine.ModuleCache.ContainsKey (fullPath)) {
+					module = VirtualMachine.ModuleCache [fullPath];
+				} else {
+					ErrorLog errLog = new ErrorLog ();
+					module = IodineModule.LoadModule (errLog, name);
+
+					if (module == null) {
+						throw new SyntaxException (errLog);
+					}
+					VirtualMachine.ModuleCache [fullPath] = module;
+					module.Initializer.Invoke (vm, new IodineObject[] { });
+				}
+
+				vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (fullPath),
+					module);
+				
+				if (names.Objects.Length > 0) {
+					foreach (IodineObject item in names.Objects) {
+						vm.Top.Module.SetAttribute (vm, item.ToString (),
+							module.GetAttribute (item.ToString ()));
+					}
+				} else {
+					foreach (KeyValuePair<string, IodineObject> kv in module.Attributes) {
+						vm.Top.Module.SetAttribute (vm, kv.Key, kv.Value);
+					}
+				}
+			}
+			return null;
+		}
+
+		private IodineObject sandbox (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			IodineHashMap hash = args [1] as IodineHashMap;
 			Dictionary<string, IodineObject> items = new Dictionary<string, IodineObject> ();
 			foreach (KeyValuePair<int, IodineObject> kv in hash.Keys) {
-				//items [kv.Value.ToString ()] = hash.Dict [kv.Value];
+				items [kv.Value.ToString ()] = hash.Dict [kv.Key];
 			}
 			VirtualMachine newVm = new VirtualMachine (items);
-			//args [0].Invoke (vm);
-			return null;
+			try {
+				return args [0].Invoke (newVm, new IodineObject[]{});
+			} catch (UnhandledIodineExceptionException ex) {
+				vm.RaiseException (ex.OriginalException);
+				return null;
+			}
 		}
 
 		private IodineObject chr (VirtualMachine vm, IodineObject self, IodineObject[] args)
