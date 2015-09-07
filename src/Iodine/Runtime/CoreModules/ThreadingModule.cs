@@ -45,14 +45,27 @@ namespace Iodine.Runtime
 			public IodineThread (Thread t)
 				: base (ThreadTypeDef)
 			{
-				this.Value = t;
+				Value = t;
 				SetAttribute ("start", new InternalMethodCallback (start, this));
+				SetAttribute ("abort", new InternalMethodCallback (abort, this));
+				SetAttribute ("isAlive", new InternalMethodCallback (isAlive, this));
 			}
 
 			private IodineObject start (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				Value.Start ();
 				return null;
+			}
+
+			private IodineObject abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				Value.Abort ();
+				return null;
+			}
+
+			private IodineObject isAlive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				return IodineBool.Create (Value.IsAlive);
 			}
 		}
 
@@ -70,10 +83,14 @@ namespace Iodine.Runtime
 				return null;
 			}
 			IodineObject func = args [0];
+			VirtualMachine newVm = new VirtualMachine (vm.Globals);
 
 			Thread t = new Thread (() => {
-				VirtualMachine newVm = new VirtualMachine (vm.Globals);
-				func.Invoke (newVm, new IodineObject[] { });
+				try {
+					func.Invoke (newVm, new IodineObject[] { }); 
+				} catch (UnhandledIodineExceptionException ex) {
+					vm.RaiseException (ex.OriginalException);
+				}
 			});
 			return new IodineThread (t);
 		}

@@ -593,15 +593,16 @@ namespace Iodine.Runtime
 		}
 
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		private void EndFrame ()
+		public StackFrame EndFrame ()
 		{
 			frameCount--;
-			frames.Pop ();
+			StackFrame ret = frames.Pop ();
 			if (frames.Count != 0) {
 				Top = frames.Peek ();
 			} else {
 				Top = null;
 			}
+			return ret;
 		}
 
 	}

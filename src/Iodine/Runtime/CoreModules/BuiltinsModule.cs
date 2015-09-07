@@ -43,7 +43,7 @@ namespace Iodine.Runtime
 			SetAttribute ("stdin", new IodineStream (Console.OpenStandardInput (), false, true));
 			SetAttribute ("stdout", new IodineStream (Console.OpenStandardOutput (), true, false));
 			SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
-			SetAttribute ("sandbox", new InternalMethodCallback (sandbox, null));
+			SetAttribute ("invoke", new InternalMethodCallback (sandbox, null));
 			SetAttribute ("require", new InternalMethodCallback (require, null));
 			SetAttribute ("chr", new InternalMethodCallback (chr, null));
 			SetAttribute ("len", new InternalMethodCallback (len, null));

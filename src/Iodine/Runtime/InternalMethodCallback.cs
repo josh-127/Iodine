@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Threading;
 
 namespace Iodine.Runtime
 {
@@ -67,6 +68,7 @@ namespace Iodine.Runtime
 				return obj;
 			} catch (UnhandledIodineExceptionException e) {
 				throw e;
+			} catch (ThreadAbortException) {
 			} catch (Exception ex) {
 				vm.RaiseException (new IodineInternalErrorException (ex));
 			}

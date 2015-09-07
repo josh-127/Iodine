@@ -41,7 +41,7 @@ namespace Iodine.Runtime
 		public readonly IodineObject Self;
 		public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
 
-		public bool AbortExecution { set; get; }
+		public volatile bool AbortExecution = false;
 
 		public bool Yielded { set; get; }
 
