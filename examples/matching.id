@@ -4,7 +4,7 @@ func main () {
     result = match opt {
         case "y" | "Y" => "Its a yes" # y or Y
         case "n" | "N" => "Its a no"  # n or N
-        case _ => "I don't know";     # Any value that doesn't match the above patterns (_ means wildcard)
+        case _ => "I don't know"     # Any value that doesn't match the above patterns (_ means wildcard)
     }
     print (result);
 }
