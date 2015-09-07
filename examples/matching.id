@@ -1,6 +1,6 @@
 
 func main () {
-    opt = input ("Yes or no (y/n)? ");
+    opt = "y"; # input ("Yes or no/ [y/n]: )
     result = match opt {
         case "y" | "Y" => "Its a yes" # y or Y
         case "n" | "N" => "Its a no"  # n or N
