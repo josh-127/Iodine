@@ -15,7 +15,7 @@ echo "Using prefix $prefix"
 mkdir -p $prefix/iodine
 mkdir -p $prefix/iodine/bin
 cp ./bin/iodine.exe $prefix/iodine/bin/iodine.exe
-cp -r ./bin/modules $prefix/iodine/bin
+cp -r ./modules $prefix/iodine/bin
 cp -r ./bin/extensions $prefix/iodine/bin
 cat ./iodine_run.sh > /usr/bin/iodine
 echo -n "export IODINE_HOME=$prefix/iodine" | sudo tee /etc/profile.d/iodine.sh
