@@ -619,10 +619,54 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
+
+		public void Accept (ListCompExpression list)
+		{
+			IodineLabel foreachLabel = methodBuilder.CreateLabel ();
+			IodineLabel breakLabel = methodBuilder.CreateLabel ();
+			IodineLabel predicateSkip = methodBuilder.CreateLabel ();
+			int tmp = methodBuilder.CreateTemporary (); 
+			int set = methodBuilder.CreateTemporary ();
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.BuildList, 0);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.StoreLocal, set);
+			symbolTable.NextScope ();
+			list.Iterator.Visit (this);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.Dup);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.StoreLocal, tmp);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.IterReset);
+			methodBuilder.MarkLabelPosition (foreachLabel);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, tmp);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.IterMoveNext);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.JumpIfFalse,
+				breakLabel);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, tmp);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.IterGetNext);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.StoreLocal,
+				symbolTable.GetSymbol
+				(list.Identifier).Index);
+			if (list.Predicate != null) {
+				list.Predicate.Visit (this);
+				methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.JumpIfFalse, predicateSkip);
+			}
+			list.Expression.Visit (this);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, set);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadAttribute,
+				methodBuilder.Module.DefineConstant (new IodineName ("add")));
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.Invoke, 1);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.Pop);
+			if (list.Predicate != null) {
+				methodBuilder.MarkLabelPosition (predicateSkip);
+			}
+			methodBuilder.EmitInstruction (list.Expression.Location, Opcode.Jump, foreachLabel);
+			methodBuilder.MarkLabelPosition (breakLabel);
+			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, set);
+			symbolTable.LeaveScope ();
+		}
+
 		public void Accept (CaseExpression caseExpr)
 		{
 		}
-
+			
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {

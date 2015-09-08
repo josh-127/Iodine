@@ -1165,7 +1165,19 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.OpenBracket);
 			ListExpression ret = new ListExpression (stream.Location);
 			while (!stream.Match (TokenClass.CloseBracket)) {
-				ret.Add (ParseExpression (stream));
+				AstNode expr = ParseExpression (stream);
+				if (stream.Accept (TokenClass.Keyword, "for")) {
+					string ident = stream.Expect (TokenClass.Identifier).Value;
+					stream.Expect (TokenClass.Keyword, "in");
+					AstNode iterator = ParseExpression (stream);
+					AstNode predicate = null;
+					if (stream.Accept (TokenClass.Keyword, "when")) {
+						predicate = ParseExpression (stream);
+					}
+					stream.Expect (TokenClass.CloseBracket);
+					return new ListCompExpression (expr.Location, expr, ident, iterator, predicate);
+				}
+				ret.Add (expr);
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}

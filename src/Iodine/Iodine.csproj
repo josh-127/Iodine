@@ -170,6 +170,7 @@
     <Compile Include="Compiler\Parser\Ast\GivenStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\WhenStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\CaseExpression.cs" />
+    <Compile Include="Compiler\Parser\Ast\ListCompExpression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

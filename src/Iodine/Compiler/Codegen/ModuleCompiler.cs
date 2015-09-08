@@ -320,7 +320,12 @@ namespace Iodine.Compiler
 
 		public void Accept (EnumDeclaration enumDecl)
 		{
-			this.module.SetAttribute (enumDecl.Name, CompileEnum (enumDecl));
+			module.SetAttribute (enumDecl.Name, CompileEnum (enumDecl));
+		}
+
+		public void Accept (ListCompExpression list)
+		{
+			list.Visit (functionCompiler);
 		}
 
 		public IodineClass CompileClass (ClassDeclaration classDecl)

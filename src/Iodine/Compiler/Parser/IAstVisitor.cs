@@ -79,6 +79,7 @@ namespace Iodine.Compiler
 		void Accept (RaiseStatement raise);
 		void Accept (MatchExpression match);
 		void Accept (CaseExpression caseExpr);
+		void Accept (ListCompExpression list);
 	}
 }
 

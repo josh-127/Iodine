@@ -343,6 +343,10 @@ namespace Iodine.Compiler
 		{
 		}
 
+		public void Accept (ListCompExpression list)
+		{
+		}
+
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {

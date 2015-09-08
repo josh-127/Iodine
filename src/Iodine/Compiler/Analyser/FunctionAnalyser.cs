@@ -259,6 +259,14 @@ namespace Iodine.Compiler
 			}
 			caseExpr.Value.Visit (this);
 		}
+			
+		public void Accept (ListCompExpression list)
+		{
+			symbolTable.BeginScope ();
+			symbolTable.AddSymbol (list.Identifier);
+			list.VisitChildren (this);
+			symbolTable.EndScope ();
+		}
 
 		public void Accept (Statement stmt)
 		{

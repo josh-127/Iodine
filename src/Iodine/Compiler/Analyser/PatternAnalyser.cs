@@ -261,6 +261,11 @@ namespace Iodine.Compiler
 			lambda.Visit (parentVisitor);
 		}
 
+		public void Accept (ListCompExpression list)
+		{
+			errorLog.AddError (ErrorType.ParserError, list.Location,
+				"List can not exist inside pattern!");
+		}
 
 		public void Accept (TryExceptStatement tryExcept)
 		{
