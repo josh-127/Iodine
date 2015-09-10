@@ -39,10 +39,7 @@ namespace Iodine
 	{
 		class IodineOptions
 		{
-			public string FileName {
-				get; 
-				set;
-			}
+			public string FileName { get; set; }
 
 			public IodineList Arguments { private set; get; }
 
