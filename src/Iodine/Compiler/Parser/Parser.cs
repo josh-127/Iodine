@@ -35,7 +35,7 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-	public class Parser
+	public sealed class Parser
 	{
 		private TokenStream tokenStream;
 

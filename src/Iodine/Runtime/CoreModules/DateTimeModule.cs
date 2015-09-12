@@ -44,7 +44,7 @@ namespace Iodine.Runtime
 			public IodineTimeStamp (DateTime val)
 				: base (TimeStampTypeDef)
 			{
-				this.Value = val;
+				Value = val;
 				SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
 				SetAttribute ("second", new IodineInteger (val.Second));
 				SetAttribute ("minute", new IodineInteger (val.Minute));

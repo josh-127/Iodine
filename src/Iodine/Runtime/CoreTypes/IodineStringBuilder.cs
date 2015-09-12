@@ -34,18 +34,37 @@ namespace Iodine.Runtime
 {
 	public class IodineStringBuilder : IodineObject
 	{
-		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("StringBuilder");
+		public readonly static IodineTypeDefinition TypeDefinition = new StringBuilderTypeDef ();
+
+		class StringBuilderTypeDef : IodineTypeDefinition
+		{
+			public StringBuilderTypeDef ()
+				: base ("StringBuffer")
+			{
+			}
+
+			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+			{
+				return new IodineStringBuilder ();
+			}
+		}
 
 		private StringBuilder buffer = new StringBuilder ();
 
 		public IodineStringBuilder ()
 			: base (TypeDefinition) {
-
+			SetAttribute ("clear", new InternalMethodCallback (clear, null));
+			SetAttribute ("append", new InternalMethodCallback (append, null));
 		}
 
 		public override string ToString ()
 		{
 			return buffer.ToString ();
+		}
+
+		public override IodineObject Len (VirtualMachine vm)
+		{
+			return new IodineInteger (buffer.Length);
 		}
 
 		public override IodineObject ToString (VirtualMachine vm)
@@ -60,6 +79,14 @@ namespace Iodine.Runtime
 			}
 			return null;
 		}
+
+		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			buffer.Clear ();
+			return null;
+		}
+
+
 	}
 }
 
