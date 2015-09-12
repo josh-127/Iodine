@@ -250,6 +250,11 @@ namespace Iodine.Compiler
 			match.VisitChildren (this);
 		}
 
+		public void Accept (TernaryExpression ifExpr)
+		{
+			ifExpr.VisitChildren (this);
+		}
+
 		public void Accept (CaseExpression caseExpr)
 		{
 			PatternAnalyzer analyzer = new PatternAnalyzer (errorLog, symbolTable, this);

@@ -135,7 +135,7 @@ namespace Iodine.Runtime
 			return new IodineInteger ((long)Value [(int)index.Value]);
 		}
 
-		public override IodineObject IterGetNext (VirtualMachine vm)
+		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
 			return new IodineInteger ((long)Value [iterIndex - 1]);
 		}
@@ -153,7 +153,6 @@ namespace Iodine.Runtime
 		{
 			iterIndex = 0;
 		}
-
 	}
 }
 

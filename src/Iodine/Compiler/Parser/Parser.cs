@@ -586,20 +586,20 @@ namespace Iodine.Compiler
 
 		private static AstNode ParseAssign (TokenStream stream)
 		{
-			AstNode expr = ParsePipeline (stream);
+			AstNode expr = ParseTernaryIfElse (stream);
 			while (stream.Match (TokenClass.Operator)) {
 				switch (stream.Current.Value) {
 				case "=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign,
-						expr, ParsePipeline (stream));
+						expr, ParseTernaryIfElse (stream));
 					continue;
 				case "+=":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Add, expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "-=":
 					stream.Accept (TokenClass.Operator);
@@ -607,7 +607,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Sub,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "*=":
 					stream.Accept (TokenClass.Operator);
@@ -615,7 +615,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Mul,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "/=":
 					stream.Accept (TokenClass.Operator);
@@ -623,7 +623,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Div,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "%=":
 					stream.Accept (TokenClass.Operator);
@@ -631,7 +631,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Mod,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "^=":
 					stream.Accept (TokenClass.Operator);
@@ -639,7 +639,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Xor,
 							expr, 
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "&=":
 					stream.Accept (TokenClass.Operator);
@@ -647,7 +647,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.And,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "|=":
 					stream.Accept (TokenClass.Operator);
@@ -655,7 +655,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.Or,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case "<<=":
 					stream.Accept (TokenClass.Operator);
@@ -663,7 +663,7 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.LeftShift,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				case ">>=":
 					stream.Accept (TokenClass.Operator);
@@ -671,12 +671,24 @@ namespace Iodine.Compiler
 						new BinaryExpression (stream.Location,
 							BinaryOperation.RightShift,
 							expr,
-							ParsePipeline (stream)));
+							ParseTernaryIfElse (stream)));
 					continue;
 				default:
 					break;
 				}
 				break;
+			}
+			return expr;
+		}
+
+		private static AstNode ParseTernaryIfElse (TokenStream stream)
+		{
+			AstNode expr = ParsePipeline (stream);
+			while (stream.Accept (TokenClass.Keyword, "when")) {
+				AstNode condition = ParseExpression (stream);
+				stream.Expect (TokenClass.Keyword, "else");
+				AstNode altValue = ParseTernaryIfElse (stream);
+				expr = new TernaryExpression (expr.Location, condition, expr, altValue);
 			}
 			return expr;
 		}

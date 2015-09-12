@@ -55,7 +55,7 @@ namespace Iodine.Runtime
 				this.resetFunc = resetFunc;
 			}
 
-			public override IodineObject IterGetNext (VirtualMachine vm)
+			public override IodineObject IterGetCurrent (VirtualMachine vm)
 			{
 				return (IodineObject)generator.Current;
 			}
@@ -137,7 +137,7 @@ namespace Iodine.Runtime
 			IodineObject func = args [1];
 			iter.IterReset (vm);
 			while (iter.IterMoveNext (vm)) {
-				func.Invoke (vm, new IodineObject[] {iter.IterGetNext (vm)});
+				func.Invoke (vm, new IodineObject[] {iter.IterGetCurrent (vm)});
 			}
 			return null;
 		}
@@ -147,7 +147,7 @@ namespace Iodine.Runtime
 			foreach (IodineObject obj in args) {
 				obj.IterReset (vm);
 				while (obj.IterMoveNext (vm)) {
-					yield return obj.IterGetNext (vm);
+					yield return obj.IterGetCurrent (vm);
 				}
 			}
 		}
@@ -157,7 +157,7 @@ namespace Iodine.Runtime
 			iterator.IterReset (vm);
 			long i = 0;
 			while (iterator.IterMoveNext (vm)) {
-				IodineObject obj = iterator.IterGetNext (vm);
+				IodineObject obj = iterator.IterGetCurrent (vm);
 				if (i >= count)
 					yield return obj;
 				i++;
@@ -169,7 +169,7 @@ namespace Iodine.Runtime
 			iterator.IterReset (vm);
 			long i = 0;
 			while (iterator.IterMoveNext (vm)) {
-				IodineObject obj = iterator.IterGetNext (vm);
+				IodineObject obj = iterator.IterGetCurrent (vm);
 				if (i < count)
 					yield return obj;
 				i++;
@@ -181,7 +181,7 @@ namespace Iodine.Runtime
 		{
 			iterator.IterReset (vm);
 			while (iterator.IterMoveNext (vm)) {
-				IodineObject obj = iterator.IterGetNext (vm);
+				IodineObject obj = iterator.IterGetCurrent (vm);
 				if (func.Invoke (vm, new IodineObject[] {obj}).IsTrue ())
 					yield return obj;
 				else
@@ -194,7 +194,7 @@ namespace Iodine.Runtime
 		{
 			iterator.IterReset (vm);
 			while (iterator.IterMoveNext (vm)) {
-				IodineObject obj = iterator.IterGetNext (vm);
+				IodineObject obj = iterator.IterGetCurrent (vm);
 				if (!func.Invoke (vm, new IodineObject[] {obj}).IsTrue ())
 					yield return obj;
 				else

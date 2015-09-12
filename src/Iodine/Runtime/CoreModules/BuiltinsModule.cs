@@ -329,7 +329,7 @@ namespace Iodine.Runtime
 			IodineObject func = args [1];
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
-				IodineObject o = collection.IterGetNext (vm);
+				IodineObject o = collection.IterGetCurrent (vm);
 				if (func.Invoke (vm, new IodineObject[] { o }).IsTrue ()) {
 					list.Add (o);
 				}
@@ -350,7 +350,7 @@ namespace Iodine.Runtime
 
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
-				IodineObject o = collection.IterGetNext (vm);
+				IodineObject o = collection.IterGetCurrent (vm);
 				list.Add (func.Invoke (vm, new IodineObject[] { o }));
 			}
 			return list;
@@ -369,7 +369,7 @@ namespace Iodine.Runtime
 
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
-				IodineObject o = collection.IterGetNext (vm);
+				IodineObject o = collection.IterGetCurrent (vm);
 				if (result == null)
 					result = o;
 				result = func.Invoke (vm, new IodineObject[] { result, o });
@@ -392,7 +392,7 @@ namespace Iodine.Runtime
 				for (int i = 0; i < args.Length; i++) {
 					if (!args [i].IterMoveNext (vm))
 						return result;
-					IodineObject o = args [i].IterGetNext (vm);
+					IodineObject o = args [i].IterGetCurrent (vm);
 					objs [i] = o;
 				}
 				result.Add (new IodineTuple (objs));
@@ -411,7 +411,7 @@ namespace Iodine.Runtime
 
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
-				IodineObject o = collection.IterGetNext (vm);
+				IodineObject o = collection.IterGetCurrent (vm);
 				initial = initial.Add (vm, o);
 			}
 			return initial;

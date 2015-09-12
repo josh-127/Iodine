@@ -165,6 +165,11 @@ namespace Iodine.Compiler
 			caseExpr.VisitChildren (functionCompiler);
 		}
 
+		public void Accept (TernaryExpression ifExpr)
+		{
+			ifExpr.Visit (functionCompiler);
+		}
+
 		public void Accept (GivenStatement switchStmt)
 		{
 		}

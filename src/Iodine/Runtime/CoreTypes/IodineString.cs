@@ -143,7 +143,7 @@ namespace Iodine.Runtime
 			return new IodineString (Value [(int)index.Value].ToString ());
 		}
 
-		public override IodineObject IterGetNext (VirtualMachine vm)
+		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
 			return new IodineString (Value [iterIndex - 1].ToString ());
 		}
@@ -311,7 +311,7 @@ namespace Iodine.Runtime
 			string last = "";
 			string sep = "";
 			while (collection.IterMoveNext (vm)) {
-				IodineObject o = collection.IterGetNext (vm);
+				IodineObject o = collection.IterGetCurrent (vm);
 				accum.AppendFormat ("{0}{1}", last, sep);
 				last = o.ToString ();
 				sep = this.Value;

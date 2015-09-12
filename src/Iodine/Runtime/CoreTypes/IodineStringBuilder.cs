@@ -28,59 +28,38 @@
 **/
 
 using System;
-using System.Collections.Generic;
+using System.Text;
 
 namespace Iodine.Runtime
 {
-	public class IodineTypeDefinition : IodineObject
+	public class IodineStringBuilder : IodineObject
 	{
-		private static IodineTypeDefinition TypeDefTypeDef = new IodineTypeDefinition ("TypeDef");
+		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("StringBuilder");
 
-		public string Name { private set; get; }
+		private StringBuilder buffer = new StringBuilder ();
 
-		public IodineTypeDefinition (string name)
-			: base (TypeDefTypeDef)
-		{
-			Name = name;
-			attributes ["__name__"] = new IodineString (name);
-		}
+		public IodineStringBuilder ()
+			: base (TypeDefinition) {
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			return base.Invoke (vm, arguments);
-		}
-
-		public override bool IsCallable ()
-		{
-			return true;
 		}
 
 		public override string ToString ()
 		{
-			return Name;
-		}
-			
-		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-		{
-			IodineObject obj = this.Invoke (vm, arguments);
-			foreach (string attr in attributes.Keys) {
-				if (!self.HasAttribute (attr))
-					self.SetAttribute (attr, attributes [attr]);
-				obj.SetAttribute (attr, attributes [attr]);
-			}
-			self.SetAttribute ("__super__", obj);
-			self.Base = obj;
+			return buffer.ToString ();
 		}
 
-		public IodineObject BindAttributes (IodineObject obj)
+		public override IodineObject ToString (VirtualMachine vm)
 		{
-			foreach (KeyValuePair<string, IodineObject> kv in attributes) {
-				if (!obj.HasAttribute (kv.Key))
-					obj.SetAttribute (kv.Key, kv.Value);
-			}
-			return obj;
+			return new IodineString (buffer.ToString ());
 		}
 
+		private IodineObject append (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			foreach (IodineObject obj in args) {
+				buffer.Append (obj.ToString (vm));
+			}
+			return null;
+		}
 	}
 }
 

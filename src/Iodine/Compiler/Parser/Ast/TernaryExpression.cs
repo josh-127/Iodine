@@ -28,59 +28,43 @@
 **/
 
 using System;
-using System.Collections.Generic;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler.Ast
 {
-	public class IodineTypeDefinition : IodineObject
+	public class TernaryExpression : AstNode
 	{
-		private static IodineTypeDefinition TypeDefTypeDef = new IodineTypeDefinition ("TypeDef");
-
-		public string Name { private set; get; }
-
-		public IodineTypeDefinition (string name)
-			: base (TypeDefTypeDef)
-		{
-			Name = name;
-			attributes ["__name__"] = new IodineString (name);
-		}
-
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			return base.Invoke (vm, arguments);
-		}
-
-		public override bool IsCallable ()
-		{
-			return true;
-		}
-
-		public override string ToString ()
-		{
-			return Name;
-		}
-			
-		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-		{
-			IodineObject obj = this.Invoke (vm, arguments);
-			foreach (string attr in attributes.Keys) {
-				if (!self.HasAttribute (attr))
-					self.SetAttribute (attr, attributes [attr]);
-				obj.SetAttribute (attr, attributes [attr]);
+		public AstNode Condition {
+			get {
+				return Children [0];
 			}
-			self.SetAttribute ("__super__", obj);
-			self.Base = obj;
 		}
 
-		public IodineObject BindAttributes (IodineObject obj)
-		{
-			foreach (KeyValuePair<string, IodineObject> kv in attributes) {
-				if (!obj.HasAttribute (kv.Key))
-					obj.SetAttribute (kv.Key, kv.Value);
+		public AstNode Expression {
+			get {
+				return Children [1];
 			}
-			return obj;
 		}
 
+		public AstNode ElseExpression {
+			get {
+				return Children [2];
+			}
+		}
+
+		public TernaryExpression (Location location, AstNode condition,
+			AstNode expression,
+			AstNode elseExpression)
+			: base (location)
+		{
+			Add (condition);
+			Add (expression);
+			Add (elseExpression);
+		}
+
+		public override void Visit (IAstVisitor visitor)
+		{
+			visitor.Accept (this);
+		}
 	}
 }
 

@@ -128,7 +128,7 @@ namespace Iodine.Runtime
 			return accum;
 		}
 
-		public override IodineObject IterGetNext (VirtualMachine vm)
+		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
 			IodineObject[] keys = new IodineObject[Keys.Count];
 			Keys.Values.CopyTo (keys, 0);

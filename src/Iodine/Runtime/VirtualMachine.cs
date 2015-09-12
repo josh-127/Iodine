@@ -440,7 +440,7 @@ namespace Iodine.Runtime
 				}
 			case Opcode.IterGetNext:
 				{
-					Push (Pop ().IterGetNext (this));
+					Push (Pop ().IterGetCurrent (this));
 					break;
 				}
 			case Opcode.IterMoveNext:

@@ -126,8 +126,8 @@ namespace Iodine.Runtime
 
 		public virtual IodineObject ToString (VirtualMachine vm)
 		{
-			if (attributes.ContainsKey ("__toStr__")) {
-				return attributes ["__toStr__"].Invoke (vm, new IodineObject[] { });
+			if (attributes.ContainsKey ("__str__")) {
+				return attributes ["__str__"].Invoke (vm, new IodineObject[] { });
 			}
 			return new IodineString (ToString ());
 		}
@@ -484,9 +484,9 @@ namespace Iodine.Runtime
 		}
 		#endregion
 
-		public virtual IodineObject IterGetNext (VirtualMachine vm)
+		public virtual IodineObject IterGetCurrent (VirtualMachine vm)
 		{
-			return GetAttribute ("__iterGetNext__").Invoke (vm, new IodineObject[]{ });
+			return GetAttribute ("__iterGetCurrent__").Invoke (vm, new IodineObject[]{ });
 		}
 
 		public virtual bool IterMoveNext (VirtualMachine vm)

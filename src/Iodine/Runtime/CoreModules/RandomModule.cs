@@ -109,7 +109,7 @@ namespace Iodine.Runtime
 			int count = 0;
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
-				collection.IterGetNext (vm);
+				collection.IterGetCurrent (vm);
 				count++;
 			}
 
@@ -118,7 +118,7 @@ namespace Iodine.Runtime
 
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
-				IodineObject o = collection.IterGetNext (vm);
+				IodineObject o = collection.IterGetCurrent (vm);
 				if (count == choice)
 					return o;
 				count++;

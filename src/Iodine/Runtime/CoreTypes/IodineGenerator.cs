@@ -48,11 +48,12 @@ namespace Iodine.Runtime
 			this.baseMethod = baseMethod;
 		}
 
-		public IodineGenerator (StackFrame parentFrame, IodineInstanceMethodWrapper baseMethod, IodineObject[] args)
+		public IodineGenerator (StackFrame parentFrame, IodineInstanceMethodWrapper baseMethod,
+			IodineObject[] args)
 			: base (TypeDef)
 		{
 			arguments = args;
-			this.self = baseMethod.Self;
+			self = baseMethod.Self;
 			this.baseMethod = baseMethod.Method;
 		}
 
@@ -65,7 +66,7 @@ namespace Iodine.Runtime
 			return stackFrame.Yielded;
 		}
 
-		public override IodineObject IterGetNext (VirtualMachine vm)
+		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
 			stackFrame.Yielded = false;
 			return value;
@@ -73,7 +74,7 @@ namespace Iodine.Runtime
 
 		public override void IterReset (VirtualMachine vm)
 		{
-			this.stackFrame = new StackFrame (baseMethod, vm.Top, null, this.baseMethod.LocalCount);
+			stackFrame = new StackFrame (baseMethod, vm.Top, null, this.baseMethod.LocalCount);
 		}
 	}
 }

@@ -172,6 +172,8 @@
     <Compile Include="Compiler\Parser\Ast\CaseExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\ListCompExpression.cs" />
     <Compile Include="Runtime\CoreModules\IterUtilsModules.cs" />
+    <Compile Include="Runtime\CoreTypes\IodineStringBuilder.cs" />
+    <Compile Include="Compiler\Parser\Ast\TernaryExpression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -122,20 +122,6 @@ namespace Iodine.Runtime
 		{
 
 			if (FindModule (file) != null) {
-				if (File.Exists (file + ".idx")) {
-					DateTime bytecodeTimeStamp = File.GetLastWriteTime (file + ".idx");
-					DateTime sourceTimeStamp = File.GetLastWriteTime (file);
-					if (bytecodeTimeStamp.CompareTo (sourceTimeStamp) >= 0) {
-						try {
-							IodineModule mod = IodineCachedModule.Load (file + ".idx");
-							if (mod != null) {
-								return mod;
-							}
-						} catch (Exception) {
-
-						}
-					}
-				}
 				Tokenizer lexer = new Tokenizer (errorLog, File.ReadAllText (FindModule (file)), file);
 				TokenStream tokenStream = lexer.Scan ();
 				if (errorLog.ErrorCount > 0)
@@ -153,13 +139,6 @@ namespace Iodine.Runtime
 				compiler.CompileAst (module, root);
 				if (errorLog.ErrorCount > 0)
 					return null;
-				/*
-				 * Caching temporarly disabled
-				 * try {
-				 *	IodineCachedModule.SaveModule (file + ".idx", module);
-				 * } catch (Exception) {
-				 * }
-				 */
 				return module;
 			} else {
 				errorLog.AddError (ErrorType.ParserError, new Location (0, 0, file), 

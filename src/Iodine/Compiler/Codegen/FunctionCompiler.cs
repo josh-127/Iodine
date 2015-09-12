@@ -663,6 +663,19 @@ namespace Iodine.Compiler
 			symbolTable.LeaveScope ();
 		}
 
+		public void Accept (TernaryExpression ifExpr)
+		{
+			IodineLabel elseLabel = methodBuilder.CreateLabel ();
+			IodineLabel endLabel = methodBuilder.CreateLabel ();
+			ifExpr.Condition.Visit (this);
+			methodBuilder.EmitInstruction (ifExpr.Expression.Location, Opcode.JumpIfFalse, elseLabel);
+			ifExpr.Expression.Visit (this);
+			methodBuilder.EmitInstruction (ifExpr.ElseExpression.Location, Opcode.Jump, endLabel);
+			methodBuilder.MarkLabelPosition (elseLabel);
+			ifExpr.ElseExpression.Visit (this);
+			methodBuilder.MarkLabelPosition (endLabel);
+		}
+
 		public void Accept (CaseExpression caseExpr)
 		{
 		}

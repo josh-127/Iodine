@@ -347,6 +347,10 @@ namespace Iodine.Compiler
 		{
 		}
 
+		public void Accept (TernaryExpression ifExpr)
+		{
+		}
+
 		private void visitSubnodes (AstNode root)
 		{
 			foreach (AstNode node in root) {

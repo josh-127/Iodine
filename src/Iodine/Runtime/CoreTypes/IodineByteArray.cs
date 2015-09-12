@@ -84,7 +84,7 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		public override IodineObject IterGetNext (VirtualMachine vm)
+		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
 			return new IodineInteger (Array [iterIndex - 1]);
 		}

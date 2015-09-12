@@ -264,6 +264,11 @@ namespace Iodine.Compiler
 			symbolTable.EndScope (true);
 		}
 
+		public void Accept (TernaryExpression ifExpr)
+		{
+			ifExpr.VisitChildren (this);
+		}
+
 		public void Accept (CaseExpression caseExpr)
 		{
 		}

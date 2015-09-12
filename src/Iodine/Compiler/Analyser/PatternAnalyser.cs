@@ -261,6 +261,12 @@ namespace Iodine.Compiler
 			lambda.Visit (parentVisitor);
 		}
 
+		public void Accept (TernaryExpression ifExpr)
+		{
+			errorLog.AddError (ErrorType.ParserError, ifExpr.Location,
+				"Expression can not exist inside pattern!");
+		}
+
 		public void Accept (ListCompExpression list)
 		{
 			errorLog.AddError (ErrorType.ParserError, list.Location,

@@ -53,7 +53,7 @@ namespace Iodine.Runtime
 					foreach (IodineObject collection in args) {
 						collection.IterReset (vm);
 						while (collection.IterMoveNext (vm)) {
-							IodineObject o = collection.IterGetNext (vm);
+							IodineObject o = collection.IterGetCurrent (vm);
 							list.Add (o);
 						}
 					}
@@ -124,7 +124,7 @@ namespace Iodine.Runtime
 			IodineList list = new IodineList (Objects.ToArray ());
 			right.IterReset (vm);
 			while (right.IterMoveNext (vm)) {
-				IodineObject o = right.IterGetNext (vm);
+				IodineObject o = right.IterGetCurrent (vm);
 				list.Add (o);
 			}
 			return list;
@@ -140,7 +140,7 @@ namespace Iodine.Runtime
 			return IodineBool.Create (compare (this, listVal));
 		}
 
-		public override IodineObject IterGetNext (VirtualMachine vm)
+		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
 			return Objects [iterIndex - 1];
 		}
@@ -207,7 +207,7 @@ namespace Iodine.Runtime
 			IodineObject collection = arguments [0];
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
-				IodineObject o = collection.IterGetNext (vm);
+				IodineObject o = collection.IterGetCurrent (vm);
 				Add (o);
 			}
 			return null;

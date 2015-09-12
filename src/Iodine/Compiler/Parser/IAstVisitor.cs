@@ -80,6 +80,7 @@ namespace Iodine.Compiler
 		void Accept (MatchExpression match);
 		void Accept (CaseExpression caseExpr);
 		void Accept (ListCompExpression list);
+		void Accept (TernaryExpression ifExpr);
 	}
 }
 

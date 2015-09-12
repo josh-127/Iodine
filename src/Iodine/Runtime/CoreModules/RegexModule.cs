@@ -119,7 +119,7 @@ namespace Iodine.Runtime
 				SetAttribute ("getNextMatch", new InternalMethodCallback (getNextMatch, this));
 			}
 
-			public override IodineObject IterGetNext (VirtualMachine vm)
+			public override IodineObject IterGetCurrent (VirtualMachine vm)
 			{
 				return new IodineMatch (this.iterRet);
 			}
