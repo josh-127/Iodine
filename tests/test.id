@@ -470,10 +470,10 @@ describe('Iodine', lambda(test) {
         });
     });
 
-    test.describe('with Statement', lambda(test) {
+    test.describe('with statement', lambda(test) {
         class WithTestClass {
 
-            func WithTestClass (self, list) {
+            func WithTestClass(self, list) {
                 self.list = list;
             }
 
@@ -486,7 +486,7 @@ describe('Iodine', lambda(test) {
             }
         }
         list = [false, false];
-        with(myClass = WithTestClass (list)) {
+        with(myClass = WithTestClass(list)) {
             test.it('__enter__ should be called', lambda() {
                 expect(list[0]).to.be._true();
             });
@@ -513,6 +513,26 @@ describe('Iodine', lambda(test) {
 
         test.it('__exit__ should have been called on return', lambda() {
             expect(list2[1]).to.be._true();
+        });
+    });
+
+    test.describe('pattern matching', lambda(test) {
+        test.it('match 2 should yield 9', lambda() {
+            x = 2;
+            result = match x {
+                case 1 => 3
+                case 2 => 9
+                case _ => 1
+            };
+            expect(result).to.equal(9);
+        });
+        test.it('match (1, 2, 3) should yield 2', lambda() {
+            x = (1, 2, 3);
+            result = match x {
+                case (1, n, 3) => n
+                case _ => 9
+            };
+            expect(result).to.equal(2);
         });
     });
 });
