@@ -52,6 +52,10 @@ namespace Iodine
 				for (i = 0; i < args.Length; i++) {
 					if (args [i].StartsWith ("-")) {
 						switch (args [i]) {
+						case "version":
+						case "v":
+							ret.ShowVersion = true;
+							break;
 						default:
 							Panic ("Unknown command line argument '{0}'", args [i]);
 							break;
