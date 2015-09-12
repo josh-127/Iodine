@@ -95,7 +95,7 @@ namespace Iodine.Runtime
 						}
 					}
 				}
-				return new IodineByteString (ms.ToArray ());
+				return new IodineBytes (ms.ToArray ());
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace Iodine.Runtime
 				return null;
 			}
 			IodineString format = args [0] as IodineString;
-			IodineByteString str = args [1] as IodineByteString;
+			IodineBytes str = args [1] as IodineBytes;
 			if (format == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;

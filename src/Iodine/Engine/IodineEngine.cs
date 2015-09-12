@@ -38,15 +38,12 @@ namespace Iodine
 	public class IodineEngine
 	{
 		private IodineModule defaultModule;
-		private StackFrame stackFrame;
-
 		public VirtualMachine VirtualMachine { private set; get; }
 
 		public IodineEngine ()
 		{
 			VirtualMachine = new VirtualMachine ();
 			defaultModule = new IodineModule ("__main__");
-			stackFrame = new StackFrame (this.defaultModule.Initializer, null, null, 1024);
 		}
 
 		public dynamic this [string name] {

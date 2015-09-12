@@ -47,13 +47,11 @@ namespace Iodine.Compiler
 
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
-		private string file;
 
 		public IodineCompiler (ErrorLog errorLog, SymbolTable symbolTable, string file)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
-			this.file = file;
 		}
 
 		public IodineModule CompileAst (IodineModule module, AstRoot ast)

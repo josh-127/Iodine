@@ -94,8 +94,8 @@ namespace Iodine.Runtime
 			foreach (IodineObject obj in args) {
 				if (obj is IodineString) {
 					write (obj.ToString ());
-				} else if (obj is IodineByteString) {
-					IodineByteString arr = obj as IodineByteString;
+				} else if (obj is IodineBytes) {
+					IodineBytes arr = obj as IodineBytes;
 					File.Write (arr.Value, 0, arr.Value.Length);
 				} else if (obj is IodineInteger) {
 					IodineInteger intVal = obj as IodineInteger;
@@ -181,7 +181,7 @@ namespace Iodine.Runtime
 				IodineInteger intv = args [0] as IodineInteger;
 				byte[] buf = new byte[(int)intv.Value];
 				File.Read (buf, 0, buf.Length);
-				return new IodineByteString (buf);
+				return new IodineBytes (buf);
 			}
 			vm.RaiseException (new IodineTypeException ("Int"));
 			return null;
@@ -252,7 +252,7 @@ namespace Iodine.Runtime
 			while ((ch = File.ReadByte ()) != -1) {
 				bytes.Add ((byte)ch);
 			}
-			return new IodineByteString (bytes.ToArray ());
+			return new IodineBytes (bytes.ToArray ());
 		}
 
 		private void write (string str)

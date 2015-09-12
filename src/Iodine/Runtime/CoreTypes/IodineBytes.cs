@@ -34,14 +34,14 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class IodineByteString : IodineObject
+	public class IodineBytes : IodineObject
 	{
-		public static readonly IodineTypeDefinition TypeDefinition = new ByteStringTypeDef ();
+		public static readonly IodineTypeDefinition TypeDefinition = new BytesTypeDef ();
 
-		class ByteStringTypeDef : IodineTypeDefinition
+		class BytesTypeDef : IodineTypeDefinition
 		{
-			public ByteStringTypeDef ()
-				: base ("ByteStr")
+			public BytesTypeDef ()
+				: base ("Bytes")
 			{
 			}
 
@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
-				return new IodineByteString (args [0].ToString ());
+				return new IodineBytes (args [0].ToString ());
 			}
 		}
 
@@ -58,18 +58,18 @@ namespace Iodine.Runtime
 
 		public byte[] Value { private set; get; }
 
-		public IodineByteString ()
+		public IodineBytes ()
 			: base (TypeDefinition)
 		{
 		}
 
-		public IodineByteString (byte[] val)
+		public IodineBytes (byte[] val)
 			: this ()
 		{
 			Value = val;
 		}
 
-		public IodineByteString (string val)
+		public IodineBytes (string val)
 			: this ()
 		{
 			Value = Encoding.ASCII.GetBytes (val);
@@ -82,20 +82,20 @@ namespace Iodine.Runtime
 
 		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
-			IodineByteString str = right as IodineByteString;
+			IodineBytes str = right as IodineBytes;
 			if (str == null) {
-				vm.RaiseException ("Right hand value must be of type Str!");
+				vm.RaiseException ("Right hand value must be of type Bytes!");
 				return null;
 			}
 			byte[] newArr = new byte[str.Value.Length + Value.Length];
 			Array.Copy (Value, newArr, Value.Length);
 			Array.Copy (str.Value, 0, newArr, Value.Length, str.Value.Length);
-			return new IodineByteString (newArr);
+			return new IodineBytes (newArr);
 		}
 
 		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
 		{
-			IodineByteString str = right as IodineByteString;
+			IodineBytes str = right as IodineBytes;
 			if (str == null) {
 				return base.Equals (vm, right);
 			}
@@ -104,7 +104,7 @@ namespace Iodine.Runtime
 
 		public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
 		{
-			IodineByteString str = right as IodineByteString;
+			IodineBytes str = right as IodineBytes;
 			if (str == null) {
 				return base.NotEquals (vm, right);
 			}

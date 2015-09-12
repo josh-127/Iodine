@@ -82,11 +82,9 @@
     <Compile Include="Runtime\IodineEnum.cs" />
     <Compile Include="Runtime\CoreModules\SysModule.cs" />
     <Compile Include="Runtime\CoreModules\MathModule.cs" />
-    <Compile Include="Runtime\IodineCachedModule.cs" />
     <Compile Include="Runtime\IodineExceptionHandler.cs" />
     <Compile Include="Runtime\IodineInterface.cs" />
     <Compile Include="Runtime\CoreModules\StructModule.cs" />
-    <Compile Include="Runtime\CoreTypes\IodineByteString.cs" />
     <Compile Include="Compiler\Codegen\FunctionCompiler.cs" />
     <Compile Include="Compiler\Codegen\IBytecodeOptimization.cs" />
     <Compile Include="Compiler\Codegen\IodineCompiler.cs" />
@@ -174,6 +172,7 @@
     <Compile Include="Runtime\CoreModules\IterUtilsModules.cs" />
     <Compile Include="Runtime\CoreTypes\IodineStringBuilder.cs" />
     <Compile Include="Compiler\Parser\Ast\TernaryExpression.cs" />
+    <Compile Include="Runtime\CoreTypes\IodineBytes.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

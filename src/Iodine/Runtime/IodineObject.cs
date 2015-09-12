@@ -155,8 +155,7 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		[Obsolete("Overload the appropriate method for the specific binary operator you wish to overload instead")]
-		public virtual IodineObject PerformBinaryOperation (VirtualMachine vm,
+		public IodineObject PerformBinaryOperation (VirtualMachine vm,
 			BinaryOperation binop,
 			IodineObject rvalue)
 		{
