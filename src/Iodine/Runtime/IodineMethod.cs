@@ -188,8 +188,9 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			if (Generator)
+			if (Generator) {
 				return new IodineGenerator (vm.Top, this, arguments);
+			}
 			return vm.InvokeMethod (this, null, arguments);
 		}
 
