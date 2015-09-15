@@ -36,27 +36,22 @@ namespace Iodine
 {
 	public sealed class ReplShell
 	{
-		private IodineEngine engine = new IodineEngine ();
+		IodineEngine engine = new IodineEngine ();
 
 		public void Run ()
 		{
-			int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
-			int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
-			int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
-			Console.WriteLine ("Iodine v{0}.{1}.{2}-alpha", major, minor, patch);
+			var version = Assembly.GetEntryAssembly ().GetName ().Version;
+			Console.WriteLine ("Iodine v{0}-alpha", version.ToString (3));
 			Console.WriteLine ("Enter expressions to have them be evaluated");
 			engine ["prompt"] = ">>> ";
 			while (true) {
-				Console.Write (engine ["prompt"].ToString ());
-				string source = Console.ReadLine ().Trim ();
+				Console.Write (engine ["prompt"]);
+				var source = Console.ReadLine ();
 				try {
-					if (source.Length > 0) {
-						Console.WriteLine (engine.DoString (source).ToString ());
-					}
+					if (source.Length > 0)
+						Console.WriteLine (engine.DoString (source));
 				} catch (UnhandledIodineExceptionException ex) {
-					Console.Error.WriteLine ("An unhandled {0} has occured!", ex.OriginalException.TypeDef.Name);
-					Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.GetAttribute ("message").ToString ());
-					Console.WriteLine ();
+					Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));
 					ex.PrintStack ();
 					Console.Error.WriteLine ();
 				} catch (SyntaxException syntaxException) {
