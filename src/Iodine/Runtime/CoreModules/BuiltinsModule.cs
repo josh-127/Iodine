@@ -46,6 +46,7 @@ namespace Iodine.Runtime
 			SetAttribute ("invoke", new InternalMethodCallback (invoke, null));
 			SetAttribute ("require", new InternalMethodCallback (require, null));
 			SetAttribute ("chr", new InternalMethodCallback (chr, null));
+			SetAttribute ("ord", new InternalMethodCallback (ord, null));
 			SetAttribute ("len", new InternalMethodCallback (len, null));
 			SetAttribute ("property", new InternalMethodCallback (property, null));
 			SetAttribute ("eval", new InternalMethodCallback (eval, null));
@@ -72,6 +73,7 @@ namespace Iodine.Runtime
 			SetAttribute ("range", new InternalMethodCallback (range, null));
 			SetAttribute ("open", new InternalMethodCallback (open, null));
 			SetAttribute ("Exception", IodineException.TypeDefinition);
+			SetAttribute ("ByteArray", IodineByteArray.TypeDefinition);
 			SetAttribute ("TypeException", IodineTypeException.TypeDefinition);
 			SetAttribute ("TypeCastException", IodineTypeCastException.TypeDefinition);
 			SetAttribute ("ArgumentException", IodineArgumentException.TypeDefinition);
@@ -197,6 +199,22 @@ namespace Iodine.Runtime
 			}
 			IodineInteger ascii = args [0] as IodineInteger;
 			return new IodineString (((char)(int)ascii.Value).ToString ());
+		}
+
+		private IodineObject ord (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineString str = args [0] as IodineString;
+
+			if (str == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			return new IodineInteger ((int)str.Value [0]);
 		}
 
 		private IodineObject len (VirtualMachine vm, IodineObject self, IodineObject[] args)

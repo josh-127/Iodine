@@ -1043,7 +1043,7 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.OpenBrace);
 			while (stream.Accept (TokenClass.Keyword, "case")) {
 				AstNode condition = null;
-				AstNode pattern = ParseExpression (stream);
+				AstNode pattern = ParsePattern (stream);
 				if (stream.Accept (TokenClass.Keyword, "when")) {
 					condition = ParseExpression (stream);
 				}
