@@ -46,12 +46,12 @@ class ConfigFile {
     func parse (source) {
         file = ConfigFile ();
         source = source.trim ();
-        foreach (section in regex.match (source, "(?ms)^\\[[^]\n]+](?:(?!^\\[[^]\n]+]).)*")) {
-            name = regex.match (section.value, "\\[[^\\(]*\\]").value;
+        foreach (section in regex.matchexp (source, "(?ms)^\\[[^]\n]+](?:(?!^\\[[^]\n]+]).)*")) {
+            name = regex.matchexp (section.value, "\\[[^\\(]*\\]").value;
             name = name.replace ("[", "").replace ("]", "");
             dict = HashMap ();
-            foreach (match in regex.match (section.value, "(?ms)^([^=;\r\n]+)=([^;\r\n]*)")) {
-                kv = match.value;
+            foreach (m in regex.matchexp (section.value, "(?ms)^([^=;\r\n]+)=([^;\r\n]*)")) {
+                kv = m.value;
                 key = kv.substr (0, kv.indexOf ("=")).trim ();
                 value = kv.substr (kv.indexOf ("=") + 1).trim ();
                 dict [key] = value;
