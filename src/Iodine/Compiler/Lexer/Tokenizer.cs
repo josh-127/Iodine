@@ -323,62 +323,24 @@ namespace Iodine.Compiler
 
 			switch (nextTwoChars) {
 			case ">>":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "<<":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "&&":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "||":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "==":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "!=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "=>":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "<=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case ">=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "+=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "-=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "*=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "/=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "%=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "^=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "&=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "|=":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "??":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "..":
-				ReadChar ();
-				return new Token (TokenClass.Operator, nextTwoChars, location);
 			case "|>":
 				ReadChar ();
 				return new Token (TokenClass.Operator, nextTwoChars, location);
