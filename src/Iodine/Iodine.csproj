@@ -37,6 +37,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Runtime\CoreTypes\IodineStringBuilder.cs" />
     <Compile Include="Compiler\Parser\Ast\TernaryExpression.cs" />
     <Compile Include="Runtime\CoreTypes\IodineBytes.cs" />
+    <Compile Include="Runtime\CoreTypes\IodineComplex.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

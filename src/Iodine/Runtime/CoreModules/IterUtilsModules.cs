@@ -38,7 +38,9 @@ namespace Iodine.Runtime
 		/*
 		 * For simplicitly its easiest to implement most of functions found in this module 
 		 * using C# generator functions. However, C# generator functions do not implement
-		 * IEnumerator.Reset (). Solution: Pass a delegate that will reset the enumerator
+		 * IEnumerator.Reset ().
+		 * 
+		 * Solution: Pass a delegate that will reset the enumerator
 		 */
 		delegate IEnumerator GeneraterResetDelegate ();
 

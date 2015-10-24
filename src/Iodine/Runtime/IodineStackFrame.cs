@@ -40,6 +40,7 @@ namespace Iodine.Runtime
 		public readonly IodineMethod Method;
 		public readonly IodineObject Self;
 		public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
+		public readonly LinkedStack<IodineExceptionHandler> ExceptionHandlers = new LinkedStack<IodineExceptionHandler> ();
 
 		public volatile bool AbortExecution = false;
 

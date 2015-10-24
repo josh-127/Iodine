@@ -46,7 +46,6 @@ namespace Iodine.Runtime
 		private IodineObject last;
 
 		private Dictionary<string, IodineObject> globalDict = new Dictionary<string, IodineObject> ();
-		private Stack<IodineExceptionHandler> exceptionHandlers = new Stack<IodineExceptionHandler> ();
 		private IodineObject lastException = null;
 		private Location currLoc;
 		private Instruction instruction;
@@ -175,11 +174,13 @@ namespace Iodine.Runtime
 			}
 
 			IodineObject retVal = last ?? IodineNull.Instance;
-			EndFrame ();
+
 
 			while (top.DisposableObjects.Count > 0) {
 				top.DisposableObjects.Pop ().Exit (this);
 			}
+
+			EndFrame ();
 
 			return retVal;
 		}
@@ -191,15 +192,26 @@ namespace Iodine.Runtime
 
 		public void RaiseException (IodineObject ex)
 		{
-			if (exceptionHandlers.Count == 0) {
+			IodineExceptionHandler handler = PopCurrentExceptionHandler ();
+			if (handler == null) {
 				throw new UnhandledIodineExceptionException (Top, ex);
-			} else {
-				IodineExceptionHandler handler = exceptionHandlers.Pop ();
-				ex.SetAttribute ("stackTrace", new IodineString (Trace ()));
-				Unwind (frameCount - handler.Frame);
-				lastException = ex;
-				Top.InstructionPointer = handler.InstructionPointer;
 			}
+			ex.SetAttribute ("stackTrace", new IodineString (Trace ()));
+			Unwind (frameCount - handler.Frame);
+			lastException = ex;
+			Top.InstructionPointer = handler.InstructionPointer;
+		}
+
+		private IodineExceptionHandler PopCurrentExceptionHandler ()
+		{
+			StackFrame current = Top;
+			while (current != null) {
+				if (current.ExceptionHandlers.Count > 0) {
+					return current.ExceptionHandlers.Pop ();
+				}
+				current = current.Parent;
+			}
+			return null;
 		}
 
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
@@ -455,12 +467,12 @@ namespace Iodine.Runtime
 				}
 			case Opcode.PushExceptionHandler:
 				{
-					exceptionHandlers.Push (new IodineExceptionHandler (frameCount, instruction.Argument));
+					Top.ExceptionHandlers.Push (new IodineExceptionHandler (frameCount, instruction.Argument));
 					break;
 				}
 			case Opcode.PopExceptionHandler:
 				{
-					exceptionHandlers.Pop ();
+					Top.ExceptionHandlers.Pop ();
 					break;
 				}
 			case Opcode.InstanceOf:
