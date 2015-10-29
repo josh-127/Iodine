@@ -61,6 +61,7 @@ namespace Iodine.Runtime
 			SetAttribute ("tell", new InternalMethodCallback (readLine, this));
 			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			SetAttribute ("close", new InternalMethodCallback (close, this));
+			SetAttribute ("flush", new InternalMethodCallback (flush, this));
 			SetAttribute ("readAllText", new InternalMethodCallback (readAllText, this));
 			SetAttribute ("readAllBytes", new InternalMethodCallback (readAllBytes, this));
 		}
@@ -224,6 +225,15 @@ namespace Iodine.Runtime
 				vm.RaiseException ("Stream has been closed!");
 			}
 			File.Close ();
+			return null;
+		}
+
+		private IodineObject flush (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (this.Closed) { 
+				vm.RaiseException ("Stream has been closed!");
+			}
+			File.Flush ();
 			return null;
 		}
 
