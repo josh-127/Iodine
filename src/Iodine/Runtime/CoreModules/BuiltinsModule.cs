@@ -54,6 +54,7 @@ namespace Iodine.Runtime
 			SetAttribute ("typecast", new InternalMethodCallback (typecast, null));
 			SetAttribute ("print", new InternalMethodCallback (print, null));
 			SetAttribute ("input", new InternalMethodCallback (input, null));
+			SetAttribute ("Complex", IodineComplex.TypeDefinition);
 			SetAttribute ("Int", IodineInteger.TypeDefinition);
 			SetAttribute ("Float", IodineFloat.TypeDefinition);
 			SetAttribute ("Str", IodineString.TypeDefinition);

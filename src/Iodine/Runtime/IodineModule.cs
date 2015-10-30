@@ -178,10 +178,10 @@ namespace Iodine.Runtime
 			} else if (FindModule (path) != null) {
 				string fullPath = FindModule (path);
 				string dir = Path.GetDirectoryName (fullPath);
-				if (!containsPath (dir)) {
+				if (!ContainsPath (dir)) {
 					SearchPaths.Add (new IodineString (dir));
 					string depPath = Path.Combine (dir, ".deps");
-					if (!containsPath (depPath)) {
+					if (!ContainsPath (depPath)) {
 						SearchPaths.Add (new IodineString (depPath));
 					}
 				}
@@ -208,7 +208,7 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private static bool containsPath (string path)
+		private static bool ContainsPath (string path)
 		{
 			foreach (IodineObject obj in SearchPaths) {
 				if (obj.ToString () == path) {
@@ -260,7 +260,7 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private static bool canWrite (string folderPath)
+		private static bool CanWrite (string folderPath)
 		{
 			try {
 				return true;

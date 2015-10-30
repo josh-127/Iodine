@@ -38,12 +38,39 @@ namespace Iodine.Runtime
 	{
 		class IodineThread : IodineObject
 		{
-			public static readonly IodineTypeDefinition ThreadTypeDef = new IodineTypeDefinition ("Thread");
+			class ThreadTypeDefinition : IodineTypeDefinition
+			{
+				public ThreadTypeDefinition ()
+					: base ("Thread")
+				{
+				}
+
+				public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+				{
+					if (args.Length <= 0) {
+						vm.RaiseException (new IodineArgumentException (1));
+						return null;
+					}
+					IodineObject func = args [0];
+					VirtualMachine newVm = new VirtualMachine (vm.Globals);
+
+					Thread t = new Thread (() => {
+						try {
+							func.Invoke (newVm, new IodineObject[] { }); 
+						} catch (UnhandledIodineExceptionException ex) {
+							vm.RaiseException (ex.OriginalException);
+						}
+					});
+					return new IodineThread (t);
+				}
+			}
+
+			public static readonly IodineTypeDefinition TypeDefinition = new ThreadTypeDefinition ();
 
 			public Thread Value { private set; get; }
 
 			public IodineThread (Thread t)
-				: base (ThreadTypeDef)
+				: base (TypeDefinition)
 			{
 				Value = t;
 				SetAttribute ("start", new InternalMethodCallback (start, this));
@@ -69,30 +96,116 @@ namespace Iodine.Runtime
 			}
 		}
 
+		class IodineLock : IodineObject
+		{
+			public static readonly IodineTypeDefinition TypeDefinition = new LockTypeDefinition ();
+
+			class LockTypeDefinition : IodineTypeDefinition
+			{
+				public LockTypeDefinition ()
+					: base ("Lock")
+				{
+				}
+
+				public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+				{
+					return new IodineLock ();
+				}
+			}
+
+			private volatile bool _lock = false;
+
+			public IodineLock ()
+				: base (TypeDefinition)
+			{
+				SetAttribute ("aquire", new InternalMethodCallback (acquire, this));
+				SetAttribute ("release", new InternalMethodCallback (release, this));
+				SetAttribute ("locked", new InternalMethodCallback (locked, this));
+			}
+
+			private IodineObject acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				while (_lock)
+					;
+				_lock = true;
+				return null;
+			}
+
+			private IodineObject release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				_lock = false;
+				return null;
+			}
+
+			private IodineObject locked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				return IodineBool.Create (_lock);
+			}
+		}
+
+		class IodineSemaphore : IodineObject
+		{
+			public static readonly IodineTypeDefinition TypeDefinition = new SemaphoreTypeDefinition ();
+
+			class SemaphoreTypeDefinition : IodineTypeDefinition
+			{
+				public SemaphoreTypeDefinition ()
+					: base ("Semaphore")
+				{
+				}
+
+				public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+				{
+					if (args.Length == 0) {
+						return new IodineSemaphore (1);
+					}
+					IodineInteger semaphore = args [0] as IodineInteger;
+					if (semaphore == null) {
+						vm.RaiseException (new IodineTypeException ("Integer"));
+						return null;
+					}
+					return new IodineSemaphore ((int)semaphore.Value);
+				}
+			}
+
+			private volatile int semaphore = 1;
+
+			public IodineSemaphore (int semaphore)
+				: base (TypeDefinition)
+			{
+				this.semaphore = semaphore;
+				SetAttribute ("aquire", new InternalMethodCallback (acquire, this));
+				SetAttribute ("release", new InternalMethodCallback (release, this));
+				SetAttribute ("locked", new InternalMethodCallback (locked, this));
+			}
+
+			private IodineObject acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				semaphore--;
+				while (semaphore < 0)
+					;
+				return null;
+			}
+
+			private IodineObject release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				semaphore++;
+				return null;
+			}
+
+			private IodineObject locked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			{
+				return IodineBool.Create (semaphore < 0);
+			}
+		}
+
 		public ThreadingModule ()
 			: base ("threading")
 		{
-			SetAttribute ("Thread", new InternalMethodCallback (thread, this));
+			SetAttribute ("Thread", IodineThread.TypeDefinition);
+			SetAttribute ("Lock", IodineLock.TypeDefinition);
+			SetAttribute ("Semaphore", IodineSemaphore.TypeDefinition);
 			SetAttribute ("sleep", new InternalMethodCallback (sleep, this));
-		}
-
-		private IodineObject thread (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
-			IodineObject func = args [0];
-			VirtualMachine newVm = new VirtualMachine (vm.Globals);
-
-			Thread t = new Thread (() => {
-				try {
-					func.Invoke (newVm, new IodineObject[] { }); 
-				} catch (UnhandledIodineExceptionException ex) {
-					vm.RaiseException (ex.OriginalException);
-				}
-			});
-			return new IodineThread (t);
 		}
 
 		private IodineObject sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
