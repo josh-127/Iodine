@@ -37,7 +37,7 @@ namespace Iodine.Compiler.Ast
 	{
 		private List<AstNode> children = new List<AstNode> ();
 
-		public Location Location { private set; get; }
+		public readonly Location Location;
 
 		public IList<AstNode> Children {
 			get {

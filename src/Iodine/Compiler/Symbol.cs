@@ -45,23 +45,11 @@ namespace Iodine.Compiler
 	/// </summary>
 	public class Symbol
 	{
-		/// <summary>
-		/// Gets the name.
-		/// </summary>
-		/// <value>The name.</value>
-		public string Name { private set; get; }
+		public readonly string Name;
 
-		/// <summary>
-		/// Gets the index.
-		/// </summary>
-		/// <value>The index.</value>
-		public int Index { private set; get; }
+		public readonly int Index;
 
-		/// <summary>
-		/// Gets the type.
-		/// </summary>
-		/// <value>The type.</value>
-		public SymbolType Type { private set; get; }
+		public readonly SymbolType Type;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Iodine.Compiler.Symbol"/> class.

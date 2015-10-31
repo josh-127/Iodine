@@ -180,7 +180,7 @@ namespace Iodine.Compiler
 
 		public void Accept (FunctionDeclaration funcDecl)
 		{
-			module.AddMethod (compileMethod (funcDecl));
+			module.AddMethod (CompileMethod (funcDecl));
 		}
 
 		public void Accept (CodeBlock scope)
@@ -335,7 +335,7 @@ namespace Iodine.Compiler
 
 		public IodineClass CompileClass (ClassDeclaration classDecl)
 		{
-			IodineMethod constructor = compileMethod (classDecl.Constructor);
+			IodineMethod constructor = CompileMethod (classDecl.Constructor);
 			if (classDecl.Constructor.Children [0].Children.Count == 0 ||
 				!(classDecl.Constructor.Children [0].Children [0] is SuperCallExpression)) {
 				if (classDecl.Base.Count > 0) {
@@ -360,9 +360,9 @@ namespace Iodine.Compiler
 				if (classDecl.Children [i] is FunctionDeclaration) {
 					FunctionDeclaration func = classDecl.Children [i] as FunctionDeclaration;
 					if (func.InstanceMethod)
-						clazz.AddInstanceMethod (compileMethod (func));
+						clazz.AddInstanceMethod (CompileMethod (func));
 					else {
-						clazz.SetAttribute (func.Name, compileMethod (func));
+						clazz.SetAttribute (func.Name, CompileMethod (func));
 					}
 				} else if (classDecl.Children [i] is ClassDeclaration) {
 					ClassDeclaration subclass = classDecl.Children [i] as ClassDeclaration;
@@ -395,7 +395,7 @@ namespace Iodine.Compiler
 			return ienum;
 		}
 
-		private IodineMethod compileMethod (FunctionDeclaration funcDecl)
+		private IodineMethod CompileMethod (FunctionDeclaration funcDecl)
 		{
 			symbolTable.NextScope ();
 			IodineMethod methodBuilder = new IodineMethod (module, funcDecl.Name, funcDecl.InstanceMethod,

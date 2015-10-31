@@ -42,11 +42,11 @@ namespace Iodine
 
 	public class Error
 	{
-		public string Text { private set; get; }
+		public readonly string Text;
 
-		public ErrorType ErrorType { private set; get; }
+		public readonly ErrorType ErrorType;
 
-		public Location Location { private set; get; }
+		public readonly Location Location;
 
 		public Error (ErrorType etype, Location location, string text)
 		{

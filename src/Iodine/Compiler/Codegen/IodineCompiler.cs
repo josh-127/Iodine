@@ -59,11 +59,11 @@ namespace Iodine.Compiler
 			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module);
 			ast.Visit (compiler);
 			module.Initializer.FinalizeLabels ();
-			optimizeObject (module);	
+			OptimizeObject (module);	
 			return module;
 		}
 
-		private void optimizeObject (IodineObject obj)
+		private void OptimizeObject (IodineObject obj)
 		{
 			foreach (IodineObject attr in obj.Attributes.Values) {
 				if (attr is IodineMethod) {

@@ -56,23 +56,9 @@ namespace Iodine.Compiler
 	/// </summary>
 	public sealed class Token
 	{
-		/// <summary>
-		/// Gets the token class.
-		/// </summary>
-		/// <value>The class of the token.</value>
-		public TokenClass Class { private set; get; }
-
-		/// <summary>
-		/// Gets the value.
-		/// </summary>
-		/// <value>The value.</value>
-		public string Value { private set; get; }
-
-		/// <summary>
-		/// Gets the location.
-		/// </summary>
-		/// <value>The location.</value>
-		public Location Location { private set; get; }
+		public readonly string Value;
+		public readonly TokenClass Class;
+		public readonly Location Location;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Iodine.Compiler.Token"/> class.
@@ -82,9 +68,9 @@ namespace Iodine.Compiler
 		/// <param name="location">Location.</param>
 		public Token (TokenClass clazz, string value, Location location)
 		{
-			this.Class = clazz;
-			this.Value = value;
-			this.Location = location;
+			Class = clazz;
+			Value = value;
+			Location = location;
 		}
 
 		/// <summary>

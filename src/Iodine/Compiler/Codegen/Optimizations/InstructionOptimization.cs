@@ -36,11 +36,11 @@ namespace Iodine.Compiler
 	{
 		public void PerformOptimization (IodineMethod method)
 		{
-			while (performOptimiziation (method) > 0)
+			while (PerformMethodOptimization (method) > 0)
 				;
 		}
 
-		private int performOptimiziation (IodineMethod method)
+		private int PerformMethodOptimization (IodineMethod method)
 		{
 			int removed = 0;
 			Instruction[] oldInstructions = method.Body.ToArray ();
@@ -65,8 +65,8 @@ namespace Iodine.Compiler
 			for (int i = 0; i < oldInstructions.Length; i++) {
 				Instruction curr = oldInstructions [i];
 				if (curr.OperationCode == Opcode.Nop) {
-					shiftLabels (next, newInstructions);
-					shiftLabels (next, oldInstructions);
+					ShiftLabels (next, newInstructions);
+					ShiftLabels (next, oldInstructions);
 				} else {
 					newInstructions [next++] = curr;
 				}
@@ -76,7 +76,7 @@ namespace Iodine.Compiler
 			return removed;
 		}
 
-		private void shiftLabels (int start, Instruction[] instructions)
+		private void ShiftLabels (int start, Instruction[] instructions)
 		{
 			for (int i = 0; i < instructions.Length; i++) {
 				Instruction ins = instructions [i];

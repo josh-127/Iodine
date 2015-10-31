@@ -64,7 +64,7 @@ namespace Iodine.Compiler
 
 		public void Accept (AstRoot ast)
 		{
-			visitSubnodes (ast);
+			ast.VisitChildren (this);
 		}
 
 		public void Accept (Expression expr)
@@ -349,13 +349,6 @@ namespace Iodine.Compiler
 
 		public void Accept (TernaryExpression ifExpr)
 		{
-		}
-
-		private void visitSubnodes (AstNode root)
-		{
-			foreach (AstNode node in root) {
-				node.Visit (this);
-			}
 		}
 	}
 }

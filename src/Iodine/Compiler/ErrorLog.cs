@@ -81,9 +81,7 @@ namespace Iodine
 		/// <returns>The enumerator.</returns>
 		public IEnumerator <Error> GetEnumerator ()
 		{
-			foreach (Error error in this.errors) {
-				yield return error;
-			}
+			return errors.GetEnumerator ();
 		}
 
 		/// <summary>

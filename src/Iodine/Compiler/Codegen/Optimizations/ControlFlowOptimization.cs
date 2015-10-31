@@ -58,7 +58,7 @@ namespace Iodine.Compiler
 		{
 			List <ReachableRegion> regions = new List<ReachableRegion> ();
 			int reachableSize = 0;
-			findRegion (method, regions, 0);
+			FindRegion (method, regions, 0);
 			foreach (ReachableRegion region in regions) {
 				reachableSize += region.Size + 1;
 			}
@@ -66,20 +66,20 @@ namespace Iodine.Compiler
 			Instruction[] newInstructions = new Instruction[method.Body.Count];
 			int next = 0;
 			for (int i = 0; i < method.Body.Count; i++) {
-				if (isReachable (regions, i)) {
+				if (IsReachable (regions, i)) {
 					newInstructions [next++] = oldInstructions [i];
 				} else {
-					shiftLabels (next, oldInstructions);
-					shiftLabels (next, newInstructions);
+					ShiftLabels (next, oldInstructions);
+					ShiftLabels (next, newInstructions);
 				}
 			}
 			method.Body.Clear ();
 			method.Body.AddRange (newInstructions);
 		}
 
-		private void findRegion (IodineMethod method, List<ReachableRegion> regions, int start)
+		private void FindRegion (IodineMethod method, List<ReachableRegion> regions, int start)
 		{
-			if (isReachable (regions, start)) {
+			if (IsReachable (regions, start)) {
 				return;
 			}
 
@@ -88,14 +88,14 @@ namespace Iodine.Compiler
 
 				if (ins.OperationCode == Opcode.Jump) {
 					regions.Add (new ReachableRegion (start, i));
-					findRegion (method, regions, ins.Argument);
+					FindRegion (method, regions, ins.Argument);
 					return;
 				} else if (ins.OperationCode == Opcode.JumpIfTrue ||
 				           ins.OperationCode == Opcode.JumpIfFalse ||
 				           ins.OperationCode == Opcode.PushExceptionHandler) {
 					regions.Add (new ReachableRegion (start, i));
-					findRegion (method, regions, i + 1);
-					findRegion (method, regions, ins.Argument);
+					FindRegion (method, regions, i + 1);
+					FindRegion (method, regions, ins.Argument);
 					return;
 				} else if (ins.OperationCode == Opcode.Return) {
 					regions.Add (new ReachableRegion (start, i));
@@ -105,7 +105,7 @@ namespace Iodine.Compiler
 			regions.Add (new ReachableRegion (start, method.Body.Count));
 		}
 
-		private void shiftLabels (int start, Instruction[] instructions)
+		private void ShiftLabels (int start, Instruction[] instructions)
 		{
 			for (int i = 0; i < instructions.Length; i++) {
 				Instruction ins = instructions [i];
@@ -122,7 +122,7 @@ namespace Iodine.Compiler
 			}
 		}
 
-		private bool isReachable (List<ReachableRegion> regions, int addr)
+		private bool IsReachable (List<ReachableRegion> regions, int addr)
 		{
 			foreach (ReachableRegion region in regions) {
 				if (region.Start <= addr && addr <= region.End) {

@@ -865,18 +865,18 @@ namespace Iodine.Compiler
 
 		public static AstNode ParseBitshift (TokenStream stream)
 		{
-			AstNode expr = ParseAddSub (stream);
+			AstNode expr = ParseAdditive (stream);
 			while (stream.Match (TokenClass.Operator)) {
 				switch (stream.Current.Value) {
 				case "<<":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.LeftShift, expr,
-						ParseAddSub (stream));
+						ParseAdditive (stream));
 					continue;
 				case ">>":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.RightShift, expr,
-						ParseAddSub (stream));
+						ParseAdditive (stream));
 					continue;
 				default:
 					break;
@@ -886,20 +886,20 @@ namespace Iodine.Compiler
 			return expr;
 		}
 
-		public static AstNode ParseAddSub (TokenStream stream)
+		public static AstNode ParseAdditive (TokenStream stream)
 		{
-			AstNode expr = ParseMulDivMod (stream);
+			AstNode expr = ParseMultiplicative (stream);
 			while (stream.Match (TokenClass.Operator)) {
 				switch (stream.Current.Value) {
 				case "+":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Add, expr,
-						ParseMulDivMod (stream));
+						ParseMultiplicative (stream));
 					continue;
 				case "-":
 					stream.Accept (TokenClass.Operator);
 					expr = new BinaryExpression (stream.Location, BinaryOperation.Sub, expr,
-						ParseMulDivMod (stream));
+						ParseMultiplicative (stream));
 					continue;
 				default:
 					break;
@@ -909,7 +909,7 @@ namespace Iodine.Compiler
 			return expr;
 		}
 
-		public static AstNode ParseMulDivMod (TokenStream stream)
+		public static AstNode ParseMultiplicative (TokenStream stream)
 		{
 			AstNode expr = ParseUnary (stream);
 			while (stream.Match (TokenClass.Operator)) {
