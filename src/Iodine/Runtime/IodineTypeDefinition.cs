@@ -36,13 +36,13 @@ namespace Iodine.Runtime
 	{
 		private static IodineTypeDefinition TypeDefTypeDef = new IodineTypeDefinition ("TypeDef");
 
-		public string Name { private set; get; }
+		public readonly string Name;
 
 		public IodineTypeDefinition (string name)
 			: base (TypeDefTypeDef)
 		{
 			Name = name;
-			attributes ["__name__"] = new IodineString (name);
+			Attributes ["__name__"] = new IodineString (name);
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
@@ -63,10 +63,10 @@ namespace Iodine.Runtime
 		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			IodineObject obj = this.Invoke (vm, arguments);
-			foreach (string attr in attributes.Keys) {
+			foreach (string attr in Attributes.Keys) {
 				if (!self.HasAttribute (attr))
-					self.SetAttribute (attr, attributes [attr]);
-				obj.SetAttribute (attr, attributes [attr]);
+					self.SetAttribute (attr, Attributes [attr]);
+				obj.SetAttribute (attr, Attributes [attr]);
 			}
 			self.SetAttribute ("__super__", obj);
 			self.Base = obj;
@@ -74,7 +74,7 @@ namespace Iodine.Runtime
 
 		public IodineObject BindAttributes (IodineObject obj)
 		{
-			foreach (KeyValuePair<string, IodineObject> kv in attributes) {
+			foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
 				if (!obj.HasAttribute (kv.Key))
 					obj.SetAttribute (kv.Key, kv.Value);
 			}

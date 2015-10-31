@@ -91,7 +91,7 @@ namespace Iodine.Runtime
 		{
 			IodineObject obj = Invoke (vm, arguments);
 
-			foreach (KeyValuePair<string, IodineObject> kv in attributes) {
+			foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
 				if (!self.HasAttribute (kv.Key))
 					self.SetAttribute (kv.Key, kv.Value);
 				if (!obj.HasAttribute (kv.Key))

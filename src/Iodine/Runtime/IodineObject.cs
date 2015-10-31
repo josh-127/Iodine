@@ -38,24 +38,16 @@ namespace Iodine.Runtime
 		public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
 
 		public IodineObject Base { set; get; }
-
 		public List<IodineInterface> Interfaces { set; get; }
 
-		public IodineTypeDefinition TypeDef { private set; get; }
-
-		public Dictionary<string, IodineObject> Attributes {
-			get {
-				return this.attributes;
-			}
-		}
-
-		protected Dictionary<string, IodineObject> attributes = new Dictionary<string, IodineObject> ();
+		public readonly IodineTypeDefinition TypeDef;
+		public readonly Dictionary<string, IodineObject> Attributes = new Dictionary<string, IodineObject> ();
 
 		public IodineObject (IodineTypeDefinition typeDef)
 		{
 			TypeDef = typeDef;
 			Interfaces = new List<IodineInterface> ();
-			attributes ["typeDef"] = typeDef;
+			Attributes ["__type__"] = typeDef;
 			if (typeDef != null) {
 				typeDef.BindAttributes (this);
 			}
@@ -63,7 +55,7 @@ namespace Iodine.Runtime
 
 		public bool HasAttribute (string name)
 		{
-			bool res = attributes.ContainsKey (name);
+			bool res = Attributes.ContainsKey (name);
 			if (!res && Base != null)
 				return Base.HasAttribute (name);
 			return res;
@@ -71,7 +63,7 @@ namespace Iodine.Runtime
 
 		public virtual void SetAttribute (VirtualMachine vm, string name, IodineObject value)
 		{
-			if (Base != null && !attributes.ContainsKey (name)) {
+			if (Base != null && !Attributes.ContainsKey (name)) {
 				if (Base.HasAttribute (name)) {
 					Base.SetAttribute (vm, name, value);
 					return;
@@ -85,25 +77,25 @@ namespace Iodine.Runtime
 			if (value is IodineMethod) {
 				IodineMethod method = (IodineMethod)value;
 				if (method.InstanceMethod) {
-					attributes [name] = new IodineInstanceMethodWrapper (this, method);
+					Attributes [name] = new IodineInstanceMethodWrapper (this, method);
 				} else {
-					attributes [name] = value;
+					Attributes [name] = value;
 				}
 			} else if (value is IodineInstanceMethodWrapper) {
 				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
-				attributes [name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
+				Attributes [name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
 			} else if (value is IodineProperty) {
 				IodineProperty property = (IodineProperty)value;
-				attributes [name] = new IodineProperty (property.Getter, property.Setter, this); 
+				Attributes [name] = new IodineProperty (property.Getter, property.Setter, this); 
 			} else {
-				attributes [name] = value;
+				Attributes [name] = value;
 			}
 		}
 
 		public IodineObject GetAttribute (string name)
 		{
-			if (attributes.ContainsKey (name))
-				return attributes [name];
+			if (Attributes.ContainsKey (name))
+				return Attributes [name];
 			else if (Base != null && Base.Attributes.ContainsKey (name))
 				return Base.GetAttribute (name);
 			return null;
@@ -111,13 +103,13 @@ namespace Iodine.Runtime
 
 		public virtual bool IsCallable ()
 		{
-			return attributes.ContainsKey ("__invoke__") && attributes ["__invoke__"].IsCallable ();
+			return Attributes.ContainsKey ("__invoke__") && Attributes ["__invoke__"].IsCallable ();
 		}
 
 		public virtual IodineObject GetAttribute (VirtualMachine vm, string name)
 		{
-			if (attributes.ContainsKey (name))
-				return attributes [name];
+			if (Attributes.ContainsKey (name))
+				return Attributes [name];
 			else if (Base != null && Base.HasAttribute (name))
 				return Base.GetAttribute (name);
 			vm.RaiseException (new IodineAttributeNotFoundException (name));
@@ -126,31 +118,31 @@ namespace Iodine.Runtime
 
 		public virtual IodineObject ToString (VirtualMachine vm)
 		{
-			if (attributes.ContainsKey ("__str__")) {
-				return attributes ["__str__"].Invoke (vm, new IodineObject[] { });
+			if (Attributes.ContainsKey ("__str__")) {
+				return Attributes ["__str__"].Invoke (vm, new IodineObject[] { });
 			}
 			return new IodineString (ToString ());
 		}
 
 		public virtual IodineObject Represent (VirtualMachine vm)
 		{
-			if (attributes.ContainsKey ("__repr__")) {
-				return attributes ["__repr__"].Invoke (vm, new IodineObject[] { });
+			if (Attributes.ContainsKey ("__repr__")) {
+				return Attributes ["__repr__"].Invoke (vm, new IodineObject[] { });
 			}
 			return ToString (vm);
 		}
 
 		public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
-			if (attributes.ContainsKey ("__setIndex__")) {
-				attributes ["__setIndex__"].Invoke (vm, new IodineObject[] { key, value });
+			if (Attributes.ContainsKey ("__setIndex__")) {
+				Attributes ["__setIndex__"].Invoke (vm, new IodineObject[] { key, value });
 			}
 		}
 
 		public virtual IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
-			if (attributes.ContainsKey ("__getIndex__")) {
-				return attributes ["__getIndex__"].Invoke (vm, new IodineObject[] { key });
+			if (Attributes.ContainsKey ("__getIndex__")) {
+				return Attributes ["__getIndex__"].Invoke (vm, new IodineObject[] { key });
 			}
 			return null;
 		}
@@ -519,7 +511,7 @@ namespace Iodine.Runtime
 		{
 			int accum = 17;
 			unchecked {
-				foreach (IodineObject obj in attributes.Values) {
+				foreach (IodineObject obj in Attributes.Values) {
 					if (obj != null) {
 						accum += 529 * obj.GetHashCode ();
 					}
