@@ -175,6 +175,7 @@
     <Compile Include="Compiler\Parser\Ast\TernaryExpression.cs" />
     <Compile Include="Runtime\CoreTypes\IodineBytes.cs" />
     <Compile Include="Runtime\CoreTypes\IodineComplex.cs" />
+    <Compile Include="Runtime\CoreModules\CollectionsModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

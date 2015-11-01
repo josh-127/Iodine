@@ -56,24 +56,13 @@ namespace Iodine.Compiler
 		private Scope lastScope = null;
 		private LocalScope currentLocalScope = null;
 
-		/// <summary>
-		/// Gets or sets the current scope.
-		/// </summary>
-		/// <value>The current scope.</value>
-		public Scope CurrentScope { set; get; }
+		public Scope CurrentScope { private set; get; }
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Iodine.Compiler.SymbolTable"/> class.
-		/// </summary>
 		public SymbolTable ()
 		{
 			CurrentScope = globalScope;
 		}
 
-		/// <summary>
-		/// Gets the next scope
-		/// </summary>
-		/// <returns>The scope.</returns>
 		public Scope NextScope ()
 		{
 			if (CurrentScope == null)
@@ -136,9 +125,8 @@ namespace Iodine.Compiler
 		{
 			if (this.CurrentScope.ParentScope != null) {
 				return CurrentScope.AddSymbol (SymbolType.Local, name, currentLocalScope.NextLocal++);
-			} else {
-				return CurrentScope.AddSymbol (SymbolType.Global, name, nextGlobalIndex++);
 			}
+			return CurrentScope.AddSymbol (SymbolType.Global, name, nextGlobalIndex++);
 		}
 
 		/// <summary>
@@ -186,7 +174,7 @@ namespace Iodine.Compiler
 		private List<Symbol> symbols = new List<Symbol> ();
 		private List<Scope> childScopes = new List<Scope> ();
 
-		public Scope ParentScope { private set; get; }
+		public readonly Scope ParentScope;
 
 		public Scope NextScope { set; get; }
 
