@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using Iodine.Compiler;
@@ -36,20 +37,6 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Runtime
 {
-	[AttributeUsage (AttributeTargets.Class)]
-	public class IodineBuiltinModule : System.Attribute
-	{
-		public string Name { private set; get; }
-
-		public bool Global { private set; get; }
-
-		public IodineBuiltinModule (string moduleName, bool existsInGlobalNamespace = false)
-		{
-			this.Name = moduleName;
-			this.Global = existsInGlobalNamespace;
-		}
-	}
-
 	public class IodineModule : IodineObject
 	{
 		public static readonly List<IodineObject> SearchPaths = new List<IodineObject> ();
@@ -197,9 +184,9 @@ namespace Iodine.Runtime
 			Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
 
 			foreach (Type type in extension.GetTypes ()) {
-				IodineBuiltinModule attr = type.GetCustomAttribute <IodineBuiltinModule> ();
-
-				if (attr != null) {
+				if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
+					IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
+						typeof(IodineBuiltinModule), false).First ();
 					if (attr.Name == module) {
 						return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
 					}

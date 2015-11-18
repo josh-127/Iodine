@@ -31,6 +31,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
@@ -183,7 +184,7 @@ namespace Iodine.Runtime
 			foreach (KeyValuePair<int, IodineObject> kv in hash.Keys) {
 				items [kv.Value.ToString ()] = hash.Dict [kv.Key];
 			}
-			VirtualMachine newVm = new VirtualMachine (items);
+			VirtualMachine newVm = new VirtualMachine (vm.Configuration, items);
 			try {
 				return args [0].Invoke (newVm, new IodineObject[]{});
 			} catch (UnhandledIodineExceptionException ex) {
@@ -257,7 +258,7 @@ namespace Iodine.Runtime
 			VirtualMachine vm = host;
 
 			if (dict != null) {
-				vm = new VirtualMachine (new Dictionary<string, IodineObject> ());
+				vm = new VirtualMachine (host.Configuration, new Dictionary<string, IodineObject> ());
 
 				foreach (string glob in host.Globals.Keys) {
 					vm.Globals [glob] = host.Globals [glob];

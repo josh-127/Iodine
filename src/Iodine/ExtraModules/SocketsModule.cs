@@ -110,7 +110,7 @@ namespace Iodine.Modules.Extras
 			}
 
 			public IodineSocket (SocketType sockType, ProtocolType protoType)
-				: this (new Socket (sockType, protoType))
+				: this (new Socket (AddressFamily.InterNetwork, sockType, protoType))
 			{
 			}
 

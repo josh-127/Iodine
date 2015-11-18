@@ -31,56 +31,69 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+	// Callback for debugger
+	public delegate bool TraceCallback (TraceType type, VirtualMachine vm, StackFrame frame,
+		Location location);
+
+	public enum TraceType
+	{
+		Line,
+		Exception,
+		Function
+	}
+
 	public sealed class VirtualMachine
 	{
 		public static readonly Dictionary<string, IodineModule> ModuleCache = new Dictionary<string, IodineModule> ();
 
-		private LinkedStack<StackFrame> frames = new LinkedStack<StackFrame> ();
-		private int frameCount = 0;
-		private IodineObject last;
+		public readonly IodineConfiguration Configuration;
 
-		private Dictionary<string, IodineObject> globalDict = new Dictionary<string, IodineObject> ();
+		private int frameCount = 0;
+		private int stackSize = 0;
+		private TraceCallback traceCallback = null;
+		private IodineObject lastObject;
 		private IodineObject lastException = null;
-		private Location currLoc;
+		private Location currentLocation;
 		private Instruction instruction;
+		private LinkedStack<StackFrame> frames = new LinkedStack<StackFrame> ();
+		private ManualResetEvent pauseVirtualMachine = new ManualResetEvent (true);
 
 		public StackFrame Top;
 
-		public Dictionary <string, IodineObject> Globals {
-			get {
-				return globalDict;
-			}
-		}
-			
-		public VirtualMachine ()
+		public readonly Dictionary<string, IodineObject> Globals;
+
+		public VirtualMachine (IodineConfiguration config)
 		{
+			Configuration = config;
+			Globals = new Dictionary<string, IodineObject> ();
 			var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
 			foreach (IodineModule module in modules) {
-				foreach (KeyValuePair<string, IodineObject> val in module.Attributes) {
-					Globals [val.Key] = val.Value;
+				foreach (KeyValuePair<string, IodineObject> value in module.Attributes) {
+					Globals [value.Key] = value.Value;
 				}
 			}
 		}
 
-		public VirtualMachine (Dictionary<string, IodineObject> globals)
+		public VirtualMachine (IodineConfiguration config, Dictionary<string, IodineObject> globals)
 		{
-			globalDict = globals;
+			Configuration = config;
+			Globals = globals;
 		}
 
-		public string Trace ()
+		public string GetStackTrace ()
 		{
 			StringBuilder accum = new StringBuilder ();
 			StackFrame top = Top;
 			while (top != null) {
 				if (top is NativeStackFrame) {
 					NativeStackFrame frame = top as NativeStackFrame;
-
 					accum.AppendFormat (" at {0} <internal method>\n",
 						frame.NativeMethod.Callback.Method.Name);
 				} else {
@@ -95,21 +108,16 @@ namespace Iodine.Runtime
 			return accum.ToString ();
 		}
 
-		public void Unwind (int frames)
+		public void ContinueExecution ()
 		{
-			for (int i = 0; i < frames; i++) {
-				StackFrame frame = this.frames.Pop ();
-				frame.AbortExecution = true;
-			}
-			frameCount -= frames;
-			Top = this.frames.Peek ();
+			pauseVirtualMachine.Set ();
 		}
 
 		public IodineObject InvokeMethod (IodineMethod method, IodineObject self, IodineObject[] arguments)
 		{
 			int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 : method.ParameterCount;
 			if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
-				(!method.Variadic && arguments.Length < requiredArgs)) {
+			    (!method.Variadic && arguments.Length < requiredArgs)) {
 				RaiseException (new IodineArgumentException (method.ParameterCount));
 				return null;
 			}
@@ -125,7 +133,7 @@ namespace Iodine.Runtime
 			int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 :
 				method.ParameterCount;
 			if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
-				(!method.Variadic && arguments.Length < requiredArgs)) {
+			    (!method.Variadic && arguments.Length < requiredArgs)) {
 				RaiseException (new IodineArgumentException (method.ParameterCount));
 				return null;
 			}
@@ -137,11 +145,13 @@ namespace Iodine.Runtime
 		private IodineObject Invoke (IodineMethod method, IodineObject[] arguments)
 		{
 			if (method.Body.Count > 0) {
-				currLoc = method.Body [0].Location;
+				currentLocation = method.Body [0].Location;
 			}
 
 			int insCount = method.Body.Count;
+			int prevStackSize = stackSize;
 			int i = 0;
+
 			foreach (string param in method.Parameters.Keys) {
 				if (method.Variadic && (method.AcceptsKeywordArgs ? i == method.Parameters.Keys.Count - 2 :
 					i == method.Parameters.Keys.Count - 1)) {
@@ -158,26 +168,31 @@ namespace Iodine.Runtime
 					Top.StoreLocal (method.Parameters [param], arguments [i++]);
 				}
 			}
-
 			StackFrame top = Top;
+
+			if (traceCallback != null) {
+				Trace (TraceType.Function, top, currentLocation);
+			}
+
 			while (top.InstructionPointer < insCount && !top.AbortExecution && !Top.Yielded) {
 				instruction = method.Body [Top.InstructionPointer++];
-				ExecuteInstruction ();
-				top.Location = currLoc;
-			}
-
-			if (top.AbortExecution) {
-				while (top.DisposableObjects.Count > 0) {
-					top.DisposableObjects.Pop ().Exit (this);
+				if (traceCallback != null && instruction.Location.Line != currentLocation.Line) {
+					Trace (TraceType.Line, top, instruction.Location);
 				}
-				return IodineNull.Instance;
+				ExecuteInstruction ();
+				top.Location = currentLocation;
 			}
 
-			IodineObject retVal = last ?? IodineNull.Instance;
-
+			IodineObject retVal = lastObject ?? IodineNull.Instance;
 
 			while (top.DisposableObjects.Count > 0) {
 				top.DisposableObjects.Pop ().Exit (this);
+			}
+
+			stackSize = prevStackSize;
+
+			if (top.AbortExecution) {
+				return IodineNull.Instance;
 			}
 
 			EndFrame ();
@@ -192,14 +207,56 @@ namespace Iodine.Runtime
 
 		public void RaiseException (IodineObject ex)
 		{
+			if (traceCallback != null) {
+				traceCallback (TraceType.Exception, this, Top, currentLocation);
+			}
 			IodineExceptionHandler handler = PopCurrentExceptionHandler ();
-			if (handler == null) {
+			if (handler == null) { // No exception handler
+				/*
+				 * The program has gone haywire and we ARE going to crash, however
+				 * we must attempt to properly dispose any objects created inside 
+				 * Iodine's with statement
+				 */
+				while (Top != null) {
+					while (Top.DisposableObjects.Count > 0) {
+						IodineObject obj = Top.DisposableObjects.Pop ();
+						try {
+							obj.Exit (this); // Call __exit__
+						} catch (UnhandledIodineExceptionException) {
+							// Ignore this, we will throw one when we're done anyway
+						}
+					}
+					Top = Top.Parent;
+				}
 				throw new UnhandledIodineExceptionException (Top, ex);
 			}
-			ex.SetAttribute ("stackTrace", new IodineString (Trace ()));
-			Unwind (frameCount - handler.Frame);
+			ex.SetAttribute ("stackTrace", new IodineString (GetStackTrace ()));
+			UnwindStack (frameCount - handler.Frame);
 			lastException = ex;
 			Top.InstructionPointer = handler.InstructionPointer;
+		}
+
+		public void SetTrace (TraceCallback callback)
+		{
+			traceCallback = callback;
+		}
+
+		private void Trace (TraceType type, StackFrame frame, Location location)
+		{
+			pauseVirtualMachine.WaitOne ();
+			if (traceCallback (type, this, frame, location)) {
+				pauseVirtualMachine.Reset ();
+			}
+		}
+
+		private void UnwindStack (int frames)
+		{
+			for (int i = 0; i < frames; i++) {
+				StackFrame frame = this.frames.Pop ();
+				frame.AbortExecution = true;
+			}
+			frameCount -= frames;
+			Top = this.frames.Peek ();
 		}
 
 		private IodineExceptionHandler PopCurrentExceptionHandler ()
@@ -214,10 +271,12 @@ namespace Iodine.Runtime
 			return null;
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		private void ExecuteInstruction ()
 		{
-			currLoc = instruction.Location;
+			currentLocation = instruction.Location;
 			switch (instruction.OperationCode) {
 			case Opcode.Pop:
 				{
@@ -274,8 +333,8 @@ namespace Iodine.Runtime
 			case Opcode.StoreGlobal:
 				{
 					string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
-					if (globalDict.ContainsKey (name)) {
-						globalDict [name] = Pop ();
+					if (Globals.ContainsKey (name)) {
+						Globals [name] = Pop ();
 					} else {
 						Top.Module.SetAttribute (this, name, Pop ());
 					}
@@ -286,8 +345,8 @@ namespace Iodine.Runtime
 					string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
 					if (Top.Module.Attributes.ContainsKey (name)) {
 						Push (Top.Module.GetAttribute (this, name));
-					} else if (globalDict.ContainsKey (name)) {
-						Push (globalDict [name]);
+					} else if (Globals.ContainsKey (name)) {
+						Push (Globals [name]);
 					} else {
 						RaiseException (new IodineAttributeNotFoundException (name));
 					}
@@ -299,7 +358,7 @@ namespace Iodine.Runtime
 					IodineObject value = Pop ();
 					string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
 					if (target.Attributes.ContainsKey (attribute) &&
-						target.Attributes [attribute] is IIodineProperty) {
+					    target.Attributes [attribute] is IIodineProperty) {
 						IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
 						property.Set (this, value);
 						break;
@@ -312,7 +371,7 @@ namespace Iodine.Runtime
 					IodineObject target = Pop ();
 					string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
 					if (target.Attributes.ContainsKey (attribute) &&
-						target.Attributes [attribute] is IIodineProperty) {
+					    target.Attributes [attribute] is IIodineProperty) {
 						IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
 						Push (property.Get (this));
 						break;
@@ -388,7 +447,7 @@ namespace Iodine.Runtime
 				}
 			case Opcode.Return:
 				{
-					this.Top.InstructionPointer = int.MaxValue;
+					Top.InstructionPointer = int.MaxValue;
 					break;
 				}
 			case Opcode.Yield:
@@ -575,39 +634,58 @@ namespace Iodine.Runtime
 
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		private void Push (IodineObject obj)
 		{
-			last = obj;
+			if (stackSize >= Configuration.StackLimit) {
+				RaiseException (new IodineStackOverflow ());
+				return;
+			}
+			lastObject = obj;
+			stackSize++;
 			Top.Push (obj);
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		private IodineObject Pop ()
 		{
+			stackSize--;
 			return Top.Pop ();
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		private void NewFrame (StackFrame frame)
 		{
 			frameCount++;
+			stackSize++;
 			Top = frame;
 			frames.Push (frame);
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		private void NewFrame (IodineMethod method, IodineObject self, int localCount)
 		{
 			frameCount++;
+			stackSize++;
 			Top = new StackFrame (method, Top, self, localCount);
 			frames.Push (Top);
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		public StackFrame EndFrame ()
 		{
 			frameCount--;
+			stackSize--;
 			StackFrame ret = frames.Pop ();
 			if (frames.Count != 0) {
 				Top = frames.Peek ();

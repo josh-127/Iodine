@@ -78,6 +78,15 @@ namespace Iodine.Runtime
 			
 	}
 
+	public class IodineStackOverflow : IodineException 
+	{
+		public IodineStackOverflow ()
+			: base ("StackOverflow")
+		{
+			SetAttribute ("message", new IodineString ("Stack overflow"));
+		}
+	}
+
 	public class IodineTypeException : IodineException
 	{
 		public static new readonly IodineTypeDefinition TypeDefinition = new TypeExceptionTypeDef ();
@@ -101,7 +110,7 @@ namespace Iodine.Runtime
 		public IodineTypeException (string expectedType)
 			: base (TypeDefinition, "Expected type '{0}'", expectedType)
 		{
-			this.Base = new IodineException ();
+			Base = new IodineException ();
 		}
 	}
 

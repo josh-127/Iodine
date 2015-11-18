@@ -27,71 +27,67 @@
 //   * DAMAGE.
 // /**
 using System;
-using System.Runtime.CompilerServices;
+using System.IO;
+using System.Linq;
 
 namespace Iodine.Runtime
 {
-	/// <summary>
-	/// My own stack implementation, I don't know how well this will perform however I wrote this
-	/// as I am currently convinced that System.Collections.Generic.Stack doesn't cut it for Iodine
-	/// </summary>
-	public class LinkedStack<T>
+	public sealed class IodineConfiguration
 	{
-		class StackItem<E>
-		{
-			public readonly E Item;
-			public readonly StackItem<E> Next;
+		public int StackLimit {
+			set;
+			get;
+		}
 
-			public StackItem (E item)
-			{
-				Item = item;
+		public bool RestrictExtensions {
+			set;
+			get;
+		}
+
+		public int ThreadLimit {
+			get;
+			set;
+		}
+
+		public IodineConfiguration ()
+		{
+			// Defaults
+			ThreadLimit = 1024;
+			StackLimit = 8192;
+			RestrictExtensions = false;
+		}
+
+
+		public void SetField (string name, string value)
+		{
+			switch (name) {
+			case "stacklimit":
+				StackLimit = Int32.Parse (value);
+				break;
+			case "threadlimit":
+				ThreadLimit = Int32.Parse (value);
+				break;
+			case "restrictextensions":
+				RestrictExtensions = value.ToLower () == "true";
+				break;
 			}
+		}
 
-			public StackItem (E item, StackItem<E> parent)
-			{
-				Item = item;
-				Next = parent;
+		public static IodineConfiguration Load (string path)
+		{
+			IodineConfiguration config = new IodineConfiguration ();
+
+			string[] lines = File.ReadAllLines (path);
+			var configLines = lines.Where (p => p.Trim () != "" && !p.StartsWith ("#"));
+			foreach (string configLine in configLines) {
+				string line = configLine.Trim ();
+				if (line.Contains (" ")) {
+					string key = line.Substring (0, line.IndexOf (" "));
+					string value = line.Substring (line.IndexOf (" ")).Trim ();
+					config.SetField (key, value);
+				}
 			}
-		}
-
-		private StackItem<T> top;
-
-		public int Count { private set; get; }
-
-		public LinkedStack ()
-		{
-		}
-
-		#if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
-		public void Push (T obj) 
-		{
-			if (top == null) {
-				top = new StackItem <T> (obj);
-			} else {
-				top = new StackItem<T> (obj, top);
-			}
-			Count++;
-		}
-
-		#if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
-		public T Pop ()
-		{
-			Count--;
-			T ret = top.Item;
-			top = top.Next;
-			return ret;
-		}
-
-		#if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
-		public T Peek ()
-		{
-			return top.Item;
+			return config;
 		}
 	}
 }

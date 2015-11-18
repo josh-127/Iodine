@@ -121,12 +121,12 @@ namespace Iodine.Compiler
 		public void Accept (NameExpression ident)
 		{
 			if (ident.Value == "_") {
-				methodBuilder.EmitInstruction (Opcode.LoadTrue);
+				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadTrue);
 			} else {
 				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, temporary);
 				methodBuilder.EmitInstruction (ident.Location, Opcode.StoreLocal,
 					symbolTable.GetSymbol (ident.Value).Index);
-				methodBuilder.EmitInstruction (Opcode.LoadTrue);
+				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadTrue);
 			}
 		}
 
@@ -314,11 +314,11 @@ namespace Iodine.Compiler
 				tuple.Children [i].Visit (compiler);
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.JumpIfFalse, endLabel);
 			}
-			methodBuilder.EmitInstruction (Opcode.LoadTrue);
-			methodBuilder.EmitInstruction (Opcode.Jump, startLabel);
+			methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadTrue);
+			methodBuilder.EmitInstruction (tuple.Location, Opcode.Jump, startLabel);
 
 			methodBuilder.MarkLabelPosition (endLabel);
-			methodBuilder.EmitInstruction (Opcode.LoadFalse);
+			methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadFalse);
 
 			methodBuilder.MarkLabelPosition (startLabel);
 		}

@@ -40,9 +40,9 @@ namespace Iodine
 		private IodineModule defaultModule;
 		public VirtualMachine VirtualMachine { private set; get; }
 
-		public IodineEngine ()
+		public IodineEngine (IodineConfiguration config)
 		{
-			VirtualMachine = new VirtualMachine ();
+			VirtualMachine = new VirtualMachine (config);
 			defaultModule = new IodineModule ("__main__");
 		}
 
@@ -73,17 +73,17 @@ namespace Iodine
 
 		public dynamic DoString (string source)
 		{
-			return doString (defaultModule, source);
+			return DoString (defaultModule, source);
 		}
 
 		public dynamic DoFile (string file)
 		{
 			IodineModule main = new IodineModule (Path.GetFileNameWithoutExtension (file));
-			doString (main, File.ReadAllText (file));
+			DoString (main, File.ReadAllText (file));
 			return new IodineDynamicObject (main, VirtualMachine);
 		}
 
-		private dynamic doString (IodineModule module, string source)
+		private dynamic DoString (IodineModule module, string source)
 		{
 			ErrorLog errorLog = new ErrorLog ();
 			Tokenizer lex = new Tokenizer (errorLog, source);
@@ -113,17 +113,6 @@ namespace Iodine
 				ret = IodineTypeConverter.Instance.CreateDynamicObject (this, result);
 			}
 			return ret;
-		}
-	}
-
-	public class SyntaxException : Exception
-	{
-		public ErrorLog ErrorLog { private set; get; }
-
-		public SyntaxException (ErrorLog errLog)
-			: base ("Syntax Error")
-		{
-			this.ErrorLog = errLog;
 		}
 	}
 }

@@ -44,8 +44,9 @@ namespace Iodine.Runtime
 				.Where (p => p.IsSubclassOf (typeof(IodineModule)));
 			
 			foreach (Type type in modules) {
-				IodineBuiltinModule attr = type.GetCustomAttribute <IodineBuiltinModule> ();
-				if (attr != null) {
+				if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
+					IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
+						typeof(IodineBuiltinModule), false).First ();
 					Modules.Add (attr.Name, (IodineModule)Activator.CreateInstance (type));
 				}
 			}

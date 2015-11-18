@@ -74,7 +74,7 @@ namespace Iodine.Compiler
 		public void Accept (Expression expr)
 		{
 			visitSubnodes (expr);
-			methodBuilder.EmitInstruction (Opcode.Pop);
+			methodBuilder.EmitInstruction (expr.Location, Opcode.Pop);
 		}
 
 		public void Accept (Statement stmt)
@@ -208,15 +208,15 @@ namespace Iodine.Compiler
 			for (int i = 0; i < kwargs.Keywords.Count; i++) {
 				string kw = kwargs.Keywords [i];
 				AstNode val = kwargs.Children [i];
-				methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (
+				methodBuilder.EmitInstruction (kwargs.Location, Opcode.LoadConst, methodBuilder.Module.DefineConstant (
 					new IodineString (kw)));
 				val.Visit (this);
-				methodBuilder.EmitInstruction (Opcode.BuildTuple, 2);
+				methodBuilder.EmitInstruction (kwargs.Location, Opcode.BuildTuple, 2);
 			}
-			methodBuilder.EmitInstruction (Opcode.BuildList, kwargs.Keywords.Count);
-			methodBuilder.EmitInstruction (Opcode.LoadGlobal, methodBuilder.Module.DefineConstant (
+			methodBuilder.EmitInstruction (kwargs.Location, Opcode.BuildList, kwargs.Keywords.Count);
+			methodBuilder.EmitInstruction (kwargs.Location, Opcode.LoadGlobal, methodBuilder.Module.DefineConstant (
 				new IodineName ("HashMap")));
-			methodBuilder.EmitInstruction (Opcode.Invoke, 1);
+			methodBuilder.EmitInstruction (kwargs.Location, Opcode.Invoke, 1);
 		}
 
 		public void Accept (GetExpression getAttr)
@@ -272,9 +272,9 @@ namespace Iodine.Compiler
 		{
 			symbolTable.NextScope ();
 			withStmt.Expression.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.BeginWith);
+			methodBuilder.EmitInstruction (withStmt.Location, Opcode.BeginWith);
 			withStmt.Body.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.EndWith);
+			methodBuilder.EmitInstruction (withStmt.Location, Opcode.EndWith);
 			symbolTable.LeaveScope ();
 		}
 
@@ -302,7 +302,7 @@ namespace Iodine.Compiler
 			breakLabels.Push (breakLabel);
 			continueLabels.Push (forLabel);
 			forStmt.Initializer.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.Jump, skipAfterThought);
+			methodBuilder.EmitInstruction (forStmt.Location, Opcode.Jump, skipAfterThought);
 			methodBuilder.MarkLabelPosition (forLabel);
 			forStmt.AfterThought.Visit (this);
 			methodBuilder.MarkLabelPosition (skipAfterThought);
@@ -352,9 +352,9 @@ namespace Iodine.Compiler
 				caseStmt.Body.Visit (this);
 			}
 			switchStmt.GivenValue.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.SwitchLookup, switchStmt.WhenStatements.Children.Count);
+			methodBuilder.EmitInstruction (switchStmt.Location, Opcode.SwitchLookup, switchStmt.WhenStatements.Children.Count);
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
-			methodBuilder.EmitInstruction (Opcode.JumpIfTrue, endLabel);
+			methodBuilder.EmitInstruction (switchStmt.Location, Opcode.JumpIfTrue, endLabel);
 			switchStmt.DefaultStatement.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
@@ -418,8 +418,10 @@ namespace Iodine.Compiler
 		{
 			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, methodBuilder.Module);
 			IodineClass clazz = compiler.CompileClass (classDecl);
-			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (clazz));
-			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (classDecl.Name).Index);
+			methodBuilder.EmitInstruction (classDecl.Location, Opcode.LoadConst,
+				methodBuilder.Module.DefineConstant (clazz));
+			methodBuilder.EmitInstruction (classDecl.Location, Opcode.StoreLocal,
+				symbolTable.GetSymbol (classDecl.Name).Index);
 		}
 
 		public void Accept (InterfaceDeclaration contractDecl)
@@ -430,8 +432,10 @@ namespace Iodine.Compiler
 				contract.AddMethod (new IodineMethod (methodBuilder.Module, decl.Name, decl.InstanceMethod,
 					decl.Parameters.Count, 0));
 			}
-			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (contract));
-			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (contractDecl.Name).Index);
+			methodBuilder.EmitInstruction (contractDecl.Location, Opcode.LoadConst,
+				methodBuilder.Module.DefineConstant (contract));
+			methodBuilder.EmitInstruction (contractDecl.Location, Opcode.StoreLocal,
+				symbolTable.GetSymbol (contractDecl.Name).Index);
 		}
 
 		public void Accept (EnumDeclaration enumDecl)
@@ -440,8 +444,10 @@ namespace Iodine.Compiler
 			foreach (string name in enumDecl.Items.Keys) {
 				ienum.AddItem (name, enumDecl.Items [name]);
 			}
-			methodBuilder.EmitInstruction (Opcode.LoadConst, methodBuilder.Module.DefineConstant (ienum));
-			methodBuilder.EmitInstruction (Opcode.StoreLocal, symbolTable.GetSymbol (enumDecl.Name).Index);
+			methodBuilder.EmitInstruction (enumDecl.Location, Opcode.LoadConst,
+				methodBuilder.Module.DefineConstant (ienum));
+			methodBuilder.EmitInstruction (enumDecl.Location, Opcode.StoreLocal,
+				symbolTable.GetSymbol (enumDecl.Name).Index);
 		}
 
 		public void Accept (ReturnStatement returnStmt)
@@ -547,7 +553,7 @@ namespace Iodine.Compiler
 		public void Accept (RaiseStatement raise)
 		{
 			raise.Value.Visit (this);
-			methodBuilder.EmitInstruction (Opcode.Raise);
+			methodBuilder.EmitInstruction (raise.Location, Opcode.Raise);
 		}
 
 		public void Accept (TupleExpression tuple)

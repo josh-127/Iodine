@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Iodine.Compiler.Ast;
 using Iodine.Runtime;
@@ -197,30 +198,30 @@ namespace Iodine.Compiler
 				                useStmt.Module);
 			
 			if (useStmt.Wildcard) {
-				module.Initializer.EmitInstruction (Opcode.LoadConst, module.DefineConstant (
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst, module.DefineConstant (
 					new IodineString (import)));
-				module.Initializer.EmitInstruction (Opcode.BuildTuple, 0);
-				module.Initializer.EmitInstruction (Opcode.LoadGlobal, module.DefineConstant (
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.BuildTuple, 0);
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal, module.DefineConstant (
 					new IodineName ("require")));
-				module.Initializer.EmitInstruction (Opcode.Invoke, 2);
-				module.Initializer.EmitInstruction (Opcode.Pop);
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Invoke, 2);
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Pop);
 			} else {
 				IodineObject[] items = new IodineObject [useStmt.Imports.Count];
 
-				module.Initializer.EmitInstruction (Opcode.LoadConst, module.DefineConstant (
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst, module.DefineConstant (
 					new IodineString (import)));
 				if (items.Length > 0) {
 					for (int i = 0; i < items.Length; i++) {
 						items [i] = new IodineString (useStmt.Imports [i]);
-						module.Initializer.EmitInstruction (Opcode.LoadConst, module.DefineConstant (
+						module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst, module.DefineConstant (
 							new IodineString (useStmt.Imports [i])));
 					}
-					module.Initializer.EmitInstruction (Opcode.BuildTuple, items.Length);
+					module.Initializer.EmitInstruction (useStmt.Location, Opcode.BuildTuple, items.Length);
 				}
-				module.Initializer.EmitInstruction (Opcode.LoadGlobal, module.DefineConstant (
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal, module.DefineConstant (
 					new IodineName ("require")));
-				module.Initializer.EmitInstruction (Opcode.Invoke, items.Length == 0 ? 1 : 2);
-				module.Initializer.EmitInstruction (Opcode.Pop);
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Invoke, items.Length == 0 ? 1 : 2);
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Pop);
 			}
 			
 		}
@@ -374,9 +375,11 @@ namespace Iodine.Compiler
 					BinaryExpression expr = classDecl.Children [i] as BinaryExpression;
 					NameExpression name = expr.Left as NameExpression;
 					expr.Right.Visit (compiler);
-					initializer.EmitInstruction (Opcode.LoadGlobal, module.DefineConstant (new
+					initializer.EmitInstruction (classDecl.Location, Opcode.LoadGlobal,
+						module.DefineConstant (new
 						IodineName (classDecl.Name)));
-					initializer.EmitInstruction (Opcode.StoreAttribute, module.DefineConstant (new
+					initializer.EmitInstruction (classDecl.Location, Opcode.StoreAttribute,
+						module.DefineConstant (new
 						IodineName (name.Value)));
 				} else {
 					classDecl.Children [i].Visit (compiler);
@@ -410,7 +413,12 @@ namespace Iodine.Compiler
 					(funcDecl.Parameters [i]).Index;
 			}
 			funcDecl.Children [0].Visit (compiler);
-			methodBuilder.EmitInstruction (Opcode.LoadNull);
+			AstNode lastNode = funcDecl.Children [0].LastOrDefault ();
+			if (lastNode != null) {
+				methodBuilder.EmitInstruction (lastNode.Location, Opcode.LoadNull);
+			} else {
+				methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
+			}
 			methodBuilder.FinalizeLabels ();
 			symbolTable.LeaveScope ();
 			return methodBuilder;

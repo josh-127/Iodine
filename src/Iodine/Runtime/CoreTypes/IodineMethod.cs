@@ -123,22 +123,6 @@ namespace Iodine.Runtime
 			this.parent = parent;
 		}
 
-		public void EmitInstruction (Opcode opcode)
-		{
-			instructions.Add (new Instruction (new Location (0, 0, ""), opcode));
-		}
-
-		public void EmitInstruction (Opcode opcode, int arg)
-		{
-			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, arg));
-		}
-
-		public void EmitInstruction (Opcode opcode, IodineLabel label)
-		{
-			labelReferences [instructions.Count] = label;
-			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, 0));
-		}
-
 		public void EmitInstruction (Location loc, Opcode opcode)
 		{
 			instructions.Add (new Instruction (loc, opcode));

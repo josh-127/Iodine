@@ -82,7 +82,9 @@ namespace Iodine.Runtime
 			}
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		internal void StoreLocal (int index, IodineObject obj)
 		{
 			if (parentLocals [index] != null) {
@@ -91,25 +93,33 @@ namespace Iodine.Runtime
 			locals [index] = obj;
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		internal IodineObject LoadLocal (int index)
 		{
 			return locals [index];
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		internal void Push (IodineObject obj)
 		{
 			stack.Push (obj ?? IodineNull.Instance);
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		internal IodineObject Pop ()
 		{
 			return stack.Pop ();
 		}
 
+		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
+		#endif
 		internal StackFrame Duplicate (StackFrame top, int localCount)
 		{
 			if (localCount > LocalCount) {
