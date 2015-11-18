@@ -18,6 +18,8 @@ bld/
 *.usertasks
 *.mdb
 
+# Allow the Debug source directory
+!src/Iodine/Runtime/Debug
 # @SplittyDev's personal files
 bin/splitty/
 
