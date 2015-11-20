@@ -35,10 +35,10 @@ using Iodine.Runtime;
 
 namespace Iodine
 {
-	public class IodineEngine
+	public sealed class IodineEngine
 	{
 		private IodineModule defaultModule;
-		public VirtualMachine VirtualMachine { private set; get; }
+		public readonly VirtualMachine VirtualMachine;
 
 		public IodineEngine (IodineConfiguration config)
 		{
@@ -48,26 +48,10 @@ namespace Iodine
 
 		public dynamic this [string name] {
 			get {
-				IodineObject obj = null;
-				if (this.VirtualMachine.Globals.ContainsKey (name)) {
-					obj = this.VirtualMachine.Globals [name];
-				} else if (this.defaultModule.HasAttribute (name)) {
-					obj = this.defaultModule.GetAttribute (name);
-				}
-				Object ret = null;
-				if (!IodineTypeConverter.Instance.ConvertToPrimative (obj, out ret)) {
-					ret = IodineTypeConverter.Instance.CreateDynamicObject (this, obj);
-				}
-				return ret;
+				return GetMember (name);
 			}
 			set {
-				IodineObject obj;
-				IodineTypeConverter.Instance.ConvertFromPrimative (value, out obj);
-				if (defaultModule.HasAttribute (name)) {
-					defaultModule.SetAttribute (name, obj);
-				} else {
-					VirtualMachine.Globals [name] = obj;
-				}
+				SetMember (name, value);
 			}
 		}
 
@@ -87,21 +71,30 @@ namespace Iodine
 		{
 			ErrorLog errorLog = new ErrorLog ();
 			Tokenizer lex = new Tokenizer (errorLog, source);
+
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
+			
 			Parser parser = new Parser (lex.Scan ());
+
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
+			
 			AstRoot root = parser.Parse ();
+
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
+			
 			SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
 			SymbolTable symTab = analyser.Analyse (root);
+
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
+			
 			IodineCompiler compiler = new IodineCompiler (errorLog, symTab, "");
 			module.Initializer = new IodineMethod (module, "__init__", false, 0, 9999);
 			compiler.CompileAst (module, root);
+
 			if (errorLog.ErrorCount > 0)
 				throw new SyntaxException (errorLog);
 
@@ -113,6 +106,32 @@ namespace Iodine
 				ret = IodineTypeConverter.Instance.CreateDynamicObject (this, result);
 			}
 			return ret;
+		}
+
+		private dynamic GetMember (string name)
+		{
+			IodineObject obj = null;
+			if (this.VirtualMachine.Globals.ContainsKey (name)) {
+				obj = VirtualMachine.Globals [name];
+			} else if (this.defaultModule.HasAttribute (name)) {
+				obj = defaultModule.GetAttribute (name);
+			}
+			Object ret = null;
+			if (!IodineTypeConverter.Instance.ConvertToPrimative (obj, out ret)) {
+				ret = IodineTypeConverter.Instance.CreateDynamicObject (this, obj);
+			}
+			return ret;
+		}
+
+		private void SetMember (string name, dynamic value)
+		{
+			IodineObject obj;
+			IodineTypeConverter.Instance.ConvertFromPrimative (value, out obj);
+			if (defaultModule.HasAttribute (name)) {
+				defaultModule.SetAttribute (name, obj);
+			} else {
+				VirtualMachine.Globals [name] = obj;
+			}
 		}
 	}
 }

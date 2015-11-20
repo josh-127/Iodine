@@ -50,21 +50,21 @@ namespace Iodine
 
 		public IodineTypeConverter ()
 		{
-			RegisterTypeConveter (typeof(Byte), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(Int16), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(UInt16), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(Int32), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(UInt32), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(Int64), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(UInt64), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(Boolean), new BoolTypeConverter ());
-			RegisterTypeConveter (typeof(String), new StringTypeConverter ());
-			RegisterTypeConveter (typeof(IodineString), new StringTypeConverter ());
-			RegisterTypeConveter (typeof(IodineInteger), new IntegerTypeConverter ());
-			RegisterTypeConveter (typeof(IodineBool), new BoolTypeConverter ());
+			RegisterTypeConverter (typeof(Byte), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(Int16), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(UInt16), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(Int32), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(UInt32), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(Int64), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(UInt64), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(Boolean), new BoolTypeConverter ());
+			RegisterTypeConverter (typeof(String), new StringTypeConverter ());
+			RegisterTypeConverter (typeof(IodineString), new StringTypeConverter ());
+			RegisterTypeConverter (typeof(IodineInteger), new IntegerTypeConverter ());
+			RegisterTypeConverter (typeof(IodineBool), new BoolTypeConverter ());
 		}
 
-		public void RegisterTypeConveter (Type fromType, ITypeConverter converter)
+		public void RegisterTypeConverter (Type fromType, ITypeConverter converter)
 		{
 			conveters [fromType] = converter;
 		}

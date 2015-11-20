@@ -38,9 +38,9 @@ namespace Iodine.Runtime
 	{
 		class IodineProc : IodineObject
 		{
-			public static readonly IodineTypeDefinition ProcTypeDef = new IodineTypeDefinition ("Proc");
+			public static readonly IodineTypeDefinition ProcTypeDef = new IodineTypeDefinition ("Process");
 
-			public Process Value { private set; get; }
+			public readonly Process Value;
 
 			public IodineProc (Process proc)
 				: base (ProcTypeDef)
@@ -49,6 +49,9 @@ namespace Iodine.Runtime
 				SetAttribute ("id", new IodineInteger (proc.Id));
 				SetAttribute ("name", new IodineString (proc.ProcessName));
 				SetAttribute ("kill", new InternalMethodCallback (kill, this));
+				SetAttribute ("stdout", new IodineStream (Value.StandardOutput.BaseStream, false, true));
+				SetAttribute ("stderr", new IodineStream (Value.StandardError.BaseStream, false, true));
+				SetAttribute ("stdin", new IodineStream (Value.StandardInput.BaseStream, true, false));
 			}
 
 			private IodineObject kill (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -61,13 +64,16 @@ namespace Iodine.Runtime
 		public OSModule ()
 			: base ("os")
 		{
-			SetAttribute ("userDir", new IodineString (Environment.GetFolderPath (
+			SetAttribute ("USER_DIR", new IodineString (Environment.GetFolderPath (
 				Environment.SpecialFolder.UserProfile)));
-			SetAttribute ("envSep", new IodineString (Path.PathSeparator.ToString ()));
-			SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
+			SetAttribute ("ENV_SEP", new IodineString (Path.PathSeparator.ToString ()));
 			SetAttribute ("getEnv", new InternalMethodCallback (getEnv, this));
 			SetAttribute ("setEnv", new InternalMethodCallback (setEnv, this));
+			SetAttribute ("getCwd", new InternalMethodCallback (getCwd, this));
+			SetAttribute ("setCwd", new InternalMethodCallback (setCwd, this));
+			SetAttribute ("getUsername", new InternalMethodCallback (getUsername, this));
 			SetAttribute ("spawn", new InternalMethodCallback (spawn, this));
+			SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
 		}
 
 		private IodineObject getProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -77,6 +83,34 @@ namespace Iodine.Runtime
 				list.Add (new IodineProc (proc));
 			}
 			return list;
+		}
+
+		private IodineObject getUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineString (Environment.UserName);
+		}
+
+		private IodineObject getCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineString (Environment.CurrentDirectory);
+		}
+
+		private IodineObject setCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineString cwd = args [0] as IodineString;
+
+			if (cwd == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			Environment.CurrentDirectory = args [0].ToString ();
+			return null;
 		}
 
 		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -92,8 +126,7 @@ namespace Iodine.Runtime
 			}
 			if (Environment.GetEnvironmentVariable (str.Value) != null)
 				return new IodineString (Environment.GetEnvironmentVariable (str.Value));
-			else
-				return null;
+			return null;
 		}
 
 		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -146,6 +179,32 @@ namespace Iodine.Runtime
 				proc.WaitForExit ();
 			}
 			return new IodineInteger (proc.ExitCode);
+		}
+
+		private IodineObject popen (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+			}
+
+			IodineString str = args [0] as IodineString;
+			string cmdArgs = "";
+
+			if (str == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			if (args.Length >= 2) {
+				IodineString cmdArgsObj = args [1] as IodineString;
+				if (cmdArgsObj == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+				cmdArgs = cmdArgsObj.Value;
+			}
+
+
 		}
 	}
 }
