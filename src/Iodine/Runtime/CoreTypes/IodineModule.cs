@@ -37,6 +37,11 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Runtime
 {
+	/*
+	 * This also needs to be rethought out.
+	 * TODO: Redesign this...
+	 */
+
 	public class IodineModule : IodineObject
 	{
 		public static readonly List<IodineObject> SearchPaths = new List<IodineObject> ();
@@ -105,59 +110,7 @@ namespace Iodine.Runtime
 			return string.Format ("<Module {0}>", Name);
 		}
 
-		public static IodineModule CompileModule (ErrorLog errorLog, string file)
-		{
-
-			if (FindModule (file) != null) {
-				Tokenizer lexer = new Tokenizer (errorLog, File.ReadAllText (FindModule (file)), file);
-				TokenStream tokenStream = lexer.Scan ();
-				if (errorLog.ErrorCount > 0)
-					return null;
-				Parser parser = new Parser (tokenStream);
-				AstRoot root = parser.Parse ();
-				if (errorLog.ErrorCount > 0)
-					return null;
-				SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
-				SymbolTable symbolTable = analyser.Analyse (root);
-				if (errorLog.ErrorCount > 0)
-					return null;
-				IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable, Path.GetFullPath (file));
-				IodineModule module = new IodineModule (Path.GetFileNameWithoutExtension (file));
-				compiler.CompileAst (module, root);
-				if (errorLog.ErrorCount > 0)
-					return null;
-				return module;
-			} else {
-				errorLog.AddError (ErrorType.ParserError, new Location (0, 0, file), 
-					"Could not find module {0}", file);
-				return null;
-			}
-		}
-
-		public static IodineModule CompileModuleFromSource (ErrorLog errorLog, string source)
-		{
-			Tokenizer lexer = new Tokenizer (errorLog, source);
-			TokenStream tokenStream = lexer.Scan ();
-			if (errorLog.ErrorCount > 0)
-				return null;
-			Parser parser = new Parser (tokenStream);
-			AstRoot root = parser.Parse ();
-			if (errorLog.ErrorCount > 0)
-				return null;
-			SemanticAnalyser analyser = new SemanticAnalyser (errorLog);
-			SymbolTable symbolTable = analyser.Analyse (root);
-			if (errorLog.ErrorCount > 0)
-				return null;
-			IodineCompiler compiler = new IodineCompiler (errorLog, symbolTable, "");
-			IodineModule module = new IodineModule ("");
-
-			compiler.CompileAst (module, root);
-			if (errorLog.ErrorCount > 0)
-				return null;
-			return module;
-		}
-
-		public static IodineModule LoadModule (ErrorLog errLog, string path)
+		public static IodineModule LoadModule (string path)
 		{
 			if (FindExtension (path) != null) {
 				return LoadExtensionModule (Path.GetFileNameWithoutExtension (path), 
@@ -165,18 +118,34 @@ namespace Iodine.Runtime
 			} else if (FindModule (path) != null) {
 				string fullPath = FindModule (path);
 				string dir = Path.GetDirectoryName (fullPath);
-				if (!ContainsPath (dir)) {
+				if (!ContainsSearchPath (dir)) {
 					SearchPaths.Add (new IodineString (dir));
 					string depPath = Path.Combine (dir, ".deps");
-					if (!ContainsPath (depPath)) {
+					if (!ContainsSearchPath (depPath)) {
 						SearchPaths.Add (new IodineString (depPath));
 					}
 				}
-				return CompileModule (errLog, FindModule (path));
+				SourceUnit source = SourceUnit.CreateFromFile (FindModule (path));
+				return source.Compile (IodineContext.Create ());
 			} else if (BuiltInModules.Modules.ContainsKey (path)) {
 				return BuiltInModules.Modules [path];
 			}
 			return null;
+		}
+
+		public static bool ContainsSearchPath (string path)
+		{
+			foreach (IodineObject obj in SearchPaths) {
+				if (obj.ToString () == path) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public static void AddSearchPath (string path)
+		{
+			SearchPaths.Add (new IodineString (path));
 		}
 
 		private static IodineModule LoadExtensionModule (string module, string dll)

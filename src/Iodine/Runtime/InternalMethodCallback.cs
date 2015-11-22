@@ -29,12 +29,16 @@
 
 using System;
 using System.Threading;
+using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
 	public delegate IodineObject IodineMethodCallback (VirtualMachine vm, IodineObject self,
 		IodineObject[] arguments);
 
+	/// <summary>
+	/// Represents a C# method that can be called in Iodine
+	/// </summary>
 	public class InternalMethodCallback : IodineObject
 	{
 		private static readonly IodineTypeDefinition InternalMethodTypeDef = new
@@ -66,6 +70,8 @@ namespace Iodine.Runtime
 				IodineObject obj = Callback.Invoke (vm, self, arguments);
 				//vm.Stack.EndFrame ();
 				return obj;
+			} catch (SyntaxException ex) {
+				throw ex;
 			} catch (UnhandledIodineExceptionException e) {
 				throw e;
 			} catch (ThreadAbortException) {

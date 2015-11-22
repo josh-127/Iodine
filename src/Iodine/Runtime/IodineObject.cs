@@ -33,6 +33,10 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+	/// <summary>
+	/// Base class for all Iodine objects. Everything in Iodine extends this, as
+	/// everything in Iodine is an object
+	/// </summary>
 	public class IodineObject
 	{
 		public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");

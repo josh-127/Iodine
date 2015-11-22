@@ -38,23 +38,20 @@ namespace Iodine.Compiler
 {
 	public class FunctionCompiler : IAstVisitor
 	{
-		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
 		private IodineMethod methodBuilder;
 		private Stack<IodineLabel> breakLabels = new Stack<IodineLabel> ();
 		private Stack<IodineLabel> continueLabels = new Stack<IodineLabel> ();
 
-		public FunctionCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineMethod methodBuilder)
+		public FunctionCompiler (SymbolTable symbolTable, IodineMethod methodBuilder)
 		{
-			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.methodBuilder = methodBuilder;
 		}
 
-		public FunctionCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineMethod methodBuilder,
+		public FunctionCompiler (SymbolTable symbolTable, IodineMethod methodBuilder,
 		                         Stack<IodineLabel> breakLabels, Stack<IodineLabel> continueLabels)
 		{
-			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.methodBuilder = methodBuilder;
 			this.breakLabels = breakLabels;
@@ -368,7 +365,7 @@ namespace Iodine.Compiler
 			symbolTable.NextScope ();
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, funcDecl.InstanceMethod, 
 				                          funcDecl.Parameters.Count, methodBuilder.LocalCount);
-			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
+			FunctionCompiler compiler = new FunctionCompiler (symbolTable, anonMethod);
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
 				anonMethod.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
 					(funcDecl.Parameters [i]).Index;
@@ -389,7 +386,7 @@ namespace Iodine.Compiler
 		{
 			symbolTable.NextScope ();
 
-			FunctionCompiler scopeCompiler = new FunctionCompiler (errorLog, symbolTable, methodBuilder,
+			FunctionCompiler scopeCompiler = new FunctionCompiler (symbolTable, methodBuilder,
 				                                 breakLabels, continueLabels);
 			foreach (AstNode node in scope) {
 				node.Visit (scopeCompiler);
@@ -416,7 +413,7 @@ namespace Iodine.Compiler
 
 		public void Accept (ClassDeclaration classDecl)
 		{
-			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, methodBuilder.Module);
+			ModuleCompiler compiler = new ModuleCompiler (symbolTable, methodBuilder.Module);
 			IodineClass clazz = compiler.CompileClass (classDecl);
 			methodBuilder.EmitInstruction (classDecl.Location, Opcode.LoadConst,
 				methodBuilder.Module.DefineConstant (clazz));
@@ -509,7 +506,7 @@ namespace Iodine.Compiler
 			int locals = methodBuilder.LocalCount > 0 ? methodBuilder.LocalCount : symbolTable.CurrentScope.SymbolCount;
 			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, lambda.InstanceMethod, 
 				                          lambda.Parameters.Count, locals);
-			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, anonMethod);
+			FunctionCompiler compiler = new FunctionCompiler (symbolTable, anonMethod);
 			for (int i = 0; i < lambda.Parameters.Count; i++) {
 				anonMethod.Parameters [lambda.Parameters [i]] = symbolTable.GetSymbol
 					(lambda.Parameters [i]).Index;
@@ -602,7 +599,7 @@ namespace Iodine.Compiler
 			value.Visit (this);
 			int temporary = methodBuilder.CreateTemporary ();
 			methodBuilder.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
-			PatternCompiler compiler = new PatternCompiler (errorLog, symbolTable, methodBuilder,
+			PatternCompiler compiler = new PatternCompiler (symbolTable, methodBuilder,
 				temporary,
 				this);
 			IodineLabel nextLabel = methodBuilder.CreateLabel ();

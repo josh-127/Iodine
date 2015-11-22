@@ -32,6 +32,10 @@ using System.IO;
 
 namespace Iodine.Runtime
 {
+	/*
+	 * Should I move all these classes into seperate files? Make a subdirectory for them?
+	 * TODO: Decide
+	 */
 	public class IodineException : IodineObject
 	{
 		public static readonly IodineTypeDefinition TypeDefinition = new ExceptionTypeDef ();
@@ -53,7 +57,7 @@ namespace Iodine.Runtime
 
 		}
 
-		public string Message { private set; get; }
+		public readonly string Message;
 
 		public Location Location { set; get; }
 

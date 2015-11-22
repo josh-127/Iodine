@@ -34,8 +34,6 @@ namespace Iodine.Runtime
 {
 	public class IodineInterface : IodineTypeDefinition
 	{
-		public IodineMethod Constructor { private set; get; }
-
 		public IList<IodineMethod> RequiredMethods { private set; get; }
 
 		public IodineInterface (string name)

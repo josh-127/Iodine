@@ -38,17 +38,15 @@ namespace Iodine.Compiler
 {
 	public class ModuleCompiler : IAstVisitor
 	{
-		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
 		private IodineModule module;
 		private FunctionCompiler functionCompiler;
 
-		public ModuleCompiler (ErrorLog errorLog, SymbolTable symbolTable, IodineModule module)
+		public ModuleCompiler (SymbolTable symbolTable, IodineModule module)
 		{
-			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
 			this.module = module;
-			functionCompiler = new FunctionCompiler (errorLog, symbolTable, module.Initializer);
+			functionCompiler = new FunctionCompiler (symbolTable, module.Initializer);
 		}
 
 		public void Accept (AstNode ast)
@@ -191,8 +189,6 @@ namespace Iodine.Compiler
 
 		public void Accept (UseStatement useStmt)
 		{
-			module.Imports.Add (useStmt.Module);
-
 			string import = !useStmt.Relative ? useStmt.Module : Path.Combine (
 				                Path.GetDirectoryName (useStmt.Location.File),
 				                useStmt.Module);
@@ -354,7 +350,7 @@ namespace Iodine.Compiler
 			}
 			IodineMethod initializer = new IodineMethod (module, "__init__", false, 0, 0);
 			IodineClass clazz = new IodineClass (classDecl.Name, initializer, constructor);
-			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable,
+			FunctionCompiler compiler = new FunctionCompiler (symbolTable,
 				clazz.Initializer);
 			
 			for (int i = 1; i < classDecl.Children.Count; i++) {
@@ -404,7 +400,7 @@ namespace Iodine.Compiler
 			IodineMethod methodBuilder = new IodineMethod (module, funcDecl.Name, funcDecl.InstanceMethod,
 				                             funcDecl.Parameters.Count,
 				                             symbolTable.CurrentScope.SymbolCount);
-			FunctionCompiler compiler = new FunctionCompiler (errorLog, symbolTable, 
+			FunctionCompiler compiler = new FunctionCompiler (symbolTable, 
 				                            methodBuilder);
 			methodBuilder.Variadic = funcDecl.Variadic;
 			methodBuilder.AcceptsKeywordArgs = funcDecl.AcceptsKeywordArgs;

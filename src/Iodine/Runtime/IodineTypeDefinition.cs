@@ -32,14 +32,18 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+	/// <summary>
+	/// Base class for all custom Iodine types, the equivalent of C#'s Type class or
+	/// Java's Class class. 
+	/// </summary>
 	public class IodineTypeDefinition : IodineObject
 	{
-		private static IodineTypeDefinition TypeDefTypeDef = new IodineTypeDefinition ("TypeDef");
+		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("TypeDef");
 
 		public readonly string Name;
 
 		public IodineTypeDefinition (string name)
-			: base (TypeDefTypeDef)
+			: base (TypeDefinition)
 		{
 			Name = name;
 			Attributes ["__name__"] = new IodineString (name);

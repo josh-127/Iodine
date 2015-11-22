@@ -34,14 +34,14 @@ namespace Iodine.Runtime
 {
 	public class IodineRange : IodineObject
 	{
-		private static IodineTypeDefinition RangeIteratorTypeDef = new IodineTypeDefinition ("RangeIterator");
+		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
 		private long iterIndex = 0;
 		private long min;
 		private long end;
 		private long step;
 
 		public IodineRange (long min, long max, long step)
-			: base (RangeIteratorTypeDef)
+			: base (TypeDefinition)
 		{
 			this.end = max;
 			this.step = step;

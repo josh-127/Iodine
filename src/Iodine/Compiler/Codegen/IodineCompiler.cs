@@ -47,19 +47,31 @@ namespace Iodine.Compiler
 
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
+		private AstRoot root;
 
-		public IodineCompiler (ErrorLog errorLog, SymbolTable symbolTable, string file)
+		public IodineCompiler (ErrorLog errorLog, SymbolTable symbolTable, AstRoot root)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
+			this.root = root;
 		}
 
-		public IodineModule CompileAst (IodineModule module, AstRoot ast)
+		public static IodineCompiler CreateCompiler (IodineContext context, AstRoot root)
 		{
-			ModuleCompiler compiler = new ModuleCompiler (errorLog, symbolTable, module);
-			ast.Visit (compiler);
+			SemanticAnalyser analyser = new SemanticAnalyser (context.ErrorLog);
+			SymbolTable table = analyser.Analyse (root);
+			return new IodineCompiler (context.ErrorLog, table, root);
+		}
+
+		public IodineModule Compile (string moduleName)
+		{
+			IodineModule module = new IodineModule (moduleName);
+
+			ModuleCompiler compiler = new ModuleCompiler (symbolTable, module);
+			root.Visit (compiler);
 			module.Initializer.FinalizeLabels ();
 			OptimizeObject (module);	
+
 			return module;
 		}
 

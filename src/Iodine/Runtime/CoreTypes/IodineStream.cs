@@ -36,7 +36,7 @@ namespace Iodine.Runtime
 {
 	public class IodineStream : IodineObject
 	{
-		private static readonly IodineTypeDefinition FileTypeDef = new IodineTypeDefinition ("File");
+		private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("File");
 
 		public bool Closed { set; get; }
 
@@ -47,7 +47,7 @@ namespace Iodine.Runtime
 		public bool CanWrite { private set; get; }
 
 		public IodineStream (Stream file, bool canWrite, bool canRead)
-			: base (FileTypeDef)
+			: base (TypeDefinition)
 		{
 			File = file;
 			CanRead = canRead;

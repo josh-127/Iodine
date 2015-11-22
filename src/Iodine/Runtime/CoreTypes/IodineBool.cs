@@ -39,7 +39,6 @@ namespace Iodine.Runtime
 		public static readonly IodineBool True = new IodineBool (true);
 		public static readonly IodineBool False = new IodineBool (false);
 
-
 		class BoolTypeDef : IodineTypeDefinition
 		{
 			public BoolTypeDef ()

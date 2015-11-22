@@ -49,6 +49,11 @@ namespace Iodine
 
 			public IodineList IodineArguments { private set; get; }
 
+
+			private IodineOptions ()
+			{
+			}
+
 			public static IodineOptions Parse (string[] args)
 			{
 				IodineOptions ret = new IodineOptions ();
@@ -74,58 +79,54 @@ namespace Iodine
 			}
 		}
 
-		private static VirtualMachine virtualMachine;
+		private static IodineContext context;
 
 		public static void Main (string[] args)
 		{
-			IodineConfiguration config = new IodineConfiguration ();
+			context = IodineContext.Create ();
 
 			if (args.Length == 0) {
-				ReplShell shell = new ReplShell (config);
-				shell.Run ();
+				//ReplShell shell = new ReplShell (config);
+				//shell.Run ();
+				DisplayUsage ();
 				Environment.Exit (0);
 			}
-			virtualMachine = new VirtualMachine (config);
 
 			IodineOptions options = IodineOptions.Parse (args);
-			options.Options.ForEach (p => ParseOption (p));
+			options.Options.ForEach (p => ParseOption (context, p));
 
-			ErrorLog errorLog = new ErrorLog ();
-			IodineModule module = IodineModule.LoadModule (errorLog, options.FileName);
-
-			if (module == null) {
-				DisplayErrors (errorLog);
-				Panic ("Compilation failed with {0} errors!", errorLog.ErrorCount);
-			} else {
-				try {
-					module.Invoke (virtualMachine, new IodineObject[] { });
-					if (module.HasAttribute ("main")) {
-						module.GetAttribute ("main").Invoke (virtualMachine, new IodineObject[] {
-							options.IodineArguments });
-					}
-				} catch (UnhandledIodineExceptionException ex) {
-					Console.Error.WriteLine ("An unhandled {0} has occured!",
-						ex.OriginalException.TypeDef.Name);
-					Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.GetAttribute (
-						"message").ToString ());
-					Console.WriteLine ();
-					ex.PrintStack ();
-					Console.Error.WriteLine ();
-					Panic ("Program terminated.");
-				} catch (SyntaxException ex) {
-					DisplayErrors (ex.ErrorLog);
-					Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
-				} catch (Exception e) {
-					Console.Error.WriteLine ("Fatal exception has occured!");
-					Console.Error.WriteLine (e.Message);
-					Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
-					Console.Error.WriteLine ("\nIodine stack trace \n{0}", virtualMachine.GetStackTrace ());
-					Panic ("Program terminated.");
+			SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
+			IodineModule module = code.Compile (context);
+			try {
+				context.Invoke (module, new IodineObject[] { });
+				if (module.HasAttribute ("main")) {
+					context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
+						options.IodineArguments });
 				}
+			} catch (UnhandledIodineExceptionException ex) {
+				Console.Error.WriteLine ("An unhandled {0} has occured!",
+					ex.OriginalException.TypeDef.Name);
+				Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.GetAttribute (
+					"message").ToString ());
+				Console.WriteLine ();
+				ex.PrintStack ();
+				Console.Error.WriteLine ();
+				Panic ("Program terminated.");
+			} catch (SyntaxException ex) {
+				DisplayErrors (ex.ErrorLog);
+				Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
+			} catch (Exception e) {
+				Console.Error.WriteLine ("Fatal exception has occured!");
+				Console.Error.WriteLine (e.Message);
+				Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
+				Console.Error.WriteLine ("\nIodine stack trace \n{0}",
+					context.VirtualMachine.GetStackTrace ());
+				Panic ("Program terminated.");
 			}
+
 		}
 
-		private static void ParseOption (string option)
+		private static void ParseOption (IodineContext context, string option)
 		{
 			switch (option) {
 			case "version":
@@ -142,10 +143,10 @@ namespace Iodine
 				break;
 			}
 		}
-			
+
 		private static void RunDebugServer ()
 		{
-			DebugServer server = new DebugServer (virtualMachine);
+			DebugServer server = new DebugServer (context.VirtualMachine);
 			Thread debugThread = new Thread (() => {
 				server.Start (new IPEndPoint (IPAddress.Loopback, 6569));
 			});

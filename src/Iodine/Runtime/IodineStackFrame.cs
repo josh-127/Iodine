@@ -31,9 +31,13 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+	/// <summary>
+	/// Represents a single frame (Activation record) for an Iodine method
+	/// </summary>
 	public class StackFrame
 	{
 		public readonly int LocalCount;
@@ -53,9 +57,7 @@ namespace Iodine.Runtime
 		public StackFrame Parent { private set; get; }
 
 		public IodineModule Module {
-			get {
-				return Method.Module;
-			}
+			get { return Method.Module; }
 		}
 
 		private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();

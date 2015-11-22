@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Iodine.Runtime;
-using Iodine;
+using Iodine.Compiler;
 
 namespace ModuleReflection
 {
@@ -18,7 +18,6 @@ namespace ModuleReflection
 			SetAttribute ("getInterfaces", new InternalMethodCallback (getInterfaces, this));
 			SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
 			SetAttribute ("compileModule", new InternalMethodCallback (compileModule, this));
-			SetAttribute ("MethodBuilder", new InternalMethodCallback (loadModule, this));
 			SetAttribute ("Opcode", IodineOpcode.OpcodeTypeDef);
 		}
 
@@ -81,20 +80,20 @@ namespace ModuleReflection
 		private IodineObject loadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineString pathStr = args [0] as IodineString;
-			IodineModule module = IodineModule.LoadModule (new ErrorLog (), pathStr.Value);
+			IodineModule module = IodineModule.LoadModule (pathStr.Value);
 			module.Initializer.Invoke (vm, new IodineObject[] { });
 			return module;
 		}
 
 		private IodineObject compileModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			IodineString pathStr = args [0] as IodineString;
-			return IodineModule.CompileModuleFromSource (new ErrorLog (), pathStr.Value);
+			IodineString source = args [0] as IodineString;
+			SourceUnit unit = SourceUnit.CreateFromSource (source);
+			return unit.Compile (new IodineContext ());
 		}
 
 		private IodineObject getBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			
 			IodineMethod method = args [0] as IodineMethod;
 
 			if (method == null && args [0] is IodineClosure) {
@@ -106,13 +105,7 @@ namespace ModuleReflection
 			foreach (Instruction ins in method.Body) {
 				ret.Add (new IodineInstruction (method, ins));
 			}
-
 			return ret;
-		}
-
-		private IodineObject methodBuilder (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			return null;
 		}
 	}
 }

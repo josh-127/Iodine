@@ -44,6 +44,12 @@ namespace Iodine.Compiler
 			this.tokenStream = tokenStream;
 		}
 
+		public static Parser CreateParser (IodineContext context, SourceUnit source)
+		{
+			Tokenizer tokenizer = new Tokenizer (context.ErrorLog, source.Text, source.Path ?? "");
+			return new Parser (tokenizer.Scan ());
+		}
+
 		public AstRoot Parse ()
 		{
 			try {
@@ -53,8 +59,11 @@ namespace Iodine.Compiler
 				}
 				return root;
 			} catch (Exception) {
-				//this.tokenStream.ErrorLog.AddError (ErrorType.ParserError, "");
 				return new AstRoot (tokenStream.Location);
+			} finally {
+				if (tokenStream.ErrorLog.ErrorCount > 0) {
+					throw new SyntaxException (tokenStream.ErrorLog);
+				}
 			}
 		}
 

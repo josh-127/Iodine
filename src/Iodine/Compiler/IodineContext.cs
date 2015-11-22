@@ -27,70 +27,36 @@
 //   * DAMAGE.
 // /**
 using System;
-using System.IO;
-using System.Linq;
+using Iodine.Runtime;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler
 {
-	/// <summary>
-	/// Contains settings that restrict what the virtual machine is capable of doing
-	/// </summary>
-	public sealed class IodineConfiguration
+	public class IodineContext
 	{
-		public int StackLimit {
-			set;
-			get;
-		}
+		public readonly ErrorLog ErrorLog;
+		public readonly VirtualMachine VirtualMachine;
+		public readonly IodineConfiguration Configuration; // Virtual machine configuration 
 
-		public bool RestrictExtensions {
-			set;
-			get;
-		}
-
-		public int ThreadLimit {
-			get;
-			set;
-		}
-
-		public IodineConfiguration ()
+		public IodineContext ()
+			: this (new IodineConfiguration ())
 		{
-			// Defaults
-			ThreadLimit = 1024;
-			StackLimit = 8192;
-			RestrictExtensions = false;
 		}
 
-
-		public void SetField (string name, string value)
+		public IodineContext (IodineConfiguration config)
 		{
-			switch (name) {
-			case "stacklimit":
-				StackLimit = Int32.Parse (value);
-				break;
-			case "threadlimit":
-				ThreadLimit = Int32.Parse (value);
-				break;
-			case "restrictextensions":
-				RestrictExtensions = value.ToLower () == "true";
-				break;
-			}
+			Configuration = config;
+			ErrorLog = new ErrorLog ();
+			VirtualMachine = new VirtualMachine (Configuration);
 		}
 
-		public static IodineConfiguration Load (string path)
+		public IodineObject Invoke (IodineObject obj, IodineObject[] args)
 		{
-			IodineConfiguration config = new IodineConfiguration ();
+			return obj.Invoke (VirtualMachine, args);
+		}
 
-			string[] lines = File.ReadAllLines (path);
-			var configLines = lines.Where (p => p.Trim () != "" && !p.StartsWith ("#"));
-			foreach (string configLine in configLines) {
-				string line = configLine.Trim ();
-				if (line.Contains (" ")) {
-					string key = line.Substring (0, line.IndexOf (" "));
-					string value = line.Substring (line.IndexOf (" ")).Trim ();
-					config.SetField (key, value);
-				}
-			}
-			return config;
+		public static IodineContext Create ()
+		{
+			return new IodineContext ();
 		}
 	}
 }

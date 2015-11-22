@@ -33,7 +33,7 @@ namespace Iodine.Runtime
 {
 	public class IodineGenerator : IodineObject
 	{
-		private static new readonly IodineTypeDefinition TypeDef = new IodineTypeDefinition ("Generator");
+		private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Generator");
 
 		private IodineMethod baseMethod;
 		private IodineObject self;
@@ -42,7 +42,7 @@ namespace Iodine.Runtime
 		private StackFrame stackFrame;
 
 		public IodineGenerator (StackFrame parentFrame, IodineMethod baseMethod, IodineObject[] args)
-			: base (TypeDef)
+			: base (TypeDefinition)
 		{
 			arguments = args;
 			this.baseMethod = baseMethod;
@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 
 		public IodineGenerator (StackFrame parentFrame, IodineInstanceMethodWrapper baseMethod,
 			IodineObject[] args)
-			: base (TypeDef)
+			: base (TypeDefinition)
 		{
 			arguments = args;
 			self = baseMethod.Self;

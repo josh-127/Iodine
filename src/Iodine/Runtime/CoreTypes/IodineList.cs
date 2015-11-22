@@ -66,7 +66,6 @@ namespace Iodine.Runtime
 
 		public List<IodineObject> Objects { private set; get; }
 
-
 		public IodineList (List<IodineObject> list)
 			: base (TypeDefinition)
 		{

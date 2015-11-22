@@ -33,13 +33,13 @@ namespace Iodine.Runtime
 {
 	public class IodineClosure : IodineObject
 	{
-		public IodineMethod Target { private set; get; }
+		public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Closure");
 
-		private static readonly IodineTypeDefinition ClosureTypeDef = new IodineTypeDefinition ("Closure");
+		public readonly IodineMethod Target;
 		private StackFrame frame;
 
 		public IodineClosure (StackFrame frame, IodineMethod target)
-			: base (ClosureTypeDef)
+			: base (TypeDefinition)
 		{
 			this.frame = frame;
 			Target = target;

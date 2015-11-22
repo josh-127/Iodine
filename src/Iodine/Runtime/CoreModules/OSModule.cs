@@ -204,7 +204,7 @@ namespace Iodine.Runtime
 				cmdArgs = cmdArgsObj.Value;
 			}
 
-
+			return null;
 		}
 	}
 }

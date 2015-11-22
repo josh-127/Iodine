@@ -65,6 +65,11 @@ namespace Iodine.Compiler
 					retStream.AddToken (nextToken);
 				EatWhiteSpaces ();
 			}
+
+			if (errorLog.ErrorCount > 0) {
+				throw new SyntaxException (errorLog);
+			}
+
 			return retStream;
 		}
 

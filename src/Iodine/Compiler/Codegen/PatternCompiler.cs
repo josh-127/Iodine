@@ -39,19 +39,16 @@ namespace Iodine.Compiler
 	public class PatternCompiler : IAstVisitor
 	{
 		private IAstVisitor parentVisitor;
-		private ErrorLog errorLog;
 		private IodineMethod methodBuilder;
 		private SymbolTable symbolTable;
 		private int temporary;
 
-		public PatternCompiler (ErrorLog errorLog,
-			SymbolTable symbolTable,
+		public PatternCompiler (SymbolTable symbolTable,
 			IodineMethod methodBuilder,
 			int temporary,
 			IAstVisitor parent)
 		{
 			parentVisitor = parent;
-			this.errorLog = errorLog;
 			this.methodBuilder = methodBuilder;
 			this.symbolTable = symbolTable;
 			this.temporary = temporary;
@@ -298,7 +295,7 @@ namespace Iodine.Compiler
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
 			int item = methodBuilder.CreateTemporary ();
 
-			PatternCompiler compiler = new PatternCompiler (errorLog, symbolTable, methodBuilder,
+			PatternCompiler compiler = new PatternCompiler (symbolTable, methodBuilder,
 				item,
 				parentVisitor);
 			

@@ -124,16 +124,11 @@ namespace Iodine.Runtime
 					vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (fullPath),
 						module);
 				} else {
-					ErrorLog errLog = new ErrorLog ();
-					IodineModule module = IodineModule.LoadModule (errLog, name);
-					if (errLog.ErrorCount == 0 && module != null) {
-						vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (
-							fullPath), module);
-						VirtualMachine.ModuleCache [fullPath] = module;
-						module.Initializer.Invoke (vm, new IodineObject[] { });
-					} else {
-						throw new SyntaxException (errLog);
-					}
+					IodineModule module = IodineModule.LoadModule (name);
+					vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (
+						fullPath), module);
+					VirtualMachine.ModuleCache [fullPath] = module;
+					module.Initializer.Invoke (vm, new IodineObject[] { });
 				}
 			} else {
 				IodineTuple names = args [1] as IodineTuple;
@@ -146,12 +141,7 @@ namespace Iodine.Runtime
 				if (VirtualMachine.ModuleCache.ContainsKey (fullPath)) {
 					module = VirtualMachine.ModuleCache [fullPath];
 				} else {
-					ErrorLog errLog = new ErrorLog ();
-					module = IodineModule.LoadModule (errLog, name);
-
-					if (module == null) {
-						throw new SyntaxException (errLog);
-					}
+					module = IodineModule.LoadModule (name);
 					VirtualMachine.ModuleCache [fullPath] = module;
 					module.Initializer.Invoke (vm, new IodineObject[] { });
 				}
@@ -268,11 +258,13 @@ namespace Iodine.Runtime
 					vm.Globals [key.ToString ()] = dict.Dict [key.GetHashCode ()];
 				}
 			}
-			ErrorLog log = new ErrorLog ();
-			IodineModule module = IodineModule.CompileModuleFromSource (log, source);
-			if (module == null || log.ErrorCount > 0) {
-				IodineSyntaxException e = new IodineSyntaxException (log);
-				vm.RaiseException (e);
+			IodineContext context = new IodineContext ();
+			SourceUnit code = SourceUnit.CreateFromSource (source);
+			IodineModule module = null;
+			try {
+				module = code.Compile (context);
+			} catch (SyntaxException ex) {
+				vm.RaiseException (new IodineSyntaxException (ex.ErrorLog));
 				return null;
 			}
 			return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{ });

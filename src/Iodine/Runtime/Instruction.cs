@@ -31,6 +31,9 @@ using System;
 
 namespace Iodine.Runtime
 {
+	/// <summary>
+	/// The structure of an Iodine bytecode instruction
+	/// </summary>
 	public struct Instruction
 	{
 		public readonly Location Location;

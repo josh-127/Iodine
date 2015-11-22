@@ -26,71 +26,66 @@
 //   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 //   * DAMAGE.
 // /**
+
 using System;
 using System.IO;
-using System.Linq;
+using Iodine.Runtime;
+using Iodine.Compiler.Ast;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler
 {
 	/// <summary>
-	/// Contains settings that restrict what the virtual machine is capable of doing
+	/// Represents a unit of Iodine code (Typically a file or a string of code)
 	/// </summary>
-	public sealed class IodineConfiguration
+	public sealed class SourceUnit
 	{
-		public int StackLimit {
-			set;
-			get;
-		}
+		public readonly string Text;
+		public readonly string Path;
 
-		public bool RestrictExtensions {
-			set;
-			get;
-		}
-
-		public int ThreadLimit {
-			get;
-			set;
-		}
-
-		public IodineConfiguration ()
-		{
-			// Defaults
-			ThreadLimit = 1024;
-			StackLimit = 8192;
-			RestrictExtensions = false;
-		}
-
-
-		public void SetField (string name, string value)
-		{
-			switch (name) {
-			case "stacklimit":
-				StackLimit = Int32.Parse (value);
-				break;
-			case "threadlimit":
-				ThreadLimit = Int32.Parse (value);
-				break;
-			case "restrictextensions":
-				RestrictExtensions = value.ToLower () == "true";
-				break;
+		public bool HasPath {
+			get { 
+				return Path != null;
 			}
 		}
 
-		public static IodineConfiguration Load (string path)
+		private SourceUnit (string source, string path = null)
 		{
-			IodineConfiguration config = new IodineConfiguration ();
+			Text = source;
+			Path = path;
+		}
 
-			string[] lines = File.ReadAllLines (path);
-			var configLines = lines.Where (p => p.Trim () != "" && !p.StartsWith ("#"));
-			foreach (string configLine in configLines) {
-				string line = configLine.Trim ();
-				if (line.Contains (" ")) {
-					string key = line.Substring (0, line.IndexOf (" "));
-					string value = line.Substring (line.IndexOf (" ")).Trim ();
-					config.SetField (key, value);
+		public static SourceUnit CreateFromFile (string path)
+		{
+			return new SourceUnit (File.ReadAllText (path), 
+				System.IO.Path.GetFullPath (path));
+		}
+
+		public static SourceUnit CreateFromSource (string source)
+		{
+			return new SourceUnit (source);
+		}
+
+		public IodineModule Compile (IodineContext context)
+		{
+			string moduleName = Path == null ? "__anonymous__" :
+				System.IO.Path.GetFileNameWithoutExtension (Path);
+			
+			if (HasPath) {
+				string wd = System.IO.Path.GetDirectoryName (Path);
+				string depPath = System.IO.Path.Combine (wd, ".deps");
+
+				if (!IodineModule.ContainsSearchPath (wd)) {
+					IodineModule.AddSearchPath (wd);
+				}
+
+				if (!IodineModule.ContainsSearchPath (depPath)) {
+					IodineModule.AddSearchPath (depPath);
 				}
 			}
-			return config;
+			Parser parser = Parser.CreateParser (context, this);
+			AstRoot root = parser.Parse ();
+			IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);
+			return compiler.Compile (moduleName);
 		}
 	}
 }

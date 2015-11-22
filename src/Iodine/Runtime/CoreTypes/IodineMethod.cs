@@ -33,6 +33,8 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+	// TODO: This file needs to be reorganized, its a mess. 
+
 	public class IodineLabel
 	{
 		public int _Position;
@@ -73,6 +75,7 @@ namespace Iodine.Runtime
 		}
 	}
 
+	// TODO: Abtract bytecode implementation away from IodineMethod
 	public class IodineMethod : IodineObject
 	{
 		private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
@@ -107,7 +110,7 @@ namespace Iodine.Runtime
 		public bool InstanceMethod { private set; get; }
 
 		public IodineMethod (IodineModule module, string name, bool isInstance, int parameterCount,
-		                     int localCount) : base (MethodTypeDef)
+			int localCount) : base (MethodTypeDef)
 		{
 			Name = name;
 			ParameterCount = parameterCount;
@@ -118,9 +121,25 @@ namespace Iodine.Runtime
 		}
 
 		public IodineMethod (IodineMethod parent, IodineModule module, string name, bool isInstance, int parameterCount,
-		                     int localCount) : this (module, name, isInstance, parameterCount, localCount)
+			int localCount) : this (module, name, isInstance, parameterCount, localCount)
 		{
 			this.parent = parent;
+		}
+
+		public void EmitInstruction (Opcode opcode)
+		{
+			instructions.Add (new Instruction (new Location (0, 0, ""), opcode));
+		}
+
+		public void EmitInstruction (Opcode opcode, int arg)
+		{
+			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, arg));
+		}
+
+		public void EmitInstruction (Opcode opcode, IodineLabel label)
+		{
+			labelReferences [instructions.Count] = label;
+			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, 0));
 		}
 
 		public void EmitInstruction (Location loc, Opcode opcode)
@@ -184,4 +203,3 @@ namespace Iodine.Runtime
 		}
 	}
 }
-
