@@ -96,8 +96,8 @@ namespace Iodine
 			options.Options.ForEach (p => ParseOption (context, p));
 
 			SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
-			IodineModule module = code.Compile (context);
 			try {
+				IodineModule module = code.Compile (context);
 				context.Invoke (module, new IodineObject[] { });
 				if (module.HasAttribute ("main")) {
 					context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
