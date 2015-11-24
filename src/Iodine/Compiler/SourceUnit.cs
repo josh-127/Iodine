@@ -74,12 +74,12 @@ namespace Iodine.Compiler
 				string wd = System.IO.Path.GetDirectoryName (Path);
 				string depPath = System.IO.Path.Combine (wd, ".deps");
 
-				if (!IodineModule.ContainsSearchPath (wd)) {
-					IodineModule.AddSearchPath (wd);
+				if (!context.SearchPath.Contains (wd)) {
+					context.SearchPath.Add (wd);
 				}
 
-				if (!IodineModule.ContainsSearchPath (depPath)) {
-					IodineModule.AddSearchPath (depPath);
+				if (!context.SearchPath.Contains (depPath)) {
+					context.SearchPath.Add (depPath);
 				}
 			}
 			Parser parser = Parser.CreateParser (context, this);

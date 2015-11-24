@@ -193,7 +193,7 @@ namespace Iodine
 		private static void DisplayErrors (ErrorLog errorLog)
 		{
 			foreach (Error err in errorLog) {
-				Location loc = err.Location;
+				SourceLocation loc = err.Location;
 				Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
 					loc.Line, loc.Column, err.Text);
 			}

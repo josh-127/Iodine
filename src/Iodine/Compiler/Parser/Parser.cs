@@ -1237,7 +1237,7 @@ namespace Iodine.Compiler
 			return tuple;
 		}
 
-		private static AstNode ParseString (Location loc, string str)
+		private static AstNode ParseString (SourceLocation loc, string str)
 		{
 			int pos = 0;
 			string accum = "";

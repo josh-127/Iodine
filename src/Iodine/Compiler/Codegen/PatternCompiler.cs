@@ -36,17 +36,20 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	public class PatternCompiler : IAstVisitor
+	/// <summary>
+	/// Responsible for compiling a pattern inside a pattern matching
+	/// </summary>
+	internal class PatternCompiler : IodineAstVisitor
 	{
-		private IAstVisitor parentVisitor;
+		private IodineAstVisitor parentVisitor;
 		private IodineMethod methodBuilder;
 		private SymbolTable symbolTable;
-		private int temporary;
+		private int temporary; 
 
 		public PatternCompiler (SymbolTable symbolTable,
 			IodineMethod methodBuilder,
 			int temporary,
-			IAstVisitor parent)
+			IodineAstVisitor parent)
 		{
 			parentVisitor = parent;
 			this.methodBuilder = methodBuilder;
@@ -59,20 +62,12 @@ namespace Iodine.Compiler
 			ast.Visit (parentVisitor);
 		}
 
-		public void Accept (AstRoot ast)
+		public override void Accept (AstRoot ast)
 		{
 			ast.VisitChildren (this);
 		}
 
-		public void Accept (Expression expr)
-		{
-		}
-
-		public void Accept (Statement stmt)
-		{
-		}
-
-		public void Accept (BinaryExpression pattern)
+		public override void Accept (BinaryExpression pattern)
 		{
 			IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
 			IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
@@ -80,8 +75,8 @@ namespace Iodine.Compiler
 			pattern.Left.Visit (this);
 
 			/*
-				 * Short circuit evaluation 
-				 */
+			 * Short circuit evaluation 
+			 */
 			switch (pattern.Operation) {
 			case BinaryOperation.And:
 				methodBuilder.EmitInstruction (pattern.Location, Opcode.Dup);
@@ -108,14 +103,14 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
-		public void Accept (UnaryExpression unaryop)
+		public override void Accept (UnaryExpression unaryop)
 		{
 			unaryop.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (unaryop.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (unaryop.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (NameExpression ident)
+		public override void Accept (NameExpression ident)
 		{
 			if (ident.Value == "_") {
 				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadTrue);
@@ -127,169 +122,83 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void Accept (CallExpression call)
+		public override void Accept (CallExpression call)
 		{
 			call.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (call.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (call.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (ArgumentList arglist)
+		public override void Accept (ArgumentList arglist)
 		{
 			arglist.Visit (parentVisitor);
 		}
 
-		public void Accept (KeywordArgumentList kwargs)
+		public override void Accept (KeywordArgumentList kwargs)
 		{
 			kwargs.Visit (parentVisitor);
 		}
 
-		public void Accept (GetExpression getAttr)
+		public override void Accept (GetExpression getAttr)
 		{
 			getAttr.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (getAttr.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (getAttr.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (IntegerExpression integer)
+		public override void Accept (IntegerExpression integer)
 		{
 			integer.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (integer.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (integer.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (FloatExpression num)
+		public override void Accept (FloatExpression num)
 		{
 			num.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (num.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (num.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (IfStatement ifStmt)
-		{
-		}
-
-		public void Accept (WhileStatement whileStmt)
-		{
-		}
-
-		public void Accept (WithStatement withStmt)
-		{
-		}
-
-		public void Accept (DoStatement doStmt)
-		{
-		}
-
-		public void Accept (ForStatement forStmt)
-		{
-		}
-
-		public void Accept (ForeachStatement foreachStmt)
-		{
-		}
-
-		public void Accept (GivenStatement switchStmt)
-		{
-		}
-
-		public void Accept (WhenStatement caseStmt)
-		{
-		}
-
-		public void Accept (FunctionDeclaration funcDecl)
-		{
-		}
-
-		public void Accept (CodeBlock scope)
-		{
-		}
-
-		public void Accept (StringExpression str)
+		public override void Accept (StringExpression str)
 		{
 			str.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (str.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (str.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (UseStatement useStmt)
-		{
-
-		}
-
-		public void Accept (ClassDeclaration classDecl)
-		{
-		}
-
-		public void Accept (InterfaceDeclaration contractDecl)
-		{
-		}
-
-		public void Accept (EnumDeclaration enumDecl)
-		{
-		}
-
-		public void Accept (ReturnStatement returnStmt)
-		{
-		}
-
-		public void Accept (YieldStatement yieldStmt)
-		{
-		}
-
-		public void Accept (IndexerExpression indexer)
-		{
-		}
-
-		public void Accept (ListExpression list)
-		{
-		}
-
-		public void Accept (HashExpression hash)
-		{
-		}
-
-		public void Accept (SelfStatement self)
+		public override void Accept (SelfStatement self)
 		{
 			self.Visit (parentVisitor);
 		}
 
-		public void Accept (TrueExpression ntrue)
+		public override void Accept (TrueExpression ntrue)
 		{
 			ntrue.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (ntrue.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (ntrue.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (FalseExpression nfalse)
+		public override void Accept (FalseExpression nfalse)
 		{
 			nfalse.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (nfalse.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (nfalse.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (NullExpression nil)
+		public override void Accept (NullExpression nil)
 		{
 			nil.Visit (parentVisitor);
 			methodBuilder.EmitInstruction (nil.Location, Opcode.LoadLocal, temporary);
 			methodBuilder.EmitInstruction (nil.Location, Opcode.BinOp, (int)BinaryOperation.Equals);
 		}
 
-		public void Accept (LambdaExpression lambda)
+		public override void Accept (LambdaExpression lambda)
 		{
 			lambda.Visit (parentVisitor);
 		}
 
-
-		public void Accept (TryExceptStatement tryExcept)
-		{
-		}
-
-		public void Accept (RaiseStatement raise)
-		{
-		}
-
-		public void Accept (TupleExpression tuple)
+		public override void Accept (TupleExpression tuple)
 		{
 			IodineLabel startLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
@@ -318,34 +227,6 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadFalse);
 
 			methodBuilder.MarkLabelPosition (startLabel);
-		}
-
-		public void Accept (SuperCallExpression super)
-		{
-		}
-
-		public void Accept (BreakStatement brk)
-		{
-		}
-
-		public void Accept (ContinueStatement cont)
-		{
-		}
-
-		public void Accept (MatchExpression match)
-		{
-		}
-
-		public void Accept (CaseExpression caseExpr)
-		{
-		}
-
-		public void Accept (ListCompExpression list)
-		{
-		}
-
-		public void Accept (TernaryExpression ifExpr)
-		{
 		}
 	}
 }

@@ -36,37 +36,20 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	public sealed class PatternAnalyzer : IAstVisitor
+	internal class PatternAnalyzer : IodineAstVisitor
 	{
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
-		private IAstVisitor parentVisitor;
+		private IodineAstVisitor parentVisitor;
 
-		public PatternAnalyzer (ErrorLog errorLog, SymbolTable symbolTable, IAstVisitor parent)
+		public PatternAnalyzer (ErrorLog errorLog, SymbolTable symbolTable, IodineAstVisitor parent)
 		{
 			parentVisitor = parent;
 			this.symbolTable = symbolTable;
 			this.errorLog = errorLog;
 		}
 
-		public void Accept (AstNode ast)
-		{
-			ast.Visit (parentVisitor);
-		}
-
-		public void Accept (AstRoot ast)
-		{
-		}
-
-		public void Accept (Expression expr)
-		{
-		}
-
-		public void Accept (Statement stmt)
-		{
-		}
-
-		public void Accept (BinaryExpression pattern)
+		public override void Accept (BinaryExpression pattern)
 		{
 			switch (pattern.Operation) {
 			case BinaryOperation.Or:
@@ -81,240 +64,232 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void Accept (UnaryExpression unaryop)
+		public override void Accept (UnaryExpression unaryop)
 		{
 			errorLog.AddError (ErrorType.ParserError, unaryop.Location,
 				"Unary operators can not be used on patterns!");
 		}
 
-		public void Accept (NameExpression ident)
+		public override void Accept (NameExpression ident)
 		{
 			symbolTable.AddSymbol (ident.Value);
 		}
 
-		public void Accept (CallExpression call)
+		public override void Accept (CallExpression call)
 		{
 			call.Visit (parentVisitor);
 		}
 
-		public void Accept (ArgumentList arglist)
+		public override void Accept (ArgumentList arglist)
 		{
 			arglist.Visit (parentVisitor);
 		}
 
-		public void Accept (KeywordArgumentList kwargs)
+		public override void Accept (KeywordArgumentList kwargs)
 		{
 			kwargs.Visit (parentVisitor);
 		}
 
-		public void Accept (GetExpression getAttr)
+		public override void Accept (GetExpression getAttr)
 		{
 			getAttr.Visit (parentVisitor);
 		}
 
-		public void Accept (IntegerExpression integer)
-		{
-		}
-
-		public void Accept (FloatExpression num)
-		{
-		}
-
-		public void Accept (IfStatement ifStmt)
+		public override void Accept (IfStatement ifStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, ifStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (WhileStatement whileStmt)
+		public override void Accept (WhileStatement whileStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, whileStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (WithStatement withStmt)
+		public override void Accept (WithStatement withStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, withStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (DoStatement doStmt)
+		public override void Accept (DoStatement doStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, doStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (ForStatement forStmt)
+		public override void Accept (ForStatement forStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, forStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (ForeachStatement foreachStmt)
+		public override void Accept (ForeachStatement foreachStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, foreachStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (GivenStatement switchStmt)
+		public override void Accept (GivenStatement switchStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, switchStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (WhenStatement caseStmt)
+		public override void Accept (WhenStatement caseStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, caseStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (FunctionDeclaration funcDecl)
+		public override void Accept (FunctionDeclaration funcDecl)
 		{
 			errorLog.AddError (ErrorType.ParserError, funcDecl.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (CodeBlock scope)
+		public override void Accept (CodeBlock scope)
 		{
 			errorLog.AddError (ErrorType.ParserError, scope.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (StringExpression str)
+		public override void Accept (StringExpression str)
 		{
 			str.Visit (parentVisitor);
 		}
 
-		public void Accept (UseStatement useStmt)
+		public override void Accept (UseStatement useStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (ClassDeclaration classDecl)
+		public override void Accept (ClassDeclaration classDecl)
 		{
 			errorLog.AddError (ErrorType.ParserError, classDecl.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (InterfaceDeclaration contractDecl)
+		public override void Accept (InterfaceDeclaration contractDecl)
 		{
 			errorLog.AddError (ErrorType.ParserError, contractDecl.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (EnumDeclaration enumDecl)
+		public override void Accept (EnumDeclaration enumDecl)
 		{
 			errorLog.AddError (ErrorType.ParserError, enumDecl.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (ReturnStatement returnStmt)
+		public override void Accept (ReturnStatement returnStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, returnStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (YieldStatement yieldStmt)
+		public override void Accept (YieldStatement yieldStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, yieldStmt.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (IndexerExpression indexer)
+		public override void Accept (IndexerExpression indexer)
 		{
 			indexer.Visit (parentVisitor);
 		}
 
-		public void Accept (ListExpression list)
+		public override void Accept (ListExpression list)
 		{
 			list.Visit (this);
 		}
 
-		public void Accept (HashExpression hash)
+		public override void Accept (HashExpression hash)
 		{
 			hash.Visit (parentVisitor);
 		}
 
-		public void Accept (SelfStatement self)
+		public override void Accept (SelfStatement self)
 		{
 			self.Visit (parentVisitor);
 		}
 
-		public void Accept (TrueExpression ntrue)
+		public override void Accept (TrueExpression ntrue)
 		{
 			ntrue.Visit (parentVisitor);
 		}
 
-		public void Accept (FalseExpression nfalse)
+		public override void Accept (FalseExpression nfalse)
 		{
 			nfalse.Visit (parentVisitor);
 		}
 
-		public void Accept (NullExpression nil)
+		public override void Accept (NullExpression nil)
 		{
 			nil.Visit (parentVisitor);
 		}
 
-		public void Accept (LambdaExpression lambda)
+		public override void Accept (LambdaExpression lambda)
 		{
 			lambda.Visit (parentVisitor);
 		}
 
-		public void Accept (TernaryExpression ifExpr)
+		public override void Accept (TernaryExpression ifExpr)
 		{
 			errorLog.AddError (ErrorType.ParserError, ifExpr.Location,
 				"Expression can not exist inside pattern!");
 		}
 
-		public void Accept (ListCompExpression list)
+		public override void Accept (ListCompExpression list)
 		{
 			errorLog.AddError (ErrorType.ParserError, list.Location,
 				"List can not exist inside pattern!");
 		}
 
-		public void Accept (TryExceptStatement tryExcept)
+		public override void Accept (TryExceptStatement tryExcept)
 		{
 			errorLog.AddError (ErrorType.ParserError, tryExcept.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (RaiseStatement raise)
+		public override void Accept (RaiseStatement raise)
 		{
 			errorLog.AddError (ErrorType.ParserError, raise.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (TupleExpression tuple)
+		public override void Accept (TupleExpression tuple)
 		{
 			tuple.VisitChildren (this);
 		}
 
-		public void Accept (SuperCallExpression super)
+		public override void Accept (SuperCallExpression super)
 		{
 			errorLog.AddError (ErrorType.ParserError, super.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (BreakStatement brk)
+		public override void Accept (BreakStatement brk)
 		{
 			errorLog.AddError (ErrorType.ParserError, brk.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (ContinueStatement cont)
+		public override void Accept (ContinueStatement cont)
 		{
 			errorLog.AddError (ErrorType.ParserError, cont.Location,
 				"statement can not exist inside pattern!");
 		}
 
-		public void Accept (MatchExpression match)
+		public override void Accept (MatchExpression match)
 		{
 			errorLog.AddError (ErrorType.ParserError, match.Location,
 				"match expression can not exist inside pattern!");
 		}
 
-		public void Accept (CaseExpression caseExpr)
+		public override void Accept (CaseExpression caseExpr)
 		{
 			errorLog.AddError (ErrorType.ParserError, caseExpr.Location,
 				"match expression can not exist inside pattern!");

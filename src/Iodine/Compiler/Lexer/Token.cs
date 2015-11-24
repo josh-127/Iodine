@@ -58,7 +58,7 @@ namespace Iodine.Compiler
 	{
 		public readonly string Value;
 		public readonly TokenClass Class;
-		public readonly Location Location;
+		public readonly SourceLocation Location;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Iodine.Compiler.Token"/> class.
@@ -66,7 +66,7 @@ namespace Iodine.Compiler
 		/// <param name="clazz">Token class.</param>
 		/// <param name="value">Value.</param>
 		/// <param name="location">Location.</param>
-		public Token (TokenClass clazz, string value, Location location)
+		public Token (TokenClass clazz, string value, SourceLocation location)
 		{
 			Class = clazz;
 			Value = value;

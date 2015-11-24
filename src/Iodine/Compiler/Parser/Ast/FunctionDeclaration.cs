@@ -47,7 +47,7 @@ namespace Iodine.Compiler.Ast
 
 		public bool AcceptsKeywordArgs { private set; get; }
 
-		public FunctionDeclaration (Location location,
+		public FunctionDeclaration (SourceLocation location,
 		                     string name,
 		                     bool isInstanceMethod,
 		                     bool isVariadic,
@@ -62,7 +62,7 @@ namespace Iodine.Compiler.Ast
 			AcceptsKeywordArgs = hasKeywordArgs;
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

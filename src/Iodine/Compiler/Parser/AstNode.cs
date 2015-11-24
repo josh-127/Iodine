@@ -37,7 +37,7 @@ namespace Iodine.Compiler.Ast
 	{
 		private List<AstNode> children = new List<AstNode> ();
 
-		public readonly Location Location;
+		public readonly SourceLocation Location;
 
 		public IList<AstNode> Children {
 			get {
@@ -45,9 +45,9 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public abstract void Visit (IAstVisitor visitor);
+		public abstract void Visit (IodineAstVisitor visitor);
 
-		public AstNode (Location location)
+		public AstNode (SourceLocation location)
 		{
 			Location = location;
 		}
@@ -57,7 +57,7 @@ namespace Iodine.Compiler.Ast
 			children.Add (node);
 		}
 
-		public void VisitChildren (IAstVisitor visitor)
+		public void VisitChildren (IodineAstVisitor visitor)
 		{
 			foreach (AstNode child in this.Children) {
 				child.Visit (visitor);
@@ -79,12 +79,12 @@ namespace Iodine.Compiler.Ast
 
 	public class AstRoot : AstNode
 	{
-		public AstRoot (Location location)
+		public AstRoot (SourceLocation location)
 			: base (location)
 		{
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

@@ -33,13 +33,13 @@ namespace Iodine.Compiler.Ast
 {
 	public class Expression : AstNode
 	{
-		public Expression (Location location, AstNode child)
+		public Expression (SourceLocation location, AstNode child)
 			: base (location)
 		{
 			this.Add (child);
 		}
 
-		public override void Visit (IAstVisitor visitor) {
+		public override void Visit (IodineAstVisitor visitor) {
 			visitor.Accept (this);
 		}
 	}

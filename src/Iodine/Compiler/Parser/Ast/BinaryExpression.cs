@@ -47,7 +47,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public BinaryExpression (Location location, BinaryOperation op, AstNode left, AstNode right)
+		public BinaryExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
 			: base (location)
 		{
 			Operation = op;
@@ -55,7 +55,7 @@ namespace Iodine.Compiler.Ast
 			Add (right);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 
 		public bool Yielded { set; get; }
 
-		public Location Location { set; get; }
+		public SourceLocation Location { set; get; }
 
 		public int InstructionPointer { set; get; }
 

@@ -47,7 +47,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public ForeachStatement (Location location, string item, AstNode iterator, AstNode body)
+		public ForeachStatement (SourceLocation location, string item, AstNode iterator, AstNode body)
 			: base (location)
 		{
 			this.Item = item;
@@ -55,7 +55,7 @@ namespace Iodine.Compiler.Ast
 			this.Add (body);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

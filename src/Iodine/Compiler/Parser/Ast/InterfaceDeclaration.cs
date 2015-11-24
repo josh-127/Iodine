@@ -36,13 +36,13 @@ namespace Iodine.Compiler.Ast
 	{
 		public string Name { private set; get; }
 
-		public InterfaceDeclaration (Location location, string name)
+		public InterfaceDeclaration (SourceLocation location, string name)
 			: base (location)
 		{
 			this.Name = name;
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

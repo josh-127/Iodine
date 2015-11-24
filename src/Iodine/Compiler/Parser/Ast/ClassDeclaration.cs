@@ -48,7 +48,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public ClassDeclaration (Location location, string name, List<string> baseClass)
+		public ClassDeclaration (SourceLocation location, string name, List<string> baseClass)
 			: base (location)
 		{
 			Name = name;
@@ -58,7 +58,7 @@ namespace Iodine.Compiler.Ast
 			Add (dummyCtor);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

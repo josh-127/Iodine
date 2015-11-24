@@ -35,13 +35,13 @@ namespace Iodine.Compiler.Ast
 	{
 		public double Value { private set; get; }
 
-		public FloatExpression (Location location, double value)
+		public FloatExpression (SourceLocation location, double value)
 			: base (location)
 		{
 			Value = value;
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

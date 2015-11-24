@@ -27,26 +27,71 @@
 //   * DAMAGE.
 // /**
 using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
 using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
+	public delegate IodineModule ModuleResolveHandler (string name);
+
+	/// <summary>
+	/// Contains restrictions that effect the virtual machine
+	/// </summary>
 	public class IodineContext
 	{
 		public readonly ErrorLog ErrorLog;
 		public readonly VirtualMachine VirtualMachine;
 		public readonly IodineConfiguration Configuration; // Virtual machine configuration 
 
+		/*
+		 * Where we can search for modules
+		 */
+		public readonly List<string> SearchPath = new List<string> ();
+
+		public bool AllowBuiltins { 
+			set;
+			get;
+		}
+
+		public bool ShouldOptimize {
+			set;
+			get;
+		}
+
+		private Dictionary<string, IodineModule> moduleCache = new Dictionary<string, IodineModule> ();
+
+		private ModuleResolveHandler _resolveModule;
+
+		public event ModuleResolveHandler ResolveModule {
+			add {
+				_resolveModule += value;
+			}
+			remove {
+				_resolveModule -= value;
+			}
+		}
+
 		public IodineContext ()
 			: this (new IodineConfiguration ())
 		{
+			string exeDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
+			string iodinePath = Environment.GetEnvironmentVariable ("IODINE_PATH");
+			SearchPath.Add (Environment.CurrentDirectory);
+			SearchPath.Add (Path.Combine (exeDir, "modules"));
+			SearchPath.Add (Path.Combine (exeDir, "extensions"));
+			if (iodinePath != null) {
+				SearchPath.AddRange (iodinePath.Split (':'));
+			}
 		}
 
 		public IodineContext (IodineConfiguration config)
 		{
 			Configuration = config;
 			ErrorLog = new ErrorLog ();
-			VirtualMachine = new VirtualMachine (Configuration);
+			VirtualMachine = new VirtualMachine (this);
 		}
 
 		public IodineObject Invoke (IodineObject obj, IodineObject[] args)
@@ -54,9 +99,104 @@ namespace Iodine.Compiler
 			return obj.Invoke (VirtualMachine, args);
 		}
 
+		public IodineModule LoadModule (string name)
+		{
+			if (moduleCache.ContainsKey (name)) {
+				return moduleCache [name];
+			}
+
+			if (_resolveModule != null) {
+				foreach (Delegate del in _resolveModule.GetInvocationList ()) {
+					ModuleResolveHandler handler = del as ModuleResolveHandler;
+					IodineModule result = handler (name);
+					if (result != null) {
+						return result;
+					}
+				}
+			}
+			IodineModule module = LoadIodineModule (name);
+
+			if (module == null) {
+				module = LoadExtensionModule (name);
+			}
+
+			if (module != null) {
+				moduleCache [name] = module;
+			}
+
+			return module;
+		}
+
 		public static IodineContext Create ()
 		{
 			return new IodineContext ();
+		}
+
+		private IodineModule LoadIodineModule (string name) 
+		{
+			string modulePath = FindModuleSource (name);
+			if (modulePath != null) {
+				string dir = Path.GetDirectoryName (modulePath);
+				if (!SearchPath.Contains (dir)) {
+					SearchPath.Add (dir);
+					string depPath = Path.Combine (dir, ".deps");
+					if (!SearchPath.Contains (depPath) && Directory.Exists (depPath)) {
+						SearchPath.Add (depPath);
+					}
+				}
+				SourceUnit source = SourceUnit.CreateFromFile (modulePath);
+				return source.Compile (IodineContext.Create ());
+			}
+			return null;
+		}
+
+		private IodineModule LoadExtensionModule (string name)
+		{
+			string extPath = FindExtension (name);
+			if (extPath != null) {
+				return LoadDll (name, extPath);
+			}
+			return null;
+		}
+
+		private static IodineModule LoadDll (string module, string dll)
+		{
+			Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
+
+			foreach (Type type in extension.GetTypes ()) {
+				if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
+					IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
+						typeof(IodineBuiltinModule), false).First ();
+					if (attr.Name == module) {
+						return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
+					}
+				}
+			}
+			return null;
+		}
+
+		private string FindModuleSource (string moduleName)
+		{
+			foreach (string path in SearchPath) {
+				string expectedName = Path.Combine (path, moduleName + ".id");
+				if (File.Exists (expectedName)) {
+					return expectedName;
+				}
+			}
+			// Module not found!
+			return null;
+		}
+
+		private string FindExtension (string extensionName)
+		{
+			foreach (string path in SearchPath) {
+				string expectedName = Path.Combine (path, extensionName + ".dll");
+				if (File.Exists (expectedName)) {
+					return expectedName;
+				}
+			}
+			// Extension not found!
+			return null;
 		}
 	}
 }

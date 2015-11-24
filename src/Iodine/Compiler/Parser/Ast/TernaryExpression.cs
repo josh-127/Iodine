@@ -51,7 +51,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public TernaryExpression (Location location, AstNode condition,
+		public TernaryExpression (SourceLocation location, AstNode condition,
 			AstNode expression,
 			AstNode elseExpression)
 			: base (location)
@@ -61,7 +61,7 @@ namespace Iodine.Compiler.Ast
 			Add (elseExpression);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

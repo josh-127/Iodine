@@ -32,7 +32,7 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-	public sealed class RootAnalyser : IAstVisitor
+	internal class RootAnalyser : IodineAstVisitor
 	{
 		private ErrorLog errorLog;
 		private SymbolTable symbolTable;
@@ -43,92 +43,92 @@ namespace Iodine.Compiler
 			this.symbolTable = symbolTable;
 		}
 
-		public void Accept (IfStatement ifStmt)
+		public override void Accept (IfStatement ifStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, ifStmt.Location, 
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (WhileStatement whileStmt)
+		public override void Accept (WhileStatement whileStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, whileStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (DoStatement doStmt)
+		public override void Accept (DoStatement doStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, doStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (ForStatement forStmt)
+		public override void Accept (ForStatement forStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, forStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (ForeachStatement foreachStmt)
+		public override void Accept (ForeachStatement foreachStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, foreachStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (ContinueStatement cont)
+		public override void Accept (ContinueStatement cont)
 		{
 			errorLog.AddError (ErrorType.ParserError, cont.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (BreakStatement brk)
+		public override void Accept (BreakStatement brk)
 		{
 			errorLog.AddError (ErrorType.ParserError, brk.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (TryExceptStatement tryExcept)
+		public override void Accept (TryExceptStatement tryExcept)
 		{
 			errorLog.AddError (ErrorType.ParserError, tryExcept.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (RaiseStatement raise)
+		public override void Accept (RaiseStatement raise)
 		{
 			errorLog.AddError (ErrorType.ParserError, raise.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (GivenStatement switchStmt)
+		public override void Accept (GivenStatement switchStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, switchStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (WhenStatement caseStmt)
+		public override void Accept (WhenStatement caseStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, caseStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (WithStatement withStmt)
+		public override void Accept (WithStatement withStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, withStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (ReturnStatement returnStmt)
+		public override void Accept (ReturnStatement returnStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, returnStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
-		public void Accept (YieldStatement yieldStmt)
+		public override void Accept (YieldStatement yieldStmt)
 		{
 			errorLog.AddError (ErrorType.ParserError, yieldStmt.Location,
 				"Statement not allowed outside function body!");
 		}
 
 
-		public void Accept (AstRoot ast)
+		public override void Accept (AstRoot ast)
 		{
 			ast.VisitChildren (this);
 		}
@@ -138,16 +138,12 @@ namespace Iodine.Compiler
 			ast.VisitChildren (this);
 		}
 
-		public void Accept (ClassDeclaration classDecl)
+		public override void Accept (ClassDeclaration classDecl)
 		{
 			classDecl.VisitChildren (this);
 		}
 
-		public void Accept (InterfaceDeclaration interfaceDecl)
-		{
-		}
-
-		public void Accept (FunctionDeclaration funcDecl)
+		public override void Accept (FunctionDeclaration funcDecl)
 		{
 			symbolTable.AddSymbol (funcDecl.Name);
 			FunctionAnalyser visitor = new FunctionAnalyser (errorLog, symbolTable);
@@ -161,22 +157,22 @@ namespace Iodine.Compiler
 			symbolTable.EndScope (true);
 		}
 
-		public void Accept (Expression expr)
+		public override void Accept (Expression expr)
 		{
 			expr.VisitChildren (this);
 		}
 
-		public void Accept (Statement stmt)
+		public override void Accept (Statement stmt)
 		{
 			stmt.VisitChildren (this);
 		}
 
-		public void Accept (SuperCallExpression super)
+		public override void Accept (SuperCallExpression super)
 		{
 			super.VisitChildren (this);
 		}
 
-		public void Accept (BinaryExpression binop)
+		public override void Accept (BinaryExpression binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
 				if (binop.Left is NameExpression) {
@@ -189,56 +185,56 @@ namespace Iodine.Compiler
 			binop.Right.Visit (this);
 		}
 
-		public void Accept (UnaryExpression unaryop)
+		public override void Accept (UnaryExpression unaryop)
 		{
 			unaryop.VisitChildren (this);
 		}
 
-		public void Accept (CallExpression call)
+		public override void Accept (CallExpression call)
 		{
 			call.VisitChildren (this);
 		}
 
-		public void Accept (ArgumentList arglist)
+		public override void Accept (ArgumentList arglist)
 		{
 			arglist.VisitChildren (this);
 		}
 
-		public void Accept (KeywordArgumentList kwargs)
+		public override void Accept (KeywordArgumentList kwargs)
 		{
 			kwargs.VisitChildren (this);
 		}
 
-		public void Accept (GetExpression getAttr)
+		public override void Accept (GetExpression getAttr)
 		{
 			getAttr.VisitChildren (this);
 		}
 
-		public void Accept (CodeBlock scope)
+		public override void Accept (CodeBlock scope)
 		{
 			scope.VisitChildren (this);
 		}
 
-		public void Accept (IndexerExpression indexer)
+		public override void Accept (IndexerExpression indexer)
 		{
 			indexer.VisitChildren (this);
 		}
 
-		public void Accept (ListExpression list)
+		public override void Accept (ListExpression list)
 		{
 			list.VisitChildren (this);
 		}
 
-		public void Accept (HashExpression hash)
+		public override void Accept (HashExpression hash)
 		{
 			hash.VisitChildren (this);
 		}
-		public void Accept (TupleExpression tuple)
+		public override void Accept (TupleExpression tuple)
 		{
 			tuple.VisitChildren (this);
 		}
 
-		public void Accept (LambdaExpression lambda)
+		public override void Accept (LambdaExpression lambda)
 		{
 			symbolTable.BeginScope (true);
 			FunctionAnalyser visitor = new FunctionAnalyser (errorLog, symbolTable);
@@ -250,67 +246,18 @@ namespace Iodine.Compiler
 			symbolTable.EndScope (true);
 		}
 
-		public void Accept (MatchExpression match)
+		public override void Accept (MatchExpression match)
 		{
 			FunctionAnalyser visitor = new FunctionAnalyser (errorLog, symbolTable);
 			match.Visit (visitor);
 		}
 
-		public void Accept (ListCompExpression list)
+		public override void Accept (ListCompExpression list)
 		{
 			symbolTable.BeginScope (true);
 			symbolTable.AddSymbol (list.Identifier);
 			list.VisitChildren (this);
 			symbolTable.EndScope (true);
-		}
-
-		public void Accept (TernaryExpression ifExpr)
-		{
-			ifExpr.VisitChildren (this);
-		}
-
-		public void Accept (CaseExpression caseExpr)
-		{
-		}
-
-		public void Accept (SelfStatement self)
-		{
-		}
-
-		public void Accept (TrueExpression ntrue)
-		{
-		}
-
-		public void Accept (EnumDeclaration enumDecl)
-		{
-		}
-
-		public void Accept (NameExpression ident)
-		{
-		}
-
-		public void Accept (StringExpression str)
-		{
-		}
-
-		public void Accept (UseStatement useStmt)
-		{
-		}
-
-		public void Accept (FalseExpression nfalse)
-		{
-		}
-
-		public void Accept (NullExpression nil)
-		{
-		}
-
-		public void Accept (IntegerExpression integer)
-		{
-		}
-
-		public void Accept (FloatExpression num)
-		{
 		}
 	}
 }

@@ -42,10 +42,10 @@ namespace Iodine.Runtime.Debug
 	{
 		class DebugResponse 
 		{
-			public readonly Location Location;
+			public readonly SourceLocation Location;
 			public readonly StackFrame Frame;
 
-			public DebugResponse (Location location, StackFrame frame)
+			public DebugResponse (SourceLocation location, StackFrame frame)
 			{
 				Location = location;
 				Frame = frame;
@@ -118,7 +118,7 @@ namespace Iodine.Runtime.Debug
 			virtualMachine.SetTrace (((TraceType type,
 				VirtualMachine vm,
 				StackFrame frame,
-				Location location) =>  {
+				SourceLocation location) =>  {
 				if (type == TraceType.Line) {
 					response = new DebugResponse (location, frame);
 					done.Set ();
@@ -140,7 +140,7 @@ namespace Iodine.Runtime.Debug
 			virtualMachine.SetTrace (((TraceType type,
 				VirtualMachine vm,
 				StackFrame frame,
-				Location location) =>  {
+				SourceLocation location) =>  {
 				if (type == TraceType.Line && frame == currentFrame) {
 					response = new DebugResponse (location, frame);
 					done.Set ();
@@ -162,7 +162,7 @@ namespace Iodine.Runtime.Debug
 			virtualMachine.SetTrace (((TraceType type,
 				VirtualMachine vm,
 				StackFrame frame,
-				Location location) =>  {
+				SourceLocation location) =>  {
 				if (type == TraceType.Line && frame.Parent == currentFrame) {
 					response = new DebugResponse (location, frame);
 					done.Set ();

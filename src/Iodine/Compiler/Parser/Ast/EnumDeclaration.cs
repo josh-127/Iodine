@@ -38,14 +38,14 @@ namespace Iodine.Compiler.Ast
 
 		public Dictionary<string, int> Items { private set; get; }
 
-		public EnumDeclaration (Location location, string name)
+		public EnumDeclaration (SourceLocation location, string name)
 			: base (location)
 		{
 			this.Name = name;
 			this.Items = new Dictionary<string, int> ();
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

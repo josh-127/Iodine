@@ -46,9 +46,9 @@ namespace Iodine
 
 		public readonly ErrorType ErrorType;
 
-		public readonly Location Location;
+		public readonly SourceLocation Location;
 
-		public Error (ErrorType etype, Location location, string text)
+		public Error (ErrorType etype, SourceLocation location, string text)
 		{
 			ErrorType = etype;
 			Text = text;

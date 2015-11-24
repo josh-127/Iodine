@@ -40,13 +40,13 @@ namespace Iodine.Compiler.Ast
 
 		}
 
-		public KeywordArgumentList (Location location)
+		public KeywordArgumentList (SourceLocation location)
 			: base (location)
 		{
 			this.Keywords = new List<string> ();
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

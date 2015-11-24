@@ -43,9 +43,9 @@ namespace Iodine
 		private IodineModule defaultModule;
 		public readonly VirtualMachine VirtualMachine;
 
-		public IodineEngine (IodineConfiguration config)
+		public IodineEngine (IodineContext context)
 		{
-			VirtualMachine = new VirtualMachine (config);
+			VirtualMachine = new VirtualMachine (context);
 			/*
 			defaultModule = new IodineModule ("__main__");
 			*/

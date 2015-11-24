@@ -51,12 +51,12 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public GivenStatement (Location location)
+		public GivenStatement (SourceLocation location)
 			: base (location)
 		{
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

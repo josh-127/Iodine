@@ -33,12 +33,12 @@ namespace Iodine.Compiler.Ast
 {
 	public class HashExpression : AstNode
 	{
-		public HashExpression (Location location)
+		public HashExpression (SourceLocation location)
 			: base (location)
 		{
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

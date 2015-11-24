@@ -34,7 +34,7 @@ namespace Iodine
 	/// <summary>
 	/// Represents a location inside an Iodine source file
 	/// </summary>
-	public class Location
+	public class SourceLocation
 	{
 		public readonly int Line;
 
@@ -48,7 +48,7 @@ namespace Iodine
 		/// <param name="line">Line.</param>
 		/// <param name="column">Column.</param>
 		/// <param name="file">File.</param>
-		public Location (int line, int column, string file)
+		public SourceLocation (int line, int column, string file)
 		{
 			Line = line;
 			Column = column;
@@ -59,18 +59,18 @@ namespace Iodine
 		/// Increments the line.
 		/// </summary>
 		/// <returns>The line.</returns>
-		public Location IncrementLine ()
+		public SourceLocation IncrementLine ()
 		{
-			return new Location (Line + 1, Column, File);
+			return new SourceLocation (Line + 1, Column, File);
 		}
 
 		/// <summary>
 		/// Increments the column.
 		/// </summary>
 		/// <returns>The column.</returns>
-		public Location IncrementColumn ()
+		public SourceLocation IncrementColumn ()
 		{
-			return new Location (Line, Column + 1, File);
+			return new SourceLocation (Line, Column + 1, File);
 		}
 	}
 }

@@ -44,7 +44,7 @@ namespace Iodine.Compiler.Ast
 
 		public bool Relative { private set; get; }
 
-		public UseStatement (Location location, string module, bool relative = false)
+		public UseStatement (SourceLocation location, string module, bool relative = false)
 			: base (location)
 		{
 			Module = module;
@@ -52,7 +52,7 @@ namespace Iodine.Compiler.Ast
 			Imports = new List<string> ();
 		}
 
-		public UseStatement (Location location,string module, List<string> imports, bool wildcard,
+		public UseStatement (SourceLocation location,string module, List<string> imports, bool wildcard,
 		                         bool relative = false)
 			: base (location)
 		{
@@ -62,7 +62,7 @@ namespace Iodine.Compiler.Ast
 			Relative = relative;
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

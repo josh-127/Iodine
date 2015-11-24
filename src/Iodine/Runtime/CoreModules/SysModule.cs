@@ -40,7 +40,8 @@ namespace Iodine.Runtime
 			: base ("sys")
 		{
 			SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
-			SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
+			// TODO: Make path accessible
+			//SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
 			SetAttribute ("exit", new InternalMethodCallback (exit, this));
 		}
 
@@ -50,14 +51,15 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineInteger code = args [0] as IodineInteger;
 
-			if (code == null) {
+			IodineInteger exitCode = args [0] as IodineInteger;
+
+			if (exitCode == null) {
 				vm.RaiseException (new IodineTypeException ("Int"));
 				return null;
 			}
 
-			Environment.Exit ((int)code.Value);
+			Environment.Exit ((int)exitCode.Value);
 			return null;
 		}
 	}

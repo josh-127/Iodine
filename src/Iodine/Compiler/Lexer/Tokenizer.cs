@@ -43,7 +43,7 @@ namespace Iodine.Compiler
 		private string source;
 		private string file;
 		private ErrorLog errorLog;
-		private Location location;
+		private SourceLocation location;
 
 		public Tokenizer (ErrorLog errorLog, string source, string file = "")
 		{
@@ -52,7 +52,7 @@ namespace Iodine.Compiler
 			this.file = file;
 			position = 0;
 			sourceLen = source.Length;
-			location = new Location (0, 0, file);
+			location = new SourceLocation (0, 0, file);
 		}
 
 		public TokenStream Scan ()
@@ -385,9 +385,9 @@ namespace Iodine.Compiler
 			}
 
 			if (source [position] == '\n') {
-				location = new Location (location.Line + 1, 0, this.file); 
+				location = new SourceLocation (location.Line + 1, 0, this.file); 
 			} else {
-				location = new Location (location.Line, location.Column + 1,
+				location = new SourceLocation (location.Line, location.Column + 1,
 					this.file); 
 			}
 			return source [position++];

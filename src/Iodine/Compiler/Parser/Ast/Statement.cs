@@ -34,12 +34,12 @@ namespace Iodine.Compiler.Ast
 {
 	public class Statement : AstNode
 	{
-		public Statement (Location location)
+		public Statement (SourceLocation location)
 			: base (location)
 		{
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

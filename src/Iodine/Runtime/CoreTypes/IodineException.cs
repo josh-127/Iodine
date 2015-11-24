@@ -59,7 +59,7 @@ namespace Iodine.Runtime
 
 		public readonly string Message;
 
-		public Location Location { set; get; }
+		public SourceLocation Location { set; get; }
 
 		public IodineException ()
 			: base (TypeDefinition)
@@ -289,7 +289,7 @@ namespace Iodine.Runtime
 			IodineObject[] errors = new IodineObject[errorLog.ErrorCount];
 			int i = 0;
 			foreach (Error error in errorLog.Errors) {
-				Location loc = error.Location;
+				SourceLocation loc = error.Location;
 				string text = String.Format ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
 					              loc.Line, loc.Column, error.Text);
 				errors [i++] = new IodineString (text);

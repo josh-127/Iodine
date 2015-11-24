@@ -53,13 +53,13 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public TryExceptStatement (Location location, string ident)
+		public TryExceptStatement (SourceLocation location, string ident)
 			: base (location)
 		{
 			this.ExceptionIdentifier = ident;
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

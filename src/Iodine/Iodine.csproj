@@ -94,7 +94,6 @@
     <Compile Include="Compiler\SymbolTable.cs" />
     <Compile Include="Compiler\ErrorLog.cs" />
     <Compile Include="Compiler\ErrorType.cs" />
-    <Compile Include="Compiler\Location.cs" />
     <Compile Include="ExtraModules\DnsModule.cs" />
     <Compile Include="ExtraModules\SocketsModule.cs" />
     <Compile Include="ExtraModules\WebClientModule.cs" />
@@ -132,7 +131,6 @@
     <Compile Include="Compiler\IodineContext.cs" />
     <Compile Include="Compiler\Parser\AstNode.cs" />
     <Compile Include="Compiler\Parser\BinaryOperation.cs" />
-    <Compile Include="Compiler\Parser\IAstVisitor.cs" />
     <Compile Include="Compiler\Parser\Parser.cs" />
     <Compile Include="Compiler\Parser\UnaryOperation.cs" />
     <Compile Include="Compiler\Parser\Ast\ArgumentList.cs" />
@@ -192,6 +190,9 @@
     <Compile Include="Compiler\Analyser\PatternAnalyser.cs" />
     <Compile Include="Compiler\Analyser\RootAnalyser.cs" />
     <Compile Include="Compiler\Analyser\SemanticAnalyser.cs" />
+    <Compile Include="Compiler\Parser\IodineAstVisitor.cs" />
+    <Compile Include="Compiler\SourceLocation.cs" />
+    <Compile Include="Runtime\CoreModules\ReflectionModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

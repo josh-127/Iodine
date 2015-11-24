@@ -45,14 +45,14 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public IndexerExpression (Location location, AstNode lvalue, AstNode index)
+		public IndexerExpression (SourceLocation location, AstNode lvalue, AstNode index)
 			: base (location)
 		{
 			Add (lvalue);
 			Add (index);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

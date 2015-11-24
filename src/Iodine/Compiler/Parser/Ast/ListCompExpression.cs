@@ -53,7 +53,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public ListCompExpression (Location location, AstNode expression,
+		public ListCompExpression (SourceLocation location, AstNode expression,
 			string ident,
 			AstNode iterator,
 			AstNode predicate = null)
@@ -67,7 +67,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

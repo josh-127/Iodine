@@ -124,7 +124,7 @@ namespace Iodine.Runtime
 					vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (fullPath),
 						module);
 				} else {
-					IodineModule module = IodineModule.LoadModule (name);
+					IodineModule module = vm.LoadModule (name);
 					vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (
 						fullPath), module);
 					VirtualMachine.ModuleCache [fullPath] = module;
@@ -141,7 +141,7 @@ namespace Iodine.Runtime
 				if (VirtualMachine.ModuleCache.ContainsKey (fullPath)) {
 					module = VirtualMachine.ModuleCache [fullPath];
 				} else {
-					module = IodineModule.LoadModule (name);
+					module = vm.LoadModule (name);
 					VirtualMachine.ModuleCache [fullPath] = module;
 					module.Initializer.Invoke (vm, new IodineObject[] { });
 				}
@@ -174,7 +174,7 @@ namespace Iodine.Runtime
 			foreach (KeyValuePair<int, IodineObject> kv in hash.Keys) {
 				items [kv.Value.ToString ()] = hash.Dict [kv.Key];
 			}
-			VirtualMachine newVm = new VirtualMachine (vm.Configuration, items);
+			VirtualMachine newVm = new VirtualMachine (vm.Context, items);
 			try {
 				return args [0].Invoke (newVm, new IodineObject[]{});
 			} catch (UnhandledIodineExceptionException ex) {
@@ -248,7 +248,7 @@ namespace Iodine.Runtime
 			VirtualMachine vm = host;
 
 			if (dict != null) {
-				vm = new VirtualMachine (host.Configuration, new Dictionary<string, IodineObject> ());
+				vm = new VirtualMachine (host.Context, new Dictionary<string, IodineObject> ());
 
 				foreach (string glob in host.Globals.Keys) {
 					vm.Globals [glob] = host.Globals [glob];

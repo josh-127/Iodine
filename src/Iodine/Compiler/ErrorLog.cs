@@ -69,7 +69,7 @@ namespace Iodine
 		/// <param name="location">Error location.</param>
 		/// <param name="format">Format.</param>
 		/// <param name="args">Arguments.</param>
-		public void AddError (ErrorType etype, Location location, string format, params object[] args)
+		public void AddError (ErrorType etype, SourceLocation location, string format, params object[] args)
 		{
 			errors.Add (new Error (etype, location, String.Format (format, args)));
 			ErrorCount++;

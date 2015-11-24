@@ -51,12 +51,12 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public Location Location {
+		public SourceLocation Location {
 			get {
 				if (PeekToken () != null)
 					return PeekToken ().Location;
 				else if (tokens.Count == 0) {
-					return new Location (0, 0, "");
+					return new SourceLocation (0, 0, "");
 				}
 				return PeekToken (-1).Location;
 

@@ -45,14 +45,14 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public CallExpression (Location location, AstNode target, AstNode args)
+		public CallExpression (SourceLocation location, AstNode target, AstNode args)
 			: base (location)
 		{
 			Add (target);
 			Add (args);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

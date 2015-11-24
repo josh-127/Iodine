@@ -36,13 +36,13 @@ namespace Iodine.Runtime
 	/// </summary>
 	public struct Instruction
 	{
-		public readonly Location Location;
+		public readonly SourceLocation Location;
 
 		public readonly Opcode OperationCode;
 
 		public readonly int Argument;
 
-		public Instruction (Location location, Opcode opcode)
+		public Instruction (SourceLocation location, Opcode opcode)
 			: this ()
 		{
 			OperationCode = opcode;
@@ -50,7 +50,7 @@ namespace Iodine.Runtime
 			Location = location;
 		}
 
-		public Instruction (Location location, Opcode opcode, int arg)
+		public Instruction (SourceLocation location, Opcode opcode, int arg)
 			: this ()
 		{
 			OperationCode = opcode;

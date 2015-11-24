@@ -32,7 +32,7 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-	public class SemanticAnalyser
+	internal class SemanticAnalyser
 	{
 		private ErrorLog errorLog;
 

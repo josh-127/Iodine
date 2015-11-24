@@ -128,31 +128,31 @@ namespace Iodine.Runtime
 
 		public void EmitInstruction (Opcode opcode)
 		{
-			instructions.Add (new Instruction (new Location (0, 0, ""), opcode));
+			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode));
 		}
 
 		public void EmitInstruction (Opcode opcode, int arg)
 		{
-			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, arg));
+			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, arg));
 		}
 
 		public void EmitInstruction (Opcode opcode, IodineLabel label)
 		{
 			labelReferences [instructions.Count] = label;
-			instructions.Add (new Instruction (new Location (0, 0, ""), opcode, 0));
+			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, 0));
 		}
 
-		public void EmitInstruction (Location loc, Opcode opcode)
+		public void EmitInstruction (SourceLocation loc, Opcode opcode)
 		{
 			instructions.Add (new Instruction (loc, opcode));
 		}
 
-		public void EmitInstruction (Location loc, Opcode opcode, int arg)
+		public void EmitInstruction (SourceLocation loc, Opcode opcode, int arg)
 		{
 			instructions.Add (new Instruction (loc, opcode, arg));
 		}
 
-		public void EmitInstruction (Location loc, Opcode opcode, IodineLabel label)
+		public void EmitInstruction (SourceLocation loc, Opcode opcode, IodineLabel label)
 		{
 			labelReferences [instructions.Count] = label;
 			instructions.Add (new Instruction (loc, opcode, 0));

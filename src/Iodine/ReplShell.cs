@@ -39,9 +39,9 @@ namespace Iodine
 	{
 		IodineEngine engine;
 
-		public ReplShell (IodineConfiguration config)
+		public ReplShell (IodineContext context)
 		{
-			engine = new IodineEngine (config);
+			engine = new IodineEngine (context);
 		}
 
 		public void Run ()
@@ -74,7 +74,7 @@ namespace Iodine
 		public static void DisplayErrors (ErrorLog errorLog)
 		{
 			foreach (Error err in errorLog) {
-				Location loc = err.Location;
+				SourceLocation loc = err.Location;
 				Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
 					loc.Line, loc.Column, err.Text);
 			}

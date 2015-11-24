@@ -41,14 +41,14 @@ namespace Iodine.Compiler.Ast
 
 		public string Field { private set; get; }
 
-		public GetExpression (Location location, AstNode target, string field)
+		public GetExpression (SourceLocation location, AstNode target, string field)
 			: base (location)
 		{
 			Add (target);
 			Field = field;
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

@@ -42,7 +42,7 @@ namespace Iodine.Compiler.Ast
 
 		public bool AcceptsKeywordArguments { private set; get; }
 
-		public LambdaExpression (Location location,
+		public LambdaExpression (SourceLocation location,
 			bool isInstanceMethod,
 			bool variadic,
 			bool acceptsKeywordArguments,
@@ -55,7 +55,7 @@ namespace Iodine.Compiler.Ast
 			AcceptsKeywordArguments = acceptsKeywordArguments;
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

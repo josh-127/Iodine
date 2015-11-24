@@ -41,14 +41,14 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public UnaryExpression (Location location, UnaryOperation op, AstNode val)
+		public UnaryExpression (SourceLocation location, UnaryOperation op, AstNode val)
 			: base (location)
 		{
 			Operation = op;
 			Add (val);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

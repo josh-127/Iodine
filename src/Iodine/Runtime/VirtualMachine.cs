@@ -40,7 +40,7 @@ namespace Iodine.Runtime
 {
 	// Callback for debugger
 	public delegate bool TraceCallback (TraceType type, VirtualMachine vm, StackFrame frame,
-		Location location);
+		SourceLocation location);
 
 	public enum TraceType
 	{
@@ -49,18 +49,23 @@ namespace Iodine.Runtime
 		Function
 	}
 
+	/// <summary>
+	/// Represents an instance of an Iodine virtual machine. Each Iodine thread gets its own
+	/// instance of this class
+	/// </summary>
 	public sealed class VirtualMachine
 	{
 		public static readonly Dictionary<string, IodineModule> ModuleCache = new Dictionary<string, IodineModule> ();
 
-		public readonly IodineConfiguration Configuration;
+		public readonly IodineContext Context;
 
 		private int frameCount = 0;
 		private int stackSize = 0;
+
 		private TraceCallback traceCallback = null;
 		private IodineObject lastObject;
 		private IodineObject lastException = null;
-		private Location currentLocation;
+		private SourceLocation currentLocation;
 		private Instruction instruction;
 		private LinkedStack<StackFrame> frames = new LinkedStack<StackFrame> ();
 		private ManualResetEvent pauseVirtualMachine = new ManualResetEvent (true);
@@ -69,9 +74,9 @@ namespace Iodine.Runtime
 
 		public readonly Dictionary<string, IodineObject> Globals;
 
-		public VirtualMachine (IodineConfiguration config)
+		public VirtualMachine (IodineContext context)
+			: this (context, new Dictionary<string, IodineObject> ())
 		{
-			Configuration = config;
 			Globals = new Dictionary<string, IodineObject> ();
 			var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
 			foreach (IodineModule module in modules) {
@@ -81,10 +86,16 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public VirtualMachine (IodineConfiguration config, Dictionary<string, IodineObject> globals)
+		public VirtualMachine (IodineContext context, Dictionary<string, IodineObject> globals)
 		{
-			Configuration = config;
+			Context = context;
 			Globals = globals;
+			context.ResolveModule += (name) => {
+				if (BuiltInModules.Modules.ContainsKey (name)) {
+					return BuiltInModules.Modules [name];
+				}
+				return null;
+			};
 		}
 
 		public string GetStackTrace ()
@@ -241,7 +252,7 @@ namespace Iodine.Runtime
 			traceCallback = callback;
 		}
 
-		private void Trace (TraceType type, StackFrame frame, Location location)
+		private void Trace (TraceType type, StackFrame frame, SourceLocation location)
 		{
 			pauseVirtualMachine.WaitOne ();
 			if (traceCallback (type, this, frame, location)) {
@@ -639,7 +650,7 @@ namespace Iodine.Runtime
 		#endif
 		private void Push (IodineObject obj)
 		{
-			if (stackSize >= Configuration.StackLimit) {
+			if (stackSize >= Context.Configuration.StackLimit) {
 				RaiseException (new IodineStackOverflow ());
 				return;
 			}
@@ -695,6 +706,10 @@ namespace Iodine.Runtime
 			return ret;
 		}
 
+		public IodineModule LoadModule (string name)
+		{
+			return Context.LoadModule (name);
+		}
 	}
 }
 

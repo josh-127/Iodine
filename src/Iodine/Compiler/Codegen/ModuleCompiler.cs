@@ -36,7 +36,10 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	public class ModuleCompiler : IAstVisitor
+	/// <summary>
+	/// Responsible for compiling all code within a module (SourceUnit)
+	/// </summary>
+	internal class ModuleCompiler : IodineAstVisitor
 	{
 		private SymbolTable symbolTable;
 		private IodineModule module;
@@ -49,185 +52,52 @@ namespace Iodine.Compiler
 			functionCompiler = new FunctionCompiler (symbolTable, module.Initializer);
 		}
 
-		public void Accept (AstNode ast)
-		{
-			this.visitSubnodes (ast);
-		}
-
-		public void Accept (AstRoot ast)
-		{
-			visitSubnodes (ast);
-		}
-
-		public void Accept (Expression expr)
-		{
-			visitSubnodes (expr);
-		}
-
-		public void Accept (Statement stmt)
-		{
-			stmt.Visit (functionCompiler);
-		}
-
-		public void Accept (BinaryExpression binop)
-		{
-			binop.Visit (functionCompiler);
-		}
-
-		public void Accept (UnaryExpression unaryop)
-		{
-			unaryop.Visit (functionCompiler);
-		}
-
-		public void Accept (NameExpression ident)
-		{
-			ident.Visit (functionCompiler);
-		}
-
-		public void Accept (CallExpression call)
-		{
-			call.Visit (functionCompiler);
-		}
-
-		public void Accept (ArgumentList arglist)
-		{
-			arglist.Visit (functionCompiler);
-		}
-
-		public void Accept (KeywordArgumentList kwargs)
-		{
-			kwargs.Visit (functionCompiler);
-		}
-
-		public void Accept (GetExpression getAttr)
-		{
-			getAttr.Visit (functionCompiler);
-		}
-
-		public void Accept (IntegerExpression integer)
-		{
-			integer.Visit (functionCompiler);
-		}
-
-		public void Accept (FloatExpression num)
-		{
-			num.Visit (functionCompiler);
-		}
-
-		public void Accept (StringExpression str)
-		{
-			str.Visit (functionCompiler);
-		}
-
-		public void Accept (IfStatement ifStmt)
-		{
-			ifStmt.Visit (functionCompiler);
-		}
-
-		public void Accept (WhileStatement whileStmt)
-		{
-			whileStmt.Visit (functionCompiler);
-		}
-
-		public void Accept (DoStatement doStmt)
-		{
-			doStmt.Visit (functionCompiler);
-		}
-
-		public void Accept (ForStatement forStmt)
-		{
-			forStmt.Visit (functionCompiler);
-		}
-
-		public void Accept (ForeachStatement foreachStmt)
-		{
-			foreachStmt.Visit (functionCompiler);
-		}
-
-		public void Accept (TupleExpression tuple)
-		{
-			tuple.Visit (functionCompiler);
-		}
-
-		public void Accept (ContinueStatement cont)
-		{
-			cont.Visit (functionCompiler);
-		}
-
-		public void Accept (MatchExpression match)
-		{
-			match.VisitChildren (functionCompiler);
-		}
-
-		public void Accept (CaseExpression caseExpr)
-		{
-			caseExpr.VisitChildren (functionCompiler);
-		}
-
-		public void Accept (TernaryExpression ifExpr)
-		{
-			ifExpr.Visit (functionCompiler);
-		}
-
-		public void Accept (GivenStatement switchStmt)
-		{
-		}
-
-		public void Accept (WhenStatement caseStmt)
-		{
-		}
-
-		public void Accept (FunctionDeclaration funcDecl)
-		{
-			module.AddMethod (CompileMethod (funcDecl));
-		}
-
-		public void Accept (CodeBlock scope)
-		{
-			scope.Visit (functionCompiler);
-		}
-
-		public void Accept (UseStatement useStmt)
+		public override void Accept (UseStatement useStmt)
 		{
 			string import = !useStmt.Relative ? useStmt.Module : Path.Combine (
 				                Path.GetDirectoryName (useStmt.Location.File),
 				                useStmt.Module);
-			
+			/*
+			 * Implementation detail: The use statement in all reality is simply an 
+			 * alias for the function require (); Here we translate the use statement
+			 * into a call to the require function
+			 */
 			if (useStmt.Wildcard) {
-				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst, module.DefineConstant (
-					new IodineString (import)));
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst,
+					module.DefineConstant (new IodineString (import)));
 				module.Initializer.EmitInstruction (useStmt.Location, Opcode.BuildTuple, 0);
-				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal, module.DefineConstant (
-					new IodineName ("require")));
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal,
+					module.DefineConstant (new IodineName ("require")));
 				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Invoke, 2);
 				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Pop);
 			} else {
 				IodineObject[] items = new IodineObject [useStmt.Imports.Count];
 
-				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst, module.DefineConstant (
-					new IodineString (import)));
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst,
+					module.DefineConstant (new IodineString (import)));
 				if (items.Length > 0) {
 					for (int i = 0; i < items.Length; i++) {
 						items [i] = new IodineString (useStmt.Imports [i]);
-						module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst, module.DefineConstant (
-							new IodineString (useStmt.Imports [i])));
+						module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst,
+							module.DefineConstant (new IodineString (useStmt.Imports [i])));
 					}
 					module.Initializer.EmitInstruction (useStmt.Location, Opcode.BuildTuple, items.Length);
 				}
-				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal, module.DefineConstant (
-					new IodineName ("require")));
-				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Invoke, items.Length == 0 ? 1 : 2);
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal,
+					module.DefineConstant (new IodineName ("require")));
+				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Invoke,
+					items.Length == 0 ? 1 : 2);
 				module.Initializer.EmitInstruction (useStmt.Location, Opcode.Pop);
 			}
 			
 		}
 
-		public void Accept (ClassDeclaration classDecl)
+		public override void Accept (ClassDeclaration classDecl)
 		{
 			module.SetAttribute (classDecl.Name, CompileClass (classDecl));
 		}
 
-		public void Accept (InterfaceDeclaration contractDecl)
+		public override void Accept (InterfaceDeclaration contractDecl)
 		{
 			IodineInterface contract = new IodineInterface (contractDecl.Name);
 			foreach (AstNode node in contractDecl.Children) {
@@ -236,98 +106,6 @@ namespace Iodine.Compiler
 					decl.Parameters.Count, 0));
 			}
 			module.SetAttribute (contractDecl.Name, contract);
-		}
-
-		public void Accept (ReturnStatement returnStmt)
-		{
-			returnStmt.Visit (functionCompiler);
-		}
-
-		public void Accept (YieldStatement yieldStmt)
-		{
-			yieldStmt.Visit (functionCompiler);
-		}
-
-		public void Accept (IndexerExpression indexer)
-		{
-			indexer.Visit (functionCompiler);
-		}
-
-		public void Accept (ListExpression list)
-		{
-			list.Visit (functionCompiler);
-		}
-
-		public void Accept (HashExpression hash)
-		{
-			hash.Visit (functionCompiler);
-		}
-
-		public void Accept (SelfStatement self)
-		{
-			self.Visit (functionCompiler);
-		}
-
-		public void Accept (TrueExpression ntrue)
-		{
-			ntrue.Visit (functionCompiler);
-		}
-
-		public void Accept (FalseExpression nfalse)
-		{
-			nfalse.Visit (functionCompiler);
-		}
-
-		public void Accept (NullExpression nil)
-		{
-			nil.Visit (functionCompiler);
-		}
-
-		public void Accept (LambdaExpression lambda)
-		{
-			lambda.Visit (functionCompiler);
-		}
-
-		public void Accept (TryExceptStatement tryExcept)
-		{
-			tryExcept.Visit (functionCompiler);
-		}
-
-		public void Accept (RaiseStatement raise)
-		{
-			raise.Value.Visit (this);
-		}
-
-		public void Accept (BreakStatement brk)
-		{
-			brk.Visit (functionCompiler);
-		}
-
-		public void Accept (WithStatement withStmt)
-		{
-			withStmt.Visit (functionCompiler);
-		}
-
-		private void visitSubnodes (AstNode root)
-		{
-			foreach (AstNode node in root) {
-				node.Visit (this);
-			}
-		}
-
-		public void Accept (SuperCallExpression super)
-		{
-		}
-
-
-		public void Accept (EnumDeclaration enumDecl)
-		{
-			module.SetAttribute (enumDecl.Name, CompileEnum (enumDecl));
-		}
-
-		public void Accept (ListCompExpression list)
-		{
-			list.Visit (functionCompiler);
 		}
 
 		public IodineClass CompileClass (ClassDeclaration classDecl)
@@ -419,6 +197,217 @@ namespace Iodine.Compiler
 			symbolTable.LeaveScope ();
 			return methodBuilder;
 		}
+
+		public void Accept (AstNode ast)
+		{
+			ast.VisitChildren (this);
+		}
+
+		public override void Accept (AstRoot ast)
+		{
+			ast.VisitChildren (this);
+		}
+
+		public override void Accept (Expression expr)
+		{
+			expr.VisitChildren (this);
+		}
+
+		public override void Accept (Statement stmt)
+		{
+			stmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (BinaryExpression binop)
+		{
+			binop.Visit (functionCompiler);
+		}
+
+		public override void Accept (UnaryExpression unaryop)
+		{
+			unaryop.Visit (functionCompiler);
+		}
+
+		public override void Accept (NameExpression ident)
+		{
+			ident.Visit (functionCompiler);
+		}
+
+		public override void Accept (CallExpression call)
+		{
+			call.Visit (functionCompiler);
+		}
+
+		public override void Accept (ArgumentList arglist)
+		{
+			arglist.Visit (functionCompiler);
+		}
+
+		public override void Accept (KeywordArgumentList kwargs)
+		{
+			kwargs.Visit (functionCompiler);
+		}
+
+		public override void Accept (GetExpression getAttr)
+		{
+			getAttr.Visit (functionCompiler);
+		}
+
+		public override void Accept (IntegerExpression integer)
+		{
+			integer.Visit (functionCompiler);
+		}
+
+		public override void Accept (FloatExpression num)
+		{
+			num.Visit (functionCompiler);
+		}
+
+		public override void Accept (StringExpression str)
+		{
+			str.Visit (functionCompiler);
+		}
+
+		public override void Accept (IfStatement ifStmt)
+		{
+			ifStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (WhileStatement whileStmt)
+		{
+			whileStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (DoStatement doStmt)
+		{
+			doStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (ForStatement forStmt)
+		{
+			forStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (ForeachStatement foreachStmt)
+		{
+			foreachStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (TupleExpression tuple)
+		{
+			tuple.Visit (functionCompiler);
+		}
+
+		public override void Accept (ContinueStatement cont)
+		{
+			cont.Visit (functionCompiler);
+		}
+
+		public override void Accept (MatchExpression match)
+		{
+			match.VisitChildren (functionCompiler);
+		}
+
+		public override void Accept (CaseExpression caseExpr)
+		{
+			caseExpr.VisitChildren (functionCompiler);
+		}
+
+		public override void Accept (TernaryExpression ifExpr)
+		{
+			ifExpr.Visit (functionCompiler);
+		}
+
+		public override void Accept (FunctionDeclaration funcDecl)
+		{
+			module.AddMethod (CompileMethod (funcDecl));
+		}
+
+		public override void Accept (CodeBlock scope)
+		{
+			scope.Visit (functionCompiler);
+		}
+
+		public override void Accept (ReturnStatement returnStmt)
+		{
+			returnStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (YieldStatement yieldStmt)
+		{
+			yieldStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (IndexerExpression indexer)
+		{
+			indexer.Visit (functionCompiler);
+		}
+
+		public override void Accept (ListExpression list)
+		{
+			list.Visit (functionCompiler);
+		}
+
+		public override void Accept (HashExpression hash)
+		{
+			hash.Visit (functionCompiler);
+		}
+
+		public override void Accept (SelfStatement self)
+		{
+			self.Visit (functionCompiler);
+		}
+
+		public override void Accept (TrueExpression ntrue)
+		{
+			ntrue.Visit (functionCompiler);
+		}
+
+		public override void Accept (FalseExpression nfalse)
+		{
+			nfalse.Visit (functionCompiler);
+		}
+
+		public override void Accept (NullExpression nil)
+		{
+			nil.Visit (functionCompiler);
+		}
+
+		public override void Accept (LambdaExpression lambda)
+		{
+			lambda.Visit (functionCompiler);
+		}
+
+		public override void Accept (TryExceptStatement tryExcept)
+		{
+			tryExcept.Visit (functionCompiler);
+		}
+
+		public override void Accept (RaiseStatement raise)
+		{
+			raise.Value.Visit (this);
+		}
+
+		public override void Accept (BreakStatement brk)
+		{
+			brk.Visit (functionCompiler);
+		}
+
+		public override void Accept (WithStatement withStmt)
+		{
+			withStmt.Visit (functionCompiler);
+		}
+
+		public override void Accept (EnumDeclaration enumDecl)
+		{
+			module.SetAttribute (enumDecl.Name, CompileEnum (enumDecl));
+		}
+
+		public override void Accept (ListCompExpression list)
+		{
+			list.Visit (functionCompiler);
+		}
+
 	}
 }
 

@@ -39,13 +39,13 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public RaiseStatement (Location location, AstNode val)
+		public RaiseStatement (SourceLocation location, AstNode val)
 			: base (location)
 		{
 			Add (val);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

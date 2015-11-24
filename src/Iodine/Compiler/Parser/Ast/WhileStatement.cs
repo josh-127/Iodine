@@ -45,12 +45,12 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public WhileStatement (Location location)
+		public WhileStatement (SourceLocation location)
 			: base (location)
 		{
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}

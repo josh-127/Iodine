@@ -41,38 +41,21 @@ namespace Iodine.Runtime
 	 * This also needs to be rethought out.
 	 * TODO: Redesign this...
 	 */
-
 	public class IodineModule : IodineObject
 	{
-		public static readonly List<IodineObject> SearchPaths = new List<IodineObject> ();
 		private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
 
-		static IodineModule ()
-		{
-			SearchPaths.Add (new IodineString (Environment.CurrentDirectory));
-			SearchPaths.Add (new IodineString (Path.Combine (Path.GetDirectoryName (
-				Assembly.GetEntryAssembly ().Location), "modules")));
-			if (Environment.GetEnvironmentVariable ("IODINE_PATH") != null) {
-				foreach (string path in Environment.GetEnvironmentVariable ("IODINE_PATH").Split (
-					Path.PathSeparator)) {
-					SearchPaths.Add (new IodineString (path));
-				}
-			}
-		}
+		public readonly string Name;
 
-		public string Name { set; get; }
+		public bool ExistsInGlobalNamespace {
+			protected set;
+			get;
+		}
 
 		public IList<IodineObject> ConstantPool {
 			get {
 				return this.constantPool;
 			}
-		}
-
-		public IList<string> Imports { private set; get; }
-
-		public bool ExistsInGlobalNamespace {
-			protected set;
-			get;
 		}
 
 		public IodineMethod Initializer { set; get; }
@@ -83,7 +66,6 @@ namespace Iodine.Runtime
 			: base (ModuleTypeDef)
 		{
 			Name = name;
-			Imports = new List<string> ();
 			Initializer = new IodineMethod (this, "__init__", false, 0, 0);
 			Attributes ["__init__"] = Initializer;
 		}
@@ -108,121 +90,6 @@ namespace Iodine.Runtime
 		public override string ToString ()
 		{
 			return string.Format ("<Module {0}>", Name);
-		}
-
-		public static IodineModule LoadModule (string path)
-		{
-			if (FindExtension (path) != null) {
-				return LoadExtensionModule (Path.GetFileNameWithoutExtension (path), 
-					FindExtension (path));
-			} else if (FindModule (path) != null) {
-				string fullPath = FindModule (path);
-				string dir = Path.GetDirectoryName (fullPath);
-				if (!ContainsSearchPath (dir)) {
-					SearchPaths.Add (new IodineString (dir));
-					string depPath = Path.Combine (dir, ".deps");
-					if (!ContainsSearchPath (depPath)) {
-						SearchPaths.Add (new IodineString (depPath));
-					}
-				}
-				SourceUnit source = SourceUnit.CreateFromFile (FindModule (path));
-				return source.Compile (IodineContext.Create ());
-			} else if (BuiltInModules.Modules.ContainsKey (path)) {
-				return BuiltInModules.Modules [path];
-			}
-			return null;
-		}
-
-		public static bool ContainsSearchPath (string path)
-		{
-			foreach (IodineObject obj in SearchPaths) {
-				if (obj.ToString () == path) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		public static void AddSearchPath (string path)
-		{
-			SearchPaths.Add (new IodineString (path));
-		}
-
-		private static IodineModule LoadExtensionModule (string module, string dll)
-		{
-			Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
-
-			foreach (Type type in extension.GetTypes ()) {
-				if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
-					IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
-						typeof(IodineBuiltinModule), false).First ();
-					if (attr.Name == module) {
-						return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
-					}
-				}
-			}
-			return null;
-		}
-
-		private static bool ContainsPath (string path)
-		{
-			foreach (IodineObject obj in SearchPaths) {
-				if (obj.ToString () == path) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private static string FindModule (string name)
-		{
-			if (File.Exists (name)) {
-				return name;
-			}
-			if (File.Exists (name + ".id")) {
-				return name + ".id";
-			}
-
-			foreach (IodineObject obj in SearchPaths) {
-				string dir = obj.ToString ();
-				string expectedName = Path.Combine (dir, name + ".id");
-				if (File.Exists (expectedName)) {
-					return expectedName;
-				}
-			}
-
-			return null;
-		}
-
-		private static string FindExtension (string name)
-		{
-			if (File.Exists (name) && name.EndsWith (".dll")) {
-				return name;
-			}
-			if (File.Exists (name + ".dll")) {
-				return name + ".dll";
-			}
-
-			string exePath = Path.Combine (Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location), "extensions");
-
-			if (Directory.Exists (exePath)) {
-				foreach (string file in Directory.GetFiles (exePath)) {
-					string fname = Path.GetFileName (file);
-					if (fname == name || fname == name + ".dll") {
-						return file;
-					}
-				}
-			}
-			return null;
-		}
-
-		private static bool CanWrite (string folderPath)
-		{
-			try {
-				return true;
-			} catch (UnauthorizedAccessException) {
-				return false;
-			}
 		}
 	}
 }

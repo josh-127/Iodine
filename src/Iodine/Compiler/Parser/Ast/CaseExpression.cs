@@ -51,7 +51,7 @@ namespace Iodine.Compiler.Ast
 			}
 		}
 
-		public CaseExpression (Location location, AstNode pattern, AstNode condition, AstNode value)
+		public CaseExpression (SourceLocation location, AstNode pattern, AstNode condition, AstNode value)
 			: base (location)
 		{
 			Children.Add (pattern);
@@ -59,7 +59,7 @@ namespace Iodine.Compiler.Ast
 			Children.Add (value);
 		}
 
-		public override void Visit (IAstVisitor visitor)
+		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
 		}
