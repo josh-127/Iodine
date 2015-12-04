@@ -35,7 +35,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Symbol table.
 	/// </summary>
-	public class SymbolTable
+	class SymbolTable
 	{
 		class LocalScope
 		{
@@ -169,7 +169,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Scope.
 	/// </summary>
-	public class Scope
+	class Scope
 	{
 		private List<Symbol> symbols = new List<Symbol> ();
 		private List<Scope> childScopes = new List<Scope> ();

@@ -60,6 +60,14 @@ namespace Iodine
 			}
 		}
 
+		public void RegisterClass<T> (string name) where T :
+			class, new ()
+		{
+			dynamic test = new T ();
+			System.Dynamic.DynamicObject foo = (System.Dynamic.DynamicObject)test;
+
+		}
+
 		public dynamic DoString (string source)
 		{
 			return DoString (defaultModule, source);

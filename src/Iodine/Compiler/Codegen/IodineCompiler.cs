@@ -45,13 +45,13 @@ namespace Iodine.Compiler
 			Optimizations.Add (new InstructionOptimization ());
 		}
 
-		private ErrorLog errorLog;
+		private IodineContext context;
 		private SymbolTable symbolTable;
 		private AstRoot root;
 
-		public IodineCompiler (ErrorLog errorLog, SymbolTable symbolTable, AstRoot root)
+		private IodineCompiler (IodineContext context, SymbolTable symbolTable, AstRoot root)
 		{
-			this.errorLog = errorLog;
+			this.context = context;
 			this.symbolTable = symbolTable;
 			this.root = root;
 		}
@@ -60,7 +60,7 @@ namespace Iodine.Compiler
 		{
 			SemanticAnalyser analyser = new SemanticAnalyser (context.ErrorLog);
 			SymbolTable table = analyser.Analyse (root);
-			return new IodineCompiler (context.ErrorLog, table, root);
+			return new IodineCompiler (context, table, root);
 		}
 
 		public IodineModule Compile (string moduleName)
@@ -70,8 +70,9 @@ namespace Iodine.Compiler
 			ModuleCompiler compiler = new ModuleCompiler (symbolTable, module);
 			root.Visit (compiler);
 			module.Initializer.FinalizeLabels ();
-			OptimizeObject (module);	
-
+			if (context.ShouldOptimize) {
+				OptimizeObject (module);
+			}
 			return module;
 		}
 

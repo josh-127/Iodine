@@ -43,7 +43,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Symbol.
 	/// </summary>
-	public class Symbol
+	class Symbol
 	{
 		public readonly string Name;
 

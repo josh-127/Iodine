@@ -85,6 +85,8 @@ namespace Iodine.Compiler
 			if (iodinePath != null) {
 				SearchPath.AddRange (iodinePath.Split (':'));
 			}
+			ShouldOptimize = true;
+			AllowBuiltins = true;
 		}
 
 		public IodineContext (IodineConfiguration config)

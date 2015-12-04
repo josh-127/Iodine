@@ -228,16 +228,17 @@ namespace Iodine.Runtime
 				 * we must attempt to properly dispose any objects created inside 
 				 * Iodine's with statement
 				 */
-				while (Top != null) {
-					while (Top.DisposableObjects.Count > 0) {
-						IodineObject obj = Top.DisposableObjects.Pop ();
+				StackFrame top = Top;
+				while (top != null) {
+					while (top.DisposableObjects.Count > 0) {
+						IodineObject obj = top.DisposableObjects.Pop ();
 						try {
 							obj.Exit (this); // Call __exit__
 						} catch (UnhandledIodineExceptionException) {
 							// Ignore this, we will throw one when we're done anyway
 						}
 					}
-					Top = Top.Parent;
+					top = top.Parent;
 				}
 				throw new UnhandledIodineExceptionException (Top, ex);
 			}
