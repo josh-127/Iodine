@@ -711,7 +711,8 @@ namespace Iodine.Runtime
 		{
 			IodineModule module = Context.LoadModule (name);
 			if (module == null) {
-				throw new Exception ("Could not find module " + name);
+				throw new Exception ("Could not find module " + name + 
+					"\n Searched in: " + String.Join ("\n", Context.SearchPath));
 			}
 			return module;
 		}

@@ -116,6 +116,7 @@ namespace Iodine.Compiler
 					}
 				}
 			}
+
 			IodineModule module = LoadIodineModule (name);
 
 			if (module == null) {
