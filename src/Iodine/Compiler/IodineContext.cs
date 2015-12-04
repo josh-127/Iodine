@@ -138,16 +138,8 @@ namespace Iodine.Compiler
 		{
 			string modulePath = FindModuleSource (name);
 			if (modulePath != null) {
-				string dir = Path.GetDirectoryName (modulePath);
-				if (!SearchPath.Contains (dir)) {
-					SearchPath.Add (dir);
-					string depPath = Path.Combine (dir, ".deps");
-					if (!SearchPath.Contains (depPath) && Directory.Exists (depPath)) {
-						SearchPath.Add (depPath);
-					}
-				}
 				SourceUnit source = SourceUnit.CreateFromFile (modulePath);
-				return source.Compile (IodineContext.Create ());
+				return source.Compile (this);
 			}
 			return null;
 		}
