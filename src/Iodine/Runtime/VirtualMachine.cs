@@ -709,7 +709,11 @@ namespace Iodine.Runtime
 
 		public IodineModule LoadModule (string name)
 		{
-			return Context.LoadModule (name);
+			IodineModule module = Context.LoadModule (name);
+			if (module == null) {
+				throw new Exception ("Could not find module " + name);
+			}
+			return module;
 		}
 	}
 }
