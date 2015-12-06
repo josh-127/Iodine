@@ -30,20 +30,18 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine
+namespace Iodine.Engine
 {
-	internal class StringTypeConverter : ITypeConverter
+	class FloatTypeMapping : TypeMapping
 	{
-		public bool TryToConvertToPrimative (IodineObject obj, out object result)
+		public override object ConvertFrom (IodineObject obj)
 		{
-			result = obj.ToString ();
-			return true;
+			return (Single)((IodineFloat)obj).Value;
 		}
 
-		public bool TryToConvertFromPrimative (object obj, out IodineObject result)
+		public override IodineObject ConvertFrom (object obj)
 		{
-			result = new IodineString (obj.ToString ());
-			return true;
+			return new IodineFloat (Convert.ToDouble (obj));
 		}
 	}
 }

@@ -28,45 +28,20 @@
 **/
 
 using System;
+using Iodine.Runtime;
 
-namespace Iodine.Runtime
+namespace Iodine.Engine
 {
-	public class IodineProperty : IodineObject, IIodineProperty
+	class Int32TypeMapping : TypeMapping
 	{
-		public readonly static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Property");
-
-		public readonly IodineObject Setter;
-		public readonly IodineObject Getter;
-
-		private IodineObject self;
-
-		public IodineProperty (IodineObject getter, IodineObject setter, IodineObject self)
-			: base (TypeDefinition) {
-			Setter = setter;
-			Getter = getter;
-			this.self = self;
+		public override object ConvertFrom (IodineObject obj)
+		{
+			return (Int32)((IodineInteger)obj).Value;
 		}
 
-		public IodineObject Set (VirtualMachine vm, IodineObject value)
+		public override IodineObject ConvertFrom (object obj)
 		{
-			if (Setter is IodineMethod) {
-				return vm.InvokeMethod ((IodineMethod)Setter, self, new IodineObject[] { value });
-			} else if (Setter is IodineInstanceMethodWrapper) {
-				return vm.InvokeMethod (((IodineInstanceMethodWrapper)Setter).Method, self,
-					new IodineObject[] { value });
-			}
-			return Setter.Invoke (vm, new IodineObject[] { value });
-		}
-
-		public IodineObject Get (VirtualMachine vm)
-		{
-			if (Getter is IodineMethod) {
-				return vm.InvokeMethod ((IodineMethod)Getter, self, new IodineObject[0]);
-			} else if (Getter is IodineInstanceMethodWrapper) {
-				return vm.InvokeMethod (((IodineInstanceMethodWrapper)Getter).Method, self,
-					new IodineObject[0]);
-			}
-			return Getter.Invoke (vm, new IodineObject[0]);
+			return new IodineInteger (Convert.ToInt64 (obj));
 		}
 	}
 }

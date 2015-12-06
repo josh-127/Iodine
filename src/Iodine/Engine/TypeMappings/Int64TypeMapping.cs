@@ -30,13 +30,19 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine
+namespace Iodine.Engine
 {
-	public interface ITypeConverter
+	class Int64TypeMapping : TypeMapping
 	{
-		bool TryToConvertToPrimative (IodineObject obj, out object result);
+		public override object ConvertFrom (IodineObject obj)
+		{
+			return ((IodineInteger)obj).Value;
+		}
 
-		bool TryToConvertFromPrimative (object obj, out IodineObject result);
+		public override IodineObject ConvertFrom (object obj)
+		{
+			return new IodineInteger (Convert.ToInt64 (obj));
+		}
 	}
 }
 

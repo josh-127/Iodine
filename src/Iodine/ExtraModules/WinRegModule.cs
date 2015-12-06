@@ -67,7 +67,7 @@ namespace Iodine.Modules.Extras
 				string name = args [0].ToString ();
 				IodineObject ioval = args [1];
 				object val = null;
-				IodineTypeConverter.Instance.ConvertToPrimative (ioval, out val);
+				//IodineTypeConverter.Instance.ConvertToPrimative (ioval, out val);
 				Key.SetValue (name, val);
 				return null;
 			}
@@ -77,7 +77,7 @@ namespace Iodine.Modules.Extras
 				string name = args [0].ToString ();
 				IodineObject ioval = null;
 				object val = Key.GetValue (name);
-				IodineTypeConverter.Instance.ConvertFromPrimative (val, out ioval);
+				//IodineTypeConverter.Instance.ConvertFromPrimative (val, out ioval);
 				return ioval;
 			}
 
@@ -133,7 +133,7 @@ namespace Iodine.Modules.Extras
 			string name = args [1].ToString ();
 			IodineObject ioval = args [2];
 			object val = null;
-			IodineTypeConverter.Instance.ConvertToPrimative (ioval, out val);
+			//IodineTypeConverter.Instance.ConvertToPrimative (ioval, out val);
 			Registry.SetValue (keyName, name, val);
 			return null;
 		}
@@ -144,7 +144,7 @@ namespace Iodine.Modules.Extras
 			string name = args [1].ToString ();
 			object val = Registry.GetValue (keyName, name, null);
 			IodineObject ioval = null;
-			IodineTypeConverter.Instance.ConvertFromPrimative (val, out ioval);
+			//IodineTypeConverter.Instance.ConvertFromPrimative (val, out ioval);
 			return ioval;
 		}
 	}

@@ -33,7 +33,7 @@ using System.Reflection;
 using Iodine.Compiler;
 using Iodine.Runtime;
 
-namespace Iodine
+namespace Iodine.Engine
 {
 	public sealed class ReplShell
 	{
@@ -66,7 +66,7 @@ namespace Iodine
 					Console.Error.WriteLine ("Fatal exception has occured!");
 					Console.Error.WriteLine (ex.Message);
 					Console.Error.WriteLine ("Stack trace: \n{0}", ex.StackTrace);
-					Console.Error.WriteLine ("\nIodine stack trace \n{0}", engine.VirtualMachine.GetStackTrace ());
+					//Console.Error.WriteLine ("\nIodine stack trace \n{0}", engine.VirtualMachine.GetStackTrace ());
 				}
 			}
 		}

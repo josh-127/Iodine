@@ -52,11 +52,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Engine\IodineEngine.cs" />
     <Compile Include="Engine\IodineDynamicObject.cs" />
-    <Compile Include="Engine\IodineTypeConverter.cs" />
-    <Compile Include="Engine\ITypeConverter.cs" />
-    <Compile Include="Engine\Converters\StringTypeConverter.cs" />
-    <Compile Include="Engine\Converters\IntegerTypeConverter.cs" />
-    <Compile Include="Engine\Converters\BoolTypeConverter.cs" />
     <Compile Include="ReplShell.cs" />
     <Compile Include="Runtime\Instruction.cs" />
     <Compile Include="Runtime\Opcode.cs" />
@@ -193,11 +188,25 @@
     <Compile Include="Compiler\Parser\IodineAstVisitor.cs" />
     <Compile Include="Compiler\SourceLocation.cs" />
     <Compile Include="Runtime\CoreModules\ReflectionModule.cs" />
+    <Compile Include="Engine\ClassWrapper.cs" />
+    <Compile Include="Engine\TypeRegistry.cs" />
+    <Compile Include="Engine\TypeMapping.cs" />
+    <Compile Include="Engine\ObjectWrapper.cs" />
+    <Compile Include="Engine\MethodWrapper.cs" />
+    <Compile Include="Engine\PropertyWrapper.cs" />
+    <Compile Include="Engine\FieldWrapper.cs" />
+    <Compile Include="Engine\TypeMappings\StringTypeMapping.cs" />
+    <Compile Include="Engine\TypeMappings\Int64TypeMapping.cs" />
+    <Compile Include="Engine\TypeMappings\BoolTypeMapping.cs" />
+    <Compile Include="Engine\TypeMappings\Int32TypeMapping.cs" />
+    <Compile Include="Engine\TypeMappings\Int16TypeMapping.cs" />
+    <Compile Include="Engine\TypeMappings\DoubleTypeMapping.cs" />
+    <Compile Include="Engine\TypeMappings\FloatTypeMapping.cs" />
+    <Compile Include="Engine\TypeMappings\CharTypeMapping.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Engine\" />
-    <Folder Include="Engine\Converters\" />
     <Folder Include="Runtime\" />
     <Folder Include="Runtime\CoreTypes\" />
     <Folder Include="Runtime\CoreModules\" />
@@ -206,6 +215,7 @@
     <Folder Include="Compiler\Parser\" />
     <Folder Include="Compiler\Codegen\" />
     <Folder Include="Compiler\Analyser\" />
+    <Folder Include="Engine\TypeMappings\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

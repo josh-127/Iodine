@@ -30,29 +30,19 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine
+namespace Iodine.Engine
 {
-	internal class IntegerTypeConverter : ITypeConverter
+	internal class BoolTypeMapping : TypeMapping
 	{
-		public bool TryToConvertToPrimative (IodineObject obj, out object result)
+		public override object ConvertFrom (IodineObject obj)
 		{
-			IodineInteger integer = obj as IodineInteger;
-			if (integer != null) {
-				result = integer.Value;
-				return true;
-			}
-			result = null;
-			return false;
+			IodineBool boolean = obj as IodineBool;
+			return boolean.Value;
 		}
 
-		public bool TryToConvertFromPrimative (object obj, out IodineObject result)
+		public override IodineObject ConvertFrom (object obj)
 		{
-			if (obj is IConvertible) {
-				result = new IodineInteger (Convert.ToInt64 (obj));
-				return true;
-			}
-			result = null;
-			return false;
+			return ((IodineBool)obj).Value ? IodineBool.True : IodineBool.False;
 		}
 	}
 }

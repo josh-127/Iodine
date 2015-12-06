@@ -31,15 +31,17 @@ using System;
 using System.Dynamic;
 using Iodine.Runtime;
 
-namespace Iodine
+namespace Iodine.Engine
 {
 	public class IodineDynamicObject : DynamicObject
 	{
+		private TypeRegistry typeRegistry;
 		private IodineObject internalObject;
 		private VirtualMachine internalVm;
 
-		internal IodineDynamicObject (IodineObject obj, VirtualMachine vm)
+		internal IodineDynamicObject (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
 		{
+			typeRegistry = registry;
 			internalObject = obj;
 			internalVm = vm;
 		}
@@ -48,9 +50,7 @@ namespace Iodine
 		{
 			if (internalObject.HasAttribute (binder.Name)) {
 				IodineObject obj = internalObject.GetAttribute (binder.Name);
-				if (!IodineTypeConverter.Instance.ConvertToPrimative (obj, out result)) {
-					result = new IodineDynamicObject (obj, internalVm);
-				}
+				result = typeRegistry.ConvertToNativeObject (obj);
 				return true;
 			}
 			result = null;
@@ -59,14 +59,7 @@ namespace Iodine
 
 		public override bool TrySetMember (SetMemberBinder binder, object value)
 		{
-			IodineObject val = null;
-			if (!IodineTypeConverter.Instance.ConvertFromPrimative (value, out val)) {
-				if (value is IodineObject) {
-					val = (IodineObject)value;
-				} else {
-					return false;
-				}
-			}
+			IodineObject val = typeRegistry.ConvertToIodineObject (value);
 			internalObject.SetAttribute (binder.Name, val);
 			return true;
 		}
@@ -75,27 +68,21 @@ namespace Iodine
 		{
 			IodineObject[] arguments = new IodineObject[args.Length];
 			for (int i = 0; i < args.Length; i++) {
-				IodineObject val = null;
-				if (!IodineTypeConverter.Instance.ConvertFromPrimative (args [i], out val)) {
-					if (args [i] is IodineObject) {
-						val = (IodineObject)args [i];
-					} else {
-						result = null;
-						return false;
-					}
-				}
-				arguments [i] = val;
+				arguments [i] = typeRegistry.ConvertToIodineObject (args [i]);
 			}
 			IodineObject returnVal = internalObject.Invoke (internalVm, arguments);
-			if (!IodineTypeConverter.Instance.ConvertToPrimative (returnVal, out result)) {
-				result = new IodineDynamicObject (returnVal, internalVm);
-			}
+			result = typeRegistry.ConvertToNativeObject (returnVal);
 			return true;
 		}
 
 		public override string ToString ()
 		{
 			return internalObject.Represent (internalVm).ToString ();
+		}
+
+		internal static IodineDynamicObject Create (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
+		{
+			return new IodineDynamicObject (obj, vm, registry);
 		}
 	}
 }

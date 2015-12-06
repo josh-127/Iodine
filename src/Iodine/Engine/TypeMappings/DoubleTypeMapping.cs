@@ -30,29 +30,18 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine
+namespace Iodine.Engine
 {
-	internal class BoolTypeConverter : ITypeConverter
+	class DoubleTypeMapping : TypeMapping
 	{
-		public bool TryToConvertToPrimative (IodineObject obj, out object result)
+		public override object ConvertFrom (IodineObject obj)
 		{
-			IodineBool boolean = obj as IodineBool;
-			if (boolean != null) {
-				result = boolean.Value;
-				return true;
-			}
-			result = null;
-			return false;
+			return ((IodineFloat)obj).Value;
 		}
 
-		public bool TryToConvertFromPrimative (object obj, out IodineObject result)
+		public override IodineObject ConvertFrom (object obj)
 		{
-			if (obj is Boolean) {
-				result = ((IodineBool)obj).Value ? IodineBool.True : IodineBool.False;
-				return true;
-			}
-			result = null;
-			return false;
+			return new IodineFloat (Convert.ToDouble (obj));
 		}
 	}
 }

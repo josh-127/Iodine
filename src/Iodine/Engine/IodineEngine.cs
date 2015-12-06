@@ -33,19 +33,19 @@ using Iodine.Compiler;
 using Iodine.Compiler.Ast;
 using Iodine.Runtime;
 
-namespace Iodine
+namespace Iodine.Engine
 {
 	/*
 	 * TODO: Make this work again
 	 */
 	public sealed class IodineEngine
 	{
+		private TypeRegistry typeRegistry = new TypeRegistry ();
 		private IodineModule defaultModule;
-		public readonly VirtualMachine VirtualMachine;
+		private IodineContext context = new IodineContext ();
 
 		public IodineEngine (IodineContext context)
 		{
-			VirtualMachine = new VirtualMachine (context);
 			/*
 			defaultModule = new IodineModule ("__main__");
 			*/
@@ -60,24 +60,31 @@ namespace Iodine
 			}
 		}
 
-		public void RegisterClass<T> (string name) where T :
-			class, new ()
+		public IodineEngine ()
 		{
-			dynamic test = new T ();
-			System.Dynamic.DynamicObject foo = (System.Dynamic.DynamicObject)test;
+		}
 
+		public void RegisterClass<T> (string name)
+			where T : class
+		{
+			Type type = typeof(T);
+			ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
+			typeRegistry.AddTypeMapping (type, wrapper, null);
+			context.VirtualMachine.Globals [name] = wrapper;
 		}
 
 		public dynamic DoString (string source)
 		{
-			return DoString (defaultModule, source);
+			SourceUnit line = SourceUnit.CreateFromSource (source);
+			context.Invoke (line.Compile (context), new IodineObject[] { });
+			return null;
 		}
 
 		public dynamic DoFile (string file)
 		{
 			IodineModule main = new IodineModule (Path.GetFileNameWithoutExtension (file));
 			DoString (main, File.ReadAllText (file));
-			return new IodineDynamicObject (main, VirtualMachine);
+			return new IodineDynamicObject (main, context.VirtualMachine, typeRegistry);
 		}
 
 		private dynamic DoString (IodineModule module, string source)
@@ -88,26 +95,21 @@ namespace Iodine
 		private dynamic GetMember (string name)
 		{
 			IodineObject obj = null;
-			if (this.VirtualMachine.Globals.ContainsKey (name)) {
-				obj = VirtualMachine.Globals [name];
+			if (context.VirtualMachine.Globals.ContainsKey (name)) {
+				obj = context.VirtualMachine.Globals [name];
 			} else if (this.defaultModule.HasAttribute (name)) {
 				obj = defaultModule.GetAttribute (name);
 			}
-			Object ret = null;
-			if (!IodineTypeConverter.Instance.ConvertToPrimative (obj, out ret)) {
-				ret = IodineTypeConverter.Instance.CreateDynamicObject (this, obj);
-			}
-			return ret;
+			return IodineDynamicObject.Create (obj, context.VirtualMachine, typeRegistry);
 		}
 
 		private void SetMember (string name, dynamic value)
 		{
-			IodineObject obj;
-			IodineTypeConverter.Instance.ConvertFromPrimative (value, out obj);
+			IodineObject obj = typeRegistry.ConvertToIodineObject ((object)value);
 			if (defaultModule.HasAttribute (name)) {
 				defaultModule.SetAttribute (name, obj);
 			} else {
-				VirtualMachine.Globals [name] = obj;
+				context.VirtualMachine.Globals [name] = obj;
 			}
 		}
 	}
