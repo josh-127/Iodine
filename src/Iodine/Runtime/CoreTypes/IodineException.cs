@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {

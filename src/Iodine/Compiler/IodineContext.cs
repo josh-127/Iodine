@@ -38,7 +38,7 @@ namespace Iodine.Compiler
 	public delegate IodineModule ModuleResolveHandler (string name);
 
 	/// <summary>
-	/// Contains restrictions that effect the virtual machine
+	/// Represent v
 	/// </summary>
 	public class IodineContext
 	{
@@ -65,6 +65,9 @@ namespace Iodine.Compiler
 
 		private ModuleResolveHandler _resolveModule;
 
+		/// <summary>
+		/// Occurs before a module is resolved
+		/// </summary>
 		public event ModuleResolveHandler ResolveModule {
 			add {
 				_resolveModule += value;
@@ -96,11 +99,22 @@ namespace Iodine.Compiler
 			VirtualMachine = new VirtualMachine (this);
 		}
 
+		/// <summary>
+		/// Invokes an IodineObject (Calling its __invoke__ method) under this
+		/// context 
+		/// </summary>
+		/// <param name="obj">The object to invoke.</param>
+		/// <param name="args">Arguments.</param>
 		public IodineObject Invoke (IodineObject obj, IodineObject[] args)
 		{
 			return obj.Invoke (VirtualMachine, args);
 		}
 
+		/// <summary>
+		/// Loads an Iodine module.
+		/// </summary>
+		/// <returns>A compiled Iodine module.</returns>
+		/// <param name="name">The module's name.</param>
 		public IodineModule LoadModule (string name)
 		{
 			if (moduleCache.ContainsKey (name)) {

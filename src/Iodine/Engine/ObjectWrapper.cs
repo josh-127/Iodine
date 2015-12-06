@@ -27,6 +27,7 @@
 //   * DAMAGE.
 // /**
 using System;
+using System.Linq;
 using System.Reflection;
 using Iodine.Runtime;
 
@@ -34,26 +35,25 @@ namespace Iodine.Engine
 {
 	class ObjectWrapper : IodineObject
 	{
-		private Type type;
-		private object self;
-		private TypeRegistry typeRegistry;
+		public readonly object Object;
 
-		public ObjectWrapper (TypeRegistry registry, ClassWrapper clazz, object self)
+		public ObjectWrapper (ClassWrapper clazz, object self)
 			: base (clazz)
 		{
-			typeRegistry = registry;
-			this.self = self;
+			Object = self;
 		}
 
 		public static ObjectWrapper CreateFromObject (TypeRegistry registry, ClassWrapper clazz, object obj)
 		{
 			Type type = obj.GetType ();
-			ObjectWrapper wrapper = new ObjectWrapper (registry, clazz, obj);
+			ObjectWrapper wrapper = new ObjectWrapper (clazz, obj);
 			foreach (MemberInfo info in type.GetMembers (BindingFlags.Instance | BindingFlags.Public)) {
 				switch (info.MemberType) {
 				case MemberTypes.Method:
-					wrapper.SetAttribute (info.Name, MethodWrapper.Create (registry, (MethodInfo)info,
-						obj));
+					if (!wrapper.HasAttribute (info.Name)) {
+						wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, obj,
+							info.Name));
+					}
 					break;
 				case MemberTypes.Field:
 					wrapper.SetAttribute (info.Name, FieldWrapper.Create (registry, (FieldInfo)info,
@@ -66,6 +66,22 @@ namespace Iodine.Engine
 				}
 			}
 			return wrapper;
+		}
+
+		private static InternalMethodCallback CreateMultiMethod (TypeRegistry registry,
+			Type type,
+			object self, 
+			string name)
+		{
+			var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Instance)
+				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
+				.Select (p => (MethodInfo)p);
+			
+			if (methods.Count () > 1) {
+				return MethodWrapper.Create (registry, methods, self); 
+			} else {
+				return MethodWrapper.Create (registry, methods.First (), self); 
+			}
 		}
 	}
 }

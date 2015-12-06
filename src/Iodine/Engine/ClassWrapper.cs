@@ -68,7 +68,10 @@ namespace Iodine.Engine
 			foreach (MemberInfo info in type.GetMembers (BindingFlags.Public | BindingFlags.Static)) {
 				switch (info.MemberType) {
 				case MemberTypes.Method:
-					wrapper.SetAttribute (info.Name, MethodWrapper.Create (registry, (MethodInfo)info));
+					if (!wrapper.HasAttribute (info.Name)) {
+						
+						wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, info.Name));
+					}
 					break;
 				case MemberTypes.Field:
 					wrapper.SetAttribute (info.Name, FieldWrapper.Create (registry, (FieldInfo)info));
@@ -78,8 +81,17 @@ namespace Iodine.Engine
 					break;
 				}
 			}
-
 			return wrapper;
+		}
+
+		private static InternalMethodCallback CreateMultiMethod (TypeRegistry registry,
+			Type type,
+			string name)
+		{
+			var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Static)
+				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
+				.Select (p => (MethodInfo)p);
+			return MethodWrapper.Create (registry, methods, null); 
 		}
 	}
 }

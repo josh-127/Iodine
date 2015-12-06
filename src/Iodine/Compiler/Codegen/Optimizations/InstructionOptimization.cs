@@ -32,7 +32,7 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	public class InstructionOptimization : IBytecodeOptimization
+	class InstructionOptimization : IBytecodeOptimization
 	{
 		public void PerformOptimization (IodineMethod method)
 		{

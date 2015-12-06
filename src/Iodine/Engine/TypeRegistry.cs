@@ -26,6 +26,7 @@
 //   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 //   * DAMAGE.
 // /**
+
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -98,6 +99,13 @@ namespace Iodine.Engine
 				return entry.Mapping.ConvertFrom (obj);
 			}
 			return null;
+		}
+
+		public bool TypeMappingExists (IodineTypeDefinition from, Type to)
+		{
+			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == from &&
+				p.NativeType == to).FirstOrDefault ();
+			return entry != null;
 		}
 
 		public object ConvertToNativeObject (IodineObject obj, Type expectedType)

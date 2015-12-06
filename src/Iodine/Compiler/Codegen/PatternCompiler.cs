@@ -39,7 +39,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Responsible for compiling a pattern inside a pattern matching
 	/// </summary>
-	internal class PatternCompiler : IodineAstVisitor
+	class PatternCompiler : IodineAstVisitor
 	{
 		private IodineAstVisitor parentVisitor;
 		private IodineMethod methodBuilder;

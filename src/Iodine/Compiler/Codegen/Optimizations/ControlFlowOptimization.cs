@@ -33,7 +33,7 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	public class ControlFlowOptimization : IBytecodeOptimization
+	class ControlFlowOptimization : IBytecodeOptimization
 	{
 		class ReachableRegion
 		{

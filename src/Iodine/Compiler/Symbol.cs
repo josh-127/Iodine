@@ -34,7 +34,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Symbol type.
 	/// </summary>
-	public enum SymbolType
+	enum SymbolType
 	{
 		Local,
 		Global

@@ -33,7 +33,7 @@ using Iodine.Runtime;
 
 namespace Iodine.Engine
 {
-	public class IodineDynamicObject : DynamicObject
+	class IodineDynamicObject : DynamicObject
 	{
 		private TypeRegistry typeRegistry;
 		private IodineObject internalObject;

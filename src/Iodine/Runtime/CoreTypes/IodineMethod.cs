@@ -30,6 +30,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {

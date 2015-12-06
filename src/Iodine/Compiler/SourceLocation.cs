@@ -29,7 +29,7 @@
 
 using System;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	/// <summary>
 	/// Represents a location inside an Iodine source file

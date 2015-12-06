@@ -29,7 +29,7 @@
 
 using System;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	/// <summary>
 	/// Error type.

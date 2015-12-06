@@ -35,21 +35,14 @@ using Iodine.Runtime;
 
 namespace Iodine.Engine
 {
-	/*
-	 * TODO: Make this work again
-	 */
 	public sealed class IodineEngine
 	{
-		private TypeRegistry typeRegistry = new TypeRegistry ();
-		private IodineModule defaultModule;
-		private IodineContext context = new IodineContext ();
+		/// <summary>
+		/// The Iodine context
+		/// </summary>
+		public readonly IodineContext Context;
 
-		public IodineEngine (IodineContext context)
-		{
-			/*
-			defaultModule = new IodineModule ("__main__");
-			*/
-		}
+		private TypeRegistry typeRegistry = new TypeRegistry ();
 
 		public dynamic this [string name] {
 			get {
@@ -62,55 +55,68 @@ namespace Iodine.Engine
 
 		public IodineEngine ()
 		{
+			Context = IodineContext.Create ();
 		}
 
+		public IodineEngine (IodineContext context)
+		{
+			Context = context;
+		}
+
+		/// <summary>
+		/// Registers a class in the global namespace, allowing it to be
+		/// instantiated in Iodine 
+		/// </summary>
+		/// <param name="name">Name of the class.</param>
+		/// <typeparam name="T">The class.</typeparam>
 		public void RegisterClass<T> (string name)
 			where T : class
 		{
 			Type type = typeof(T);
 			ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
 			typeRegistry.AddTypeMapping (type, wrapper, null);
-			context.VirtualMachine.Globals [name] = wrapper;
+			Context.VirtualMachine.Globals [name] = wrapper;
 		}
 
+		public void RegisterClass (Type type, string name)
+		{
+			ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
+			typeRegistry.AddTypeMapping (type, wrapper, null);
+			Context.VirtualMachine.Globals [name] = wrapper;
+		}
+
+		/// <summary>
+		/// Executes a string of Iodine source code
+		/// </summary>
+		/// <returns>The last object evaluated during the execute of the source.</returns>
+		/// <param name="source">A string containing valid Iodine code..</param>
 		public dynamic DoString (string source)
 		{
 			SourceUnit line = SourceUnit.CreateFromSource (source);
-			context.Invoke (line.Compile (context), new IodineObject[] { });
+			Context.Invoke (line.Compile (Context), new IodineObject[] { });
 			return null;
 		}
 
 		public dynamic DoFile (string file)
 		{
 			IodineModule main = new IodineModule (Path.GetFileNameWithoutExtension (file));
-			DoString (main, File.ReadAllText (file));
-			return new IodineDynamicObject (main, context.VirtualMachine, typeRegistry);
-		}
-
-		private dynamic DoString (IodineModule module, string source)
-		{
-			return null;
+			DoString (File.ReadAllText (file));
+			return new IodineDynamicObject (main, Context.VirtualMachine, typeRegistry);
 		}
 
 		private dynamic GetMember (string name)
 		{
 			IodineObject obj = null;
-			if (context.VirtualMachine.Globals.ContainsKey (name)) {
-				obj = context.VirtualMachine.Globals [name];
-			} else if (this.defaultModule.HasAttribute (name)) {
-				obj = defaultModule.GetAttribute (name);
+			if (Context.VirtualMachine.Globals.ContainsKey (name)) {
+				obj = Context.VirtualMachine.Globals [name];
 			}
-			return IodineDynamicObject.Create (obj, context.VirtualMachine, typeRegistry);
+			return IodineDynamicObject.Create (obj, Context.VirtualMachine, typeRegistry);
 		}
 
 		private void SetMember (string name, dynamic value)
 		{
 			IodineObject obj = typeRegistry.ConvertToIodineObject ((object)value);
-			if (defaultModule.HasAttribute (name)) {
-				defaultModule.SetAttribute (name, obj);
-			} else {
-				context.VirtualMachine.Globals [name] = obj;
-			}
+			Context.VirtualMachine.Globals [name] = obj;
 		}
 	}
 }

@@ -31,7 +31,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Iodine
+namespace Iodine.Compiler
 {
 	/// <summary>
 	/// Error log.

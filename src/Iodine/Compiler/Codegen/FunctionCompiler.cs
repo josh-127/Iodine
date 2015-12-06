@@ -39,7 +39,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Reponsible for compiling all code inside a function body
 	/// </summary>
-	internal class FunctionCompiler : IodineAstVisitor
+	class FunctionCompiler : IodineAstVisitor
 	{
 		private SymbolTable symbolTable;
 		private IodineMethod methodBuilder;

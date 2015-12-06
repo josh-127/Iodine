@@ -49,7 +49,7 @@ namespace Iodine.Engine
 				return registry.ConvertToIodineObject (info.Invoke (self, objects));
 			}), null);
 		}
-		/*
+
 		public static InternalMethodCallback Create (TypeRegistry registry,
 			IEnumerable<MethodInfo> info,
 			object self = null)
@@ -60,13 +60,26 @@ namespace Iodine.Engine
 
 				foreach (MethodInfo overload in suitableOverloads) {
 					var types = overload.GetParameters ().Select (p => p.ParameterType).ToArray ();
-					int i = 0;
-					object[] objects = arguments.Select (p => registry.ConvertToNativeObject (p,
-						types [i++])).ToArray ();
+					object[] objects = new object[arguments.Length];
+					bool mappingExists = true;
+					for (int i = 0; i < arguments.Length; i++) {
+						if (!registry.TypeMappingExists (arguments [i].TypeDef, types [i])) {
+							mappingExists = false;
+							break;
+						}
+						objects [i] = registry.ConvertToNativeObject (arguments [i], types [i]);
+					}
+
+					if (mappingExists) {
+						return registry.ConvertToIodineObject (overload.Invoke (self, objects));
+					}
 				}
+				// No suitable overload found
+				Console.WriteLine ("No suitable overload found!");
+				return null;
 			}), null);
 		}
-		*/
+	
 	}
 }
 
