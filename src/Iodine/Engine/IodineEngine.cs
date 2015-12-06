@@ -29,6 +29,9 @@
 
 using System;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Collections.Generic;
 using Iodine.Compiler;
 using Iodine.Compiler.Ast;
 using Iodine.Runtime;
@@ -43,6 +46,7 @@ namespace Iodine.Engine
 		public readonly IodineContext Context;
 
 		private TypeRegistry typeRegistry = new TypeRegistry ();
+		private Dictionary<string, IodineModule> modules = new Dictionary<string, IodineModule> ();
 
 		public dynamic this [string name] {
 			get {
@@ -54,13 +58,14 @@ namespace Iodine.Engine
 		}
 
 		public IodineEngine ()
+			: this (IodineContext.Create ())
 		{
-			Context = IodineContext.Create ();
 		}
 
 		public IodineEngine (IodineContext context)
 		{
 			Context = context;
+			Context.ResolveModule += ResolveModule;
 		}
 
 		/// <summary>
@@ -86,6 +91,32 @@ namespace Iodine.Engine
 		}
 
 		/// <summary>
+		/// Registers an assembly, allowing all classes in this assembly to be
+		/// used from Iodine.
+		/// </summary>
+		/// <param name="assembly">The assembly.</param>
+		public void RegisterAssembly (Assembly assembly)
+		{
+			var classes = assembly.GetExportedTypes ().Where (p => p.IsClass);
+			foreach (Type type in classes) {
+				if (type.Namespace != "") {
+					string moduleName = type.Namespace.Contains (".") ? 
+						type.Namespace.Substring (type.Namespace.LastIndexOf (".") + 1) :
+						type.Namespace;
+					IodineModule module = null;
+					if (!modules.ContainsKey (type.Namespace)) {
+						module = new IodineModule (moduleName);
+						modules [type.Namespace] = module;
+					} else {
+						module = modules [type.Namespace];
+					}
+					module.SetAttribute (type.Name, ClassWrapper.CreateFromType (typeRegistry, type,
+						type.Name));
+				}
+			}
+		}
+
+		/// <summary>
 		/// Executes a string of Iodine source code
 		/// </summary>
 		/// <returns>The last object evaluated during the execute of the source.</returns>
@@ -101,7 +132,16 @@ namespace Iodine.Engine
 		{
 			IodineModule main = new IodineModule (Path.GetFileNameWithoutExtension (file));
 			DoString (File.ReadAllText (file));
-			return new IodineDynamicObject (main, Context.VirtualMachine, typeRegistry);
+			return IodineDynamicObject.Create (main, Context.VirtualMachine, typeRegistry);
+		}
+
+		private IodineModule ResolveModule (string path)
+		{
+			string moduleName = path.Replace ("\\", ".").Replace ("/", ".");
+			if (modules.ContainsKey (moduleName)) {
+				return modules [moduleName];
+			}
+			return null;
 		}
 
 		private dynamic GetMember (string name)

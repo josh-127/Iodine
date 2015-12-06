@@ -39,7 +39,7 @@ namespace Iodine.Engine
 		private IodineObject internalObject;
 		private VirtualMachine internalVm;
 
-		internal IodineDynamicObject (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
+		IodineDynamicObject (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
 		{
 			typeRegistry = registry;
 			internalObject = obj;
