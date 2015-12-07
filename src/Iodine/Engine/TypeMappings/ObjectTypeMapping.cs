@@ -32,17 +32,26 @@ using Iodine.Runtime;
 
 namespace Iodine.Engine
 {
-	class BoolTypeMapping : TypeMapping
+	class ObjectTypeMapping : TypeMapping
 	{
+		private ClassWrapper classWrapper;
+		private TypeRegistry typeRegistry;
+
+		public ObjectTypeMapping (ClassWrapper wrapper, TypeRegistry registry)
+		{
+			classWrapper = wrapper;
+			typeRegistry = registry;
+		}
+
 		public override object ConvertFrom (IodineObject obj)
 		{
-			IodineBool boolean = obj as IodineBool;
-			return boolean.Value;
+			ObjectWrapper wrapper = obj as ObjectWrapper;
+			return wrapper.Object;
 		}
 
 		public override IodineObject ConvertFrom (object obj)
 		{
-			return ((IodineBool)obj).Value ? IodineBool.True : IodineBool.False;
+			return ObjectWrapper.CreateFromObject (typeRegistry, classWrapper, obj);
 		}
 	}
 }

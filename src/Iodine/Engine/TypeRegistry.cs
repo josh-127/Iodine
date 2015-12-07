@@ -77,7 +77,8 @@ namespace Iodine.Engine
 
 			Type key = obj.GetType ();
 
-			TypeRegistryEntry entry = typeMappings.Where (p => p.NativeType == key).FirstOrDefault ();
+			TypeRegistryEntry entry = typeMappings.Where (p => p.NativeType.IsAssignableFrom (key))
+				.FirstOrDefault ();
 
 			if (entry != null) {
 				return entry.Mapping.ConvertFrom (obj);
@@ -104,7 +105,7 @@ namespace Iodine.Engine
 		public bool TypeMappingExists (IodineTypeDefinition from, Type to)
 		{
 			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == from &&
-				p.NativeType == to).FirstOrDefault ();
+				p.NativeType.IsAssignableFrom (to)).FirstOrDefault ();
 			return entry != null;
 		}
 

@@ -81,6 +81,9 @@ namespace Iodine.Engine
 					break;
 				}
 			}
+
+			registry.AddTypeMapping (type, wrapper, new ObjectTypeMapping (wrapper, registry));
+
 			return wrapper;
 		}
 
