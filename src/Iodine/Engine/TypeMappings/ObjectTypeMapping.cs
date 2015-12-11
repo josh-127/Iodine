@@ -43,13 +43,13 @@ namespace Iodine.Engine
 			typeRegistry = registry;
 		}
 
-		public override object ConvertFrom (IodineObject obj)
+		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
 			ObjectWrapper wrapper = obj as ObjectWrapper;
 			return wrapper.Object;
 		}
 
-		public override IodineObject ConvertFrom (object obj)
+		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
 			return ObjectWrapper.CreateFromObject (typeRegistry, classWrapper, obj);
 		}
