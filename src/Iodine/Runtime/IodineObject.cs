@@ -226,6 +226,9 @@ namespace Iodine.Runtime
 
 		public virtual IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
+			if (HasAttribute ("__invoke__")) {
+				return GetAttribute ("__invoke__").Invoke (vm, arguments);
+			}
 			vm.RaiseException (new IodineNotSupportedException (
 				"Object does not support invocation"));
 			return null;

@@ -152,7 +152,8 @@ namespace Iodine.Engine
 
 		private object[] ConvertToArray (IodineObject obj)
 		{
-			
+			// #TODO Implement this
+			return null;
 		}
 	}
 }

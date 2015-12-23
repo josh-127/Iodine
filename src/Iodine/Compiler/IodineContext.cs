@@ -38,7 +38,7 @@ namespace Iodine.Compiler
 	public delegate IodineModule ModuleResolveHandler (string name);
 
 	/// <summary>
-	/// Represent v
+	/// Global state for an Iodine interpreter instance
 	/// </summary>
 	public class IodineContext
 	{
@@ -163,12 +163,12 @@ namespace Iodine.Compiler
 		{
 			string extPath = FindExtension (name);
 			if (extPath != null) {
-				return LoadDll (name, extPath);
+				return LoadLibrary (name, extPath);
 			}
 			return null;
 		}
 
-		private static IodineModule LoadDll (string module, string dll)
+		private static IodineModule LoadLibrary (string module, string dll)
 		{
 			Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
 
