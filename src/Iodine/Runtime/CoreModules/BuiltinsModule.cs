@@ -63,7 +63,6 @@ namespace Iodine.Runtime
 			SetAttribute ("Bool", IodineBool.TypeDefinition);
 			SetAttribute ("Tuple", IodineTuple.TypeDefinition);
 			SetAttribute ("List", IodineList.TypeDefinition);
-			SetAttribute ("EventEmitter", IodineEventEmitter.TypeDefinition);
 			SetAttribute ("Object", new InternalMethodCallback (Object, null));
 			SetAttribute ("HashMap", IodineHashMap.TypeDefinition);
 			SetAttribute ("repr", new InternalMethodCallback (repr, null));

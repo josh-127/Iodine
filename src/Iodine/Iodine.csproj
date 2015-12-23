@@ -64,7 +64,6 @@
     <Compile Include="Runtime\CoreTypes\IodineName.cs" />
     <Compile Include="Runtime\CoreTypes\IodineList.cs" />
     <Compile Include="Runtime\IodineTypeDefinition.cs" />
-    <Compile Include="Runtime\CoreTypes\IodineEvent.cs" />
     <Compile Include="Runtime\CoreTypes\IodineTuple.cs" />
     <Compile Include="Runtime\CoreTypes\IodineNull.cs" />
     <Compile Include="Runtime\CoreModules\RandomModule.cs" />

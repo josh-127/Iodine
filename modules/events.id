@@ -1,0 +1,38 @@
+
+
+class EventEmitter {
+    func EventEmitter (self) {
+        self.dict = {};
+    }
+
+    func on (self, event, callback) {
+        self.dict [event] = callback;
+    }
+
+    func emit (self, event, *args) {
+        if (self.dict.contains (event)) {
+            self.dict [event] (*args);
+        }
+    }
+}
+
+class Event {
+    func Event (self) {
+        self._handlers = [];
+    }
+
+    func __invoke__ (self, *args) {
+        foreach (handler in self._handlers) {
+            handler (*args);
+        }   
+    }
+
+    func __add__ (self, callback) {
+        self._handlers.add (callback);
+        return self;
+    }
+
+    func __sub__ (self, callback) {
+        self._handlers.remove (callback);
+    }
+}
