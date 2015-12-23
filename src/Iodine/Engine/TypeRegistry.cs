@@ -62,6 +62,8 @@ namespace Iodine.Engine
 			AddTypeMapping (typeof(string), IodineString.TypeDefinition, new StringTypeMapping ());
 			AddTypeMapping (typeof(float), IodineFloat.TypeDefinition, new FloatTypeMapping ());
 			AddTypeMapping (typeof(double), IodineFloat.TypeDefinition, new DoubleTypeMapping ());
+			AddTypeMapping (null, IodineList.TypeDefinition, new ArrayTypeMapping ());
+			AddTypeMapping (null, IodineTuple.TypeDefinition, new ArrayTypeMapping ());
 		}
 
 		public void AddTypeMapping (Type type, IodineTypeDefinition iodineType, TypeMapping mapping)
@@ -117,7 +119,11 @@ namespace Iodine.Engine
 
 		public bool TypeMappingExists (IodineTypeDefinition from, Type to)
 		{
+			if (to.IsArray) {
+				return TypeMappingExists (from, to.GetElementType ());
+			}
 			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == from &&
+				p.NativeType != null &&
 				p.NativeType.IsAssignableFrom (to)).FirstOrDefault ();
 			return entry != null;
 		}
@@ -128,15 +134,25 @@ namespace Iodine.Engine
 				return null;
 			}
 
+			if (expectedType.IsArray) {
+
+			}
+
 			IodineTypeDefinition key = obj.TypeDef;
 
-			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == key &&
-				p.NativeType == expectedType).FirstOrDefault ();
+			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == key && 
+				p.NativeType != null &&
+				p.NativeType.IsAssignableFrom (expectedType)).FirstOrDefault ();
 
 			if (entry != null) {
 				return entry.Mapping.ConvertFrom (this, obj);
 			}
 			return null;
+		}
+
+		private object[] ConvertToArray (IodineObject obj)
+		{
+			
 		}
 	}
 }

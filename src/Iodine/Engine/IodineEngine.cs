@@ -86,6 +86,22 @@ namespace Iodine.Engine
 			Context.VirtualMachine.Globals [name] = wrapper;
 		}
 
+		/// <summary>
+		/// Registers a struct in the global namespace, allowing it to be
+		/// instantiated in Iodine 
+		/// </summary>
+		/// <param name="name">Name of the class.</param>
+		/// <typeparam name="T">The class.</typeparam>
+		public void RegisterStruct<T> (string name)
+			where T : struct
+		{
+			Type type = typeof(T);
+			ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
+			typeRegistry.AddTypeMapping (type, wrapper, null);
+			Context.VirtualMachine.Globals [name] = wrapper;
+		}
+
+
 		public void RegisterClass (Type type, string name)
 		{
 			ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
