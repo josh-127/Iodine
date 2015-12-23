@@ -71,7 +71,7 @@ namespace Iodine.Runtime
 		{
 			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			SetAttribute ("add", new InternalMethodCallback (add, this));
-			SetAttribute ("addRange", new InternalMethodCallback (add, this));
+			SetAttribute ("addRange", new InternalMethodCallback (addRange, this));
 			SetAttribute ("remove", new InternalMethodCallback (remove, this));
 			SetAttribute ("removeAt", new InternalMethodCallback (removeAt, this));
 			SetAttribute ("contains", new InternalMethodCallback (contains, this));
