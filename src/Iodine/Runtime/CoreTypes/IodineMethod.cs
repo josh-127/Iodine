@@ -63,6 +63,11 @@ namespace Iodine.Runtime
 			Self = self;
 		}
 
+		public void Rewrap (IodineObject newSelf)
+		{
+			Self = newSelf;
+		}
+
 		public override bool IsCallable ()
 		{
 			return true;

@@ -94,8 +94,17 @@ namespace Iodine.Runtime
 			foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
 				if (!self.HasAttribute (kv.Key))
 					self.SetAttribute (kv.Key, kv.Value);
-				if (!obj.HasAttribute (kv.Key))
+				if (!obj.HasAttribute (kv.Key)) {
 					obj.SetAttribute (kv.Key, kv.Value);
+				}
+			}
+			Dictionary<string, IodineObject> childAttributes = obj.Attributes;
+
+			foreach (KeyValuePair<string, IodineObject> kv in childAttributes) {
+				if (kv.Value is IodineInstanceMethodWrapper) {
+					IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)kv.Value;
+					wrapper.Rewrap (self);
+				}
 			}
 			self.SetAttribute ("__super__", obj);
 			self.Base = obj;
