@@ -982,6 +982,8 @@ namespace Iodine.Compiler
 				return ParseCallSubscriptAccess (stream, ParseIndexer (lvalue, stream));
 			} else if (stream.Match (TokenClass.Operator, ".")) {
 				return ParseCallSubscriptAccess (stream, ParseGet (lvalue, stream));
+			} else if (stream.Match (TokenClass.Operator, ".?")) {
+				return ParseCallSubscriptAccess (stream, ParseGetOrNull (lvalue, stream));
 			}
 			return lvalue;
 		}
@@ -1129,6 +1131,13 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.Operator, ".");
 			Token ident = stream.Expect (TokenClass.Identifier);
 			return new GetExpression (stream.Location, lvalue, ident.Value);
+		}
+
+		private static AstNode ParseGetOrNull (AstNode lvalue, TokenStream stream)
+		{
+			stream.Expect (TokenClass.Operator, ".?");
+			Token ident = stream.Expect (TokenClass.Identifier);
+			return new GetDefaultExpression (stream.Location, lvalue, ident.Value);
 		}
 
 		public static SuperCallExpression ParseSuperCall (TokenStream stream, ClassDeclaration parent)

@@ -156,6 +156,7 @@ namespace Iodine.Compiler
 				SourceUnit source = SourceUnit.CreateFromFile (modulePath);
 				return source.Compile (this);
 			}
+
 			return null;
 		}
 
@@ -192,6 +193,11 @@ namespace Iodine.Compiler
 					return expectedName;
 				}
 			}
+
+			if (File.Exists (moduleName)) {
+				return moduleName;
+			}
+
 			// Module not found!
 			return null;
 		}

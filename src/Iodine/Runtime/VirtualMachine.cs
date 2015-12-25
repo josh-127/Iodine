@@ -391,6 +391,17 @@ namespace Iodine.Runtime
 					Push (target.GetAttribute (this, attribute));
 					break;
 				}
+			case Opcode.LoadAttributeOrNull:
+				{
+					IodineObject target = Pop ();
+					string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
+					if (target.Attributes.ContainsKey (attribute)) {
+						Push (target.GetAttribute (this, attribute));
+					} else {
+						Push (IodineNull.Instance);
+					}
+					break;
+				}
 			case Opcode.StoreIndex:
 				{
 					IodineObject index = Pop ();

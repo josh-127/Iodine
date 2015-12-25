@@ -204,6 +204,8 @@
     <Compile Include="Engine\TypeMappings\CharTypeMapping.cs" />
     <Compile Include="Engine\TypeMappings\ObjectTypeMapping.cs" />
     <Compile Include="Engine\TypeMappings\ArrayTypeMapping.cs" />
+    <Compile Include="Runtime\InternalIodineProperty.cs" />
+    <Compile Include="Compiler\Parser\Ast\GetDefaultExpression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

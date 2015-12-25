@@ -48,6 +48,7 @@ namespace Iodine.Runtime
 		StoreLocal,
 		LoadGlobal,
 		StoreGlobal,
+		LoadAttributeOrNull,
 		LoadAttribute,
 		StoreAttribute,
 		LoadIndex,

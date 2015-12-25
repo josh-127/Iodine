@@ -49,6 +49,7 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
+			vm.RaiseException (new IodineNotSupportedException ());
 			return null;
 		}
 

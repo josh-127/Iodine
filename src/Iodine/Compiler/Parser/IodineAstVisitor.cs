@@ -74,6 +74,10 @@ namespace Iodine.Compiler
 		{
 		}
 
+		public virtual void Accept (GetDefaultExpression getAttr)
+		{
+		}
+
 		public virtual void Accept (IntegerExpression integer)
 		{
 		}

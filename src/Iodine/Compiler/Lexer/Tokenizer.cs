@@ -347,6 +347,7 @@ namespace Iodine.Compiler
 			case "??":
 			case "..":
 			case "|>":
+			case ".?":
 				ReadChar ();
 				return new Token (TokenClass.Operator, nextTwoChars, location);
 			default:

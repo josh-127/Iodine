@@ -41,16 +41,18 @@ namespace Iodine.Runtime
 	{
 		public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
 
-		public IodineObject Base { set; get; }
-		public List<IodineInterface> Interfaces { set; get; }
-
 		public readonly IodineTypeDefinition TypeDef;
 		public readonly Dictionary<string, IodineObject> Attributes = new Dictionary<string, IodineObject> ();
+
+		private List<IodineInterface> interfaces = new List<IodineInterface> ();
+
+		public IodineObject Base { set; get; }
+
+		public readonly List<IodineInterface> Interfaces = new List<IodineInterface> ();
 
 		public IodineObject (IodineTypeDefinition typeDef)
 		{
 			TypeDef = typeDef;
-			Interfaces = new List<IodineInterface> ();
 			Attributes ["__type__"] = typeDef;
 			if (typeDef != null) {
 				typeDef.BindAttributes (this);

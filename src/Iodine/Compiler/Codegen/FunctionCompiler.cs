@@ -226,6 +226,13 @@ namespace Iodine.Compiler
 				methodBuilder.Module.DefineConstant (new IodineName (getAttr.Field)));
 		}
 
+		public override void Accept (GetDefaultExpression getAttr)
+		{
+			getAttr.Target.Visit (this);
+			methodBuilder.EmitInstruction (getAttr.Location, Opcode.LoadAttributeOrNull,
+				methodBuilder.Module.DefineConstant (new IodineName (getAttr.Field)));
+		}
+
 		public override void Accept (IntegerExpression integer)
 		{
 			methodBuilder.EmitInstruction (integer.Location, Opcode.LoadConst, 
