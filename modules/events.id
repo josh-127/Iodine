@@ -1,5 +1,11 @@
+# File        : events.id
+# Name        : events
+# Author      : GruntTheDivine
+# Description : Provides several classes for event handling and dispatch
 
 
+# Class       : EventEmitter
+# Description : Provides a node.js like EventEmitter class
 class EventEmitter {
     func EventEmitter (self) {
         self.dict = {};
@@ -9,6 +15,17 @@ class EventEmitter {
         self.dict [event] = callback;
     }
 
+    func once (self, event, callback) {
+        self.dict [event] = lambda (*args) {
+            callback (*args);
+            self.dict.remove (event);
+        };
+    }
+
+    func remove (self, callback) {
+        self.dict.remove (callback);
+    }
+
     func emit (self, event, *args) {
         if (self.dict.contains (event)) {
             self.dict [event] (*args);
@@ -16,6 +33,9 @@ class EventEmitter {
     }
 }
 
+
+# Class       : Event
+# Description : Provides a class for a single event
 class Event {
     func Event (self) {
         self._handlers = [];
