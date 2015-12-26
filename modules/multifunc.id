@@ -1,0 +1,81 @@
+###
+# File        : multifunc.id
+# Author      : GruntTheDivine
+# Description : Provides classes for implementing function overloading
+###
+
+class OverloadException : Exception {
+    func OverloadException (self) {
+        super ("No suitable overload was found!");
+    }   
+}
+
+class MultiFunc {
+    func MultiFunc (self) {
+        self._dispatchTable = {};
+        self._default = lambda (args) {
+            raise OverloadException ();
+        };
+    }
+
+    func define (self, method, argc) {
+        self._dispatchTable [argc] = method;   
+    }
+
+    func defineDefault (self, meth) {
+        self._default = meth;
+    }
+
+    func __invoke__ (self, *args) {
+        size = len (args);
+        if (self._dispatchTable.contains (size)) {
+            self._dispatchTable [size] (*args);
+        } else {
+            self._default (args);
+        }   
+    }
+}
+
+class TypedMultiFunc {
+    class TypedOverload {
+        func TypedOverload (self, method, types) {
+            self._types = types;
+            self._method = method;
+        }
+
+
+        func isMatch (self, args) {
+            if (len (args) != len (self._types)) {
+                return false;
+            }
+
+            foreach (i in 0 .. len (args)) {
+                if (args [i] isnot self._types [i]) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    func TypedMultiFunc (self) {
+        self._dispatchTable = [];
+        self._default = lambda (args) {
+            raise OverloadException ();
+        }
+    }
+
+    func define (self, method, *typeList) {
+        self._dispatchTable.add (TypedMultiFunc.TypedOverload (method, typeList));
+    }
+
+    func __invoke__ (self, *args) {
+        matches = filter (self._dispatchTable, lambda (p) => p.isMatch (args));
+        if (len (matches) == 0) {
+            self._default (args);
+        } else {
+            matches [0]._method (*args);
+        }
+    }
+}
