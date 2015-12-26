@@ -26,22 +26,42 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-
 using System;
+using System.Reflection;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class Int32TypeMapping : TypeMapping
+	class PropertyWrapper : IodineObject, IIodineProperty
 	{
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
+		private object self;
+		private PropertyInfo propertyInfo;
+		private TypeRegistry typeRegistry;
+
+		private PropertyWrapper (TypeRegistry registry, PropertyInfo property, object self)
+			: base (IodineProperty.TypeDefinition)
 		{
-			return (Int32)((IodineInteger)obj).Value;
+			typeRegistry = registry;
+			propertyInfo = property;
+			this.self = self;
 		}
 
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
+		public IodineObject Set (VirtualMachine vm, IodineObject value)
 		{
-			return new IodineInteger (Convert.ToInt64 (obj));
+			propertyInfo.SetValue (self, typeRegistry.ConvertToNativeObject (value,
+				propertyInfo.PropertyType));
+			return null;
+		}
+
+		public IodineObject Get (VirtualMachine vm)
+		{
+			return typeRegistry.ConvertToIodineObject (propertyInfo.GetValue (self));
+		}
+
+		public static PropertyWrapper Create (TypeRegistry registry, PropertyInfo property,
+			object self = null)
+		{
+			return new PropertyWrapper (registry, property, self);
 		}
 	}
 }

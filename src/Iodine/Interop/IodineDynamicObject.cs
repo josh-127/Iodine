@@ -28,30 +28,61 @@
 **/
 
 using System;
+using System.Dynamic;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class ObjectTypeMapping : TypeMapping
+	class IodineDynamicObject : DynamicObject
 	{
-		private ClassWrapper classWrapper;
 		private TypeRegistry typeRegistry;
+		private IodineObject internalObject;
+		private VirtualMachine internalVm;
 
-		public ObjectTypeMapping (ClassWrapper wrapper, TypeRegistry registry)
+		IodineDynamicObject (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
 		{
-			classWrapper = wrapper;
 			typeRegistry = registry;
+			internalObject = obj;
+			internalVm = vm;
 		}
 
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
+		public override bool TryGetMember (GetMemberBinder binder, out object result)
 		{
-			ObjectWrapper wrapper = obj as ObjectWrapper;
-			return wrapper.Object;
+			if (internalObject.HasAttribute (binder.Name)) {
+				IodineObject obj = internalObject.GetAttribute (binder.Name);
+				result = typeRegistry.ConvertToNativeObject (obj);
+				return true;
+			}
+			result = null;
+			return true;
 		}
 
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
+		public override bool TrySetMember (SetMemberBinder binder, object value)
 		{
-			return ObjectWrapper.CreateFromObject (typeRegistry, classWrapper, obj);
+			IodineObject val = typeRegistry.ConvertToIodineObject (value);
+			internalObject.SetAttribute (binder.Name, val);
+			return true;
+		}
+
+		public override bool TryInvoke (InvokeBinder binder, object[] args, out object result)
+		{
+			IodineObject[] arguments = new IodineObject[args.Length];
+			for (int i = 0; i < args.Length; i++) {
+				arguments [i] = typeRegistry.ConvertToIodineObject (args [i]);
+			}
+			IodineObject returnVal = internalObject.Invoke (internalVm, arguments);
+			result = typeRegistry.ConvertToNativeObject (returnVal);
+			return true;
+		}
+
+		public override string ToString ()
+		{
+			return internalObject.Represent (internalVm).ToString ();
+		}
+
+		internal static IodineDynamicObject Create (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
+		{
+			return new IodineDynamicObject (obj, vm, registry);
 		}
 	}
 }

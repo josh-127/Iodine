@@ -30,18 +30,18 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class StringTypeMapping : TypeMapping
+	class FloatTypeMapping : TypeMapping
 	{
 		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
-			return ((IodineString)obj).Value;
+			return (Single)((IodineFloat)obj).Value;
 		}
 
 		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
-			return new IodineString (obj.ToString ());
+			return new IodineFloat (Convert.ToDouble (obj));
 		}
 	}
 }

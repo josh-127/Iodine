@@ -28,61 +28,20 @@
 **/
 
 using System;
-using System.Dynamic;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class IodineDynamicObject : DynamicObject
+	class DoubleTypeMapping : TypeMapping
 	{
-		private TypeRegistry typeRegistry;
-		private IodineObject internalObject;
-		private VirtualMachine internalVm;
-
-		IodineDynamicObject (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
+		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
-			typeRegistry = registry;
-			internalObject = obj;
-			internalVm = vm;
+			return ((IodineFloat)obj).Value;
 		}
 
-		public override bool TryGetMember (GetMemberBinder binder, out object result)
+		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
-			if (internalObject.HasAttribute (binder.Name)) {
-				IodineObject obj = internalObject.GetAttribute (binder.Name);
-				result = typeRegistry.ConvertToNativeObject (obj);
-				return true;
-			}
-			result = null;
-			return true;
-		}
-
-		public override bool TrySetMember (SetMemberBinder binder, object value)
-		{
-			IodineObject val = typeRegistry.ConvertToIodineObject (value);
-			internalObject.SetAttribute (binder.Name, val);
-			return true;
-		}
-
-		public override bool TryInvoke (InvokeBinder binder, object[] args, out object result)
-		{
-			IodineObject[] arguments = new IodineObject[args.Length];
-			for (int i = 0; i < args.Length; i++) {
-				arguments [i] = typeRegistry.ConvertToIodineObject (args [i]);
-			}
-			IodineObject returnVal = internalObject.Invoke (internalVm, arguments);
-			result = typeRegistry.ConvertToNativeObject (returnVal);
-			return true;
-		}
-
-		public override string ToString ()
-		{
-			return internalObject.Represent (internalVm).ToString ();
-		}
-
-		internal static IodineDynamicObject Create (IodineObject obj, VirtualMachine vm, TypeRegistry registry)
-		{
-			return new IodineDynamicObject (obj, vm, registry);
+			return new IodineFloat (Convert.ToDouble (obj));
 		}
 	}
 }

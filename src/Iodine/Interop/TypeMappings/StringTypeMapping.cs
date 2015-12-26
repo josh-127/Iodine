@@ -30,18 +30,18 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class Int16TypeMapping : TypeMapping
+	class StringTypeMapping : TypeMapping
 	{
 		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
-			return (Int16)((IodineInteger)obj).Value;
+			return ((IodineString)obj).Value;
 		}
 
 		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
-			return new IodineInteger (Convert.ToInt64 (obj));
+			return new IodineString (obj.ToString ());
 		}
 	}
 }

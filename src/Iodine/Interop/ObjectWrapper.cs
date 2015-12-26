@@ -26,22 +26,62 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-
 using System;
+using System.Linq;
+using System.Reflection;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class FloatTypeMapping : TypeMapping
+	class ObjectWrapper : IodineObject
 	{
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
+		public readonly object Object;
+
+		public ObjectWrapper (ClassWrapper clazz, object self)
+			: base (clazz)
 		{
-			return (Single)((IodineFloat)obj).Value;
+			Object = self;
 		}
 
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
+		public static ObjectWrapper CreateFromObject (TypeRegistry registry, ClassWrapper clazz, object obj)
 		{
-			return new IodineFloat (Convert.ToDouble (obj));
+			Type type = obj.GetType ();
+			ObjectWrapper wrapper = new ObjectWrapper (clazz, obj);
+			foreach (MemberInfo info in type.GetMembers (BindingFlags.Instance | BindingFlags.Public)) {
+				switch (info.MemberType) {
+				case MemberTypes.Method:
+					if (!wrapper.HasAttribute (info.Name)) {
+						wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, obj,
+							info.Name));
+					}
+					break;
+				case MemberTypes.Field:
+					wrapper.SetAttribute (info.Name, FieldWrapper.Create (registry, (FieldInfo)info,
+						obj));
+					break;
+				case MemberTypes.Property:
+					wrapper.SetAttribute (info.Name, PropertyWrapper.Create (registry, (PropertyInfo)info,
+						obj));
+					break;
+				}
+			}
+			return wrapper;
+		}
+
+		private static InternalMethodCallback CreateMultiMethod (TypeRegistry registry,
+			Type type,
+			object self, 
+			string name)
+		{
+			var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Instance)
+				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
+				.Select (p => (MethodInfo)p);
+			
+			if (methods.Count () > 1) {
+				return MethodWrapper.Create (registry, methods, self); 
+			} else {
+				return MethodWrapper.Create (registry, methods.First (), self); 
+			}
 		}
 	}
 }

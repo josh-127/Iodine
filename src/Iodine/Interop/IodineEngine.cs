@@ -36,7 +36,7 @@ using Iodine.Compiler;
 using Iodine.Compiler.Ast;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
 	public sealed class IodineEngine
 	{

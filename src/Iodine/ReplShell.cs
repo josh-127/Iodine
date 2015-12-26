@@ -33,7 +33,7 @@ using System.Reflection;
 using Iodine.Compiler;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
 	public sealed class ReplShell
 	{

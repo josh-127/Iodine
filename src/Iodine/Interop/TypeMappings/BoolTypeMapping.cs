@@ -30,9 +30,9 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class ArrayTypeMapping : TypeMapping
+	class BoolTypeMapping : TypeMapping
 	{
 		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
@@ -42,12 +42,7 @@ namespace Iodine.Engine
 
 		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
-			object[] arr = (object[])obj;
-			IodineObject[] iodineObjects = new IodineObject[arr.Length];
-			for (int i = 0; i < arr.Length; i++) {
-				iodineObjects [i] = registry.ConvertToIodineObject (arr [i]);
-			}
-			return new IodineList (iodineObjects);
+			return ((IodineBool)obj).Value ? IodineBool.True : IodineBool.False;
 		}
 	}
 }

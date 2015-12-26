@@ -27,36 +27,40 @@
   * DAMAGE.
 **/
 using System;
+using System.Reflection;
+using Iodine.Runtime;
 
-namespace Iodine.Runtime
+namespace Iodine.Interop
 {
-	public delegate IodineObject IodineGetter ();
-	public delegate void IodineSetter (IodineObject value);
-
-	public class InternalIodineProperty : IodineObject, IIodineProperty
+	class FieldWrapper : IodineObject, IIodineProperty
 	{
-		private IodineGetter getter;
-		private IodineSetter setter;
+		private object self;
+		private FieldInfo fieldInfo;
+		private TypeRegistry typeRegistry;
 
-		public InternalIodineProperty (IodineGetter getter, IodineSetter setter)
+		private FieldWrapper (TypeRegistry registry, FieldInfo field, object self)
 			: base (IodineProperty.TypeDefinition)
 		{
-			this.getter = getter;
-			this.setter = setter;
+			typeRegistry = registry;
+			fieldInfo = field;
+			this.self = self;
 		}
-
 
 		public IodineObject Set (VirtualMachine vm, IodineObject value)
 		{
-			setter (value);
+			fieldInfo.SetValue (self, typeRegistry.ConvertToNativeObject (value, fieldInfo.FieldType));
 			return null;
 		}
 
 		public IodineObject Get (VirtualMachine vm)
 		{
-			return getter ();
+			return typeRegistry.ConvertToIodineObject (fieldInfo.GetValue (self));
 		}
-	
+
+		public static FieldWrapper Create (TypeRegistry registry, FieldInfo field, object self = null)
+		{
+			return new FieldWrapper (registry, field, self);
+		}
 	}
 }
 

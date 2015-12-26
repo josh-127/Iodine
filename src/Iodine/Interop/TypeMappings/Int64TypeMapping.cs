@@ -30,18 +30,18 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class DoubleTypeMapping : TypeMapping
+	class Int64TypeMapping : TypeMapping
 	{
 		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
-			return ((IodineFloat)obj).Value;
+			return ((IodineInteger)obj).Value;
 		}
 
 		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
-			return new IodineFloat (Convert.ToDouble (obj));
+			return new IodineInteger (Convert.ToInt64 (obj));
 		}
 	}
 }

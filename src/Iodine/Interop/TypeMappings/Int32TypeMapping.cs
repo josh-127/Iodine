@@ -30,19 +30,18 @@
 using System;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class BoolTypeMapping : TypeMapping
+	class Int32TypeMapping : TypeMapping
 	{
 		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
-			IodineBool boolean = obj as IodineBool;
-			return boolean.Value;
+			return (Int32)((IodineInteger)obj).Value;
 		}
 
 		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
-			return ((IodineBool)obj).Value ? IodineBool.True : IodineBool.False;
+			return new IodineInteger (Convert.ToInt64 (obj));
 		}
 	}
 }

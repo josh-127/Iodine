@@ -26,23 +26,15 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-
 using System;
 using Iodine.Runtime;
 
-namespace Iodine.Engine
+namespace Iodine.Interop
 {
-	class CharTypeMapping : TypeMapping
+	public abstract class TypeMapping
 	{
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
-		{
-			return Convert.ToChar (obj.ToString ());
-		}
-
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
-		{
-			return new IodineString (Convert.ToChar (obj).ToString ());
-		}
+		public abstract IodineObject ConvertFrom (TypeRegistry registry, object obj);
+		public abstract object ConvertFrom (TypeRegistry registry, IodineObject obj);
 	}
 }
 

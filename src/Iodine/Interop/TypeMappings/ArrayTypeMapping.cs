@@ -26,37 +26,29 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
+
 using System;
+using Iodine.Runtime;
 
-namespace Iodine.Runtime
+namespace Iodine.Interop
 {
-	public delegate IodineObject IodineGetter ();
-	public delegate void IodineSetter (IodineObject value);
-
-	public class InternalIodineProperty : IodineObject, IIodineProperty
+	class ArrayTypeMapping : TypeMapping
 	{
-		private IodineGetter getter;
-		private IodineSetter setter;
-
-		public InternalIodineProperty (IodineGetter getter, IodineSetter setter)
-			: base (IodineProperty.TypeDefinition)
+		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
 		{
-			this.getter = getter;
-			this.setter = setter;
+			IodineBool boolean = obj as IodineBool;
+			return boolean.Value;
 		}
 
-
-		public IodineObject Set (VirtualMachine vm, IodineObject value)
+		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
 		{
-			setter (value);
-			return null;
+			object[] arr = (object[])obj;
+			IodineObject[] iodineObjects = new IodineObject[arr.Length];
+			for (int i = 0; i < arr.Length; i++) {
+				iodineObjects [i] = registry.ConvertToIodineObject (arr [i]);
+			}
+			return new IodineList (iodineObjects);
 		}
-
-		public IodineObject Get (VirtualMachine vm)
-		{
-			return getter ();
-		}
-	
 	}
 }
 
