@@ -6,6 +6,14 @@
 # Please add yourself as author if you make changes
 ###
 
+#############################
+# THIS MODULE IS DEPRECATED #
+#############################
+
+# All of the functionality of this module has been 
+# implemented in the core library, so this class
+# really shouldn't be used anymore
+
 use * from reflection
 
 ###

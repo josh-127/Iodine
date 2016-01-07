@@ -26,13 +26,17 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
+
 using System;
 
 namespace Iodine.Runtime
 {
-	public delegate IodineObject IodineGetter ();
-	public delegate void IodineSetter (IodineObject value);
+	public delegate IodineObject IodineGetter (VirtualMachine vm);
+	public delegate void IodineSetter (VirtualMachine vm, IodineObject value);
 
+	/// <summary>
+	/// Class allowing the creation of Iodine properities in C#
+	/// </summary>
 	public class InternalIodineProperty : IodineObject, IIodineProperty
 	{
 		private IodineGetter getter;
@@ -48,13 +52,13 @@ namespace Iodine.Runtime
 
 		public IodineObject Set (VirtualMachine vm, IodineObject value)
 		{
-			setter (value);
+			setter (vm, value);
 			return null;
 		}
 
 		public IodineObject Get (VirtualMachine vm)
 		{
-			return getter ();
+			return getter (vm);
 		}
 	
 	}

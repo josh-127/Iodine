@@ -31,6 +31,10 @@ using System;
 
 namespace Iodine.Runtime
 {
+	/// <summary>
+	/// Interface for Iodine properties (Any IodineObject implementing this interface will
+	/// be treated as a property when accessed)
+	/// </summary>
 	public interface IIodineProperty
 	{
 		IodineObject Set (VirtualMachine vm, IodineObject value);

@@ -26,6 +26,7 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
+
 using System;
 using System.IO;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Global state for an Iodine interpreter instance
 	/// </summary>
-	public class IodineContext
+	public sealed class IodineContext
 	{
 		public readonly ErrorLog ErrorLog;
 		public readonly VirtualMachine VirtualMachine;
@@ -52,11 +53,21 @@ namespace Iodine.Compiler
 		 */
 		public readonly List<string> SearchPath = new List<string> ();
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> can use the 
+		/// built in Iodine standard library.
+		/// </summary>
+		/// <value><c>true</c> if allow builtins; otherwise, <c>false</c>.</value>
 		public bool AllowBuiltins { 
 			set;
 			get;
 		}
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> should optimize bytecode 
+		/// after compilation.
+		/// </summary>
+		/// <value><c>true</c> if should optimize; otherwise, <c>false</c>.</value>
 		public bool ShouldOptimize {
 			set;
 			get;
@@ -89,6 +100,7 @@ namespace Iodine.Compiler
 			if (iodinePath != null) {
 				SearchPath.AddRange (iodinePath.Split (':'));
 			}
+			// Defaults
 			ShouldOptimize = true;
 			AllowBuiltins = true;
 		}
@@ -145,6 +157,9 @@ namespace Iodine.Compiler
 			return module;
 		}
 
+		/// <summary>
+		/// Creates a new Iodine context
+		/// </summary>
 		public static IodineContext Create ()
 		{
 			return new IodineContext ();

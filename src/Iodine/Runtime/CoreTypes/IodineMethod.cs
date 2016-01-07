@@ -124,6 +124,7 @@ namespace Iodine.Runtime
 			LocalCount = localCount;
 			InstanceMethod = isInstance;
 			Parameters = new Dictionary<string, int> ();
+			SetAttribute ("__module__", module);
 		}
 
 		public IodineMethod (IodineMethod parent, IodineModule module, string name, bool isInstance, int parameterCount,

@@ -69,8 +69,8 @@ func openUrl (url) {
 }
 
 func normalizeUrl (url) {
-  input = url
-  lower_url = input
+  input_url = url
+  lower_url = input_url
   protocol = _getUrlProtocol (lower_url)
   base = _getUrlBase (lower_url)
   base = _optUrlBase (base)
@@ -152,7 +152,7 @@ func _optUrlBase (url) {
 
 func _optUrlTail (url) {
   n = 0
-  inc = lambda () => {
+  inc = lambda () {
     prevn = n
     n = n + 1
     return hex (prevn)

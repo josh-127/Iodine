@@ -68,6 +68,7 @@ namespace Iodine.Runtime
 			Name = name;
 			Initializer = new IodineMethod (this, "__init__", false, 0, 0);
 			Attributes ["__init__"] = Initializer;
+			Attributes ["__name__"] = new IodineString (name);
 		}
 
 		public void AddMethod (IodineMethod method)

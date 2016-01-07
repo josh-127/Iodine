@@ -29,6 +29,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Iodine.Runtime
@@ -43,6 +44,12 @@ namespace Iodine.Runtime
 			// TODO: Make path accessible
 			//SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
 			SetAttribute ("exit", new InternalMethodCallback (exit, this));
+			SetAttribute ("path", new InternalIodineProperty (getPath, null));
+		}
+
+		private IodineObject getPath (VirtualMachine vm)
+		{
+			return new IodineTuple (vm.Context.SearchPath.Select (p => new IodineString (p)).ToArray ());
 		}
 
 		private IodineObject exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
