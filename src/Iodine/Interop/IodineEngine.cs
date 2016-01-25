@@ -176,6 +176,16 @@ namespace Iodine.Interop
 			return IodineDynamicObject.Create (ret, Context.VirtualMachine, typeRegistry);
 		}
 
+		public dynamic Call (IodineObject obj, params object[] args)
+		{
+			IodineObject[] arguments = new IodineObject[args.Length];
+			for (int i = 0; i < args.Length; i++) {
+				arguments [i] = typeRegistry.ConvertToIodineObject (args [i]);
+			}
+			IodineObject ret = Context.Invoke (obj, arguments);
+			return IodineDynamicObject.Create (ret, Context.VirtualMachine, typeRegistry);
+		}
+
 		public T Call<T> (string name, params object[] args)
 		{
 			IodineObject[] arguments = new IodineObject[args.Length];
