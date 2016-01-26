@@ -62,8 +62,8 @@ namespace Iodine.Interop
 			AddTypeMapping (typeof(string), IodineString.TypeDefinition, new StringTypeMapping ());
 			AddTypeMapping (typeof(float), IodineFloat.TypeDefinition, new FloatTypeMapping ());
 			AddTypeMapping (typeof(double), IodineFloat.TypeDefinition, new DoubleTypeMapping ());
-			AddTypeMapping (null, IodineList.TypeDefinition, new ArrayTypeMapping ());
-			AddTypeMapping (null, IodineTuple.TypeDefinition, new ArrayTypeMapping ());
+			//AddTypeMapping (null, IodineList.TypeDefinition, new ArrayTypeMapping ());
+			//AddTypeMapping (null, IodineTuple.TypeDefinition, new ArrayTypeMapping ());
 		}
 
 		public void AddTypeMapping (Type type, IodineTypeDefinition iodineType, TypeMapping mapping)
