@@ -116,7 +116,7 @@ namespace Iodine.Interop
 		/// <param name="assembly">The assembly.</param>
 		public void RegisterAssembly (Assembly assembly)
 		{
-			var classes = assembly.GetExportedTypes ().Where (p => p.IsClass || p.IsValueType);
+			var classes = assembly.GetExportedTypes ().Where (p => p.IsClass || p.IsValueType || p.IsInterface);
 			foreach (Type type in classes) {
 				if (type.Namespace != "") {
 					string moduleName = type.Namespace.Contains (".") ? 
