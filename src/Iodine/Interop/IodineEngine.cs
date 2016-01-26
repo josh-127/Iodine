@@ -129,8 +129,11 @@ namespace Iodine.Interop
 					} else {
 						module = modules [type.Namespace];
 					}
-					module.SetAttribute (type.Name, ClassWrapper.CreateFromType (typeRegistry, type,
-						type.Name));
+					ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type,
+						type.Name);
+					module.SetAttribute (type.Name, wrapper);
+					typeRegistry.AddTypeMapping (type, ClassWrapper.ObjectTypeDef, new ObjectTypeMapping (wrapper, typeRegistry));
+					
 				}
 			}
 		}
