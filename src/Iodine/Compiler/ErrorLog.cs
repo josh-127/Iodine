@@ -65,13 +65,12 @@ namespace Iodine.Compiler
 		/// <summary>
 		/// Adds the error.
 		/// </summary>
-		/// <param name="etype">Error type.</param>
-		/// <param name="location">Error location.</param>
-		/// <param name="format">Format.</param>
+		/// <param name="error">Error.</param>
+		/// <param name="location">Location.</param>
 		/// <param name="args">Arguments.</param>
-		public void AddError (ErrorType etype, SourceLocation location, string format, params object[] args)
+		public void AddError (Errors error, SourceLocation location, params object[] args)
 		{
-			errors.Add (new Error (etype, location, String.Format (format, args)));
+			errors.Add (new Error (error, location, args));
 			ErrorCount++;
 		}
 

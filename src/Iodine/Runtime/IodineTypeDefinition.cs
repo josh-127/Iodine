@@ -78,6 +78,9 @@ namespace Iodine.Runtime
 
 		public IodineObject BindAttributes (IodineObject obj)
 		{
+			if (Name == "ConsoleFrontendBase") {
+				Console.Write ("");
+			}
 			foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
 				if (!obj.HasAttribute (kv.Key))
 					obj.SetAttribute (kv.Key, kv.Value);

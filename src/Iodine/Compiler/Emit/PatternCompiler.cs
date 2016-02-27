@@ -37,23 +37,23 @@ using Iodine.Runtime;
 namespace Iodine.Compiler
 {
 	/// <summary>
-	/// Responsible for compiling a pattern inside a pattern matching
+	/// Responsible for compiling a pattern inside a pattern matching expression
 	/// </summary>
 	class PatternCompiler : IodineAstVisitor
 	{
 		private IodineAstVisitor parentVisitor;
-		private IodineMethod methodBuilder;
-		private SymbolTable symbolTable;
+		private MethodBuilder methodBuilder;
+		private EmitContext context;
 		private int temporary; 
 
-		public PatternCompiler (SymbolTable symbolTable,
-			IodineMethod methodBuilder,
+		public PatternCompiler (EmitContext context,
+			MethodBuilder methodBuilder,
 			int temporary,
 			IodineAstVisitor parent)
 		{
 			parentVisitor = parent;
+			this.context = context;
 			this.methodBuilder = methodBuilder;
-			this.symbolTable = symbolTable;
 			this.temporary = temporary;
 		}
 
@@ -62,7 +62,7 @@ namespace Iodine.Compiler
 			ast.Visit (parentVisitor);
 		}
 
-		public override void Accept (AstRoot ast)
+		public override void Accept (CompilationUnit ast)
 		{
 			ast.VisitChildren (this);
 		}
@@ -117,7 +117,7 @@ namespace Iodine.Compiler
 			} else {
 				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, temporary);
 				methodBuilder.EmitInstruction (ident.Location, Opcode.StoreLocal,
-					symbolTable.GetSymbol (ident.Value).Index);
+					context.SymbolTable.GetSymbol (ident.Value).Index);
 				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadTrue);
 			}
 		}
@@ -204,17 +204,21 @@ namespace Iodine.Compiler
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
 			int item = methodBuilder.CreateTemporary ();
 
-			PatternCompiler compiler = new PatternCompiler (symbolTable, methodBuilder,
+			PatternCompiler compiler = new PatternCompiler (context,
+				methodBuilder,
 				item,
-				parentVisitor);
+				parentVisitor
+			);
 			
 			for (int i = 0; i < tuple.Children.Count; i++) {
 				if (tuple.Children [i] is NameExpression &&
 					((NameExpression)tuple.Children [i]).Value == "_")
 					continue;
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadLocal, temporary);
-				methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadConst,
-					methodBuilder.Module.DefineConstant (new IodineInteger (i)));
+				methodBuilder.EmitInstruction (tuple.Location,
+					Opcode.LoadConst,
+					context.CurrentModule.DefineConstant (new IodineInteger (i))
+				);
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadIndex);
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.StoreLocal, item);
 				tuple.Children [i].Visit (compiler);

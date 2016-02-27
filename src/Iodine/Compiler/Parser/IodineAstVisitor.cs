@@ -32,13 +32,21 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
+	/// <summary>
+	/// Abstract class for implementing a visitor pattern to walk an Iodine abstract syntax
+	/// tree.
+	/// </summary>
 	public abstract class IodineAstVisitor
 	{
-		public virtual void Accept (AstRoot ast)
+		public virtual void Accept (CompilationUnit ast)
 		{
 		}
 
 		public virtual void Accept (Expression expr)
+		{
+		}
+
+		public virtual void Accept (StatementList stmtList)
 		{
 		}
 
@@ -203,6 +211,10 @@ namespace Iodine.Compiler
 		}
 
 		public virtual void Accept (EnumDeclaration enumDecl)
+		{
+		}
+
+		public virtual void Accept (VariableDeclaration varDecl)
 		{
 		}
 

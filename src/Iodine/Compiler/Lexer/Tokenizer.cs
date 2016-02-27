@@ -143,8 +143,7 @@ namespace Iodine.Compiler
 				if (char.IsLetter (ch)) {
 					return ReadIdentifier ();
 				}
-				errorLog.AddError (ErrorType.LexerError, location, "Unexpected '{0}'", 
-					(char)ReadChar ());
+				errorLog.AddError (Errors.UnexpectedToken, location, (char)ReadChar ());
 				
 				return null;
 			}
@@ -219,7 +218,7 @@ namespace Iodine.Compiler
 				ch = PeekChar ();
 			}
 			if (ReadChar () == -1) {
-				errorLog.AddError (ErrorType.LexerError, location, "Unterminated string literal!");
+				errorLog.AddError (Errors.UnterminatedStringLiteral, location);
 			}
 			return new Token (ch == '"' ? 
 				TokenClass.InterpolatedStringLiteral :
@@ -247,7 +246,7 @@ namespace Iodine.Compiler
 			case '\\':
 				return '\\';
 			}
-			errorLog.AddError (ErrorType.LexerError, location, "Unrecognized escape sequence");
+			errorLog.AddError (Errors.UnrecognizedEscapeSequence, location);
 			return '\0';
 		}
 
@@ -294,6 +293,7 @@ namespace Iodine.Compiler
 			case "return":
 			case "match":
 			case "when":
+			case "var":
 			case "with":
 				return new Token (TokenClass.Keyword, accum.ToString (), location);
 			case "is":

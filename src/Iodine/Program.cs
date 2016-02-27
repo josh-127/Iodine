@@ -49,11 +49,6 @@ namespace Iodine
 
 			public IodineList IodineArguments { private set; get; }
 
-
-			private IodineOptions ()
-			{
-			}
-
 			public static IodineOptions Parse (string[] args)
 			{
 				IodineOptions ret = new IodineOptions ();
@@ -86,8 +81,8 @@ namespace Iodine
 			context = IodineContext.Create ();
 
 			if (args.Length == 0) {
-				//ReplShell shell = new ReplShell (config);
-				//shell.Run ();
+				ReplShell shell = new ReplShell (context);
+				shell.Run ();
 				DisplayUsage ();
 				Environment.Exit (0);
 			}
@@ -96,6 +91,7 @@ namespace Iodine
 			options.Options.ForEach (p => ParseOption (context, p));
 
 			SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
+
 			try {
 				IodineModule module = code.Compile (context);
 				context.Invoke (module, new IodineObject[] { });
@@ -194,14 +190,18 @@ namespace Iodine
 		{
 			foreach (Error err in errorLog) {
 				SourceLocation loc = err.Location;
-				Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
-					loc.Line, loc.Column, err.Text);
+				Console.Error.WriteLine ("{0} ({1}:{2}) error ID{3:d4}: {4}",
+					Path.GetFileName (loc.File),
+					loc.Line,
+					loc.Column,
+					(int)err.ErrorID,
+					err.Text);
 			}
 		}
 
 		private static void DisplayUsage ()
 		{
-			Console.WriteLine ("usage: [option] ... [file] [arg] ...");
+			Console.WriteLine ("usage: iodine [option] ... [file] [arg] ...");
 			Environment.Exit (0);
 		}
 

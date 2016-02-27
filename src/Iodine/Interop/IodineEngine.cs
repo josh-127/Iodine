@@ -38,6 +38,9 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
+	/// <summary>
+	/// Represents an abstracted Iodine instance allowing for partial .NET interoperability
+	/// </summary>
 	public sealed class IodineEngine
 	{
 		/// <summary>
@@ -51,6 +54,10 @@ namespace Iodine.Interop
 
 		private IodineModule module; // Last module produced by DoString or DoFile 
 
+		/// <summary>
+		/// Gets or sets the <see cref="Iodine.Interop.IodineEngine"/>'s global dictionary.
+		/// </summary>
+		/// <param name="name">Name.</param>
 		public dynamic this [string name] {
 			get {
 				return GetMember (name);
@@ -101,7 +108,11 @@ namespace Iodine.Interop
 			Context.VirtualMachine.Globals [name] = wrapper;
 		}
 
-
+		/// <summary>
+		/// Registers a C# class in Iodine
+		/// </summary>
+		/// <param name="type">Type.</param>
+		/// <param name="name">Name.</param>
 		public void RegisterClass (Type type, string name)
 		{
 			ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
@@ -124,7 +135,8 @@ namespace Iodine.Interop
 						type.Namespace;
 					IodineModule module = null;
 					if (!modules.ContainsKey (type.Namespace)) {
-						module = new IodineModule (moduleName);
+						#warning This needs fixed
+						//module = new IodineModule (moduleName);
 						modules [type.Namespace] = module;
 					} else {
 						module = modules [type.Namespace];
@@ -199,12 +211,21 @@ namespace Iodine.Interop
 			return (T)typeRegistry.ConvertToNativeObject (ret, typeof(T));
 		}
 
+		/// <summary>
+		/// Returns an item in this Iodine instance's global dictionary
+		/// </summary>
+		/// <param name="name">Name.</param>
 		public dynamic Get (string name)
 		{
 			IodineObject ret = module.GetAttribute (name);
 			return IodineDynamicObject.Create (ret, Context.VirtualMachine, typeRegistry);
 		}
 
+		/// <summary>
+		/// Returns an item in this Iodine instance's global dictionary as type T
+		/// </summary>
+		/// <param name="name">Name.</param>
+		/// <typeparam name="T">.NET Type</typeparam>
 		public T Get<T> (string name)
 		{
 			IodineObject ret = module.GetAttribute (name);
@@ -213,6 +234,9 @@ namespace Iodine.Interop
 
 		private IodineModule ResolveModule (string path)
 		{
+			/*
+			 * Resolve any imported .NET modules
+			 */
 			string moduleName = path.Replace ("\\", ".").Replace ("/", ".");
 			if (modules.ContainsKey (moduleName)) {
 				return modules [moduleName];

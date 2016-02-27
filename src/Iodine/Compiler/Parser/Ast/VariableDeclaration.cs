@@ -28,13 +28,23 @@
 **/
 
 using System;
-using Iodine.Runtime;
 
-namespace Iodine.Compiler
+namespace Iodine.Compiler.Ast
 {
-	public interface IBytecodeOptimization
+	public class VariableDeclaration : AstNode
 	{
-		void PerformOptimization (IodineMethod method);
+		public string Name { private set; get; }
+
+		public VariableDeclaration (SourceLocation location, string name)
+			: base (location)
+		{
+			Name = name;
+		}
+
+		public override void Visit (IodineAstVisitor visitor)
+		{
+			visitor.Accept (this);
+		}
 	}
 }
 

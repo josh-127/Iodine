@@ -54,7 +54,7 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public void PerformOptimization (IodineMethod method)
+		public void PerformOptimization (MethodBuilder method)
 		{
 			List <ReachableRegion> regions = new List<ReachableRegion> ();
 			int reachableSize = 0;
@@ -62,10 +62,10 @@ namespace Iodine.Compiler
 			foreach (ReachableRegion region in regions) {
 				reachableSize += region.Size + 1;
 			}
-			Instruction[] oldInstructions = method.Body.ToArray ();
-			Instruction[] newInstructions = new Instruction[method.Body.Count];
+			Instruction[] oldInstructions = method.Body;
+			Instruction[] newInstructions = new Instruction[method.Body.Length];
 			int next = 0;
-			for (int i = 0; i < method.Body.Count; i++) {
+			for (int i = 0; i < method.Body.Length; i++) {
 				if (IsReachable (regions, i)) {
 					newInstructions [next++] = oldInstructions [i];
 				} else {
@@ -73,17 +73,16 @@ namespace Iodine.Compiler
 					ShiftLabels (next, newInstructions);
 				}
 			}
-			method.Body.Clear ();
-			method.Body.AddRange (newInstructions);
+			method.Body = newInstructions;
 		}
 
-		private void FindRegion (IodineMethod method, List<ReachableRegion> regions, int start)
+		private void FindRegion (MethodBuilder method, List<ReachableRegion> regions, int start)
 		{
 			if (IsReachable (regions, start)) {
 				return;
 			}
 
-			for (int i = start; i < method.Body.Count; i++) {
+			for (int i = start; i < method.Body.Length; i++) {
 				Instruction ins = method.Body [i];
 
 				if (ins.OperationCode == Opcode.Jump) {
@@ -102,7 +101,7 @@ namespace Iodine.Compiler
 					return;
 				}
 			}
-			regions.Add (new ReachableRegion (start, method.Body.Count));
+			regions.Add (new ReachableRegion (start, method.Body.Length));
 		}
 
 		private void ShiftLabels (int start, Instruction[] instructions)

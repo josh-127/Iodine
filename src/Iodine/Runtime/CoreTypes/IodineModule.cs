@@ -41,7 +41,7 @@ namespace Iodine.Runtime
 	 * This also needs to be rethought out.
 	 * TODO: Redesign this...
 	 */
-	public class IodineModule : IodineObject
+	public abstract class IodineModule : IodineObject
 	{
 		private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
 
@@ -52,35 +52,34 @@ namespace Iodine.Runtime
 			get;
 		}
 
-		public IList<IodineObject> ConstantPool {
+		internal virtual IList<IodineObject> ConstantPool {
 			get {
 				return this.constantPool;
 			}
 		}
 
-		public IodineMethod Initializer { set; get; }
+
+		private IodineMethod initializer;
 
 		private List<IodineObject> constantPool = new List<IodineObject> ();
+
+		public IodineMethod Initializer {
+			protected set {
+				initializer = value;
+				SetAttribute ("__init__", value);
+			} get {
+				return initializer; 
+			}
+		}
 
 		public IodineModule (string name)
 			: base (ModuleTypeDef)
 		{
 			Name = name;
-			Initializer = new IodineMethod (this, "__init__", false, 0, 0);
-			Attributes ["__init__"] = Initializer;
+
 			Attributes ["__name__"] = new IodineString (name);
 		}
 
-		public void AddMethod (IodineMethod method)
-		{
-			Attributes [method.Name] = method;
-		}
-
-		public int DefineConstant (IodineObject obj)
-		{
-			constantPool.Add (obj);
-			return constantPool.Count - 1;
-		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{

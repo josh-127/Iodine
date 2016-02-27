@@ -34,20 +34,20 @@ namespace Iodine.Compiler
 {
 	class InstructionOptimization : IBytecodeOptimization
 	{
-		public void PerformOptimization (IodineMethod method)
+		public void PerformOptimization (MethodBuilder method)
 		{
 			while (PerformMethodOptimization (method) > 0)
 				;
 		}
 
-		private int PerformMethodOptimization (IodineMethod method)
+		private int PerformMethodOptimization (MethodBuilder method)
 		{
 			int removed = 0;
-			Instruction[] oldInstructions = method.Body.ToArray ();
-			Instruction[] newInstructions = new Instruction[method.Body.Count];
+			Instruction[] oldInstructions = method.Body;
+			Instruction[] newInstructions = new Instruction[method.Body.Length];
 			int next = 0;
 			Instruction last = new Instruction ();
-			for (int i = 0; i < method.Body.Count; i++) {
+			for (int i = 0; i < method.Body.Length; i++) {
 				Instruction curr = oldInstructions [i];
 				if (i != 0 && curr.OperationCode == Opcode.Pop) {
 					if (last.OperationCode == Opcode.LoadLocal || last.OperationCode == Opcode.LoadGlobal
@@ -71,8 +71,7 @@ namespace Iodine.Compiler
 					newInstructions [next++] = curr;
 				}
 			}
-			method.Body.Clear ();
-			method.Body.AddRange (newInstructions);
+			method.Body = newInstructions;
 			return removed;
 		}
 

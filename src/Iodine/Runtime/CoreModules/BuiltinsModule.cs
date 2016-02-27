@@ -127,7 +127,9 @@ namespace Iodine.Runtime
 					vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (
 						fullPath), module);
 					VirtualMachine.ModuleCache [fullPath] = module;
-					module.Initializer.Invoke (vm, new IodineObject[] { });
+					if (module.Initializer != null) {
+						module.Initializer.Invoke (vm, new IodineObject[] { });
+					}
 				}
 			} else {
 				IodineTuple names = args [1] as IodineTuple;
@@ -142,7 +144,9 @@ namespace Iodine.Runtime
 				} else {
 					module = vm.LoadModule (name);
 					VirtualMachine.ModuleCache [fullPath] = module;
-					module.Initializer.Invoke (vm, new IodineObject[] { });
+					if (module.Initializer != null) {
+						module.Initializer.Invoke (vm, new IodineObject[] { });
+					}
 				}
 
 				vm.Top.Module.SetAttribute (vm, Path.GetFileNameWithoutExtension (fullPath),

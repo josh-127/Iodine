@@ -83,7 +83,7 @@ namespace Iodine.Compiler
 				}
 			}
 			Parser parser = Parser.CreateParser (context, this);
-			AstRoot root = parser.Parse ();
+			CompilationUnit root = parser.Parse ();
 			IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);
 			return compiler.Compile (moduleName);
 		}

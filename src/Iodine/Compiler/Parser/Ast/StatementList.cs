@@ -28,25 +28,19 @@
 **/
 
 using System;
-using Iodine.Compiler.Ast;
 
-namespace Iodine.Compiler
+namespace Iodine.Compiler.Ast
 {
-	internal class SemanticAnalyser
+	public class StatementList : AstNode
 	{
-		private ErrorLog errorLog;
-
-		public SemanticAnalyser (ErrorLog errorLog)
+		public StatementList (SourceLocation location)
+			: base (location)
 		{
-			this.errorLog = errorLog;
 		}
 
-		public SymbolTable Analyse (AstRoot ast)
+		public override void Visit (IodineAstVisitor visitor)
 		{
-			SymbolTable retTable = new SymbolTable ();
-			RootAnalyser visitor = new RootAnalyser (errorLog, retTable);
-			ast.Visit (visitor);
-			return retTable;
+			visitor.Accept (this);
 		}
 	}
 }

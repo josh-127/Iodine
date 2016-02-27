@@ -50,16 +50,16 @@ namespace Iodine.Compiler
 			return new Parser (tokenizer.Scan ());
 		}
 
-		public AstRoot Parse ()
+		public CompilationUnit Parse ()
 		{
 			try {
-				AstRoot root = new AstRoot (tokenStream.Location);
+				CompilationUnit root = new CompilationUnit (tokenStream.Location);
 				while (!tokenStream.EndOfStream) {
 					root.Add (ParseStatement (tokenStream));
 				}
 				return root;
 			} catch (Exception) {
-				return new AstRoot (tokenStream.Location);
+				return new CompilationUnit (tokenStream.Location);
 			} finally {
 				if (tokenStream.ErrorLog.ErrorCount > 0) {
 					throw new SyntaxException (tokenStream.ErrorLog);
@@ -109,6 +109,7 @@ namespace Iodine.Compiler
 			EnumDeclaration decl = new EnumDeclaration (stream.Location, name);
 
 			stream.Expect (TokenClass.OpenBrace);
+
 			int defaultVal = -1;
 
 			while (!stream.Match (TokenClass.CloseBrace)) {
@@ -123,6 +124,7 @@ namespace Iodine.Compiler
 				} else {
 					decl.Items [ident] = defaultVal--;
 				}
+
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
@@ -147,8 +149,7 @@ namespace Iodine.Compiler
 					FunctionDeclaration func = ParseFunction (stream, true) as FunctionDeclaration;
 					contract.Add (func);
 				} else {
-					stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location, 
-						"Interface may only contain function prototypes!");
+					stream.ErrorLog.AddError (Errors.IllegalInterfaceDeclaration, stream.Location);
 				}
 				while (stream.Accept (TokenClass.SemiColon));
 			}
@@ -175,8 +176,11 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.Keyword, "use");
 			bool relative = stream.Accept (TokenClass.Operator, ".");
 			string ident = "";
-			if (!stream.Match (TokenClass.Operator, "*"))
+
+			if (!stream.Match (TokenClass.Operator, "*")) {
 				ident = ParseModuleName (stream);
+			}
+
 			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma) ||
 				stream.Match (TokenClass.Operator, "*")) {
 				List<string> items = new List<string> ();
@@ -217,9 +221,8 @@ namespace Iodine.Compiler
 				}
 				return accum.ToString ();
 
-			} else {
-				return initIdent.Value;
 			}
+			return initIdent.Value;
 		}
 
 		private static AstNode ParseFunction (TokenStream stream, bool prototype = false,
@@ -246,7 +249,7 @@ namespace Iodine.Compiler
 				 * Since two values can not be returned, we must return a single node containing both
 				 * the function declaration and call to the decorator 
 				 */
-				AstRoot nodes = new AstRoot (stream.Location);
+				StatementList nodes = new StatementList (stream.Location);
 				nodes.Add (idecl);
 				nodes.Add (new Expression (stream.Location, new BinaryExpression (stream.Location,
 					BinaryOperation.Assign,
@@ -255,9 +258,11 @@ namespace Iodine.Compiler
 				return nodes;
 			}
 			stream.Expect (TokenClass.Keyword, "func");
+
 			bool isInstanceMethod;
 			bool isVariadic;
 			bool hasKeywordArgs;
+
 			Token ident = stream.Expect (TokenClass.Identifier);
 			List<string> parameters = ParseFuncParameters (stream,
 				out isInstanceMethod,
@@ -324,12 +329,10 @@ namespace Iodine.Compiler
 					}
 				} else {
 					if (hasKeywordArgs) {
-						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
-							"Argument after keyword arguments!");
+						stream.ErrorLog.AddError (Errors.ArgumentAfterKeywordArgs, stream.Location);
 					}
 					if (isVariadic) {
-						stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
-							"Argument after params keyword!");
+						stream.ErrorLog.AddError (Errors.ArgumentAfterVariadicArgs, stream.Location);
 					}
 					Token param = stream.Expect (TokenClass.Identifier);
 					ret.Add (param.Value);
@@ -378,6 +381,8 @@ namespace Iodine.Compiler
 					return ParseYield (stream);
 				case "try":
 					return ParseTryExcept (stream);
+				case "var":
+					return ParseVariableDeclaration (stream);
 				case "break":
 					stream.Accept (TokenClass.Keyword);
 					return new BreakStatement (stream.Location);
@@ -385,8 +390,7 @@ namespace Iodine.Compiler
 					stream.Accept (TokenClass.Keyword);
 					return new ContinueStatement (stream.Location);
 				case "super":
-					stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location,
-						"super () constructor must be called first!");
+					stream.ErrorLog.AddError (Errors.SuperCalledAfter, stream.Location);
 					return ParseSuperCall (stream, new ClassDeclaration (stream.Location, "", null));
 				}
 			}
@@ -453,6 +457,19 @@ namespace Iodine.Compiler
 			return argList;
 		}
 
+		private static VariableDeclaration ParseVariableDeclaration (TokenStream stream)
+		{
+			stream.Expect (TokenClass.Keyword, "var");
+			Token ident = stream.Expect (TokenClass.Identifier);
+			VariableDeclaration declaration = new VariableDeclaration (stream.Location, ident != null ? ident.Value : "");
+			if (stream.Accept (TokenClass.Operator, "=")) {
+				declaration.Add (new BinaryExpression (stream.Location, BinaryOperation.Assign,
+					new NameExpression (ident.Location, ident.Value),
+					ParseExpression (stream)));
+			}
+			return declaration;
+		}
+
 		private static AstNode ParseGiven (TokenStream stream)
 		{
 			GivenStatement switchStmt = new GivenStatement (stream.Location);
@@ -461,8 +478,8 @@ namespace Iodine.Compiler
 			switchStmt.Add (ParseExpression (stream));
 			stream.Expect (TokenClass.CloseParan);
 			stream.Expect (TokenClass.OpenBrace);
-			AstNode defaultBlock = new AstRoot (stream.Location);
-			AstRoot caseStatements = new AstRoot (stream.Location);
+			AstNode defaultBlock = new CompilationUnit (stream.Location);
+			StatementList caseStatements = new StatementList (stream.Location);
 			while (!stream.EndOfStream && !stream.Match (TokenClass.CloseBrace)) {
 				caseStatements.Add (ParseWhen (stream));
 				if (stream.Accept (TokenClass.Keyword, "default")) {
@@ -708,8 +725,7 @@ namespace Iodine.Compiler
 			while (stream.Accept (TokenClass.Operator, "|>")) {
 				CallExpression call = ParseRange (stream) as CallExpression;
 				if (call == null) {
-					stream.ErrorLog.AddError (ErrorType.ParserError, stream.Location, 
-						"Right value must be function call");
+					stream.ErrorLog.AddError (Errors.PipeIntoNonFunction, stream.Location);
 				} else {
 					call.Arguments.Children.Insert (0, expr);
 					expr = call;
@@ -1170,8 +1186,7 @@ namespace Iodine.Compiler
 					NameExpression ident = arg as NameExpression;
 					AstNode val = ParseExpression (stream);
 					if (ident == null) {
-						stream.ErrorLog.AddError (ErrorType.ParserError, arg.Location,
-							"Keyword must be a valid identifier");
+						stream.ErrorLog.AddError (Errors.ExpectedIdentifier, stream.Location);
 					} else {
 						kwargs.Add (ident.Value, val);
 					}

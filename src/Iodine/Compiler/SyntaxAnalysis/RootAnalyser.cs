@@ -32,6 +32,9 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
+	/// <summary>
+	/// Performs semantic analysis on the root of an Iodine AST
+	/// </summary>
 	internal class RootAnalyser : IodineAstVisitor
 	{
 		private ErrorLog errorLog;
@@ -43,92 +46,82 @@ namespace Iodine.Compiler
 			this.symbolTable = symbolTable;
 		}
 
+		public override void Accept (StatementList stmtList)
+		{
+			stmtList.VisitChildren (this);
+		}
+
 		public override void Accept (IfStatement ifStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, ifStmt.Location, 
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, ifStmt.Location);
 		}
 
 		public override void Accept (WhileStatement whileStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, whileStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, whileStmt.Location);
 		}
 
 		public override void Accept (DoStatement doStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, doStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, doStmt.Location);
 		}
 
 		public override void Accept (ForStatement forStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, forStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, forStmt.Location);
 		}
 
 		public override void Accept (ForeachStatement foreachStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, foreachStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, foreachStmt.Location);
 		}
 
 		public override void Accept (ContinueStatement cont)
 		{
-			errorLog.AddError (ErrorType.ParserError, cont.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, cont.Location);
 		}
 
 		public override void Accept (BreakStatement brk)
 		{
-			errorLog.AddError (ErrorType.ParserError, brk.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, brk.Location);
 		}
 
 		public override void Accept (TryExceptStatement tryExcept)
 		{
-			errorLog.AddError (ErrorType.ParserError, tryExcept.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, tryExcept.Location);
 		}
 
 		public override void Accept (RaiseStatement raise)
 		{
-			errorLog.AddError (ErrorType.ParserError, raise.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, raise.Location);
 		}
 
 		public override void Accept (GivenStatement switchStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, switchStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, switchStmt.Location);
 		}
 
 		public override void Accept (WhenStatement caseStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, caseStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, caseStmt.Location);
 		}
 
 		public override void Accept (WithStatement withStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, withStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, withStmt.Location);
 		}
 
 		public override void Accept (ReturnStatement returnStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, returnStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, returnStmt.Location);
 		}
 
 		public override void Accept (YieldStatement yieldStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, yieldStmt.Location,
-				"Statement not allowed outside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, yieldStmt.Location);
 		}
-
-
-		public override void Accept (AstRoot ast)
+			
+		public override void Accept (CompilationUnit ast)
 		{
 			ast.VisitChildren (this);
 		}
@@ -141,6 +134,12 @@ namespace Iodine.Compiler
 		public override void Accept (ClassDeclaration classDecl)
 		{
 			classDecl.VisitChildren (this);
+		}
+
+		public override void Accept (VariableDeclaration varDecl)
+		{
+			symbolTable.AddSymbol (varDecl.Name);
+			varDecl.VisitChildren (this);
 		}
 
 		public override void Accept (FunctionDeclaration funcDecl)

@@ -82,114 +82,64 @@ namespace Iodine.Runtime
 	}
 
 	// TODO: Abtract bytecode implementation away from IodineMethod
-	public class IodineMethod : IodineObject
+	public abstract class IodineMethod : IodineObject
 	{
 		private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
-		private static int nextLabelID = 0;
 
-		private Dictionary<int, IodineLabel> labelReferences = new Dictionary<int, IodineLabel> ();
-		protected List<Instruction> instructions = new List<Instruction> ();
 		private IodineMethod parent = null;
 
-		public List<Instruction> Body {
-			get {
-				return this.instructions;
-			}
+		public Instruction[] Body {
+			get;
+			internal set;
 		}
 
-		public string Name { private set; get; }
+		public string Name {
+			get;
+			protected set;
+		}
 
-		public Dictionary <string, int> Parameters { private set; get; }
+		public int ParameterCount {
+			get;
+			protected set;
+		}
 
-		public int ParameterCount { private set; get; }
+		public int LocalCount {
+			get;
+			protected set;
+		}
 
-		public int LocalCount { private set; get; }
+		public bool Variadic {
+			get;
+			protected set;
+		}
 
-		public bool Variadic { set; get; }
+		public bool AcceptsKeywordArgs {
+			get;
+			protected set;
+		}
 
-		public bool AcceptsKeywordArgs { set; get; }
+		public bool Generator {
+			get;
+			set;
+		}
 
-		public bool Generator { set; get; }
+		public IodineModule Module {
+			get;
+			protected set;
+		}
 
-		public IodineModule Module { private set; get; }
+		public bool InstanceMethod {
+			get;
+			protected set;
+		}
 
-		public bool InstanceMethod { private set; get; }
+		public readonly Dictionary<string, int> Parameters = new Dictionary<string, int> ();
 
-		public IodineMethod (IodineModule module, string name, bool isInstance, int parameterCount,
-			int localCount) : base (MethodTypeDef)
+		public IodineMethod ()
+			: base (MethodTypeDef)
 		{
-			Name = name;
-			ParameterCount = parameterCount;
-			Module = module;
-			LocalCount = localCount;
-			InstanceMethod = isInstance;
-			Parameters = new Dictionary<string, int> ();
-			SetAttribute ("__module__", module);
 		}
 
-		public IodineMethod (IodineMethod parent, IodineModule module, string name, bool isInstance, int parameterCount,
-			int localCount) : this (module, name, isInstance, parameterCount, localCount)
-		{
-			this.parent = parent;
-		}
-
-		public void EmitInstruction (Opcode opcode)
-		{
-			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode));
-		}
-
-		public void EmitInstruction (Opcode opcode, int arg)
-		{
-			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, arg));
-		}
-
-		public void EmitInstruction (Opcode opcode, IodineLabel label)
-		{
-			labelReferences [instructions.Count] = label;
-			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, 0));
-		}
-
-		public void EmitInstruction (SourceLocation loc, Opcode opcode)
-		{
-			instructions.Add (new Instruction (loc, opcode));
-		}
-
-		public void EmitInstruction (SourceLocation loc, Opcode opcode, int arg)
-		{
-			instructions.Add (new Instruction (loc, opcode, arg));
-		}
-
-		public void EmitInstruction (SourceLocation loc, Opcode opcode, IodineLabel label)
-		{
-			labelReferences [instructions.Count] = label;
-			instructions.Add (new Instruction (loc, opcode, 0));
-		}
-
-		public int CreateTemporary ()
-		{
-			if (parent != null)
-				parent.CreateTemporary ();
-			return LocalCount++;
-		}
-
-		public IodineLabel CreateLabel ()
-		{
-			return new IodineLabel (nextLabelID++);
-		}
-
-		public void MarkLabelPosition (IodineLabel label)
-		{
-			label._Position = instructions.Count;
-		}
-
-		public void FinalizeLabels ()
-		{
-			foreach (int position in labelReferences.Keys) {
-				instructions [position] = new Instruction (instructions [position].Location,
-					instructions [position].OperationCode,
-					labelReferences [position]._Position);
-			}
-		}
 
 		public override bool IsCallable ()
 		{

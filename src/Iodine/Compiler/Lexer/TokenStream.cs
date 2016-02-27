@@ -133,14 +133,9 @@ namespace Iodine.Compiler
 			}
 			Token offender = ReadToken ();
 			if (offender != null) {
-				errorLog.AddError (ErrorType.ParserError, offender.Location,
-					"Unexpected '{0}' (Expected '{1}')",
-					offender.ToString (),
-					Token.ClassToString (clazz));
+				errorLog.AddError (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
 			} else {
-				errorLog.AddError (ErrorType.ParserError, offender.Location,
-					"Unexpected end of file (Expected {0})",
-					Token.ClassToString (clazz));
+				errorLog.AddError (Errors.UnexpectedEndOfFile, Location);
 				throw new Exception ("");
 			}
 			return new Token (clazz, "", Location);
@@ -154,12 +149,9 @@ namespace Iodine.Compiler
 			}
 			Token offender = ReadToken ();
 			if (offender != null) {
-				errorLog.AddError (ErrorType.ParserError, offender.Location, 
-					"Unexpected '{0}' (Expected '{1}')", offender.ToString (), Token.ClassToString (
-					clazz));
+				errorLog.AddError (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
 			} else {
-				errorLog.AddError (ErrorType.ParserError, offender.Location, 
-					"Unexpected end of file (Expected {0})", Token.ClassToString (clazz));
+				errorLog.AddError (Errors.UnexpectedEndOfFile, Location);
 				throw new Exception ("");
 			}
 			return new Token (clazz, "", Location);
@@ -167,8 +159,7 @@ namespace Iodine.Compiler
 
 		public void MakeError ()
 		{
-			errorLog.AddError (ErrorType.ParserError, PeekToken ().Location, "Unexpected {0}",
-				ReadToken ().ToString ());
+			errorLog.AddError (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
 		}
 
 		private Token PeekToken ()

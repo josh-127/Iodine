@@ -32,8 +32,9 @@ using System.IO;
 using System.Reflection;
 using Iodine.Compiler;
 using Iodine.Runtime;
+using Iodine.Interop;
 
-namespace Iodine.Interop
+namespace Iodine
 {
 	public sealed class ReplShell
 	{
@@ -51,11 +52,12 @@ namespace Iodine.Interop
 			Console.WriteLine ("Enter expressions to have them be evaluated");
 			engine ["prompt"] = ">>> ";
 			while (true) {
-				Console.Write (engine ["prompt"]);
+				Console.Write (">>> ");
 				var source = Console.ReadLine ();
 				try {
-					if (source.Length > 0)
-						Console.WriteLine (engine.DoString (source));
+					if (source.Length > 0) {
+						Console.WriteLine (engine.DoString (source).ToString ());
+					}
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));
 					ex.PrintStack ();

@@ -50,6 +50,11 @@ namespace Iodine.Runtime
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 				}
+
+				if (args [0] is IodineByteArray) {
+					return new IodineBytes (((IodineByteArray)args [0]).Array);
+				}
+
 				return new IodineBytes (args [0].ToString ());
 			}
 		}

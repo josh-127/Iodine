@@ -28,53 +28,25 @@
 **/
 
 using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
+using Iodine.Compiler.Ast;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler
 {
-	[IodineBuiltinModule ("sys")]
-	public class SysModule : IodineModule
+	internal class SemanticAnalyser
 	{
-		public SysModule ()
-			: base ("sys")
+		private ErrorLog errorLog;
+
+		public SemanticAnalyser (ErrorLog errorLog)
 		{
-			int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
-			int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
-			int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
-			SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
-			// TODO: Make path accessible
-			//SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
-			SetAttribute ("exit", new InternalMethodCallback (exit, this));
-			SetAttribute ("path", new InternalIodineProperty (getPath, null));
-			SetAttribute ("VERSION_MAJOR", new IodineInteger (major));
-			SetAttribute ("VERSION_MINOR", new IodineInteger (minor));
-			SetAttribute ("VERSION_PATCH", new IodineInteger (patch));
-			SetAttribute ("VERSION_STR", new IodineString (String.Format ("v{0}.{1}.{2}", major, minor, patch)));
+			this.errorLog = errorLog;
 		}
 
-		private IodineObject getPath (VirtualMachine vm)
+		public SymbolTable Analyse (CompilationUnit ast)
 		{
-			return new IodineTuple (vm.Context.SearchPath.Select (p => new IodineString (p)).ToArray ());
-		}
-
-		private IodineObject exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
-
-			IodineInteger exitCode = args [0] as IodineInteger;
-
-			if (exitCode == null) {
-				vm.RaiseException (new IodineTypeException ("Int"));
-				return null;
-			}
-
-			Environment.Exit ((int)exitCode.Value);
-			return null;
+			SymbolTable retTable = new SymbolTable ();
+			RootAnalyser visitor = new RootAnalyser (errorLog, retTable);
+			ast.Visit (visitor);
+			return retTable;
 		}
 	}
 }

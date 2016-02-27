@@ -155,11 +155,11 @@ namespace Iodine.Runtime
 
 		private IodineObject Invoke (IodineMethod method, IodineObject[] arguments)
 		{
-			if (method.Body.Count > 0) {
+			if (method.Body.Length > 0) {
 				currentLocation = method.Body [0].Location;
 			}
 
-			int insCount = method.Body.Count;
+			int insCount = method.Body.Length;
 			int prevStackSize = stackSize;
 			int i = 0;
 
@@ -423,7 +423,8 @@ namespace Iodine.Runtime
 					IodineObject op1 = Pop ();
 					Push (op1.PerformBinaryOperation (this,
 						(BinaryOperation)instruction.Argument,
-						op2));
+						op2
+					));
 					break;
 				}
 			case Opcode.UnaryOp:

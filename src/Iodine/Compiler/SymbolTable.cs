@@ -35,7 +35,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Symbol table.
 	/// </summary>
-	class SymbolTable
+	public class SymbolTable
 	{
 		class LocalScope
 		{
@@ -169,7 +169,7 @@ namespace Iodine.Compiler
 	/// <summary>
 	/// Scope.
 	/// </summary>
-	class Scope
+	public class Scope
 	{
 		private List<Symbol> symbols = new List<Symbol> ();
 		private List<Scope> childScopes = new List<Scope> ();
@@ -213,6 +213,16 @@ namespace Iodine.Compiler
 		public void AddScope (Scope scope)
 		{
 			childScopes.Add (scope);
+		}
+
+		public bool IsSymbolDefined (string name) 
+		{
+			foreach (Symbol sym in symbols) {
+				if (sym.Name == name) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		public bool GetSymbol (string name, out Symbol symbol)

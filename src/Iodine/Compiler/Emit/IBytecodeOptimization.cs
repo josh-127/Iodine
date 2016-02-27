@@ -28,41 +28,13 @@
 **/
 
 using System;
+using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	/// <summary>
-	/// Symbol type.
-	/// </summary>
-	public enum SymbolType
+	public interface IBytecodeOptimization
 	{
-		Local,
-		Global
-	}
-
-	/// <summary>
-	/// Symbol.
-	/// </summary>
-	public class Symbol
-	{
-		public readonly string Name;
-
-		public readonly int Index;
-
-		public readonly SymbolType Type;
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Iodine.Compiler.Symbol"/> class.
-		/// </summary>
-		/// <param name="type">Type of symbol.</param>
-		/// <param name="name">Name of the symbol.</param>
-		/// <param name="index">Symbol index.</param>
-		public Symbol (SymbolType type, string name, int index)
-		{
-			Name = name;
-			Index = index;
-			Type = type;
-		}
+		void PerformOptimization (MethodBuilder method);
 	}
 }
 

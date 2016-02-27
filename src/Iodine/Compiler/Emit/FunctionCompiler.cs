@@ -41,21 +41,24 @@ namespace Iodine.Compiler
 	/// </summary>
 	class FunctionCompiler : IodineAstVisitor
 	{
-		private SymbolTable symbolTable;
-		private IodineMethod methodBuilder;
+		private MethodBuilder methodBuilder;
 		private Stack<IodineLabel> breakLabels = new Stack<IodineLabel> ();
 		private Stack<IodineLabel> continueLabels = new Stack<IodineLabel> ();
 
-		public FunctionCompiler (SymbolTable symbolTable, IodineMethod methodBuilder)
+		private EmitContext context;
+
+		public FunctionCompiler (MethodBuilder builder, EmitContext context)
 		{
-			this.symbolTable = symbolTable;
-			this.methodBuilder = methodBuilder;
+			this.context = context;
+			this.methodBuilder = builder;
 		}
 
-		public FunctionCompiler (SymbolTable symbolTable, IodineMethod methodBuilder,
-		                         Stack<IodineLabel> breakLabels, Stack<IodineLabel> continueLabels)
+		public FunctionCompiler (EmitContext context,
+			MethodBuilder methodBuilder,
+		    Stack<IodineLabel> breakLabels,
+			Stack<IodineLabel> continueLabels)
 		{
-			this.symbolTable = symbolTable;
+			this.context = context;
 			this.methodBuilder = methodBuilder;
 			this.breakLabels = breakLabels;
 			this.continueLabels = continueLabels;
@@ -66,7 +69,7 @@ namespace Iodine.Compiler
 			ast.VisitChildren (this);
 		}
 
-		public override void Accept (AstRoot ast)
+		public override void Accept (CompilationUnit ast)
 		{
 			ast.VisitChildren (this);
 		}
@@ -82,25 +85,30 @@ namespace Iodine.Compiler
 			stmt.VisitChildren (this);
 		}
 
+		public override void Accept (StatementList stmtList)
+		{
+			stmtList.VisitChildren (this);
+		}
+
 		public override void Accept (BinaryExpression binop)
 		{
 			if (binop.Operation == BinaryOperation.Assign) {
 				binop.Right.Visit (this);
 				if (binop.Left is NameExpression) {
 					NameExpression ident = (NameExpression)binop.Left;
-					Symbol sym = symbolTable.GetSymbol (ident.Value);
+					Symbol sym = context.SymbolTable.GetSymbol (ident.Value);
 					if (sym.Type == SymbolType.Local) {
 						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreLocal, sym.Index);
 						methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, sym.Index);
 					} else {
-						int globalIndex = methodBuilder.Module.DefineConstant (new IodineName (ident.Value));
+						int globalIndex = context.CurrentModule.DefineConstant (new IodineName (ident.Value));
 						methodBuilder.EmitInstruction (ident.Location, Opcode.StoreGlobal, globalIndex);
 						methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalIndex);
 					}
 				} else if (binop.Left is GetExpression) {
 					GetExpression getattr = binop.Left as GetExpression;
 					getattr.Target.Visit (this);
-					int attrIndex = methodBuilder.Module.DefineConstant (new IodineName (getattr.Field));
+					int attrIndex = context.CurrentModule.DefineConstant (new IodineName (getattr.Field));
 					methodBuilder.EmitInstruction (getattr.Location, Opcode.StoreAttribute, attrIndex);
 					getattr.Target.Visit (this);
 					methodBuilder.EmitInstruction (getattr.Location, Opcode.LoadAttribute, attrIndex);
@@ -170,17 +178,21 @@ namespace Iodine.Compiler
 
 		public override void Accept (NameExpression ident)
 		{
-			if (symbolTable.IsSymbolDefined (ident.Value)) {
-				Symbol sym = symbolTable.GetSymbol (ident.Value);
+			if (context.SymbolTable.IsSymbolDefined (ident.Value)) {
+				Symbol sym = context.SymbolTable.GetSymbol (ident.Value);
 				if (sym.Type == SymbolType.Local) {
 					methodBuilder.EmitInstruction (ident.Location, Opcode.LoadLocal, sym.Index);
 				} else {
-					methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal,
-						methodBuilder.Module.DefineConstant (new IodineName (ident.Value)));
+					methodBuilder.EmitInstruction (ident.Location,
+						Opcode.LoadGlobal,
+						context.CurrentModule.DefineConstant (new IodineName (ident.Value))
+					);
 				}
 			} else {
-				methodBuilder.EmitInstruction (ident.Location, Opcode.LoadGlobal,
-					methodBuilder.Module.DefineConstant (new IodineName (ident.Value)));
+				methodBuilder.EmitInstruction (ident.Location,
+					Opcode.LoadGlobal,
+					context.CurrentModule.DefineConstant (new IodineName (ident.Value))
+				);
 			}
 		}
 
@@ -208,41 +220,53 @@ namespace Iodine.Compiler
 			for (int i = 0; i < kwargs.Keywords.Count; i++) {
 				string kw = kwargs.Keywords [i];
 				AstNode val = kwargs.Children [i];
-				methodBuilder.EmitInstruction (kwargs.Location, Opcode.LoadConst, methodBuilder.Module.DefineConstant (
-					new IodineString (kw)));
+				methodBuilder.EmitInstruction (kwargs.Location,
+					Opcode.LoadConst,
+					context.CurrentModule.DefineConstant (new IodineString (kw))
+				);
 				val.Visit (this);
 				methodBuilder.EmitInstruction (kwargs.Location, Opcode.BuildTuple, 2);
 			}
 			methodBuilder.EmitInstruction (kwargs.Location, Opcode.BuildList, kwargs.Keywords.Count);
-			methodBuilder.EmitInstruction (kwargs.Location, Opcode.LoadGlobal, methodBuilder.Module.DefineConstant (
-				new IodineName ("HashMap")));
+			methodBuilder.EmitInstruction (kwargs.Location,
+				Opcode.LoadGlobal,
+				context.CurrentModule.DefineConstant (new IodineName ("HashMap"))
+			);
 			methodBuilder.EmitInstruction (kwargs.Location, Opcode.Invoke, 1);
 		}
 
 		public override void Accept (GetExpression getAttr)
 		{
 			getAttr.Target.Visit (this);
-			methodBuilder.EmitInstruction (getAttr.Location, Opcode.LoadAttribute,
-				methodBuilder.Module.DefineConstant (new IodineName (getAttr.Field)));
+			methodBuilder.EmitInstruction (getAttr.Location,
+				Opcode.LoadAttribute,
+				context.CurrentModule.DefineConstant (new IodineName (getAttr.Field))
+			);
 		}
 
 		public override void Accept (GetDefaultExpression getAttr)
 		{
 			getAttr.Target.Visit (this);
-			methodBuilder.EmitInstruction (getAttr.Location, Opcode.LoadAttributeOrNull,
-				methodBuilder.Module.DefineConstant (new IodineName (getAttr.Field)));
+			methodBuilder.EmitInstruction (getAttr.Location,
+				Opcode.LoadAttributeOrNull,
+				context.CurrentModule.DefineConstant (new IodineName (getAttr.Field))
+			);
 		}
 
 		public override void Accept (IntegerExpression integer)
 		{
-			methodBuilder.EmitInstruction (integer.Location, Opcode.LoadConst, 
-				methodBuilder.Module.DefineConstant (new IodineInteger (integer.Value)));
+			methodBuilder.EmitInstruction (integer.Location,
+				Opcode.LoadConst, 
+				context.CurrentModule.DefineConstant (new IodineInteger (integer.Value))
+			);
 		}
 
 		public override void Accept (FloatExpression num)
 		{
-			methodBuilder.EmitInstruction (num.Location, Opcode.LoadConst, 
-				methodBuilder.Module.DefineConstant (new IodineFloat (num.Value)));
+			methodBuilder.EmitInstruction (num.Location,
+				Opcode.LoadConst, 
+				context.CurrentModule.DefineConstant (new IodineFloat (num.Value))
+			);
 		}
 
 		public override void Accept (IfStatement ifStmt)
@@ -266,8 +290,12 @@ namespace Iodine.Compiler
 			continueLabels.Push (whileLabel);
 			methodBuilder.MarkLabelPosition (whileLabel);
 			whileStmt.Condition.Visit (this);
-			methodBuilder.EmitInstruction (whileStmt.Condition.Location, Opcode.JumpIfFalse,
-				breakLabel);
+
+			methodBuilder.EmitInstruction (whileStmt.Condition.Location,
+				Opcode.JumpIfFalse,
+				breakLabel
+			);
+
 			whileStmt.Body.Visit (this);
 			methodBuilder.EmitInstruction (whileStmt.Body.Location, Opcode.Jump, whileLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
@@ -277,12 +305,12 @@ namespace Iodine.Compiler
 
 		public override void Accept (WithStatement withStmt)
 		{
-			symbolTable.NextScope ();
+			context.SymbolTable.NextScope ();
 			withStmt.Expression.Visit (this);
 			methodBuilder.EmitInstruction (withStmt.Location, Opcode.BeginWith);
 			withStmt.Body.Visit (this);
 			methodBuilder.EmitInstruction (withStmt.Location, Opcode.EndWith);
-			symbolTable.LeaveScope ();
+			context.SymbolTable.LeaveScope ();
 		}
 
 		public override void Accept (DoStatement doStmt)
@@ -294,8 +322,12 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (doLabel);
 			doStmt.Body.Visit (this);
 			doStmt.Condition.Visit (this);
-			methodBuilder.EmitInstruction (doStmt.Condition.Location, Opcode.JumpIfTrue,
-				doLabel);
+
+			methodBuilder.EmitInstruction (doStmt.Condition.Location,
+				Opcode.JumpIfTrue,
+				doLabel
+			);
+
 			methodBuilder.MarkLabelPosition (breakLabel);
 			breakLabels.Pop ();
 			continueLabels.Pop ();
@@ -342,7 +374,7 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterGetNext);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.StoreLocal,
-				symbolTable.GetSymbol
+				context.SymbolTable.GetSymbol
 				(foreachStmt.Item).Index);
 			foreachStmt.Body.Visit (this);
 			methodBuilder.EmitInstruction (foreachStmt.Body.Location, Opcode.Jump, foreachLabel);
@@ -358,8 +390,14 @@ namespace Iodine.Compiler
 				caseStmt.Values.Visit (this);
 				caseStmt.Body.Visit (this);
 			}
+
 			switchStmt.GivenValue.Visit (this);
-			methodBuilder.EmitInstruction (switchStmt.Location, Opcode.SwitchLookup, switchStmt.WhenStatements.Children.Count);
+
+			methodBuilder.EmitInstruction (switchStmt.Location,
+				Opcode.SwitchLookup,
+				switchStmt.WhenStatements.Children.Count
+			);
+
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
 			methodBuilder.EmitInstruction (switchStmt.Location, Opcode.JumpIfTrue, endLabel);
 			switchStmt.DefaultStatement.Visit (this);
@@ -370,48 +408,72 @@ namespace Iodine.Compiler
 		{
 		}
 
+		public override void Accept (VariableDeclaration varDecl)
+		{
+			varDecl.VisitChildren (this);
+		}
+
 		public override void Accept (FunctionDeclaration funcDecl)
 		{
-			symbolTable.NextScope ();
-			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, funcDecl.InstanceMethod, 
-				                          funcDecl.Parameters.Count, methodBuilder.LocalCount);
-			FunctionCompiler compiler = new FunctionCompiler (symbolTable, anonMethod);
+			context.SymbolTable.NextScope ();
+
+			MethodBuilder anonMethod = new MethodBuilder (methodBuilder,
+				context.CurrentModule,
+				null,
+				funcDecl.InstanceMethod,
+				funcDecl.Parameters.Count,
+				methodBuilder.LocalCount,
+				funcDecl.Variadic,
+				funcDecl.AcceptsKeywordArgs
+			);
+
+			FunctionCompiler compiler = new FunctionCompiler (anonMethod, context);
 			for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-				anonMethod.Parameters [funcDecl.Parameters [i]] = symbolTable.GetSymbol
+				anonMethod.Parameters [funcDecl.Parameters [i]] = context.SymbolTable.GetSymbol
 					(funcDecl.Parameters [i]).Index;
 			}
 			funcDecl.Children [0].Visit (compiler);
+
 			anonMethod.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
-			anonMethod.Variadic = funcDecl.Variadic;
-			anonMethod.AcceptsKeywordArgs = funcDecl.AcceptsKeywordArgs;
+
 			anonMethod.FinalizeLabels ();
-			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadConst,
-				methodBuilder.Module.DefineConstant (anonMethod));
+
+			methodBuilder.EmitInstruction (funcDecl.Location,
+				Opcode.LoadConst,
+				context.CurrentModule.DefineConstant (anonMethod)
+			);
+
 			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.BuildClosure);
-			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.StoreLocal, symbolTable.GetSymbol (funcDecl.Name).Index);
-			symbolTable.LeaveScope ();
+			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.StoreLocal, context.SymbolTable.GetSymbol (funcDecl.Name).Index);
+
+			context.SymbolTable.LeaveScope ();
 		}
 
 		public override void Accept (CodeBlock scope)
 		{
-			symbolTable.NextScope ();
+			context.SymbolTable.NextScope ();
 
-			FunctionCompiler scopeCompiler = new FunctionCompiler (symbolTable, methodBuilder,
-				                                 breakLabels, continueLabels);
+			FunctionCompiler scopeCompiler = new FunctionCompiler (context, 
+				methodBuilder,
+				breakLabels,
+				continueLabels
+			);
+
 			foreach (AstNode node in scope) {
 				node.Visit (scopeCompiler);
 			}
-			symbolTable.LeaveScope ();
+
+			context.SymbolTable.LeaveScope ();
 		}
 
 		public override void Accept (StringExpression str)
 		{
 			str.VisitChildren (this);
 			methodBuilder.EmitInstruction (str.Location, Opcode.LoadConst, 
-				methodBuilder.Module.DefineConstant (new IodineString (str.Value)));
+				context.CurrentModule.DefineConstant (new IodineString (str.Value)));
 			if (str.Children.Count != 0) {
 				methodBuilder.EmitInstruction (str.Location, Opcode.LoadAttribute,
-					methodBuilder.Module.DefineConstant (new IodineName ("format")));
+					context.CurrentModule.DefineConstant (new IodineName ("format")));
 				methodBuilder.EmitInstruction (str.Location, Opcode.Invoke, str.Children.Count);
 			}
 		}
@@ -423,12 +485,12 @@ namespace Iodine.Compiler
 
 		public override void Accept (ClassDeclaration classDecl)
 		{
-			ModuleCompiler compiler = new ModuleCompiler (symbolTable, methodBuilder.Module);
+			ModuleCompiler compiler = new ModuleCompiler (context);
 			IodineClass clazz = compiler.CompileClass (classDecl);
 			methodBuilder.EmitInstruction (classDecl.Location, Opcode.LoadConst,
-				methodBuilder.Module.DefineConstant (clazz));
+				context.CurrentModule.DefineConstant (clazz));
 			methodBuilder.EmitInstruction (classDecl.Location, Opcode.StoreLocal,
-				symbolTable.GetSymbol (classDecl.Name).Index);
+				context.SymbolTable.GetSymbol (classDecl.Name).Index);
 		}
 
 		public override void Accept (InterfaceDeclaration contractDecl)
@@ -436,13 +498,20 @@ namespace Iodine.Compiler
 			IodineInterface contract = new IodineInterface (contractDecl.Name);
 			foreach (AstNode node in contractDecl.Children) {
 				FunctionDeclaration decl = node as FunctionDeclaration;
-				contract.AddMethod (new IodineMethod (methodBuilder.Module, decl.Name, decl.InstanceMethod,
-					decl.Parameters.Count, 0));
+				contract.AddMethod (new MethodBuilder (
+					context.CurrentModule,
+					decl.Name,
+					decl.InstanceMethod,
+					decl.Parameters.Count,
+					0,
+					decl.Variadic,
+					decl.AcceptsKeywordArgs
+				));
 			}
 			methodBuilder.EmitInstruction (contractDecl.Location, Opcode.LoadConst,
-				methodBuilder.Module.DefineConstant (contract));
+				context.CurrentModule.DefineConstant (contract));
 			methodBuilder.EmitInstruction (contractDecl.Location, Opcode.StoreLocal,
-				symbolTable.GetSymbol (contractDecl.Name).Index);
+				context.SymbolTable.GetSymbol (contractDecl.Name).Index);
 		}
 
 		public override void Accept (EnumDeclaration enumDecl)
@@ -452,9 +521,9 @@ namespace Iodine.Compiler
 				ienum.AddItem (name, enumDecl.Items [name]);
 			}
 			methodBuilder.EmitInstruction (enumDecl.Location, Opcode.LoadConst,
-				methodBuilder.Module.DefineConstant (ienum));
+				context.CurrentModule.DefineConstant (ienum));
 			methodBuilder.EmitInstruction (enumDecl.Location, Opcode.StoreLocal,
-				symbolTable.GetSymbol (enumDecl.Name).Index);
+				context.SymbolTable.GetSymbol (enumDecl.Name).Index);
 		}
 
 		public override void Accept (ReturnStatement returnStmt)
@@ -511,26 +580,42 @@ namespace Iodine.Compiler
 
 		public override void Accept (LambdaExpression lambda)
 		{
-			symbolTable.NextScope ();
+			context.SymbolTable.NextScope ();
 
-			int locals = methodBuilder.LocalCount > 0 ? methodBuilder.LocalCount : symbolTable.CurrentScope.SymbolCount;
-			IodineMethod anonMethod = new IodineMethod (methodBuilder, methodBuilder.Module, null, lambda.InstanceMethod, 
-				                          lambda.Parameters.Count, locals);
-			FunctionCompiler compiler = new FunctionCompiler (symbolTable, anonMethod);
+			int locals = methodBuilder.LocalCount > 0 ?
+				methodBuilder.LocalCount :
+				context.SymbolTable.CurrentScope.SymbolCount;
+			
+			MethodBuilder anonMethod = new MethodBuilder (methodBuilder,
+				context.CurrentModule,
+				null,
+				lambda.InstanceMethod, 
+				lambda.Parameters.Count,
+				locals,
+				lambda.Variadic,
+				lambda.AcceptsKeywordArguments
+			);
+
+			FunctionCompiler compiler = new FunctionCompiler (anonMethod, context);
 			for (int i = 0; i < lambda.Parameters.Count; i++) {
-				anonMethod.Parameters [lambda.Parameters [i]] = symbolTable.GetSymbol
+				anonMethod.Parameters [lambda.Parameters [i]] = context.SymbolTable.GetSymbol
 					(lambda.Parameters [i]).Index;
 			}
 			lambda.Children [0].Visit (compiler);
+
 			anonMethod.EmitInstruction (lambda.Location, Opcode.LoadNull);
-			anonMethod.Variadic = lambda.Variadic;
 			anonMethod.FinalizeLabels ();
-			methodBuilder.EmitInstruction (lambda.Location, Opcode.LoadConst,
-				methodBuilder.Module.DefineConstant (anonMethod));
+
+			methodBuilder.EmitInstruction (lambda.Location,
+				Opcode.LoadConst,
+				context.CurrentModule.DefineConstant (anonMethod)
+			);
+
 			if (methodBuilder.LocalCount > 0) {
 				methodBuilder.EmitInstruction (lambda.Location, Opcode.BuildClosure);
 			}
-			symbolTable.LeaveScope ();
+
+			context.SymbolTable.LeaveScope ();
 		}
 
 
@@ -551,7 +636,7 @@ namespace Iodine.Compiler
 			if (tryExcept.ExceptionIdentifier != null) {
 				methodBuilder.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.LoadException);
 				methodBuilder.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.StoreLocal,
-					symbolTable.GetSymbol (tryExcept.ExceptionIdentifier).Index);
+					context.SymbolTable.GetSymbol (tryExcept.ExceptionIdentifier).Index);
 			}
 			tryExcept.ExceptBody.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
@@ -574,20 +659,20 @@ namespace Iodine.Compiler
 			string[] subclass = super.Parent.Base [0].Split ('.');
 			super.Arguments.Visit (this);
 			methodBuilder.EmitInstruction (super.Location, Opcode.LoadGlobal,
-				methodBuilder.Module.DefineConstant (new IodineName (subclass [0])));
+				context.CurrentModule.DefineConstant (new IodineName (subclass [0])));
 			for (int i = 1; i < subclass.Length; i++) {
 				methodBuilder.EmitInstruction (super.Location, Opcode.LoadAttribute,
-					methodBuilder.Module.DefineConstant (new IodineName (subclass [0])));
+					context.CurrentModule.DefineConstant (new IodineName (subclass [0])));
 			}
 			methodBuilder.EmitInstruction (super.Location, Opcode.InvokeSuper,
 				super.Arguments.Children.Count);
 			for (int i = 1; i < super.Parent.Base.Count; i++) {
 				string[] contract = super.Parent.Base [i].Split ('.');
 				methodBuilder.EmitInstruction (super.Location, Opcode.LoadGlobal,
-					methodBuilder.Module.DefineConstant (new IodineName (contract [0])));
+					context.CurrentModule.DefineConstant (new IodineName (contract [0])));
 				for (int j = 1; j < contract.Length; j++) {
 					methodBuilder.EmitInstruction (super.Location, Opcode.LoadAttribute,
-						methodBuilder.Module.DefineConstant (new IodineName (contract [0])));
+						context.CurrentModule.DefineConstant (new IodineName (contract [0])));
 				}
 				methodBuilder.EmitInstruction (super.Location, Opcode.InvokeSuper, 0);
 			}
@@ -609,7 +694,7 @@ namespace Iodine.Compiler
 			value.Visit (this);
 			int temporary = methodBuilder.CreateTemporary ();
 			methodBuilder.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
-			PatternCompiler compiler = new PatternCompiler (symbolTable, methodBuilder,
+			PatternCompiler compiler = new PatternCompiler (context, methodBuilder,
 				temporary,
 				this);
 			IodineLabel nextLabel = methodBuilder.CreateLabel ();
@@ -642,7 +727,7 @@ namespace Iodine.Compiler
 			int set = methodBuilder.CreateTemporary ();
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.BuildList, 0);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.StoreLocal, set);
-			symbolTable.NextScope ();
+			context.SymbolTable.NextScope ();
 			list.Iterator.Visit (this);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.Dup);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.StoreLocal, tmp);
@@ -655,7 +740,7 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, tmp);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.IterGetNext);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.StoreLocal,
-				symbolTable.GetSymbol
+				context.SymbolTable.GetSymbol
 				(list.Identifier).Index);
 			if (list.Predicate != null) {
 				list.Predicate.Visit (this);
@@ -664,7 +749,7 @@ namespace Iodine.Compiler
 			list.Expression.Visit (this);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, set);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadAttribute,
-				methodBuilder.Module.DefineConstant (new IodineName ("add")));
+				context.CurrentModule.DefineConstant (new IodineName ("add")));
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.Invoke, 1);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.Pop);
 			if (list.Predicate != null) {
@@ -673,7 +758,7 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (list.Expression.Location, Opcode.Jump, foreachLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
 			methodBuilder.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, set);
-			symbolTable.LeaveScope ();
+			context.SymbolTable.LeaveScope ();
 		}
 
 		public override void Accept (TernaryExpression ifExpr)

@@ -33,6 +33,9 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
+	/// <summary>
+	/// Performs semantic analysis on trees from Iodine functions
+	/// </summary>
 	internal class FunctionAnalyser : IodineAstVisitor
 	{
 		private ErrorLog errorLog;
@@ -46,8 +49,7 @@ namespace Iodine.Compiler
 
 		public override void Accept (UseStatement useStmt)
 		{
-			errorLog.AddError (ErrorType.ParserError, useStmt.Location,
-				"use statement not valid inside function body!");
+			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, useStmt.Location, "use");
 		}
 
 		public override void Accept (BinaryExpression binop)
@@ -78,6 +80,16 @@ namespace Iodine.Compiler
 		public override void Accept (EnumDeclaration enumDecl)
 		{
 			symbolTable.AddSymbol (enumDecl.Name);
+		}
+
+		public override void Accept (VariableDeclaration varDecl)
+		{
+			if (!symbolTable.CurrentScope.IsSymbolDefined (varDecl.Name)) {
+				symbolTable.AddSymbol (varDecl.Name);
+				varDecl.VisitChildren (this);
+			} else {
+				errorLog.AddError (Errors.VariableAlreadyDefined, varDecl.Location, varDecl.Name);
+			}
 		}
 
 		public override void Accept (FunctionDeclaration funcDecl)
@@ -133,9 +145,14 @@ namespace Iodine.Compiler
 			ast.VisitChildren (this);
 		}
 
-		public override void Accept (AstRoot ast)
+		public override void Accept (CompilationUnit ast)
 		{
 			ast.VisitChildren (this);
+		}
+
+		public override void Accept (StatementList stmtList)
+		{
+			stmtList.VisitChildren (this);
 		}
 
 		public override void Accept (Expression expr)

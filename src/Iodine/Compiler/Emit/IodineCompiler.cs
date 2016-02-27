@@ -47,16 +47,16 @@ namespace Iodine.Compiler
 
 		private IodineContext context;
 		private SymbolTable symbolTable;
-		private AstRoot root;
+		private CompilationUnit root;
 
-		private IodineCompiler (IodineContext context, SymbolTable symbolTable, AstRoot root)
+		private IodineCompiler (IodineContext context, SymbolTable symbolTable, CompilationUnit root)
 		{
 			this.context = context;
 			this.symbolTable = symbolTable;
 			this.root = root;
 		}
 
-		public static IodineCompiler CreateCompiler (IodineContext context, AstRoot root)
+		public static IodineCompiler CreateCompiler (IodineContext context, CompilationUnit root)
 		{
 			SemanticAnalyser analyser = new SemanticAnalyser (context.ErrorLog);
 			SymbolTable table = analyser.Analyse (root);
@@ -65,22 +65,28 @@ namespace Iodine.Compiler
 
 		public IodineModule Compile (string moduleName)
 		{
-			IodineModule module = new IodineModule (moduleName);
+			ModuleBuilder moduleBuilder = new ModuleBuilder (moduleName);
+			EmitContext context = new EmitContext (symbolTable);
+			context.SetCurrentModule (moduleBuilder);
 
-			ModuleCompiler compiler = new ModuleCompiler (symbolTable, module);
+			ModuleCompiler compiler = new ModuleCompiler (context);
+
 			root.Visit (compiler);
-			module.Initializer.FinalizeLabels ();
+
+			moduleBuilder.Initializer.FinalizeLabels ();
+
 			if (context.ShouldOptimize) {
-				OptimizeObject (module);
+				OptimizeObject (moduleBuilder);
 			}
-			return module;
+
+			return moduleBuilder;
 		}
 
 		private void OptimizeObject (IodineObject obj)
 		{
 			foreach (IodineObject attr in obj.Attributes.Values) {
-				if (attr is IodineMethod) {
-					IodineMethod method = attr as IodineMethod;
+				if (attr is MethodBuilder) {
+					MethodBuilder method = attr as MethodBuilder;
 					foreach (IBytecodeOptimization opt in Optimizations) {
 						opt.PerformOptimization (method);
 					}

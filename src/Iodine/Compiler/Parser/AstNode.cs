@@ -76,18 +76,5 @@ namespace Iodine.Compiler.Ast
 			return GetEnumerator ();
 		}
 	}
-
-	public class AstRoot : AstNode
-	{
-		public AstRoot (SourceLocation location)
-			: base (location)
-		{
-		}
-
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
 }
 

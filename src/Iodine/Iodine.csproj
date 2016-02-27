@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <Commandlineparameters>/home/grunt/Iodine/tests/test.id</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -171,17 +172,6 @@
     <Compile Include="Compiler\Parser\Ast\WhileStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\WithStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\YieldStatement.cs" />
-    <Compile Include="Compiler\Codegen\FunctionCompiler.cs" />
-    <Compile Include="Compiler\Codegen\IBytecodeOptimization.cs" />
-    <Compile Include="Compiler\Codegen\IodineCompiler.cs" />
-    <Compile Include="Compiler\Codegen\ModuleCompiler.cs" />
-    <Compile Include="Compiler\Codegen\PatternCompiler.cs" />
-    <Compile Include="Compiler\Codegen\Optimizations\ControlFlowOptimization.cs" />
-    <Compile Include="Compiler\Codegen\Optimizations\InstructionOptimization.cs" />
-    <Compile Include="Compiler\Analyser\FunctionAnalyser.cs" />
-    <Compile Include="Compiler\Analyser\PatternAnalyser.cs" />
-    <Compile Include="Compiler\Analyser\RootAnalyser.cs" />
-    <Compile Include="Compiler\Analyser\SemanticAnalyser.cs" />
     <Compile Include="Compiler\Parser\IodineAstVisitor.cs" />
     <Compile Include="Compiler\SourceLocation.cs" />
     <Compile Include="Runtime\CoreModules\ReflectionModule.cs" />
@@ -206,6 +196,23 @@
     <Compile Include="Interop\TypeMappings\Int64TypeMapping.cs" />
     <Compile Include="Interop\TypeMappings\ObjectTypeMapping.cs" />
     <Compile Include="Interop\TypeMappings\StringTypeMapping.cs" />
+    <Compile Include="Compiler\Parser\Ast\VariableDeclaration.cs" />
+    <Compile Include="Compiler\Parser\CompilationUnit.cs" />
+    <Compile Include="Compiler\Parser\Ast\StatementList.cs" />
+    <Compile Include="Compiler\SyntaxAnalysis\FunctionAnalyser.cs" />
+    <Compile Include="Compiler\SyntaxAnalysis\PatternAnalyser.cs" />
+    <Compile Include="Compiler\SyntaxAnalysis\RootAnalyser.cs" />
+    <Compile Include="Compiler\SyntaxAnalysis\SemanticAnalyser.cs" />
+    <Compile Include="Compiler\Emit\FunctionCompiler.cs" />
+    <Compile Include="Compiler\Emit\IBytecodeOptimization.cs" />
+    <Compile Include="Compiler\Emit\IodineCompiler.cs" />
+    <Compile Include="Compiler\Emit\ModuleCompiler.cs" />
+    <Compile Include="Compiler\Emit\PatternCompiler.cs" />
+    <Compile Include="Compiler\Emit\Optimizations\ControlFlowOptimization.cs" />
+    <Compile Include="Compiler\Emit\Optimizations\InstructionOptimization.cs" />
+    <Compile Include="Compiler\Emit\MethodBuilder.cs" />
+    <Compile Include="Compiler\Emit\ModuleBuilder.cs" />
+    <Compile Include="Compiler\Emit\EmitContext.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -215,10 +222,10 @@
     <Folder Include="Compiler\" />
     <Folder Include="Runtime\Debug\" />
     <Folder Include="Compiler\Parser\" />
-    <Folder Include="Compiler\Codegen\" />
-    <Folder Include="Compiler\Analyser\" />
     <Folder Include="Interop\" />
     <Folder Include="Interop\TypeMappings\" />
+    <Folder Include="Compiler\SyntaxAnalysis\" />
+    <Folder Include="Compiler\Emit\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
