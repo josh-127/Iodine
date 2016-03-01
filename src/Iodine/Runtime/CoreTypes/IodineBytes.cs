@@ -158,6 +158,16 @@ namespace Iodine.Runtime
 		{
 			iterIndex = 0;
 		}
+
+		private IodineObject indexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineInteger val = args [0] as IodineInteger;
+			return null;
+		}
 	}
 }
 

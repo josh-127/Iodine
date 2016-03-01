@@ -224,7 +224,32 @@ namespace Iodine.Compiler
 				TokenClass.InterpolatedStringLiteral :
 				TokenClass.StringLiteral,
 				accum.ToString (),
-				location);
+				location
+			);
+		}
+
+		private Token ReadBinaryStringLiteral ()
+		{
+			StringBuilder accum = new StringBuilder ();
+			int delimiter = ReadChar ();
+			int ch = (char)PeekChar ();
+			while (ch != delimiter && ch != -1) {
+				if (ch == '\\') {
+					ReadChar ();
+					accum.Append (ParseEscapeCode ());
+				} else {
+					accum.Append ((char)ReadChar ());
+				}
+				ch = PeekChar ();
+			}
+			if (ReadChar () == -1) {
+				errorLog.AddError (Errors.UnterminatedStringLiteral, location);
+			}
+
+			return new Token (TokenClass.BinaryStringLiteral,
+				accum.ToString (),
+				location
+			);
 		}
 
 		private char ParseEscapeCode ()
@@ -260,6 +285,10 @@ namespace Iodine.Compiler
 			} while (char.IsLetterOrDigit (ch) || ch == '_');
 
 			string final = accum.ToString ();
+
+			if (final == "b" && (ch == '\"' || ch == '\'')) {
+				return ReadBinaryStringLiteral ();
+			}
 
 			switch (final) {
 			case "if":

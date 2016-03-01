@@ -34,12 +34,14 @@ namespace Iodine.Compiler.Ast
 {
 	public class StringExpression : AstNode
 	{
-		public string Value { private set; get; }
+		public readonly bool Binary;
+		public readonly string Value;
 
-		public StringExpression (SourceLocation location, string value)
+		public StringExpression (SourceLocation location, string value, bool binary = false)
 			: base (location)
 		{
 			Value = value;
+			Binary = binary;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)

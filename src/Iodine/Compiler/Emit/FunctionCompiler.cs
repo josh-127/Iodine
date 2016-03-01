@@ -469,8 +469,14 @@ namespace Iodine.Compiler
 		public override void Accept (StringExpression str)
 		{
 			str.VisitChildren (this);
-			methodBuilder.EmitInstruction (str.Location, Opcode.LoadConst, 
-				context.CurrentModule.DefineConstant (new IodineString (str.Value)));
+			IodineObject constant = str.Binary ?
+				(IodineObject) new IodineBytes (str.Value) :
+				(IodineObject) new IodineString (str.Value);
+			
+			methodBuilder.EmitInstruction (str.Location,
+				Opcode.LoadConst, 
+				context.CurrentModule.DefineConstant (constant)
+			);
 			if (str.Children.Count != 0) {
 				methodBuilder.EmitInstruction (str.Location, Opcode.LoadAttribute,
 					context.CurrentModule.DefineConstant (new IodineName ("format")));

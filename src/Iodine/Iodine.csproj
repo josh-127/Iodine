@@ -111,11 +111,9 @@
     <Compile Include="Runtime\IodineConfiguration.cs" />
     <Compile Include="Runtime\CoreTypes\IodineClass.cs" />
     <Compile Include="Runtime\CoreTypes\IodineClosure.cs" />
-    <Compile Include="Runtime\CoreTypes\IodineMethod.cs" />
     <Compile Include="Runtime\CoreTypes\IodineEnum.cs" />
     <Compile Include="Runtime\CoreTypes\IodineException.cs" />
     <Compile Include="Runtime\CoreTypes\IodineInterface.cs" />
-    <Compile Include="Runtime\CoreTypes\IodineModule.cs" />
     <Compile Include="Compiler\SyntaxException.cs" />
     <Compile Include="Runtime\IodineBuiltinModule.cs" />
     <Compile Include="Runtime\Debug\DebugServer.cs" />
@@ -213,6 +211,8 @@
     <Compile Include="Compiler\Emit\MethodBuilder.cs" />
     <Compile Include="Compiler\Emit\ModuleBuilder.cs" />
     <Compile Include="Compiler\Emit\EmitContext.cs" />
+    <Compile Include="Runtime\IodineModule.cs" />
+    <Compile Include="Runtime\IodineMethod.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -124,6 +124,13 @@ namespace Iodine.Runtime
 			pauseVirtualMachine.Set ();
 		}
 
+		/// <summary>
+		/// Executes an Iodine method
+		/// </summary>
+		/// <returns>Value evaluated on return (null if void).</returns>
+		/// <param name="method">Method.</param>
+		/// <param name="self">self pointer.</param>
+		/// <param name="arguments">Arguments.</param>
 		public IodineObject InvokeMethod (IodineMethod method, IodineObject self, IodineObject[] arguments)
 		{
 			int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 : method.ParameterCount;
@@ -211,11 +218,20 @@ namespace Iodine.Runtime
 			return retVal;
 		}
 
+		/// <summary>
+		/// Raises a generic Iodine exception
+		/// </summary>
+		/// <param name="message">Format.</param>
+		/// <param name="args">Arguments.</param>
 		public void RaiseException (string message, params object[] args)
 		{
 			RaiseException (new IodineException (message, args));
 		}
 
+		/// <summary>
+		/// Raises an exception, throwing 'ex' as an IodineException object
+		/// </summary>
+		/// <param name="ex">Exception to raise.</param>
 		public void RaiseException (IodineObject ex)
 		{
 			if (traceCallback != null) {
@@ -248,6 +264,10 @@ namespace Iodine.Runtime
 			Top.InstructionPointer = handler.InstructionPointer;
 		}
 
+		/// <summary>
+		/// Sets the trace calback function (For debugging).
+		/// </summary>
+		/// <param name="callback">Callback.</param>
 		public void SetTrace (TraceCallback callback)
 		{
 			traceCallback = callback;
