@@ -34,17 +34,28 @@ namespace Iodine.Compiler.Ast
 {
 	public class InterfaceDeclaration : AstNode
 	{
-		public string Name { private set; get; }
+		public readonly string Name;
+		public readonly List<AstNode> Members = new List<AstNode> ();
 
 		public InterfaceDeclaration (SourceLocation location, string name)
 			: base (location)
 		{
-			this.Name = name;
+			Name = name;
+		}
+
+		public void AddMember (AstNode member)
+		{
+			Members.Add (member);
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Members.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

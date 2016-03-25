@@ -36,6 +36,7 @@ namespace Iodine.Compiler.Ast
 	{
 		public readonly bool Binary;
 		public readonly string Value;
+		public readonly List<AstNode> SubExpressions = new List<AstNode> ();
 
 		public StringExpression (SourceLocation location, string value, bool binary = false)
 			: base (location)
@@ -44,9 +45,19 @@ namespace Iodine.Compiler.Ast
 			Binary = binary;
 		}
 
+		public void AddSubExpression (AstNode node)
+		{
+			SubExpressions.Add (node);
+		}
+
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			SubExpressions.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

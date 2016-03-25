@@ -39,8 +39,11 @@ using Iodine.Compiler;
 namespace Iodine.Runtime
 {
 	// Callback for debugger
-	public delegate bool TraceCallback (TraceType type, VirtualMachine vm, StackFrame frame,
-		SourceLocation location);
+	public delegate bool TraceCallback (TraceType type, 
+		VirtualMachine vm,
+		StackFrame frame,
+		SourceLocation location
+	);
 
 	public enum TraceType
 	{
@@ -111,7 +114,8 @@ namespace Iodine.Runtime
 					accum.AppendFormat (" at {0} (Module: {1}, Line: {2})\n",
 						top.Method.Name,
 						top.Module.Name,
-						top.Location.Line + 1);
+						top.Location.Line + 1
+					);
 				}
 				top = top.Parent;
 			}

@@ -33,37 +33,30 @@ namespace Iodine.Compiler.Ast
 {
 	public class TernaryExpression : AstNode
 	{
-		public AstNode Condition {
-			get {
-				return Children [0];
-			}
-		}
-
-		public AstNode Expression {
-			get {
-				return Children [1];
-			}
-		}
-
-		public AstNode ElseExpression {
-			get {
-				return Children [2];
-			}
-		}
+		public readonly AstNode Condition;
+		public readonly AstNode Expression;
+		public readonly AstNode ElseExpression;
 
 		public TernaryExpression (SourceLocation location, AstNode condition,
 			AstNode expression,
 			AstNode elseExpression)
 			: base (location)
 		{
-			Add (condition);
-			Add (expression);
-			Add (elseExpression);
+			Condition = condition;
+			Expression = expression;
+			ElseExpression = expression; 
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Condition.Visit (visitor);
+			Expression.Visit (visitor);
+			ElseExpression.Visit (visitor);
 		}
 	}
 }

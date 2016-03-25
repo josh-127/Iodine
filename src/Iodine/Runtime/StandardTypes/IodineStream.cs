@@ -46,6 +46,8 @@ namespace Iodine.Runtime
 
 		public bool CanWrite { private set; get; }
 
+		public bool BinaryMode { private set; get; }
+
 		public IodineStream (Stream file, bool canWrite, bool canRead)
 			: base (TypeDefinition)
 		{

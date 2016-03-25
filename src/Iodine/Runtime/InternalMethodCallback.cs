@@ -44,7 +44,10 @@ namespace Iodine.Runtime
 		private static readonly IodineTypeDefinition InternalMethodTypeDef = new
 			IodineTypeDefinition ("InternalMethod");
 		
-		private IodineObject self;
+		public IodineObject Self {
+			get;
+			internal set;
+		}
 
 		public IodineMethodCallback Callback {
 			private set;
@@ -54,7 +57,7 @@ namespace Iodine.Runtime
 		public InternalMethodCallback (IodineMethodCallback callback, IodineObject self)
 			: base (InternalMethodTypeDef)
 		{
-			this.self = self;
+			Self = self;
 			Callback = callback;
 		}
 
@@ -68,7 +71,7 @@ namespace Iodine.Runtime
 			//vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
 			try {
 				//vm.Stack.EndFrame ();
-				IodineObject obj = Callback.Invoke (vm, self, arguments);
+				IodineObject obj = Callback.Invoke (vm, Self, arguments);
 				return obj;
 			} catch (SyntaxException ex) {
 				throw ex;

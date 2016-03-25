@@ -34,7 +34,7 @@ namespace Iodine.Compiler.Ast
 {
 	public class EnumDeclaration : AstNode
 	{
-		public string Name { private set; get; }
+		public readonly string Name;
 
 		public Dictionary<string, int> Items { private set; get; }
 

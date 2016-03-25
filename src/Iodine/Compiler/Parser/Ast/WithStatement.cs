@@ -33,26 +33,26 @@ namespace Iodine.Compiler.Ast
 {
 	public class WithStatement : AstNode
 	{
-		public AstNode Expression {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Expression;
 
-		public AstNode Body {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly AstNode Body;
 
-		public WithStatement (SourceLocation location)
+		public WithStatement (SourceLocation location, AstNode expression, AstNode body)
 			: base (location)
 		{
+			Expression = expression;
+			Body = body;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Expression.Visit (visitor);
+			Body.Visit (visitor);
 		}
 	}
 }

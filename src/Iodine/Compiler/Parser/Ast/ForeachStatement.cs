@@ -33,31 +33,28 @@ namespace Iodine.Compiler.Ast
 {
 	public class ForeachStatement : AstNode
 	{
-		public string Item { private set; get; }
+		public readonly string Item;
 
-		public AstNode Iterator {
-			get {
-				return Children [0];
-			}
-		}
-
-		public AstNode Body {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly AstNode Iterator;
+		public readonly AstNode Body;
 
 		public ForeachStatement (SourceLocation location, string item, AstNode iterator, AstNode body)
 			: base (location)
 		{
-			this.Item = item;
-			this.Add (iterator);
-			this.Add (body);
+			Item = item;
+			Iterator = iterator;
+			Body = body;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Iterator.Visit (visitor);
+			Body.Visit (visitor);
 		}
 	}
 }

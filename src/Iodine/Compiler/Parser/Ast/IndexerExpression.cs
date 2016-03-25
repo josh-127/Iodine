@@ -33,28 +33,25 @@ namespace Iodine.Compiler.Ast
 {
 	public class IndexerExpression : AstNode
 	{
-		public AstNode Target {
-			get {
-				return Children [0];
-			}
-		}
-
-		public AstNode Index {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly AstNode Target;
+		public readonly AstNode Index;
 
 		public IndexerExpression (SourceLocation location, AstNode lvalue, AstNode index)
 			: base (location)
 		{
-			Add (lvalue);
-			Add (index);
+			Target = lvalue;
+			Index = index;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Target.Visit (visitor);
+			Index.Visit (visitor);
 		}
 	}
 }

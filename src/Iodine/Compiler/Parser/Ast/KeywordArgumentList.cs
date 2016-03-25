@@ -34,16 +34,11 @@ namespace Iodine.Compiler.Ast
 {
 	public class KeywordArgumentList : AstNode
 	{
-		public List<string> Keywords {
-			private set;
-			get;
-
-		}
+		public readonly Dictionary<string, AstNode> Keywords = new Dictionary<string, AstNode> ();
 
 		public KeywordArgumentList (SourceLocation location)
 			: base (location)
 		{
-			this.Keywords = new List<string> ();
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
@@ -53,8 +48,14 @@ namespace Iodine.Compiler.Ast
 
 		public void Add (string kw, AstNode child)
 		{
-			this.Keywords.Add (kw);
-			this.Children.Add (child);
+			Keywords [kw] = child;
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			foreach (AstNode node in Keywords.Values) {
+				node.Visit (visitor);
+			}
 		}
 	}
 }

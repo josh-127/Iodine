@@ -202,10 +202,10 @@ namespace Iodine.Compiler
 			call.Target.Visit (this);
 			if (call.Arguments.Packed) {
 				methodBuilder.EmitInstruction (call.Target.Location, Opcode.InvokeVar, 
-					call.Arguments.Children.Count - 1);
+					call.Arguments.Arguments.Count - 1);
 			} else {
 				methodBuilder.EmitInstruction (call.Target.Location, Opcode.Invoke, 
-					call.Arguments.Children.Count);
+					call.Arguments.Arguments.Count);
 			}
 			
 		}
@@ -217,9 +217,9 @@ namespace Iodine.Compiler
 
 		public override void Accept (KeywordArgumentList kwargs)
 		{
-			for (int i = 0; i < kwargs.Keywords.Count; i++) {
-				string kw = kwargs.Keywords [i];
-				AstNode val = kwargs.Children [i];
+			foreach (KeyValuePair<string, AstNode> kv in kwargs.Keywords) {
+				string kw = kv.Key;
+				AstNode val = kv.Value;
 				methodBuilder.EmitInstruction (kwargs.Location,
 					Opcode.LoadConst,
 					context.CurrentModule.DefineConstant (new IodineString (kw))
@@ -276,9 +276,11 @@ namespace Iodine.Compiler
 			ifStmt.Condition.Visit (this);
 			methodBuilder.EmitInstruction (ifStmt.Body.Location, Opcode.JumpIfFalse, elseLabel);
 			ifStmt.Body.Visit (this);
-			methodBuilder.EmitInstruction (ifStmt.ElseBody.Location, Opcode.Jump, endLabel);
+			methodBuilder.EmitInstruction (ifStmt.ElseBody != null ? ifStmt.ElseBody.Location : ifStmt.Location, Opcode.Jump, endLabel);
 			methodBuilder.MarkLabelPosition (elseLabel);
-			ifStmt.ElseBody.Visit (this);
+			if (ifStmt.ElseBody != null) {
+				ifStmt.ElseBody.Visit (this);
+			}
 			methodBuilder.MarkLabelPosition (endLabel);
 		}
 
@@ -385,8 +387,7 @@ namespace Iodine.Compiler
 
 		public override void Accept (GivenStatement switchStmt)
 		{
-			foreach (AstNode node in switchStmt.WhenStatements.Children) {
-				WhenStatement caseStmt = node as WhenStatement;
+			foreach (WhenStatement caseStmt in switchStmt.WhenStatements) {
 				caseStmt.Values.Visit (this);
 				caseStmt.Body.Visit (this);
 			}
@@ -395,7 +396,7 @@ namespace Iodine.Compiler
 
 			methodBuilder.EmitInstruction (switchStmt.Location,
 				Opcode.SwitchLookup,
-				switchStmt.WhenStatements.Children.Count
+				switchStmt.WhenStatements.Count
 			);
 
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
@@ -432,7 +433,7 @@ namespace Iodine.Compiler
 				anonMethod.Parameters [funcDecl.Parameters [i]] = context.SymbolTable.GetSymbol
 					(funcDecl.Parameters [i]).Index;
 			}
-			funcDecl.Children [0].Visit (compiler);
+			funcDecl.VisitChildren (compiler);
 
 			anonMethod.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
 
@@ -459,16 +460,15 @@ namespace Iodine.Compiler
 				continueLabels
 			);
 
-			foreach (AstNode node in scope) {
-				node.Visit (scopeCompiler);
-			}
+			scope.VisitChildren (scopeCompiler);
 
 			context.SymbolTable.LeaveScope ();
 		}
 
 		public override void Accept (StringExpression str)
 		{
-			str.VisitChildren (this);
+			str.VisitChildren (this); // A string can contain a list of sub expressions for string interpolation
+
 			IodineObject constant = str.Binary ?
 				(IodineObject) new IodineBytes (str.Value) :
 				(IodineObject) new IodineString (str.Value);
@@ -477,11 +477,15 @@ namespace Iodine.Compiler
 				Opcode.LoadConst, 
 				context.CurrentModule.DefineConstant (constant)
 			);
-			if (str.Children.Count != 0) {
-				methodBuilder.EmitInstruction (str.Location, Opcode.LoadAttribute,
-					context.CurrentModule.DefineConstant (new IodineName ("format")));
-				methodBuilder.EmitInstruction (str.Location, Opcode.Invoke, str.Children.Count);
+
+			if (str.SubExpressions.Count != 0) {
+				methodBuilder.EmitInstruction (str.Location,
+					Opcode.LoadAttribute,
+					context.CurrentModule.DefineConstant (new IodineName ("format"))
+				);
+				methodBuilder.EmitInstruction (str.Location, Opcode.Invoke, str.SubExpressions.Count);
 			}
+
 		}
 
 		public override void Accept (UseStatement useStmt)
@@ -502,7 +506,7 @@ namespace Iodine.Compiler
 		public override void Accept (InterfaceDeclaration contractDecl)
 		{
 			IodineInterface contract = new IodineInterface (contractDecl.Name);
-			foreach (AstNode node in contractDecl.Children) {
+			foreach (AstNode node in contractDecl.Members) {
 				FunctionDeclaration decl = node as FunctionDeclaration;
 				contract.AddMethod (new MethodBuilder (
 					context.CurrentModule,
@@ -555,13 +559,13 @@ namespace Iodine.Compiler
 		public override void Accept (ListExpression list)
 		{
 			list.VisitChildren (this);
-			methodBuilder.EmitInstruction (list.Location, Opcode.BuildList, list.Children.Count);
+			methodBuilder.EmitInstruction (list.Location, Opcode.BuildList, list.Items.Count);
 		}
 
 		public override void Accept (HashExpression hash)
 		{
 			hash.VisitChildren (this);
-			methodBuilder.EmitInstruction (hash.Location, Opcode.BuildHash, hash.Children.Count / 2);
+			methodBuilder.EmitInstruction (hash.Location, Opcode.BuildHash, hash.Items.Count / 2);
 		}
 
 		public override void Accept (SelfStatement self)
@@ -607,7 +611,7 @@ namespace Iodine.Compiler
 				anonMethod.Parameters [lambda.Parameters [i]] = context.SymbolTable.GetSymbol
 					(lambda.Parameters [i]).Index;
 			}
-			lambda.Children [0].Visit (compiler);
+			lambda.VisitChildren (compiler);
 
 			anonMethod.EmitInstruction (lambda.Location, Opcode.LoadNull);
 			anonMethod.FinalizeLabels ();
@@ -635,9 +639,9 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (tryExcept.TryBody.Location, Opcode.Jump, endLabel);
 			methodBuilder.MarkLabelPosition (exceptLabel);
 			tryExcept.TypeList.Visit (this);
-			if (tryExcept.TypeList.Children.Count > 0) {
+			if (tryExcept.TypeList.Arguments.Count > 0) {
 				methodBuilder.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.BeginExcept,
-					tryExcept.TypeList.Children.Count);
+					tryExcept.TypeList.Arguments.Count);
 			}
 			if (tryExcept.ExceptionIdentifier != null) {
 				methodBuilder.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.LoadException);
@@ -657,7 +661,7 @@ namespace Iodine.Compiler
 		public override void Accept (TupleExpression tuple)
 		{
 			tuple.VisitChildren (this);
-			methodBuilder.EmitInstruction (tuple.Location, Opcode.BuildTuple, tuple.Children.Count);
+			methodBuilder.EmitInstruction (tuple.Location, Opcode.BuildTuple, tuple.Items.Count);
 		}
 
 		public override void Accept (SuperCallExpression super)
@@ -671,7 +675,7 @@ namespace Iodine.Compiler
 					context.CurrentModule.DefineConstant (new IodineName (subclass [0])));
 			}
 			methodBuilder.EmitInstruction (super.Location, Opcode.InvokeSuper,
-				super.Arguments.Children.Count);
+				super.Arguments.Arguments.Count);
 			for (int i = 1; i < super.Parent.Base.Count; i++) {
 				string[] contract = super.Parent.Base [i].Split ('.');
 				methodBuilder.EmitInstruction (super.Location, Opcode.LoadGlobal,
@@ -696,7 +700,7 @@ namespace Iodine.Compiler
 
 		public override void Accept (MatchExpression match)
 		{
-			AstNode value = match.Children [0];
+			AstNode value = match.Expression;
 			value.Visit (this);
 			int temporary = methodBuilder.CreateTemporary ();
 			methodBuilder.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
@@ -705,12 +709,14 @@ namespace Iodine.Compiler
 				this);
 			IodineLabel nextLabel = methodBuilder.CreateLabel ();
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
-			for (int i = 1; i < match.Children.Count; i++) {
-				if (i > 1) {
+
+
+			for (int i = 0; i < match.MatchCases.Count; i++) {
+				if (i > 0) {
 					methodBuilder.MarkLabelPosition (nextLabel);
 					nextLabel = methodBuilder.CreateLabel ();
 				}
-				CaseExpression clause = match.Children [i] as CaseExpression;
+				CaseExpression clause = match.MatchCases [i] as CaseExpression;
 				clause.Pattern.Visit (compiler);
 				methodBuilder.EmitInstruction (match.Location, Opcode.JumpIfFalse, nextLabel);
 				if (clause.Condition != null) {

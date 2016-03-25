@@ -33,28 +33,25 @@ namespace Iodine.Compiler.Ast
 {
 	public class CallExpression : AstNode
 	{
-		public AstNode Target {
-			get {
-				return Children[0];
-			}
-		}
+		public readonly AstNode Target;
+		public readonly ArgumentList Arguments;
 
-		public ArgumentList Arguments {
-			get {
-				return (ArgumentList)Children[1];
-			}
-		}
-
-		public CallExpression (SourceLocation location, AstNode target, AstNode args)
+		public CallExpression (SourceLocation location, AstNode target, ArgumentList args)
 			: base (location)
 		{
-			Add (target);
-			Add (args);
+			Target = target;
+			Arguments = args;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Target.Visit (visitor);
+			Arguments.Visit (visitor);
 		}
 			
 	}

@@ -210,9 +210,9 @@ namespace Iodine.Compiler
 				parentVisitor
 			);
 			
-			for (int i = 0; i < tuple.Children.Count; i++) {
-				if (tuple.Children [i] is NameExpression &&
-					((NameExpression)tuple.Children [i]).Value == "_")
+			for (int i = 0; i < tuple.Items.Count; i++) {
+				if (tuple.Items [i] is NameExpression &&
+					((NameExpression)tuple.Items [i]).Value == "_")
 					continue;
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadLocal, temporary);
 				methodBuilder.EmitInstruction (tuple.Location,
@@ -221,7 +221,7 @@ namespace Iodine.Compiler
 				);
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadIndex);
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.StoreLocal, item);
-				tuple.Children [i].Visit (compiler);
+				tuple.Items [i].Visit (compiler);
 				methodBuilder.EmitInstruction (tuple.Location, Opcode.JumpIfFalse, endLabel);
 			}
 			methodBuilder.EmitInstruction (tuple.Location, Opcode.LoadTrue);

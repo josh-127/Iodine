@@ -33,17 +33,9 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode : IEnumerable<AstNode>
+	public abstract class AstNode
 	{
-		private List<AstNode> children = new List<AstNode> ();
-
 		public readonly SourceLocation Location;
-
-		public IList<AstNode> Children {
-			get {
-				return this.children;
-			}
-		}
 
 		public abstract void Visit (IodineAstVisitor visitor);
 
@@ -52,28 +44,9 @@ namespace Iodine.Compiler.Ast
 			Location = location;
 		}
 
-		public void Add (AstNode node)
-		{
-			children.Add (node);
-		}
 
-		public void VisitChildren (IodineAstVisitor visitor)
+		public virtual void VisitChildren (IodineAstVisitor visitor)
 		{
-			foreach (AstNode child in this.Children) {
-				child.Visit (visitor);
-			}
-		}
-
-		public IEnumerator<AstNode> GetEnumerator ()
-		{
-			foreach (AstNode node in this.children) {
-				yield return node;
-			}
-		}
-
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
 		}
 	}
 }

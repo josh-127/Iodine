@@ -66,6 +66,10 @@ namespace Iodine.Runtime
 		public IodineBytes ()
 			: base (TypeDefinition)
 		{
+			SetAttribute ("indexOf", new InternalMethodCallback (indexOf, this));
+			SetAttribute ("lastIndexOf", new InternalMethodCallback (indexOf, this));
+			SetAttribute ("substr", new InternalMethodCallback (substr, this));
+			SetAttribute ("contains", new InternalMethodCallback (contains, this));
 		}
 
 		public IodineBytes (byte[] val)
@@ -165,8 +169,145 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineInteger val = args [0] as IodineInteger;
-			return null;
+			int val = ConvertToByte (args [0]);
+
+			if (val < 0) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+
+			for (int i = 0; i < Value.Length; i++) {
+				if (Value [i] == val) {
+					return new IodineInteger (i);
+				}
+			}
+
+			return new IodineInteger (-1);
+		}
+
+		private IodineObject lastIndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			int val = ConvertToByte (args [0]);
+
+			if (val < 0) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+
+			int lastI = -1;
+
+			for (int i = 0; i < Value.Length; i++) {
+				if (Value [i] == val) {
+					lastI = i;
+				}
+			}
+
+			return new IodineInteger (lastI);
+		}
+
+		private IodineObject substr (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			if (args.Length == 1) {
+				IodineInteger i1 = args [0] as IodineInteger;
+				if (i1 == null) {
+					vm.RaiseException (new IodineTypeException ("Int"));
+					return null;
+				}
+				return substr (vm, i1);
+			} else {
+				IodineInteger i1 = args [0] as IodineInteger;
+				IodineInteger i2 = args [1] as IodineInteger;
+
+				if (i1 == null || i2 == null) {
+					vm.RaiseException (new IodineTypeException ("Int"));
+					return null;
+				}
+
+				return substr (vm, i1, i2);
+			}
+		}
+
+		private IodineObject substr (VirtualMachine vm, IodineInteger i1)
+		{
+			byte[] newBytes = new byte[Value.Length - (int)i1.Value];
+			int nI = 0;
+
+			for (int i = (int)i1.Value; i < newBytes.Length; i++) {
+				newBytes [nI++] = Value [i];
+			}
+
+			return new IodineBytes (newBytes);
+		}
+
+		private IodineObject substr (VirtualMachine vm, IodineInteger i1, IodineInteger i2)
+		{
+			byte[] newBytes = new byte[(int)i2.Value];
+
+			int nI = 0;
+
+			for (int i = (int)i1.Value; nI < (int)i2.Value; i++) {
+				newBytes [nI++] = Value [i];
+			}
+
+			return new IodineBytes (newBytes);
+
+		}
+
+		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineBytes needle = args [0] as IodineBytes;
+
+			if (needle == null) {
+				vm.RaiseException (new IodineTypeException ("Bytes"));
+				return null;
+			}
+
+			for (int i = 0; i < Value.Length; i++) {
+				bool found = true;
+
+				for (int sI = 0; sI < needle.Value.Length; sI++) {
+					if (needle.Value [sI] != Value [i]) {
+						found = false;
+						break;
+					}
+				}
+
+				if (found) {
+					return IodineBool.True;
+				}
+			}
+
+			return IodineBool.False;
+		}
+
+		private static int ConvertToByte (IodineObject obj)
+		{
+			if (obj is IodineInteger) {
+				return (byte)((IodineInteger)obj).Value;
+			} 
+
+			if (obj is IodineString) {
+				string val = obj.ToString ();
+				if (val.Length == 1) {
+					return (byte)val [0];
+				}
+			}
+
+			return -1;
 		}
 	}
 }

@@ -33,35 +33,30 @@ namespace Iodine.Compiler.Ast
 {
 	public class CaseExpression : AstNode
 	{
-		public AstNode Pattern {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Pattern;
 
-		public AstNode Condition {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly AstNode Condition;
 
-		public AstNode Value {
-			get {
-				return Children [2];
-			}
-		}
+		public readonly AstNode Value;
 
 		public CaseExpression (SourceLocation location, AstNode pattern, AstNode condition, AstNode value)
 			: base (location)
 		{
-			Children.Add (pattern);
-			Children.Add (condition);
-			Children.Add (value);
+			Pattern = pattern;
+			Condition = condition;
+			Value = value;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Pattern.Visit (visitor);
+			Condition.Visit (visitor);
+			Value.Visit (visitor);
 		}
 	}
 }

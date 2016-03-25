@@ -63,10 +63,12 @@ namespace Iodine.Compiler
 			 */
 			if (useStmt.Wildcard) {
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst,
-					context.CurrentModule.DefineConstant (new IodineString (import)));
+					context.CurrentModule.DefineConstant (new IodineString (import))
+				);
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.BuildTuple, 0);
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal,
-					context.CurrentModule.DefineConstant (new IodineName ("require")));
+					context.CurrentModule.DefineConstant (new IodineName ("require"))
+				);
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.Invoke, 2);
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.Pop);
 			} else {
@@ -86,9 +88,13 @@ namespace Iodine.Compiler
 					context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.BuildTuple, items.Length);
 				}
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadGlobal,
-					context.CurrentModule.DefineConstant (new IodineName ("require")));
+					context.CurrentModule.DefineConstant (new IodineName ("require"))
+				);
+
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.Invoke,
-					items.Length == 0 ? 1 : 2);
+					items.Length == 0 ? 1 : 2
+				);
+
 				context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.Pop);
 			}
 			
@@ -102,7 +108,7 @@ namespace Iodine.Compiler
 		public override void Accept (InterfaceDeclaration contractDecl)
 		{
 			IodineInterface contract = new IodineInterface (contractDecl.Name);
-			foreach (AstNode node in contractDecl.Children) {
+			foreach (AstNode node in contractDecl.Members) {
 				FunctionDeclaration decl = node as FunctionDeclaration;
 				contract.AddMethod (new MethodBuilder (context.CurrentModule,
 					decl.Name,
@@ -119,8 +125,7 @@ namespace Iodine.Compiler
 		public IodineClass CompileClass (ClassDeclaration classDecl)
 		{
 			MethodBuilder constructor = CompileMethod (classDecl.Constructor);
-			if (classDecl.Constructor.Children [0].Children.Count == 0 ||
-				!(classDecl.Constructor.Children [0].Children [0] is SuperCallExpression)) {
+			if (classDecl.Constructor.Body.Statements.Count == 0) {
 				if (classDecl.Base.Count > 0) {
 					foreach (string subclass in classDecl.Base) {
 						string[] contract = subclass.Split ('.');
@@ -151,23 +156,23 @@ namespace Iodine.Compiler
 			IodineClass clazz = new IodineClass (classDecl.Name, initializer, constructor);
 
 			FunctionCompiler compiler = new FunctionCompiler (initializer, context);
-			
-			for (int i = 1; i < classDecl.Children.Count; i++) {
-				if (classDecl.Children [i] is FunctionDeclaration) {
-					FunctionDeclaration func = classDecl.Children [i] as FunctionDeclaration;
+
+			foreach (AstNode member in classDecl.Members) {
+				if (member is FunctionDeclaration) {
+					FunctionDeclaration func = member as FunctionDeclaration;
 					if (func.InstanceMethod) {
 						clazz.AddInstanceMethod (CompileMethod (func));
 					} else {
 						clazz.SetAttribute (func.Name, CompileMethod (func));
 					}
-				} else if (classDecl.Children [i] is ClassDeclaration) {
-					ClassDeclaration subclass = classDecl.Children [i] as ClassDeclaration;
+				} else if (member is ClassDeclaration) {
+					ClassDeclaration subclass = member as ClassDeclaration;
 					clazz.SetAttribute (subclass.Name, CompileClass (subclass));
-				} else if (classDecl.Children [i] is EnumDeclaration) {
-					EnumDeclaration enumeration = classDecl.Children [i] as EnumDeclaration;
+				} else if (member is EnumDeclaration) {
+					EnumDeclaration enumeration = member as EnumDeclaration;
 					clazz.SetAttribute (enumeration.Name, CompileEnum (enumeration));
-				} else if (classDecl.Children [i] is BinaryExpression) {
-					BinaryExpression expr = classDecl.Children [i] as BinaryExpression;
+				} else if (member is BinaryExpression) {
+					BinaryExpression expr = member as BinaryExpression;
 					NameExpression name = expr.Left as NameExpression;
 					expr.Right.Visit (compiler);
 					initializer.EmitInstruction (classDecl.Location,
@@ -180,10 +185,9 @@ namespace Iodine.Compiler
 						context.CurrentModule.DefineConstant (new IodineName (name.Value))
 					);
 				} else {
-					classDecl.Children [i].Visit (compiler);
+					member.Visit (compiler);
 				}
 			}
-
 			initializer.FinalizeLabels ();
 			constructor.FinalizeLabels ();
 
@@ -224,15 +228,10 @@ namespace Iodine.Compiler
 					(funcDecl.Parameters [i]).Index;
 			}
 
-			funcDecl.Children [0].Visit (compiler);
+			funcDecl.VisitChildren (compiler);
 
-			AstNode lastNode = funcDecl.Children [0].LastOrDefault ();
+			methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
 
-			if (lastNode != null) {
-				methodBuilder.EmitInstruction (lastNode.Location, Opcode.LoadNull);
-			} else {
-				methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
-			}
 
 			methodBuilder.FinalizeLabels ();
 
@@ -433,7 +432,7 @@ namespace Iodine.Compiler
 
 		public override void Accept (RaiseStatement raise)
 		{
-			raise.Value.Visit (this);
+			raise.Value.Visit (functionCompiler);
 		}
 
 		public override void Accept (BreakStatement brk)

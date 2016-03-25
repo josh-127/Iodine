@@ -33,24 +33,25 @@ namespace Iodine.Compiler.Ast
 {
 	public class GetDefaultExpression : AstNode
 	{
-		public AstNode Target {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Target;
 
-		public string Field { private set; get; }
+		public readonly string Field;
 
 		public GetDefaultExpression (SourceLocation location, AstNode target, string field)
 			: base (location)
 		{
-			Add (target);
+			Target = target;
 			Field = field;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Target.Visit (visitor);
 		}
 	}
 }

@@ -28,37 +28,41 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
 	public class GivenStatement : AstNode
 	{
-		public AstNode GivenValue {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode GivenValue;
 
-		public AstNode WhenStatements {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly List<WhenStatement> WhenStatements = new List<WhenStatement> ();
 
-		public AstNode DefaultStatement {
-			get {
-				return Children [2];
-			}
-		}
+		public readonly AstNode DefaultStatement;
 
-		public GivenStatement (SourceLocation location)
+		public GivenStatement (SourceLocation location, AstNode givenValue, IEnumerable<WhenStatement> whenStatements, AstNode defaultStatement)
 			: base (location)
 		{
+			GivenValue = givenValue;
+			DefaultStatement = defaultStatement;
+			WhenStatements.AddRange (whenStatements);
+		}
+
+		public void AddCase (WhenStatement statement)
+		{
+			WhenStatements.Add (statement);
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			GivenValue.Visit (visitor);
+			WhenStatements.ForEach (p => p.Visit (visitor));
+			DefaultStatement.Visit (visitor);
 		}
 	}
 }

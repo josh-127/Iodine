@@ -42,6 +42,8 @@ namespace Iodine.Compiler.Ast
 
 		public bool AcceptsKeywordArguments { private set; get; }
 
+		private List<AstNode> body = new List<AstNode> ();
+
 		public LambdaExpression (SourceLocation location,
 			bool isInstanceMethod,
 			bool variadic,
@@ -55,9 +57,19 @@ namespace Iodine.Compiler.Ast
 			AcceptsKeywordArguments = acceptsKeywordArguments;
 		}
 
+		public void AddStatement (AstNode statement)
+		{
+			body.Add (statement);
+		}
+
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			body.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

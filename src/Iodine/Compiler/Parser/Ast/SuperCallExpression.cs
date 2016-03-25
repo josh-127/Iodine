@@ -34,22 +34,25 @@ namespace Iodine.Compiler.Ast
 	public class SuperCallExpression : AstNode
 	{
 
-		public AstNode Arguments {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly ArgumentList Arguments;
 
-		public ClassDeclaration Parent { set; get; }
+		public readonly ClassDeclaration Parent;
 
-		public SuperCallExpression (SourceLocation location)
+		public SuperCallExpression (SourceLocation location, ClassDeclaration parent, ArgumentList argumentList)
 			: base (location)
 		{
+			Parent = parent;
+			Arguments = argumentList;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Arguments.VisitChildren (visitor);
 		}
 	}
 }

@@ -35,23 +35,11 @@ namespace Iodine.Compiler.Ast
 	{
 		public string Identifier {private set; get; }
 
-		public AstNode Expression {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Expression;
 
-		public AstNode Iterator {
-			get {
-				return Children [1];
-			}
-		}
+		public AstNode Iterator;
 
-		public AstNode Predicate {
-			get {
-				return Children.Count > 2 ? Children [2] : null;
-			}
-		}
+		public AstNode Predicate;
 
 		public ListCompExpression (SourceLocation location, AstNode expression,
 			string ident,
@@ -59,17 +47,24 @@ namespace Iodine.Compiler.Ast
 			AstNode predicate = null)
 			: base (location)
 		{
-			Add (expression);
+			Expression = expression;
+			Iterator = iterator;
 			Identifier = ident;
-			Add (iterator);
-			if (predicate != null) {
-				Add (predicate);
-			}
+			Predicate = predicate; 
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Expression.Visit (visitor);
+			Iterator.Visit (visitor);
+			if (Predicate != null) {
+				Predicate.Visit (visitor);
+			}
 		}
 	}
 }

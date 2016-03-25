@@ -33,32 +33,37 @@ namespace Iodine.Compiler.Ast
 {
 	public class IfStatement : AstNode
 	{
-		public AstNode Condition {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Condition;
 
-		public AstNode Body {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly AstNode Body;
 
-		public AstNode ElseBody {
-			get {
-				return Children [2];
-			}
-		}
+		public readonly AstNode ElseBody;
 
-		public IfStatement (SourceLocation location)
+		public IfStatement (SourceLocation location, AstNode condition, AstNode body, AstNode elseBody = null)
 			: base (location)
 		{
+			Condition = condition;
+			Body = body;
+			ElseBody = elseBody;
+
+			if (elseBody == null) {
+				elseBody = new Statement (location);
+			}
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Condition.Visit (visitor);
+			Body.Visit (visitor);
+
+			if (ElseBody != null) {
+				ElseBody.Visit (visitor);
+			}
 		}
 	}
 }

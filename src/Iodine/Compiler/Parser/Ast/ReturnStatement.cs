@@ -33,21 +33,22 @@ namespace Iodine.Compiler.Ast
 {
 	public class ReturnStatement : AstNode
 	{
-		public AstNode Value {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Value;
 
 		public ReturnStatement (SourceLocation location, AstNode val)
 			: base (location)
 		{
-			Add (val);
+			Value = val;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Value.Visit (visitor);
 		}
 	}
 }

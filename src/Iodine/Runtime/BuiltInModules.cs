@@ -47,7 +47,23 @@ namespace Iodine.Runtime
 				if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
 					IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
 						typeof(IodineBuiltinModule), false).First ();
-					Modules.Add (attr.Name, (IodineModule)Activator.CreateInstance (type));
+					IodineModule module = (IodineModule)Activator.CreateInstance (type);
+					LoadBuiltinTypes (module, type);
+					Modules.Add (attr.Name, module);
+				}
+			}
+		}
+
+		static void LoadBuiltinTypes (IodineModule module, Type moduleType)
+		{
+			var types = moduleType.GetNestedTypes ()
+				.Where (p => p.IsSubclassOf (typeof(IodineTypeDefinition)));
+			foreach (Type type in types) {
+				if (type.IsDefined (typeof(IodineBuiltinType), false)) {
+					IodineBuiltinType attr = (IodineBuiltinType)type.GetCustomAttributes (
+						typeof(IodineBuiltinType), false).First ();
+					IodineTypeDefinition typeDef = (IodineTypeDefinition)Activator.CreateInstance (type);
+					module.SetAttribute (attr.Name, typeDef);
 				}
 			}
 		}

@@ -35,18 +35,16 @@ namespace Iodine.Compiler.Ast
 {
 	public class ClassDeclaration : AstNode
 	{
-		public string Name { private set; get; }
+		public readonly string Name;
 
-		public List<string> Base { private set; get; }
+		public readonly List<string> Base;
 
 		public FunctionDeclaration Constructor {
-			get {
-				return (FunctionDeclaration)Children [0];
-			}
-			set {
-				this.Children [0] = value;
-			}
+			get;
+			set;
 		}
+
+		public readonly List<AstNode> Members = new List<AstNode> ();
 
 		public ClassDeclaration (SourceLocation location, string name, List<string> baseClass)
 			: base (location)
@@ -54,13 +52,23 @@ namespace Iodine.Compiler.Ast
 			Name = name;
 			Base = baseClass;
 			FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, new List<string> ());
-			dummyCtor.Add (new Statement (location));
-			Add (dummyCtor);
+			Constructor = dummyCtor;
+		}
+
+		public void Add (AstNode item)
+		{
+			Members.Add (item);
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Constructor.Visit (visitor);
+			Members.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

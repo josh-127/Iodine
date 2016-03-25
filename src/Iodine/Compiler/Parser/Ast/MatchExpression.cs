@@ -28,19 +28,36 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
 	public class MatchExpression : AstNode
 	{
-		public MatchExpression (SourceLocation location)
+		public readonly AstNode Expression;
+
+		public readonly List<AstNode> MatchCases = new List<AstNode> ();
+
+		public MatchExpression (SourceLocation location, AstNode expression)
 			: base (location)
 		{
+			Expression = expression;
+		}
+
+		public void AddCase (AstNode matchCase)
+		{
+			MatchCases.Add (matchCase);
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Expression.Visit (visitor);
+			MatchCases.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

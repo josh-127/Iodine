@@ -35,22 +35,23 @@ namespace Iodine.Compiler.Ast
 	{
 		public UnaryOperation Operation { private set; get; }
 
-		public AstNode Value {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Value;
 
 		public UnaryExpression (SourceLocation location, UnaryOperation op, AstNode val)
 			: base (location)
 		{
 			Operation = op;
-			Add (val);
+			Value = val;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Value.Visit (visitor);
 		}
 	}
 }

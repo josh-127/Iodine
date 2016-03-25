@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
@@ -38,15 +39,27 @@ namespace Iodine.Compiler.Ast
 			get;
 		}
 
+		public readonly List<AstNode> Arguments = new List<AstNode> ();
+
 		public ArgumentList (SourceLocation location)
 			: base (location)
 		{
 
 		}
 
+		public void AddArgument (AstNode node)
+		{
+			Arguments.Add (node);
+		}
+
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Arguments.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

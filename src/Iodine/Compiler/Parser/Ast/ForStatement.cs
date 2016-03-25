@@ -33,39 +33,31 @@ namespace Iodine.Compiler.Ast
 {
 	public class ForStatement : AstNode
 	{
-		public AstNode Initializer {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Initializer;
+		public readonly AstNode Condition;
+		public readonly AstNode AfterThought;
+		public readonly AstNode Body;
 
-		public AstNode Condition {
-			get {
-				return Children [1];
-			}
-		}
-
-		public AstNode AfterThought {
-			get {
-				return Children [2];
-			}
-
-		}
-
-		public AstNode Body {
-			get {
-				return Children [3];
-			}
-		}
-
-		public ForStatement (SourceLocation location)
+		public ForStatement (SourceLocation location, AstNode initializer, AstNode condition, AstNode afterThought, AstNode body)
 			: base (location)
 		{
+			Initializer = initializer;
+			Condition = condition;
+			AfterThought = afterThought;
+			Body = body;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Initializer.Visit (visitor);
+			Condition.Visit (visitor);
+			AfterThought.Visit (visitor);
+			Body.Visit (visitor);
 		}
 	}
 }

@@ -47,6 +47,8 @@ namespace Iodine.Compiler.Ast
 
 		public bool AcceptsKeywordArgs { private set; get; }
 
+		public readonly StatementList Body;
+
 		public FunctionDeclaration (SourceLocation location,
 		                     string name,
 		                     bool isInstanceMethod,
@@ -60,11 +62,22 @@ namespace Iodine.Compiler.Ast
 			InstanceMethod = isInstanceMethod;
 			Variadic = isVariadic;
 			AcceptsKeywordArgs = hasKeywordArgs;
+			Body = new StatementList (location);
+		}
+
+		public void AddStatement (AstNode statement)
+		{
+			Body.AddStatement (statement);
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Body.VisitChildren (visitor);
 		}
 	}
 }

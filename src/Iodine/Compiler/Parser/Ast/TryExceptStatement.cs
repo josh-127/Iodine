@@ -35,33 +35,39 @@ namespace Iodine.Compiler.Ast
 	{
 		public string ExceptionIdentifier { private set; get; }
 
-		public AstNode TryBody {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode TryBody;
 
-		public AstNode ExceptBody {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly AstNode ExceptBody;
 
-		public AstNode TypeList {
-			get {
-				return Children [2];
-			}
-		}
+		public readonly ArgumentList TypeList;
 
-		public TryExceptStatement (SourceLocation location, string ident)
+		public TryExceptStatement (SourceLocation location,
+			string ident,
+			AstNode tryBody,
+			AstNode exceptBody,
+			ArgumentList typeList = null)
 			: base (location)
 		{
-			this.ExceptionIdentifier = ident;
+			ExceptionIdentifier = ident;
+			TryBody = tryBody;
+			ExceptBody = exceptBody;
+			TypeList = typeList;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			TryBody.Visit (visitor);
+
+			ExceptBody.Visit (visitor);
+
+			if (TypeList != null) {
+				TypeList.Visit (visitor);
+			}
 		}
 	}
 }

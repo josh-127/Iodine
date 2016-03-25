@@ -33,31 +33,29 @@ namespace Iodine.Compiler.Ast
 {
 	public class BinaryExpression : AstNode
 	{
-		public BinaryOperation Operation { private set; get; }
+		public readonly BinaryOperation Operation;
 
-		public AstNode Left {
-			get {
-				return Children [0];
-			}
-		}
+		public readonly AstNode Left;
 
-		public AstNode Right {
-			get {
-				return Children [1];
-			}
-		}
+		public readonly AstNode Right;
 
 		public BinaryExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
 			: base (location)
 		{
 			Operation = op;
-			Add (left);
-			Add (right);
+			Left = left;
+			Right = right;
 		}
 
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Left.Visit (visitor);
+			Right.Visit (visitor);
 		}
 	}
 }

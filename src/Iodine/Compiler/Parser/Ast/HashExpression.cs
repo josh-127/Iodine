@@ -28,19 +28,33 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
 	public class HashExpression : AstNode
 	{
+		public readonly List<AstNode> Items = new List<AstNode> ();
+
 		public HashExpression (SourceLocation location)
 			: base (location)
 		{
 		}
 
+		public void AddItem (AstNode key, AstNode value)
+		{
+			Items.Add (key);
+			Items.Add (value);
+		}
+
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Items.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

@@ -28,19 +28,32 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
 	public class StatementList : AstNode
 	{
+		public readonly List<AstNode> Statements = new List<AstNode> ();
+
 		public StatementList (SourceLocation location)
 			: base (location)
 		{
 		}
 
+		public void AddStatement (AstNode statement)
+		{
+			Statements.Add (statement);
+		}
+
 		public override void Visit (IodineAstVisitor visitor)
 		{
 			visitor.Accept (this);
+		}
+
+		public override void VisitChildren (IodineAstVisitor visitor)
+		{
+			Statements.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

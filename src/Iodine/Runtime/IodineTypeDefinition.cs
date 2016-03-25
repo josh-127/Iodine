@@ -28,6 +28,8 @@
 **/
 
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 
 namespace Iodine.Runtime
@@ -47,6 +49,7 @@ namespace Iodine.Runtime
 		{
 			Name = name;
 			Attributes ["__name__"] = new IodineString (name);
+			BindMethods ();
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
@@ -78,16 +81,27 @@ namespace Iodine.Runtime
 
 		public IodineObject BindAttributes (IodineObject obj)
 		{
-			if (Name == "ConsoleFrontendBase") {
-				Console.Write ("");
-			}
 			foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
-				if (!obj.HasAttribute (kv.Key))
+				if (!obj.HasAttribute (kv.Key)) {
 					obj.SetAttribute (kv.Key, kv.Value);
+				}
 			}
 			return obj;
 		}
 
+		private void BindMethods ()
+		{
+			Type type = GetType ();
+			var methods = type.GetMethods ().
+				Where (p => p.IsStatic && p.IsDefined (typeof(IodineBuiltinMethod)));
+			foreach (MethodInfo info in methods) {
+				IodineBuiltinMethod attr = (IodineBuiltinMethod)info.GetCustomAttributes (
+					typeof(IodineBuiltinMethod), false).First ();
+				SetAttribute (attr.Name, new InternalMethodCallback (
+					(IodineMethodCallback)Delegate.CreateDelegate (typeof(IodineMethodCallback), info), null)
+				);
+			}
+		}
 	}
 }
 

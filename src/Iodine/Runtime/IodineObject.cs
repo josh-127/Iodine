@@ -44,8 +44,6 @@ namespace Iodine.Runtime
 		public readonly IodineTypeDefinition TypeDef;
 		public readonly Dictionary<string, IodineObject> Attributes = new Dictionary<string, IodineObject> ();
 
-		private List<IodineInterface> interfaces = new List<IodineInterface> ();
-
 		public IodineObject Base { set; get; }
 
 		public readonly List<IodineInterface> Interfaces = new List<IodineInterface> ();
@@ -87,6 +85,10 @@ namespace Iodine.Runtime
 				} else {
 					Attributes [name] = value;
 				}
+			} else if (value is InternalMethodCallback) {
+				InternalMethodCallback callback = (InternalMethodCallback)value;
+				callback.Self = this;
+				Attributes [name] = value;
 			} else if (value is IodineInstanceMethodWrapper) {
 				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
 				Attributes [name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
@@ -200,7 +202,8 @@ namespace Iodine.Runtime
 				return ClosedRange (vm, rvalue);
 			}
 			vm.RaiseException (new IodineNotSupportedException (
-				"The requested binary operator has not been implemented"));
+				"The requested binary operator has not been implemented")
+			);
 			return null;
 		}
 

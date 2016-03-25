@@ -102,7 +102,7 @@ namespace Iodine.Compiler
 				symbolTable.AddSymbol (param);
 			}
 
-			funcDecl.Children [0].Visit (visitor);
+			funcDecl.VisitChildren (visitor);
 			symbolTable.EndScope ();
 		}
 
@@ -120,7 +120,7 @@ namespace Iodine.Compiler
 				symbolTable.AddSymbol (param);
 			}
 			FunctionAnalyser visitor = new FunctionAnalyser (errorLog, symbolTable);
-			lambda.Children [0].Visit (visitor);
+			lambda.VisitChildren (visitor);
 			symbolTable.EndScope ();
 		}
 

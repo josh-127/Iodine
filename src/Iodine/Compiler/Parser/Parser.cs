@@ -86,6 +86,7 @@ namespace Iodine.Compiler
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				if (stream.Match (TokenClass.Keyword, "func") || stream.Match (TokenClass.Operator,
 					    "@")) {
+
 					FunctionDeclaration func = ParseFunction (stream, false, clazz) as FunctionDeclaration;
 					if (func.Name == name) {
 						clazz.Constructor = func;
@@ -147,7 +148,7 @@ namespace Iodine.Compiler
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				if (stream.Match (TokenClass.Keyword, "func")) {
 					FunctionDeclaration func = ParseFunction (stream, true) as FunctionDeclaration;
-					contract.Add (func);
+					contract.AddMember (func);
 				} else {
 					stream.ErrorLog.AddError (Errors.IllegalInterfaceDeclaration, stream.Location);
 				}
@@ -244,14 +245,14 @@ namespace Iodine.Compiler
 				FunctionDeclaration idecl = ParseFunction (stream, prototype, cdecl) as FunctionDeclaration;
 				/* We must construct an arglist which will be passed to the decorator */
 				ArgumentList args = new ArgumentList (stream.Location);
-				args.Add (new NameExpression (stream.Location, idecl.Name));
+				args.AddArgument (new NameExpression (stream.Location, idecl.Name));
 				/*
 				 * Since two values can not be returned, we must return a single node containing both
 				 * the function declaration and call to the decorator 
 				 */
 				StatementList nodes = new StatementList (stream.Location);
-				nodes.Add (idecl);
-				nodes.Add (new Expression (stream.Location, new BinaryExpression (stream.Location,
+				nodes.AddStatement (idecl);
+				nodes.AddStatement (new Expression (stream.Location, new BinaryExpression (stream.Location,
 					BinaryOperation.Assign,
 					new NameExpression (stream.Location, idecl.Name),
 					new CallExpression (stream.Location, expr, args))));
@@ -279,20 +280,25 @@ namespace Iodine.Compiler
 			if (!prototype) {
 
 				if (stream.Accept (TokenClass.Operator, "=>")) {
-					decl.Add (new ReturnStatement (stream.Location, ParseExpression (stream)));
+					decl.AddStatement (new ReturnStatement (stream.Location, ParseExpression (stream)));
 				} else {
 					stream.Expect (TokenClass.OpenBrace);
 					CodeBlock scope = new CodeBlock (stream.Location);
 
 					if (stream.Match (TokenClass.Keyword, "super")) {
 						scope.Add (ParseSuperCall (stream, cdecl));
+					} else if (cdecl != null && cdecl.Name == decl.Name && cdecl.Base.Count > 0) {
+						/*
+						 * If this is infact a constructor and no super call is provided, we must implicitly call super ()
+						 */
+						scope.Add (new SuperCallExpression (decl.Location, cdecl, new ArgumentList (decl.Location)));
 					}
 
 					while (!stream.Match (TokenClass.CloseBrace)) {
 						scope.Add (ParseStatement (stream));
 					}
 
-					decl.Add (scope);
+					decl.AddStatement (scope);
 					stream.Expect (TokenClass.CloseBrace);
 				}
 			}
@@ -424,10 +430,10 @@ namespace Iodine.Compiler
 
 		private static AstNode ParseTryExcept (TokenStream stream)
 		{
-			TryExceptStatement retVal = null;
+			string exceptionVariable = null;
 			stream.Expect (TokenClass.Keyword, "try");
 			AstNode tryBody = ParseStatement (stream);
-			AstNode typeList = new ArgumentList (stream.Location);
+			ArgumentList typeList = new ArgumentList (stream.Location);
 			stream.Expect (TokenClass.Keyword, "except");
 			if (stream.Accept (TokenClass.OpenParan)) {
 				Token ident = stream.Expect (TokenClass.Identifier);
@@ -435,21 +441,17 @@ namespace Iodine.Compiler
 					typeList = ParseTypeList (stream);
 				}
 				stream.Expect (TokenClass.CloseParan);
-				retVal = new TryExceptStatement (stream.Location, ident.Value);
-			} else {
-				retVal = new TryExceptStatement (stream.Location, null);
+				exceptionVariable = ident.Value;
 			}
-			retVal.Add (tryBody);
-			retVal.Add (ParseStatement (stream));
-			retVal.Add (typeList);
-			return retVal;
+			AstNode exceptBody = ParseStatement (stream);
+			return new TryExceptStatement (stream.Location, exceptionVariable, tryBody, exceptBody, typeList);
 		}
 
 		private static ArgumentList ParseTypeList (TokenStream stream)
 		{
 			ArgumentList argList = new ArgumentList (stream.Location);
 			while (!stream.Match (TokenClass.CloseParan)) {
-				argList.Add (ParseExpression (stream));
+				argList.AddArgument (ParseExpression (stream));
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
@@ -461,80 +463,76 @@ namespace Iodine.Compiler
 		{
 			stream.Expect (TokenClass.Keyword, "var");
 			Token ident = stream.Expect (TokenClass.Identifier);
-			VariableDeclaration declaration = new VariableDeclaration (stream.Location, ident != null ? ident.Value : "");
+			AstNode value = null;
 			if (stream.Accept (TokenClass.Operator, "=")) {
-				declaration.Add (new BinaryExpression (stream.Location, BinaryOperation.Assign,
+				value = new BinaryExpression (stream.Location, BinaryOperation.Assign,
 					new NameExpression (ident.Location, ident.Value),
-					ParseExpression (stream)));
+					ParseExpression (stream));
 			}
-			return declaration;
+			return new VariableDeclaration (stream.Location, ident.Value, value);
 		}
 
 		private static AstNode ParseGiven (TokenStream stream)
 		{
-			GivenStatement switchStmt = new GivenStatement (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "given");
 			stream.Expect (TokenClass.OpenParan);
-			switchStmt.Add (ParseExpression (stream));
+			AstNode value = ParseExpression (stream);
 			stream.Expect (TokenClass.CloseParan);
 			stream.Expect (TokenClass.OpenBrace);
 			AstNode defaultBlock = new CompilationUnit (stream.Location);
-			StatementList caseStatements = new StatementList (stream.Location);
+			List<WhenStatement> whenStatements = new List<WhenStatement> ();
 			while (!stream.EndOfStream && !stream.Match (TokenClass.CloseBrace)) {
-				caseStatements.Add (ParseWhen (stream));
+				whenStatements.Add (ParseWhen (stream));
 				if (stream.Accept (TokenClass.Keyword, "default")) {
 					defaultBlock = ParseStatement (stream); 
 				}
 			}
-			switchStmt.Add (caseStatements);
-			switchStmt.Add (defaultBlock);
 			stream.Expect (TokenClass.CloseBrace);
-			return switchStmt;
+			return new GivenStatement (location, value, whenStatements, defaultBlock);
 		}
 
-		private static AstNode ParseWhen (TokenStream stream)
+		private static WhenStatement ParseWhen (TokenStream stream)
 		{
-			WhenStatement caseStmt = new WhenStatement (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "when");
 			AstNode value = ParseExpression (stream);
 			AstNode body = ParseStatement (stream);
-			AstNode lambda = new LambdaExpression (body.Location, false, false, false,
+			LambdaExpression lambda = new LambdaExpression (body.Location, false, false, false,
 				new System.Collections.Generic.List<string> ());
-			lambda.Add (body);
-			caseStmt.Add (value);
-			caseStmt.Add (lambda);
-			return caseStmt;
+			lambda.AddStatement (body);
+			return new WhenStatement (location, value, lambda);
 		}
 
 		private static AstNode ParseIf (TokenStream stream)
 		{
-			IfStatement ifStmt = new IfStatement (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "if");
 			stream.Expect (TokenClass.OpenParan);
-			ifStmt.Add (ParseExpression (stream));
+			AstNode predicate = ParseExpression (stream);
 			stream.Expect (TokenClass.CloseParan);
-			ifStmt.Add (ParseStatement (stream));
+			AstNode body = ParseStatement (stream);
+			AstNode elseBody = null;
 			if (stream.Accept (TokenClass.Keyword, "else")) {
-				ifStmt.Add (ParseStatement (stream));
-			} else {
-				ifStmt.Add (new CodeBlock (stream.Location));
+				elseBody = ParseStatement (stream);
 			}
-			return ifStmt;
+			return new IfStatement (location, predicate, body, elseBody);
 		}
 
 		private static AstNode ParseFor (TokenStream stream)
 		{
-			ForStatement ret = new ForStatement (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "for");
 			stream.Expect (TokenClass.OpenParan);
-			ret.Add (new Expression (stream.Location, ParseExpression (stream)));
+			AstNode initializer = new Expression (stream.Location, ParseExpression (stream));
 			stream.Expect (TokenClass.SemiColon);
-			ret.Add (ParseExpression (stream));
+			AstNode condition = ParseExpression (stream);
 			stream.Expect (TokenClass.SemiColon);
-			ret.Add (new Expression (stream.Location, ParseExpression (stream)));
+			AstNode afterThought = new Expression (stream.Location, ParseExpression (stream));
 			stream.Expect (TokenClass.CloseParan);
-			ret.Add (ParseStatement (stream));
-			return ret;
+			AstNode body = ParseStatement (stream);
+
+			return new ForStatement (location, initializer, condition, afterThought, body);
 		}
 
 		private static AstNode ParseForeach (TokenStream stream)
@@ -551,36 +549,36 @@ namespace Iodine.Compiler
 
 		private static AstNode ParseDoWhile (TokenStream stream)
 		{
-			DoStatement ret = new DoStatement (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "do");
-			ret.Add (ParseStatement (stream));
+			AstNode body = ParseStatement (stream);
 			stream.Expect (TokenClass.Keyword, "while");
 			stream.Expect (TokenClass.OpenParan);
-			ret.Add (ParseExpression (stream));
+			AstNode condition = ParseExpression (stream);
 			stream.Expect (TokenClass.CloseParan);
-			return ret;
+			return new DoStatement (location, condition, body);
 		}
 
 		private static AstNode ParseWhile (TokenStream stream)
 		{
-			WhileStatement ret = new WhileStatement (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "while");
 			stream.Expect (TokenClass.OpenParan);
-			ret.Add (ParseExpression (stream));
+			AstNode condition = ParseExpression (stream);
 			stream.Expect (TokenClass.CloseParan);
-			ret.Add (ParseStatement (stream));
-			return ret;
+			AstNode body = ParseStatement (stream);
+			return new WhileStatement (location, condition, body);
 		}
 			
 		private static AstNode ParseWith (TokenStream stream)
 		{
-			WithStatement ret = new WithStatement (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "with");
 			stream.Expect (TokenClass.OpenParan);
-			ret.Add (ParseExpression (stream));
+			AstNode value = ParseExpression (stream);
 			stream.Expect (TokenClass.CloseParan);
-			ret.Add (ParseStatement (stream));
-			return ret;
+			AstNode body = ParseStatement (stream);
+			return new WithStatement (location, value, body);
 		}
 
 		private static AstNode ParseRaise (TokenStream stream)
@@ -719,9 +717,11 @@ namespace Iodine.Compiler
 			return expr;
 		}
 
+		// TODO: Decide whether or not to keep the |> operator
 		private static AstNode ParsePipeline (TokenStream stream)
 		{
-			AstNode expr = ParseRange (stream);
+			
+			return ParseRange (stream); /*
 			while (stream.Accept (TokenClass.Operator, "|>")) {
 				CallExpression call = ParseRange (stream) as CallExpression;
 				if (call == null) {
@@ -731,7 +731,8 @@ namespace Iodine.Compiler
 					expr = call;
 				}
 			}
-			return expr;
+			*/
+			return null;
 		}
 
 		private static AstNode ParseRange (TokenStream stream)
@@ -1016,7 +1017,7 @@ namespace Iodine.Compiler
 				return new FloatExpression (stream.Location, double.Parse (
 					stream.ReadToken ().Value));
 			case TokenClass.InterpolatedStringLiteral:
-				AstNode val = ParseString (stream.Location, stream.ReadToken ().Value);
+				AstNode val = ParseString (stream.Location, stream, stream.ReadToken ().Value);
 				if (val == null) {
 					stream.MakeError ();
 					return new StringExpression (stream.Location, "");
@@ -1024,6 +1025,8 @@ namespace Iodine.Compiler
 				return val;
 			case TokenClass.StringLiteral:
 				return new StringExpression (stream.Location, stream.ReadToken ().Value);
+			case TokenClass.BinaryStringLiteral:
+				return new StringExpression (stream.Location, stream.ReadToken ().Value, true);
 			case TokenClass.OpenBracket:
 				return ParseList (stream);
 			case TokenClass.OpenBrace:
@@ -1064,9 +1067,8 @@ namespace Iodine.Compiler
 
 		private static AstNode ParseMatch (TokenStream stream)
 		{
-			MatchExpression expr = new MatchExpression (stream.Location);
 			stream.Expect (TokenClass.Keyword, "match");
-			expr.Add (ParseExpression (stream));
+			MatchExpression expr = new MatchExpression (stream.Location, ParseExpression (stream));
 			stream.Expect (TokenClass.OpenBrace);
 			while (stream.Accept (TokenClass.Keyword, "case")) {
 				AstNode condition = null;
@@ -1076,7 +1078,7 @@ namespace Iodine.Compiler
 				}
 				stream.Expect (TokenClass.Operator, "=>");
 				AstNode value = ParseExpression (stream);
-				expr.Children.Add (new CaseExpression (pattern.Location, pattern, condition, value));
+				expr.AddCase (new CaseExpression (pattern.Location, pattern, condition, value));
 			}
 			stream.Expect (TokenClass.CloseBrace);
 			return expr;
@@ -1124,13 +1126,16 @@ namespace Iodine.Compiler
 			List<string> parameters = ParseFuncParameters (stream,
 				out isInstanceMethod,
 				out isVariadic,
-				out acceptsKwargs);
+				out acceptsKwargs
+			);
 
 			LambdaExpression decl = new LambdaExpression (stream.Location, isInstanceMethod, isVariadic, acceptsKwargs, parameters);
+
 			if (stream.Accept (TokenClass.Operator, "=>"))
-				decl.Add (new ReturnStatement (stream.Location, ParseExpression (stream)));
+				decl.AddStatement (new ReturnStatement (stream.Location, ParseExpression (stream)));
 			else
-				decl.Add (ParseStatement (stream));
+				decl.AddStatement (ParseStatement (stream));
+			
 			return decl;
 		}
 
@@ -1158,16 +1163,15 @@ namespace Iodine.Compiler
 
 		public static SuperCallExpression ParseSuperCall (TokenStream stream, ClassDeclaration parent)
 		{
-			SuperCallExpression ret = new SuperCallExpression (stream.Location);
+			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "super");
-			ret.Parent = parent;
-			ret.Add (ParseArgumentList (stream));
+			ArgumentList argumentList = ParseArgumentList (stream);
 			while (stream.Accept (TokenClass.SemiColon))
 				;
-			return ret;
+			return new SuperCallExpression (location, parent, argumentList);
 		}
 
-		private static AstNode ParseArgumentList (TokenStream stream)
+		private static ArgumentList ParseArgumentList (TokenStream stream)
 		{
 			ArgumentList argList = new ArgumentList (stream.Location);
 			stream.Expect (TokenClass.OpenParan);
@@ -1175,7 +1179,7 @@ namespace Iodine.Compiler
 			while (!stream.Match (TokenClass.CloseParan)) {
 				if (stream.Accept (TokenClass.Operator, "*")) {
 					argList.Packed = true;
-					argList.Add (ParseExpression (stream));
+					argList.AddArgument (ParseExpression (stream));
 					break;
 				}
 				AstNode arg = ParseExpression (stream);
@@ -1191,14 +1195,14 @@ namespace Iodine.Compiler
 						kwargs.Add (ident.Value, val);
 					}
 				} else
-					argList.Add (arg);
+					argList.AddArgument (arg);
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
 
 			}
 			if (kwargs != null) {
-				argList.Add (kwargs);
+				argList.AddArgument (kwargs);
 			}
 			stream.Expect (TokenClass.CloseParan);
 			return argList;
@@ -1222,7 +1226,7 @@ namespace Iodine.Compiler
 					stream.Expect (TokenClass.CloseBracket);
 					return new ListCompExpression (expr.Location, expr, ident, iterator, predicate);
 				}
-				ret.Add (expr);
+				ret.AddItem (expr);
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
@@ -1236,9 +1240,10 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.OpenBrace);
 			HashExpression ret = new HashExpression (stream.Location);
 			while (!stream.Match (TokenClass.CloseBrace)) {
-				ret.Add (ParseExpression (stream));
+				AstNode key = ParseExpression (stream);
 				stream.Expect (TokenClass.Colon);
-				ret.Add (ParseExpression (stream));
+				AstNode value = ParseExpression (stream);
+				ret.AddItem (key, value);
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
@@ -1250,9 +1255,9 @@ namespace Iodine.Compiler
 		private static AstNode ParseTuple (AstNode firstVal, TokenStream stream)
 		{
 			TupleExpression tuple = new TupleExpression (stream.Location);
-			tuple.Add (firstVal);
+			tuple.AddItem (firstVal);
 			while (!stream.Match (TokenClass.CloseParan)) {
-				tuple.Add (ParseExpression (stream));
+				tuple.AddItem (ParseExpression (stream));
 				if (!stream.Accept (TokenClass.Comma)) {
 					break;
 				}
@@ -1261,11 +1266,15 @@ namespace Iodine.Compiler
 			return tuple;
 		}
 
-		private static AstNode ParseString (SourceLocation loc, string str)
+		private static AstNode ParseString (SourceLocation loc, TokenStream stream, string str)
 		{
+			/*
+			 * This might be a *bit* hacky, but, basically Iodine string interpolation
+			 * is *basically* just syntactic sugar for Str.format (...)
+			 */
 			int pos = 0;
 			string accum = "";
-			List<string> vars = new List<string> ();
+			List<string> subExpressions = new List<string> ();
 			while (pos < str.Length) {
 				if (str [pos] == '#' && str.Length != pos + 1 && str [pos + 1] == '{') {
 					string substr = str.Substring (pos + 2);
@@ -1273,7 +1282,7 @@ namespace Iodine.Compiler
 						return null;
 					substr = substr.Substring (0, substr.IndexOf ('}'));
 					pos += substr.Length + 3;
-					vars.Add (substr);
+					subExpressions.Add (substr);
 					accum += "{}";
 
 				} else {
@@ -1282,8 +1291,11 @@ namespace Iodine.Compiler
 			}
 			StringExpression ret = new StringExpression (loc, accum);
 
-			foreach (string name in vars) {
-				ret.Add (new NameExpression (loc, name));
+			foreach (string name in subExpressions) {
+				Tokenizer tokenizer = new Tokenizer (stream.ErrorLog, name);
+				TokenStream subStream = tokenizer.Scan ();
+				var expression = ParseExpression (subStream);
+				ret.AddSubExpression (expression);
 			}
 			return ret;
 		}
