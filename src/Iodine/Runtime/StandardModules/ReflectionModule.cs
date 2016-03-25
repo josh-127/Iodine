@@ -91,6 +91,13 @@ namespace Iodine.Runtime
 			SetAttribute ("getInterfaces", new InternalMethodCallback (getInterfaces, this));
 			SetAttribute ("loadModule", new InternalMethodCallback (loadModule, this));
 			SetAttribute ("compileModule", new InternalMethodCallback (compileModule, this));
+			SetAttribute ("isClass", new InternalMethodCallback (isClass, this));
+			SetAttribute ("isMethod", new InternalMethodCallback (isMethod, this));
+			SetAttribute ("isFunction", new InternalMethodCallback (isFunction, this));
+			SetAttribute ("isGeneratorMethod", new InternalMethodCallback (isGeneratorMethod, this));
+			SetAttribute ("isModule", new InternalMethodCallback (isModule, this));
+			SetAttribute ("isBuiltIn", new InternalMethodCallback (isBuiltin, this));
+			SetAttribute ("isProperty", new InternalMethodCallback (isProperty, this));
 		}
 
 		private IodineObject hasAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -178,6 +185,115 @@ namespace Iodine.Runtime
 				ret.Add (new IodineInstruction (method, ins));
 			}
 			return ret;
+		}
+
+		private IodineObject isMethod (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineObject method = args [0];
+
+			bool isMethod = method is IodineMethod || method is IodineInstanceMethodWrapper;
+
+			return IodineBool.Create (isMethod);
+		}
+
+		private IodineObject isGeneratorMethod (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineObject generator = args [0];
+
+			bool isGenerator = generator is IodineGenerator;
+
+			return IodineBool.Create (isGenerator);
+		}
+
+		private IodineObject isFunction (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineObject function = args [0];
+			bool isFunction = function is IodineMethod || function is IodineInstanceMethodWrapper || function is IodineClosure || function is IodineGenerator;
+
+			return IodineBool.Create (isFunction);
+		}
+
+		private IodineObject isBuiltin (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineObject builtin = args [0];
+
+			bool isBuiltin = builtin is InternalMethodCallback;
+
+			return IodineBool.Create (isBuiltin);
+		}
+
+		private IodineObject isClass (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineObject clazz = args [0];
+
+			bool isClass = clazz is IodineClass;
+
+			return IodineBool.Create (isClass);
+		}
+
+		private IodineObject isType (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineObject type = args [0];
+
+			bool isType = type is IodineTypeDefinition;
+
+			return IodineBool.Create (isType);
+		}
+
+		private IodineObject isModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineObject module = args [0];
+
+			bool isModule = module is IodineModule;
+
+			return IodineBool.Create (isModule);
+		}
+
+		private IodineObject isProperty (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+			IodineObject property = args [0];
+
+			bool isProperty = property is IIodineProperty;
+
+			return IodineBool.Create (isProperty);
 		}
 	}
 }
