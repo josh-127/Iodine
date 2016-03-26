@@ -105,6 +105,11 @@ namespace Iodine.Compiler
 			context.CurrentModule.SetAttribute (classDecl.Name, CompileClass (classDecl));
 		}
 
+		public override void Accept (EnumDeclaration enumDecl)
+		{
+			context.CurrentModule.SetAttribute (enumDecl.Name, CompileEnum (enumDecl));
+		}
+
 		public override void Accept (InterfaceDeclaration contractDecl)
 		{
 			IodineInterface contract = new IodineInterface (contractDecl.Name);
@@ -120,6 +125,11 @@ namespace Iodine.Compiler
 				));
 			}
 			context.CurrentModule.SetAttribute (contractDecl.Name, contract);
+		}
+		
+		public override void Accept (FunctionDeclaration funcDecl)
+		{
+			context.CurrentModule.AddMethod (CompileMethod (funcDecl));
 		}
 
 		public IodineClass CompileClass (ClassDeclaration classDecl)
@@ -188,6 +198,7 @@ namespace Iodine.Compiler
 					member.Visit (compiler);
 				}
 			}
+
 			initializer.FinalizeLabels ();
 			constructor.FinalizeLabels ();
 
@@ -207,6 +218,7 @@ namespace Iodine.Compiler
 		{
 			varDecl.VisitChildren (this);
 		}
+
 
 		private MethodBuilder CompileMethod (FunctionDeclaration funcDecl)
 		{
@@ -265,6 +277,8 @@ namespace Iodine.Compiler
 			stmtList.VisitChildren (this);
 		}
 
+		#region Expressions
+
 		public override void Accept (BinaryExpression binop)
 		{
 			binop.Visit (functionCompiler);
@@ -315,31 +329,6 @@ namespace Iodine.Compiler
 			str.Visit (functionCompiler);
 		}
 
-		public override void Accept (IfStatement ifStmt)
-		{
-			ifStmt.Visit (functionCompiler);
-		}
-
-		public override void Accept (WhileStatement whileStmt)
-		{
-			whileStmt.Visit (functionCompiler);
-		}
-
-		public override void Accept (DoStatement doStmt)
-		{
-			doStmt.Visit (functionCompiler);
-		}
-
-		public override void Accept (ForStatement forStmt)
-		{
-			forStmt.Visit (functionCompiler);
-		}
-
-		public override void Accept (ForeachStatement foreachStmt)
-		{
-			foreachStmt.Visit (functionCompiler);
-		}
-
 		public override void Accept (TupleExpression tuple)
 		{
 			tuple.Visit (functionCompiler);
@@ -363,26 +352,6 @@ namespace Iodine.Compiler
 		public override void Accept (TernaryExpression ifExpr)
 		{
 			ifExpr.Visit (functionCompiler);
-		}
-
-		public override void Accept (FunctionDeclaration funcDecl)
-		{
-			context.CurrentModule.AddMethod (CompileMethod (funcDecl));
-		}
-
-		public override void Accept (CodeBlock scope)
-		{
-			scope.Visit (functionCompiler);
-		}
-
-		public override void Accept (ReturnStatement returnStmt)
-		{
-			returnStmt.Visit (functionCompiler);
-		}
-
-		public override void Accept (YieldStatement yieldStmt)
-		{
-			yieldStmt.Visit (functionCompiler);
 		}
 
 		public override void Accept (IndexerExpression indexer)
@@ -424,36 +393,12 @@ namespace Iodine.Compiler
 		{
 			lambda.Visit (functionCompiler);
 		}
-
-		public override void Accept (TryExceptStatement tryExcept)
-		{
-			tryExcept.Visit (functionCompiler);
-		}
-
-		public override void Accept (RaiseStatement raise)
-		{
-			raise.Value.Visit (functionCompiler);
-		}
-
-		public override void Accept (BreakStatement brk)
-		{
-			brk.Visit (functionCompiler);
-		}
-
-		public override void Accept (WithStatement withStmt)
-		{
-			withStmt.Visit (functionCompiler);
-		}
-
-		public override void Accept (EnumDeclaration enumDecl)
-		{
-			context.CurrentModule.SetAttribute (enumDecl.Name, CompileEnum (enumDecl));
-		}
-
 		public override void Accept (ListCompExpression list)
 		{
 			list.Visit (functionCompiler);
 		}
+
+		#endregion
 	}
 }
 

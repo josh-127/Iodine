@@ -67,6 +67,13 @@ namespace Iodine.Compiler
 			}
 		}
 
+		#region Declarations
+
+		/*
+		 * class <name> [: <baseclass> [, <interfaces>, ...]] {
+		 * 
+		 * }
+		 */
 		private static AstNode ParseClass (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "class");
@@ -102,7 +109,14 @@ namespace Iodine.Compiler
 
 			return clazz;
 		}
-			
+
+		/*
+		 * enum <name> {
+		 *	<item> [= <constant>],
+		 *	...
+		 * }
+		 * 
+		 */
 		private static AstNode ParseEnum (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "enum");
@@ -136,6 +150,11 @@ namespace Iodine.Compiler
 			return decl;
 		}
 
+		/*
+		 * interface <name> {
+		 *     ...
+		 * }
+		 */
 		private static AstNode ParseInterface (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "interface");
@@ -172,59 +191,6 @@ namespace Iodine.Compiler
 			return ret.ToString ();
 		}
 
-		private static UseStatement ParseUse (TokenStream stream)
-		{
-			stream.Expect (TokenClass.Keyword, "use");
-			bool relative = stream.Accept (TokenClass.Operator, ".");
-			string ident = "";
-
-			if (!stream.Match (TokenClass.Operator, "*")) {
-				ident = ParseModuleName (stream);
-			}
-
-			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma) ||
-				stream.Match (TokenClass.Operator, "*")) {
-				List<string> items = new List<string> ();
-				bool wildcard = false;
-				if (!stream.Accept (TokenClass.Operator, "*")) {
-					items.Add (ident);
-					stream.Accept (TokenClass.Comma);
-					while (!stream.Match (TokenClass.Keyword, "from")) {
-						Token item = stream.Expect (TokenClass.Identifier);
-						items.Add (item.Value);
-						if (!stream.Accept (TokenClass.Comma)) {
-							break;
-						}
-					}
-				} else {
-					wildcard = true;
-				}
-				stream.Expect (TokenClass.Keyword, "from");
-
-				relative = stream.Accept (TokenClass.Operator, ".");
-				string module = ParseModuleName (stream);
-				return new UseStatement (stream.Location, module, items, wildcard, relative);
-			}
-			return new UseStatement (stream.Location, ident, relative);
-		}
-
-		private static string ParseModuleName (TokenStream stream)
-		{
-			Token initIdent = stream.Expect (TokenClass.Identifier);
-
-			if (stream.Match (TokenClass.Operator, ".")) {
-				StringBuilder accum = new StringBuilder ();
-				accum.Append (initIdent.Value);
-				while (stream.Accept (TokenClass.Operator, ".")) {
-					Token ident = stream.Expect (TokenClass.Identifier);
-					accum.Append (Path.DirectorySeparatorChar);
-					accum.Append (ident.Value);
-				}
-				return accum.ToString ();
-
-			}
-			return initIdent.Value;
-		}
 
 		private static AstNode ParseFunction (TokenStream stream, bool prototype = false,
 			ClassDeclaration cdecl = null)
@@ -276,7 +242,7 @@ namespace Iodine.Compiler
 				isVariadic,
 				hasKeywordArgs,
 				parameters);
-			
+
 			if (!prototype) {
 
 				if (stream.Accept (TokenClass.Operator, "=>")) {
@@ -349,6 +315,68 @@ namespace Iodine.Compiler
 			}
 			stream.Expect (TokenClass.CloseParan);
 			return ret;
+		}
+
+		#endregion
+
+		#region Statements
+
+		/*
+		 * use <module> |
+		 * use <class> from <module>
+		 */
+		private static UseStatement ParseUse (TokenStream stream)
+		{
+			stream.Expect (TokenClass.Keyword, "use");
+			bool relative = stream.Accept (TokenClass.Operator, ".");
+			string ident = "";
+
+			if (!stream.Match (TokenClass.Operator, "*")) {
+				ident = ParseModuleName (stream);
+			}
+
+			if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma) ||
+				stream.Match (TokenClass.Operator, "*")) {
+				List<string> items = new List<string> ();
+				bool wildcard = false;
+				if (!stream.Accept (TokenClass.Operator, "*")) {
+					items.Add (ident);
+					stream.Accept (TokenClass.Comma);
+					while (!stream.Match (TokenClass.Keyword, "from")) {
+						Token item = stream.Expect (TokenClass.Identifier);
+						items.Add (item.Value);
+						if (!stream.Accept (TokenClass.Comma)) {
+							break;
+						}
+					}
+				} else {
+					wildcard = true;
+				}
+				stream.Expect (TokenClass.Keyword, "from");
+
+				relative = stream.Accept (TokenClass.Operator, ".");
+				string module = ParseModuleName (stream);
+				return new UseStatement (stream.Location, module, items, wildcard, relative);
+			}
+			return new UseStatement (stream.Location, ident, relative);
+		}
+
+		private static string ParseModuleName (TokenStream stream)
+		{
+			Token initIdent = stream.Expect (TokenClass.Identifier);
+
+			if (stream.Match (TokenClass.Operator, ".")) {
+				StringBuilder accum = new StringBuilder ();
+				accum.Append (initIdent.Value);
+				while (stream.Accept (TokenClass.Operator, ".")) {
+					Token ident = stream.Expect (TokenClass.Identifier);
+					accum.Append (Path.DirectorySeparatorChar);
+					accum.Append (ident.Value);
+				}
+				return accum.ToString ();
+
+			}
+			return initIdent.Value;
 		}
 
 		private static AstNode ParseStatement (TokenStream stream) 
@@ -428,6 +456,13 @@ namespace Iodine.Compiler
 			return ret;
 		}
 
+		/*
+		 * try {
+		 * 
+		 * } except [(<identifier> as <type>)] {
+		 * 
+		 * }
+		 */
 		private static AstNode ParseTryExcept (TokenStream stream)
 		{
 			string exceptionVariable = null;
@@ -472,6 +507,12 @@ namespace Iodine.Compiler
 			return new VariableDeclaration (stream.Location, ident.Value, value);
 		}
 
+		/*
+		 * given <condition> {
+		 *     when <expression>
+		 *         <statement>
+		 * }
+		 */
 		private static AstNode ParseGiven (TokenStream stream)
 		{
 			SourceLocation location = stream.Location;
@@ -492,6 +533,12 @@ namespace Iodine.Compiler
 			return new GivenStatement (location, value, whenStatements, defaultBlock);
 		}
 
+		/*
+		 * given <condition> {
+		 *     when <expression>
+		 *         <statement>
+		 * }
+		 */
 		private static WhenStatement ParseWhen (TokenStream stream)
 		{
 			SourceLocation location = stream.Location;
@@ -504,6 +551,14 @@ namespace Iodine.Compiler
 			return new WhenStatement (location, value, lambda);
 		}
 
+		/*
+		 * if (<expression> 
+		 *     <statement>
+		 * [
+		 * else
+		 *     <statement>
+		 * ]
+		 */
 		private static AstNode ParseIf (TokenStream stream)
 		{
 			SourceLocation location = stream.Location;
@@ -519,6 +574,10 @@ namespace Iodine.Compiler
 			return new IfStatement (location, predicate, body, elseBody);
 		}
 
+		/*
+		 * for (<initializer>; <condition>; <afterthought>)
+		 *     <statement>
+		 */
 		private static AstNode ParseFor (TokenStream stream)
 		{
 			SourceLocation location = stream.Location;
@@ -535,6 +594,10 @@ namespace Iodine.Compiler
 			return new ForStatement (location, initializer, condition, afterThought, body);
 		}
 
+		/*
+		 * foreach (<identifier> in <expression>)
+		 *     <statement>
+		 */
 		private static AstNode ParseForeach (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "foreach");
@@ -547,6 +610,11 @@ namespace Iodine.Compiler
 			return new ForeachStatement (stream.Location, identifier.Value, expr, body);
 		}
 
+		/*
+		 * do 
+		 *     <statement>
+		 * while (<expression>)
+		 */
 		private static AstNode ParseDoWhile (TokenStream stream)
 		{
 			SourceLocation location = stream.Location;
@@ -559,6 +627,10 @@ namespace Iodine.Compiler
 			return new DoStatement (location, condition, body);
 		}
 
+		/*
+		 * while (<expression>) 
+		 *     <statement>
+		 */
 		private static AstNode ParseWhile (TokenStream stream)
 		{
 			SourceLocation location = stream.Location;
@@ -569,7 +641,11 @@ namespace Iodine.Compiler
 			AstNode body = ParseStatement (stream);
 			return new WhileStatement (location, condition, body);
 		}
-			
+
+		/*
+		 * with (<expression) 
+		 *      <statement>
+		 */
 		private static AstNode ParseWith (TokenStream stream)
 		{
 			SourceLocation location = stream.Location;
@@ -581,6 +657,9 @@ namespace Iodine.Compiler
 			return new WithStatement (location, value, body);
 		}
 
+		/*
+		 * raise <expression>;
+		 */
 		private static AstNode ParseRaise (TokenStream stream)
 		{
 			stream.Expect (TokenClass.Keyword, "raise");
@@ -602,6 +681,10 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.Keyword, "yield");
 			return new YieldStatement (stream.Location, ParseExpression (stream));
 		}
+
+		#endregion
+
+		#region Expressions
 
 		private static AstNode ParseExpression (TokenStream stream)
 		{
@@ -1299,6 +1382,8 @@ namespace Iodine.Compiler
 			}
 			return ret;
 		}
+
+		#endregion
 	}
 }
 

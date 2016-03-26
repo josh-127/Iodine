@@ -87,7 +87,6 @@
     <Compile Include="Compiler\Parser\AstNode.cs" />
     <Compile Include="Compiler\Parser\BinaryOperation.cs" />
     <Compile Include="Compiler\Parser\Parser.cs" />
-    <Compile Include="Compiler\Parser\UnaryOperation.cs" />
     <Compile Include="Compiler\Parser\Ast\ArgumentList.cs" />
     <Compile Include="Compiler\Parser\Ast\BinaryExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\BreakStatement.cs" />
@@ -215,6 +214,7 @@
     <Compile Include="Runtime\StandardTypes\IodineInterface.cs" />
     <Compile Include="Runtime\IodineBuiltinType.cs" />
     <Compile Include="Runtime\IodineBuiltinMethod.cs" />
+    <Compile Include="Compiler\SyntaxAnalysis\UnaryOperation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

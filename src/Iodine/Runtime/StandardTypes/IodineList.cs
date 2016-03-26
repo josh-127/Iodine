@@ -77,6 +77,17 @@ namespace Iodine.Runtime
 			SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			SetAttribute ("splice", new InternalMethodCallback (splice, this));
 			SetAttribute ("clear", new InternalMethodCallback (clear, this));
+
+			SetAttribute ("__iterReset__", new InternalMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+				IterReset (vm);
+				return IodineNull.Instance;
+			}, this));
+			SetAttribute ("__iterGetCurrent__", new InternalMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+				return IterGetCurrent (vm);
+			}, this));
+			SetAttribute ("__iterMoveNext__", new InternalMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+				return IodineBool.Create (IterMoveNext (vm));
+			}, this));
 			Objects = list;
 		}
 

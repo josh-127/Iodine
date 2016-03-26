@@ -119,55 +119,65 @@ namespace Iodine.Compiler
 					methodBuilder.EmitInstruction (indexer.Location, Opcode.StoreIndex);
 					binop.Left.Visit (this);
 				}
-			} else if (binop.Operation == BinaryOperation.InstanceOf) {
+				return;
+			} 
+
+			switch (binop.Operation) {
+			case BinaryOperation.InstanceOf:
 				binop.Right.Visit (this);
 				binop.Left.Visit (this);
 				methodBuilder.EmitInstruction (binop.Location, Opcode.InstanceOf);
-			} else if (binop.Operation == BinaryOperation.NotInstanceOf) {
+				return;
+			case BinaryOperation.NotInstanceOf:
 				binop.Right.Visit (this);
 				binop.Left.Visit (this);
 				methodBuilder.EmitInstruction (binop.Location, Opcode.InstanceOf);
 				methodBuilder.EmitInstruction (binop.Location, Opcode.UnaryOp, (int)UnaryOperation.BoolNot);
-			}  else if (binop.Operation == BinaryOperation.DynamicCast) {
+				return;
+			case BinaryOperation.DynamicCast:
 				binop.Right.Visit (this);
 				binop.Left.Visit (this);
 				methodBuilder.EmitInstruction (binop.Location, Opcode.DynamicCast);
-			}  else if (binop.Operation == BinaryOperation.NullCoalescing) {
+				return;
+			case BinaryOperation.NullCoalescing:
 				binop.Right.Visit (this);
 				binop.Left.Visit (this);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.NullCoalesce);
-			} else {
-				IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
-				IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
-				IodineLabel endLabel = methodBuilder.CreateLabel ();
-				binop.Left.Visit (this);
-				/*
-				 * Short circuit evaluation 
-				 */
-				switch (binop.Operation) {
-				case BinaryOperation.BoolAnd:
-					methodBuilder.EmitInstruction (binop.Location, Opcode.Dup);
-					methodBuilder.EmitInstruction (binop.Location, Opcode.JumpIfFalse,
-						shortCircuitFalseLabel);
-					break;
-				case BinaryOperation.BoolOr:
-					methodBuilder.EmitInstruction (binop.Location, Opcode.Dup);
-					methodBuilder.EmitInstruction (binop.Location, Opcode.JumpIfTrue,
-						shortCircuitTrueLabel);
-					break;
-				}
-				binop.Right.Visit (this);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.BinOp, (int)binop.Operation);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
-				methodBuilder.MarkLabelPosition (shortCircuitTrueLabel);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.Pop);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.LoadTrue);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
-				methodBuilder.MarkLabelPosition (shortCircuitFalseLabel);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.Pop);
-				methodBuilder.EmitInstruction (binop.Location, Opcode.LoadFalse);
-				methodBuilder.MarkLabelPosition (endLabel);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.DynamicCast);
+				return;
+
 			}
+
+			IodineLabel shortCircuitTrueLabel = methodBuilder.CreateLabel ();
+			IodineLabel shortCircuitFalseLabel = methodBuilder.CreateLabel ();
+			IodineLabel endLabel = methodBuilder.CreateLabel ();
+			binop.Left.Visit (this);
+			/*
+			 * Short circuit evaluation 
+			 */
+			switch (binop.Operation) {
+			case BinaryOperation.BoolAnd:
+				methodBuilder.EmitInstruction (binop.Location, Opcode.Dup);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.JumpIfFalse,
+					shortCircuitFalseLabel);
+				break;
+			case BinaryOperation.BoolOr:
+				methodBuilder.EmitInstruction (binop.Location, Opcode.Dup);
+				methodBuilder.EmitInstruction (binop.Location, Opcode.JumpIfTrue,
+					shortCircuitTrueLabel);
+				break;
+			}
+			binop.Right.Visit (this);
+			methodBuilder.EmitInstruction (binop.Location, Opcode.BinOp, (int)binop.Operation);
+			methodBuilder.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
+			methodBuilder.MarkLabelPosition (shortCircuitTrueLabel);
+			methodBuilder.EmitInstruction (binop.Location, Opcode.Pop);
+			methodBuilder.EmitInstruction (binop.Location, Opcode.LoadTrue);
+			methodBuilder.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
+			methodBuilder.MarkLabelPosition (shortCircuitFalseLabel);
+			methodBuilder.EmitInstruction (binop.Location, Opcode.Pop);
+			methodBuilder.EmitInstruction (binop.Location, Opcode.LoadFalse);
+			methodBuilder.MarkLabelPosition (endLabel);
+			
 		}
 
 		public override void Accept (UnaryExpression unaryop)
@@ -372,12 +382,14 @@ namespace Iodine.Compiler
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterMoveNext);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.JumpIfFalse,
-				breakLabel);
+				breakLabel
+			);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterGetNext);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.StoreLocal,
 				context.SymbolTable.GetSymbol
-				(foreachStmt.Item).Index);
+				(foreachStmt.Item).Index
+			);
 			foreachStmt.Body.Visit (this);
 			methodBuilder.EmitInstruction (foreachStmt.Body.Location, Opcode.Jump, foreachLabel);
 			methodBuilder.MarkLabelPosition (breakLabel);
@@ -400,13 +412,10 @@ namespace Iodine.Compiler
 			);
 
 			IodineLabel endLabel = methodBuilder.CreateLabel ();
+
 			methodBuilder.EmitInstruction (switchStmt.Location, Opcode.JumpIfTrue, endLabel);
 			switchStmt.DefaultStatement.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
-		}
-
-		public override void Accept (WhenStatement caseStmt)
-		{
 		}
 
 		public override void Accept (VariableDeclaration varDecl)
@@ -486,11 +495,6 @@ namespace Iodine.Compiler
 				methodBuilder.EmitInstruction (str.Location, Opcode.Invoke, str.SubExpressions.Count);
 			}
 
-		}
-
-		public override void Accept (UseStatement useStmt)
-		{
-			
 		}
 
 		public override void Accept (ClassDeclaration classDecl)
@@ -784,10 +788,6 @@ namespace Iodine.Compiler
 			methodBuilder.MarkLabelPosition (elseLabel);
 			ifExpr.ElseExpression.Visit (this);
 			methodBuilder.MarkLabelPosition (endLabel);
-		}
-
-		public override void Accept (CaseExpression caseExpr)
-		{
 		}
 	}
 }

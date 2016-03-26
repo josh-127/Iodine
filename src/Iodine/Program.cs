@@ -88,6 +88,7 @@ namespace Iodine
 			}
 
 			IodineOptions options = IodineOptions.Parse (args);
+
 			options.Options.ForEach (p => ParseOption (context, p));
 
 			SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
@@ -196,7 +197,8 @@ namespace Iodine
 					loc.Line,
 					loc.Column,
 					(int)err.ErrorID,
-					err.Text);
+					err.Text
+				);
 			}
 		}
 
