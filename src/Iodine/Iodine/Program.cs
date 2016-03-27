@@ -188,7 +188,7 @@ namespace Iodine
 			Environment.Exit (0);
 		}
 
-		private static void DisplayErrors (ErrorLog errorLog)
+		private static void DisplayErrors (ErrorSink errorLog)
 		{
 			foreach (Error err in errorLog) {
 				SourceLocation loc = err.Location;

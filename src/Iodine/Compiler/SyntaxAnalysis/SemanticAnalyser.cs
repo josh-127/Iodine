@@ -34,9 +34,9 @@ namespace Iodine.Compiler
 {
 	internal class SemanticAnalyser
 	{
-		private ErrorLog errorLog;
+		private ErrorSink errorLog;
 
-		public SemanticAnalyser (ErrorLog errorLog)
+		public SemanticAnalyser (ErrorSink errorLog)
 		{
 			this.errorLog = errorLog;
 		}

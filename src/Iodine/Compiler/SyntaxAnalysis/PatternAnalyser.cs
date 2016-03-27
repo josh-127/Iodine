@@ -41,11 +41,11 @@ namespace Iodine.Compiler
 	/// </summary>
 	internal class PatternAnalyzer : IodineAstVisitor
 	{
-		private ErrorLog errorLog;
+		private ErrorSink errorLog;
 		private SymbolTable symbolTable;
 		private IodineAstVisitor parentVisitor;
 
-		public PatternAnalyzer (ErrorLog errorLog, SymbolTable symbolTable, IodineAstVisitor parent)
+		public PatternAnalyzer (ErrorSink errorLog, SymbolTable symbolTable, IodineAstVisitor parent)
 		{
 			parentVisitor = parent;
 			this.symbolTable = symbolTable;
@@ -61,7 +61,7 @@ namespace Iodine.Compiler
 				pattern.Right.Visit (this);
 				break;
 			default:
-				errorLog.AddError (Errors.IllegalPatternExpression, pattern.Location);
+				errorLog.Add (Errors.IllegalPatternExpression, pattern.Location);
 				break;
 			}
 		}
@@ -93,137 +93,137 @@ namespace Iodine.Compiler
 
 		public override void Accept (UnaryExpression unaryop)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, unaryop.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, unaryop.Location);
 		}
 
 		public override void Accept (StatementList stmtList)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, stmtList.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, stmtList.Location);
 		}
 
 		public override void Accept (IfStatement ifStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, ifStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, ifStmt.Location);
 		}
 
 		public override void Accept (WhileStatement whileStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, whileStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, whileStmt.Location);
 		}
 
 		public override void Accept (WithStatement withStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, withStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, withStmt.Location);
 		}
 
 		public override void Accept (DoStatement doStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, doStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, doStmt.Location);
 		}
 
 		public override void Accept (ForStatement forStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, forStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, forStmt.Location);
 		}
 
 		public override void Accept (ForeachStatement foreachStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, foreachStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, foreachStmt.Location);
 		}
 
 		public override void Accept (GivenStatement switchStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, switchStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, switchStmt.Location);
 		}
 
 		public override void Accept (WhenStatement caseStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, caseStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, caseStmt.Location);
 		}
 
 		public override void Accept (FunctionDeclaration funcDecl)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, funcDecl.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, funcDecl.Location);
 		}
 
 		public override void Accept (CodeBlock scope)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, scope.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, scope.Location);
 		}
 
 		public override void Accept (UseStatement useStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, useStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, useStmt.Location);
 		}
 
 		public override void Accept (ClassDeclaration classDecl)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, classDecl.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, classDecl.Location);
 		}
 
 		public override void Accept (InterfaceDeclaration contractDecl)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, contractDecl.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, contractDecl.Location);
 		}
 
 		public override void Accept (EnumDeclaration enumDecl)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, enumDecl.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, enumDecl.Location);
 		}
 
 		public override void Accept (ReturnStatement returnStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, returnStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, returnStmt.Location);
 		}
 
 		public override void Accept (YieldStatement yieldStmt)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, yieldStmt.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, yieldStmt.Location);
 		}
 
 		public override void Accept (TernaryExpression ifExpr)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, ifExpr.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, ifExpr.Location);
 		}
 
 		public override void Accept (ListCompExpression list)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, list.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, list.Location);
 		}
 
 		public override void Accept (TryExceptStatement tryExcept)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, tryExcept.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, tryExcept.Location);
 		}
 
 		public override void Accept (RaiseStatement raise)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, raise.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, raise.Location);
 		}
 
 		public override void Accept (SuperCallExpression super)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, super.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, super.Location);
 		}
 
 		public override void Accept (BreakStatement brk)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, brk.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, brk.Location);
 		}
 
 		public override void Accept (ContinueStatement cont)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, cont.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, cont.Location);
 		}
 
 		public override void Accept (MatchExpression match)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, match.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, match.Location);
 		}
 
 		public override void Accept (CaseExpression caseExpr)
 		{
-			errorLog.AddError (Errors.IllegalPatternExpression, caseExpr.Location);
+			errorLog.Add (Errors.IllegalPatternExpression, caseExpr.Location);
 		}
 
 		public override void Accept (StringExpression str)

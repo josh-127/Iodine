@@ -32,9 +32,9 @@ namespace Iodine.Compiler
 {
 	public class SyntaxException : Exception
 	{
-		public readonly ErrorLog ErrorLog;
+		public readonly ErrorSink ErrorLog;
 
-		public SyntaxException (ErrorLog errLog)
+		public SyntaxException (ErrorSink errLog)
 			: base ("Syntax Error")
 		{
 			ErrorLog = errLog;

@@ -49,9 +49,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Iodine\libIodine.csproj">
+    <ProjectReference Include="..\Iodine\LibIodine.csproj">
       <Project>{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}</Project>
-      <Name>libIodine</Name>
+      <Name>LibIodine</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

@@ -44,7 +44,7 @@ namespace Iodine.Compiler
 	/// </summary>
 	public sealed class IodineContext
 	{
-		public readonly ErrorLog ErrorLog;
+		public readonly ErrorSink ErrorLog;
 		public readonly VirtualMachine VirtualMachine;
 		public readonly IodineConfiguration Configuration; // Virtual machine configuration 
 		public readonly TypeRegistry TypeRegistry = new TypeRegistry (); // Type registry for .NET interops
@@ -108,7 +108,7 @@ namespace Iodine.Compiler
 		public IodineContext (IodineConfiguration config)
 		{
 			Configuration = config;
-			ErrorLog = new ErrorLog ();
+			ErrorLog = new ErrorSink ();
 			VirtualMachine = new VirtualMachine (this);
 		}
 

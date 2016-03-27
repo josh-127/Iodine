@@ -73,7 +73,7 @@ namespace Iodine
 			}
 		}
 
-		public static void DisplayErrors (ErrorLog errorLog)
+		public static void DisplayErrors (ErrorSink errorLog)
 		{
 			foreach (Error err in errorLog) {
 				SourceLocation loc = err.Location;

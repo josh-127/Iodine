@@ -34,7 +34,7 @@ namespace Iodine.Compiler
 {
 	public sealed class TokenStream
 	{
-		private ErrorLog errorLog;
+		private ErrorSink errorLog;
 		private List<Token> tokens = new List<Token> ();
 
 		public bool EndOfStream {
@@ -63,13 +63,13 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public ErrorLog ErrorLog {
+		public ErrorSink ErrorLog {
 			get {
 				return errorLog;
 			}
 		}
 
-		public TokenStream (ErrorLog errorLog)
+		public TokenStream (ErrorSink errorLog)
 		{
 			this.errorLog = errorLog;
 		}
@@ -133,9 +133,9 @@ namespace Iodine.Compiler
 			}
 			Token offender = ReadToken ();
 			if (offender != null) {
-				errorLog.AddError (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+				errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
 			} else {
-				errorLog.AddError (Errors.UnexpectedEndOfFile, Location);
+				errorLog.Add (Errors.UnexpectedEndOfFile, Location);
 				throw new Exception ("");
 			}
 			return new Token (clazz, "", Location);
@@ -149,9 +149,9 @@ namespace Iodine.Compiler
 			}
 			Token offender = ReadToken ();
 			if (offender != null) {
-				errorLog.AddError (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+				errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
 			} else {
-				errorLog.AddError (Errors.UnexpectedEndOfFile, Location);
+				errorLog.Add (Errors.UnexpectedEndOfFile, Location);
 				throw new Exception ("");
 			}
 			return new Token (clazz, "", Location);
@@ -159,7 +159,7 @@ namespace Iodine.Compiler
 
 		public void MakeError ()
 		{
-			errorLog.AddError (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
+			errorLog.Add (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
 		}
 
 		private Token PeekToken ()

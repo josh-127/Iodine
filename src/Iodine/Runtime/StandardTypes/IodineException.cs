@@ -283,7 +283,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		public IodineSyntaxException (ErrorLog errorLog)
+		public IodineSyntaxException (ErrorSink errorLog)
 			: base (TypeDefinition, "Syntax error")
 		{
 			Base = new IodineException ();

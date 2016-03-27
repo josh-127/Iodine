@@ -63,7 +63,6 @@
     <Compile Include="Compiler\Lexer\TokenStream.cs" />
     <Compile Include="Compiler\Symbol.cs" />
     <Compile Include="Compiler\SymbolTable.cs" />
-    <Compile Include="Compiler\ErrorLog.cs" />
     <Compile Include="Compiler\ErrorType.cs" />
     <Compile Include="ExtraModules\DnsModule.cs" />
     <Compile Include="ExtraModules\SocketsModule.cs" />
@@ -214,6 +213,7 @@
     <Compile Include="Runtime\IodineBuiltinType.cs" />
     <Compile Include="Runtime\IodineBuiltinMethod.cs" />
     <Compile Include="Compiler\SyntaxAnalysis\UnaryOperation.cs" />
+    <Compile Include="Compiler\ErrorSink.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

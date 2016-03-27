@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libIodine", "libIodine.csproj", "{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibIodine", "LibIodine.csproj", "{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleMySQL", "..\ModuleMySQL\ModuleMySQL.csproj", "{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}"
 EndProject

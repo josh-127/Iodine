@@ -379,9 +379,29 @@ namespace Iodine.Compiler
 			case ".?":
 				ReadChar ();
 				return new Token (TokenClass.Operator, nextTwoChars, location);
+			case "/*":
+				ReadChar ();
+				ReadLineComment ();
+				return null;
 			default:
 				return new Token (TokenClass.Operator, op.ToString (), location);
 			}
+		}
+
+		private void ReadLineComment ()
+		{
+			while (PeekChar () != -1) {
+
+				char ch = (char)ReadChar ();
+
+				if (ch == '*') {
+					if ((char)ReadChar () == '/') {
+						return;
+					}
+				}
+			}
+
+			errorLog.AddError (Errors.UnexpectedEndOfFile, location);
 		}
 
 		private void EatWhiteSpaces ()
