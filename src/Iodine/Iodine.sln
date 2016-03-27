@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iodine", "Iodine.csproj", "{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "libIodine", "libIodine.csproj", "{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleMySQL", "..\ModuleMySQL\ModuleMySQL.csproj", "{532EED8D-4FC3-4D02-BDF7-A5D39445F6DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iodine", "Iodine\Iodine.csproj", "{EA1CFAC6-7316-4CDC-822C-DD16DFD27292}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,5 +21,9 @@ Global
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Debug|x86.Build.0 = Debug|x86
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Release|x86.ActiveCfg = Release|x86
 		{7A5BFF77-C783-4D40-AF7F-4C673C20E48B}.Release|x86.Build.0 = Release|x86
+		{EA1CFAC6-7316-4CDC-822C-DD16DFD27292}.Debug|x86.ActiveCfg = Debug|x86
+		{EA1CFAC6-7316-4CDC-822C-DD16DFD27292}.Debug|x86.Build.0 = Debug|x86
+		{EA1CFAC6-7316-4CDC-822C-DD16DFD27292}.Release|x86.ActiveCfg = Release|x86
+		{EA1CFAC6-7316-4CDC-822C-DD16DFD27292}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal
