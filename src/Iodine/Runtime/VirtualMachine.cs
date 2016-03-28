@@ -173,6 +173,7 @@ namespace Iodine.Runtime
 			int insCount = method.Body.Length;
 			int prevStackSize = stackSize;
 			int i = 0;
+			lastObject = null;
 
 			foreach (string param in method.Parameters.Keys) {
 				if (method.Variadic && (method.AcceptsKeywordArgs ? i == method.Parameters.Keys.Count - 2 :

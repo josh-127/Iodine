@@ -366,13 +366,13 @@ describe('Iodine', lambda(test) {
                 y();
             });
 
-            test.it('should return the function if no value', lambda() {
-                y = lambda() {
-                    return;
-                };
+            #test.it('should return the function if no value', lambda() {
+            #    y = lambda() {
+            #        return;
+            #    };
 
-                expect(y()).to.equal(y);
-            });
+            #    expect(y()).to.equal(y);
+            # });
 
             test.it('should return the specified value otherwise', lambda() {
                 y = lambda() {

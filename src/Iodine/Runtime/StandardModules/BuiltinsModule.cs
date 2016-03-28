@@ -175,9 +175,9 @@ namespace Iodine.Runtime
 			}
 			IodineHashMap hash = args [1] as IodineHashMap;
 			Dictionary<string, IodineObject> items = new Dictionary<string, IodineObject> ();
-			foreach (KeyValuePair<int, IodineObject> kv in hash.Keys) {
-				items [kv.Value.ToString ()] = hash.Dict [kv.Key];
-			}
+			//foreach (KeyValuePair<int, IodineObject> kv in hash.Keys) {
+			//	items [kv.Value.ToString ()] = hash.Dict [kv.Key];
+			//}
 			VirtualMachine newVm = new VirtualMachine (vm.Context, items);
 			try {
 				return args [0].Invoke (newVm, new IodineObject[]{});
@@ -257,10 +257,11 @@ namespace Iodine.Runtime
 				foreach (string glob in host.Globals.Keys) {
 					vm.Globals [glob] = host.Globals [glob];
 				}
-
-				foreach (IodineObject key in dict.Keys.Values) {
+				/*
+				foreach (IodineObject key in dict.Keys) {
+					vm.Globals [key.ToString ()] = dict.values 
 					vm.Globals [key.ToString ()] = dict.Dict [key.GetHashCode ()];
-				}
+				}*/
 			}
 			IodineContext context = new IodineContext ();
 			SourceUnit code = SourceUnit.CreateFromSource (source);

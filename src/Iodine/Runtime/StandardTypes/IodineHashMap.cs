@@ -65,15 +65,21 @@ namespace Iodine.Runtime
 
 		private int iterIndex = 0;
 
-		public Dictionary <int, IodineObject> Dict { private set; get; }
+		protected readonly Dictionary<int, IodineObject> values = new Dictionary<int, IodineObject> ();
 
-		public Dictionary <int, IodineObject> Keys { private set; get; }
+		protected readonly Dictionary<int, IodineObject> keys = new Dictionary<int, IodineObject> ();
+
+		public IEnumerable<IodineObject> Keys {
+			get {
+				return keys.Values;
+			}
+		}
 
 		public IodineHashMap ()
 			: base (TypeDefinition)
 		{
-			Dict = new Dictionary<int, IodineObject> ();
-			Keys = new Dictionary<int, IodineObject> ();
+			values = new Dictionary<int, IodineObject> ();
+			keys = new Dictionary<int, IodineObject> ();
 			SetAttribute ("contains", new InternalMethodCallback (contains, this));
 			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 			SetAttribute ("clear", new InternalMethodCallback (clear, this));
@@ -84,23 +90,23 @@ namespace Iodine.Runtime
 
 		public override IodineObject Len (VirtualMachine vm)
 		{
-			return new IodineInteger (Keys.Count);
+			return new IodineInteger (keys.Count);
 		}
 
 		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
 		{
 			int hash = key.GetHashCode ();
-			if (!Dict.ContainsKey (hash)) {
+			if (!values.ContainsKey (hash)) {
 				vm.RaiseException (new IodineKeyNotFound ());
 				return null;
 			}
-			return Dict [key.GetHashCode ()];
+			return values [key.GetHashCode ()];
 		}
 
 		public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
 		{
-			Dict [key.GetHashCode ()] = value;
-			Keys [key.GetHashCode ()] = key;
+			values [key.GetHashCode ()] = value;
+			keys [key.GetHashCode ()] = key;
 		}
 
 		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
@@ -117,9 +123,9 @@ namespace Iodine.Runtime
 		{
 			int accum = 17;
 			unchecked {
-				foreach (int key in Dict.Keys) {
+				foreach (int key in values.Keys) {
 					accum += 529 * key;
-					IodineObject obj = Dict [key];
+					IodineObject obj = values [key];
 					if (obj != null) {
 						accum += 529 * obj.GetHashCode ();
 					}
@@ -130,14 +136,14 @@ namespace Iodine.Runtime
 
 		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
-			IodineObject[] keys = new IodineObject[Keys.Count];
-			Keys.Values.CopyTo (keys, 0);
-			return keys [iterIndex - 1];
+			IodineObject[] newKeys = new IodineObject[keys.Count];
+			keys.Values.CopyTo (newKeys, 0);
+			return newKeys [iterIndex - 1];
 		}
 
 		public override bool IterMoveNext (VirtualMachine vm)
 		{
-			if (iterIndex >= Dict.Keys.Count)
+			if (iterIndex >= values.Keys.Count)
 				return false;
 			iterIndex++;
 			return true;
@@ -150,23 +156,23 @@ namespace Iodine.Runtime
 
 		public void Set (IodineObject key, IodineObject val)
 		{
-			Dict [key.GetHashCode ()] = val;
-			Keys [key.GetHashCode ()] = key;
+			values [key.GetHashCode ()] = val;
+			keys [key.GetHashCode ()] = key;
 		}
 
 		public IodineObject Get (IodineObject key)
 		{
-			return Dict [key.GetHashCode ()];
+			return values [key.GetHashCode ()];
 		}
 
 		private bool compareTo (IodineHashMap hash)
 		{
-			if (hash.Keys.Count != this.Keys.Count)
+			if (hash.keys.Count != this.keys.Count)
 				return false;
-			foreach (int key in Keys.Keys) {
-				if (!hash.Keys.ContainsKey (key))
+			foreach (int key in keys.Keys) {
+				if (!hash.keys.ContainsKey (key))
 					return false;
-				if (hash.Dict [key].GetHashCode () != Dict [key].GetHashCode ())
+				if (hash.values [key].GetHashCode () != values [key].GetHashCode ())
 					return false;
 			}
 			return true;
@@ -178,18 +184,18 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			return IodineBool.Create (Dict.ContainsKey (args [0].GetHashCode ()));
+			return IodineBool.Create (values.ContainsKey (args [0].GetHashCode ()));
 		}
 
 		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			return new IodineInteger (Dict.Count);
+			return new IodineInteger (values.Count);
 		}
 
 		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
-			Dict.Clear ();
-			Keys.Clear ();
+			values.Clear ();
+			keys.Clear ();
 			return null;
 		}
 
@@ -198,8 +204,8 @@ namespace Iodine.Runtime
 			if (arguments.Length >= 2) {
 				IodineObject key = arguments [0];
 				IodineObject val = arguments [1];
-				Dict [key.GetHashCode ()] = val;
-				Keys [key.GetHashCode ()] = key;
+				values [key.GetHashCode ()] = val;
+				keys [key.GetHashCode ()] = key;
 				return null;
 			}
 			vm.RaiseException (new IodineArgumentException (2));
@@ -213,15 +219,15 @@ namespace Iodine.Runtime
 				return null;
 			} else if (arguments.Length == 1) {
 				int hash = arguments [0].GetHashCode ();
-				if (Dict.ContainsKey (hash)) {
-					return Dict [hash];
+				if (values.ContainsKey (hash)) {
+					return values [hash];
 				}
 				vm.RaiseException (new IodineKeyNotFound ());
 				return null;
 			} else {
 				int hash = arguments [0].GetHashCode ();
-				if (Dict.ContainsKey (hash)) {
-					return Dict [hash];
+				if (values.ContainsKey (hash)) {
+					return values [hash];
 				}
 				return arguments [1];
 			}
@@ -232,12 +238,12 @@ namespace Iodine.Runtime
 			if (arguments.Length >= 1) {
 				IodineObject key = arguments [0];
 				int hash = key.GetHashCode ();
-				if (!Dict.ContainsKey (hash)) {
+				if (!values.ContainsKey (hash)) {
 					vm.RaiseException (new IodineKeyNotFound ());
 					return null;
 				}
-				Keys.Remove (hash);
-				Dict.Remove (hash);
+				keys.Remove (hash);
+				values.Remove (hash);
 				return null;
 			}
 			vm.RaiseException (new IodineArgumentException (2));
@@ -245,4 +251,3 @@ namespace Iodine.Runtime
 		}
 	}
 }
-
