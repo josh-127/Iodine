@@ -67,6 +67,7 @@ namespace Iodine.Compiler
 
 		public IodineModule Compile (IodineContext context)
 		{
+			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 			context.ErrorLog.Clear ();
 			string moduleName = Path == null ? "__anonymous__" :
 				System.IO.Path.GetFileNameWithoutExtension (Path);
