@@ -53,6 +53,8 @@ namespace Iodine.Compiler
 		 */
 		public readonly List<string> SearchPath = new List<string> ();
 
+		// Globals
+		public readonly Dictionary<string, IodineObject> Globals = new Dictionary<string, IodineObject> ();
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> can use the 
 		/// built in Iodine standard library.
@@ -89,8 +91,6 @@ namespace Iodine.Compiler
 			}
 		}
 
-		// Globals
-		private Dictionary<string, IodineObject> globalDictionary = new Dictionary<string, IodineObject> ();
 
 		public IodineContext ()
 			: this (new IodineConfiguration ())
@@ -113,12 +113,12 @@ namespace Iodine.Compiler
 		{
 			Configuration = config;
 			ErrorLog = new ErrorSink ();
-			VirtualMachine = new VirtualMachine (this, globalDictionary);
+			VirtualMachine = new VirtualMachine (this, Globals);
 
 			var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
 			foreach (IodineModule module in modules) {
 				foreach (KeyValuePair<string, IodineObject> value in module.Attributes) {
-					globalDictionary [value.Key] = value.Value;
+					Globals [value.Key] = value.Value;
 				}
 			}
 

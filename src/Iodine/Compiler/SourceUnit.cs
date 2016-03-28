@@ -91,6 +91,10 @@ namespace Iodine.Compiler
 
 			if (Path == null) {
 				module.IsAnonymous = true;
+
+				foreach (string key in module.Attributes.Keys) {
+					context.Globals [key] = module.Attributes [key];
+				}
 			}
 
 			return module;
