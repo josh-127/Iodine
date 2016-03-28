@@ -67,6 +67,7 @@ namespace Iodine.Compiler
 
 		public IodineModule Compile (IodineContext context)
 		{
+			context.ErrorLog.Clear ();
 			string moduleName = Path == null ? "__anonymous__" :
 				System.IO.Path.GetFileNameWithoutExtension (Path);
 			

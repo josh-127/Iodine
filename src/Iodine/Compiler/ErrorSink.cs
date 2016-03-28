@@ -74,6 +74,16 @@ namespace Iodine.Compiler
 			ErrorCount++;
 		}
 
+
+		/// <summary>
+		/// clears all errors
+		/// </summary>
+		public void Clear ()
+		{
+			ErrorCount = 0;
+			errors.Clear ();
+		}
+
 		/// <summary>
 		/// Returns an enumerator that iterates through a collection.
 		/// </summary>

@@ -1,0 +1,46 @@
+###
+# Name          : argparse
+# Author        : @GruntTheDivine
+# Description   : Simple command line argument parsing module
+####
+
+
+
+_characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+func encode (dataStr) {
+    r = "";
+    p = "";
+    c = len (dataStr) % 3;
+
+    if (c > 0) {
+        for (c = len (dataStr) % 3; c < 3; c += 1) {
+            p += "=";
+            dataStr += " ";
+        }
+    }
+     
+    for (c = 0; c < len (dataStr); c += 3) {
+        if (c >= 0 && (c / 3 * 4) % 76 == 0) {
+            r += "\r\n";
+        }
+
+        n = (ord (dataStr [c]) << 16) + 
+            (ord (dataStr [c + 1]) << 8) + 
+            ord (dataStr [c + 2]);
+
+        n1 = (n >> 18) & 63;
+        n2 = (n >> 12) & 63;
+        n3 = (n >> 6) & 63;
+        n4 = n & 63;
+
+
+        r += _characters [n1] + _characters [n2] + _characters [n3] + _characters [n4];
+    }
+
+    return r.substr (0, len (r) - len (p)) + p;
+}
+
+func decode (dataStr) {
+
+}
