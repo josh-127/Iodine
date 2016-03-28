@@ -1,0 +1,55 @@
+/*
+ *
+ *
+**/
+
+
+class Array {
+    func Array (self, type, n) {
+        self._list = [];
+        if (n is Int) {
+            foreach (i in 0 .. n) {
+                self._list.add (null);
+            }
+        } else {
+            foreach (i in n) {
+                if (i isnot type) {
+                    raise TypeException (Str (self._type));
+                }
+            }
+        }
+    }
+
+    func __setIndex__ (self, index, value) {
+        if (value isnot self._type) {
+            raise TypeException (Str (self._type));
+        }
+        self._list [index] = value;
+    }
+
+    func __getIndex__ (self, index) {
+        return self._list [index];
+    }
+
+    func __iterReset__ (self) {
+        self._list.__iterReset__ ();
+    }
+
+    func __iterMoveNext__ (self) {
+        return self._list.__iterMoveNext__ ();
+    }
+
+    func __iterGetCurrent__ (self) {
+        return self._list.__iterGetCurrent__ ();
+    }
+}
+
+
+class Stack {
+
+}
+
+class TypedList : List {
+
+}
+

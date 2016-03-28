@@ -214,7 +214,7 @@ namespace Iodine.Runtime
 			stackSize = prevStackSize;
 
 			if (top.AbortExecution) {
-				return IodineNull.Instance;
+				return retVal;
 			}
 
 			EndFrame ();
@@ -369,7 +369,7 @@ namespace Iodine.Runtime
 			case Opcode.StoreGlobal:
 				{
 					string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
-					if (Globals.ContainsKey (name)) {
+					if (Globals.ContainsKey (name) || Top.Module.IsAnonymous) {
 						Globals [name] = Pop ();
 					} else {
 						Top.Module.SetAttribute (this, name, Pop ());
@@ -748,7 +748,8 @@ namespace Iodine.Runtime
 			IodineModule module = Context.LoadModule (name);
 			if (module == null) {
 				throw new Exception ("Could not find module " + name + 
-					"\n Searched in: " + String.Join ("\n", Context.SearchPath));
+					"\n Searched in: " + String.Join ("\n", Context.SearchPath)
+				);
 			}
 			return module;
 		}

@@ -345,6 +345,7 @@ namespace Iodine.Runtime
 			IodineObject collection = args [0];
 			IodineObject func = args [1];
 			collection.IterReset (vm);
+
 			while (collection.IterMoveNext (vm)) {
 				IodineObject o = collection.IterGetCurrent (vm);
 				if (func.Invoke (vm, new IodineObject[] { o }).IsTrue ()) {

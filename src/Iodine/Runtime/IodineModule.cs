@@ -52,6 +52,14 @@ namespace Iodine.Runtime
 			get;
 		}
 
+		/*
+		 * Anonymous modules will use the global dictionary for storage rather than the modules own dictionary
+		 */
+		internal bool IsAnonymous {
+			set;
+			get;
+		}
+
 		internal virtual IList<IodineObject> ConstantPool {
 			get {
 				return this.constantPool;
@@ -83,8 +91,7 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			Initializer.Invoke (vm, arguments);
-			return null;
+			return Initializer.Invoke (vm, arguments);
 		}
 
 		public override string ToString ()

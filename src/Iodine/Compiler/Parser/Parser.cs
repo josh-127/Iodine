@@ -169,7 +169,7 @@ namespace Iodine.Compiler
 					FunctionDeclaration func = ParseFunction (stream, true) as FunctionDeclaration;
 					contract.AddMember (func);
 				} else {
-					stream.ErrorLog.AddError (Errors.IllegalInterfaceDeclaration, stream.Location);
+					stream.ErrorLog.Add (Errors.IllegalInterfaceDeclaration, stream.Location);
 				}
 				while (stream.Accept (TokenClass.SemiColon));
 			}
@@ -185,8 +185,9 @@ namespace Iodine.Compiler
 			do {
 				string attr = stream.Expect (TokenClass.Identifier).Value;
 				ret.Append (attr);
-				if (stream.Match (TokenClass.Operator, "."))
+				if (stream.Match (TokenClass.Operator, ".")) {
 					ret.Append ('.');
+				}
 			} while (stream.Accept (TokenClass.Operator, "."));
 			return ret.ToString ();
 		}
@@ -301,10 +302,10 @@ namespace Iodine.Compiler
 					}
 				} else {
 					if (hasKeywordArgs) {
-						stream.ErrorLog.AddError (Errors.ArgumentAfterKeywordArgs, stream.Location);
+						stream.ErrorLog.Add (Errors.ArgumentAfterKeywordArgs, stream.Location);
 					}
 					if (isVariadic) {
-						stream.ErrorLog.AddError (Errors.ArgumentAfterVariadicArgs, stream.Location);
+						stream.ErrorLog.Add (Errors.ArgumentAfterVariadicArgs, stream.Location);
 					}
 					Token param = stream.Expect (TokenClass.Identifier);
 					ret.Add (param.Value);
@@ -424,7 +425,7 @@ namespace Iodine.Compiler
 					stream.Accept (TokenClass.Keyword);
 					return new ContinueStatement (stream.Location);
 				case "super":
-					stream.ErrorLog.AddError (Errors.SuperCalledAfter, stream.Location);
+					stream.ErrorLog.Add (Errors.SuperCalledAfter, stream.Location);
 					return ParseSuperCall (stream, new ClassDeclaration (stream.Location, "", null));
 				}
 			}
@@ -1273,7 +1274,7 @@ namespace Iodine.Compiler
 					NameExpression ident = arg as NameExpression;
 					AstNode val = ParseExpression (stream);
 					if (ident == null) {
-						stream.ErrorLog.AddError (Errors.ExpectedIdentifier, stream.Location);
+						stream.ErrorLog.Add (Errors.ExpectedIdentifier, stream.Location);
 					} else {
 						kwargs.Add (ident.Value, val);
 					}

@@ -37,10 +37,10 @@ namespace Iodine.Compiler
 	/// </summary>
 	internal class RootAnalyser : IodineAstVisitor
 	{
-		private ErrorLog errorLog;
+		private ErrorSink errorLog;
 		private SymbolTable symbolTable;
 
-		public RootAnalyser (ErrorLog errorLog, SymbolTable symbolTable)
+		public RootAnalyser (ErrorSink errorLog, SymbolTable symbolTable)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
@@ -53,72 +53,72 @@ namespace Iodine.Compiler
 
 		public override void Accept (IfStatement ifStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, ifStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, ifStmt.Location);
 		}
 
 		public override void Accept (WhileStatement whileStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, whileStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, whileStmt.Location);
 		}
 
 		public override void Accept (DoStatement doStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, doStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, doStmt.Location);
 		}
 
 		public override void Accept (ForStatement forStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, forStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, forStmt.Location);
 		}
 
 		public override void Accept (ForeachStatement foreachStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, foreachStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, foreachStmt.Location);
 		}
 
 		public override void Accept (ContinueStatement cont)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, cont.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, cont.Location);
 		}
 
 		public override void Accept (BreakStatement brk)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, brk.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, brk.Location);
 		}
 
 		public override void Accept (TryExceptStatement tryExcept)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, tryExcept.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, tryExcept.Location);
 		}
 
 		public override void Accept (RaiseStatement raise)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, raise.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, raise.Location);
 		}
 
 		public override void Accept (GivenStatement switchStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, switchStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, switchStmt.Location);
 		}
 
 		public override void Accept (WhenStatement caseStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, caseStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, caseStmt.Location);
 		}
 
 		public override void Accept (WithStatement withStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, withStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, withStmt.Location);
 		}
 
 		public override void Accept (ReturnStatement returnStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, returnStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, returnStmt.Location);
 		}
 
 		public override void Accept (YieldStatement yieldStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, yieldStmt.Location);
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, yieldStmt.Location);
 		}
 			
 		public override void Accept (CompilationUnit ast)

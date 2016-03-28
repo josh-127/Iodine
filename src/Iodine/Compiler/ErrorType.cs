@@ -51,7 +51,7 @@ namespace Iodine.Compiler
 		UnexpectedEndOfFile = 0x0F
 	}
 
-	public class Error
+	public sealed class Error
 	{
 
 		static string[] errorStringLookup = new string[] {

@@ -31,6 +31,9 @@ using System;
 
 namespace Iodine.Compiler
 {
+	/// <summary>
+	/// Token class.
+	/// </summary>
 	public enum TokenClass
 	{
 		Identifier,

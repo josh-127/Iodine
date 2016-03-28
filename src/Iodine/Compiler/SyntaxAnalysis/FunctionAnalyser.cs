@@ -38,10 +38,10 @@ namespace Iodine.Compiler
 	/// </summary>
 	internal class FunctionAnalyser : IodineAstVisitor
 	{
-		private ErrorLog errorLog;
+		private ErrorSink errorLog;
 		private SymbolTable symbolTable;
 
-		public FunctionAnalyser (ErrorLog errorLog, SymbolTable symbolTable)
+		public FunctionAnalyser (ErrorSink errorLog, SymbolTable symbolTable)
 		{
 			this.errorLog = errorLog;
 			this.symbolTable = symbolTable;
@@ -49,7 +49,7 @@ namespace Iodine.Compiler
 
 		public override void Accept (UseStatement useStmt)
 		{
-			errorLog.AddError (Errors.StatementNotAllowedOutsideFunction, useStmt.Location, "use");
+			errorLog.Add (Errors.StatementNotAllowedOutsideFunction, useStmt.Location, "use");
 		}
 
 		public override void Accept (BinaryExpression binop)
@@ -88,7 +88,7 @@ namespace Iodine.Compiler
 				symbolTable.AddSymbol (varDecl.Name);
 				varDecl.VisitChildren (this);
 			} else {
-				errorLog.AddError (Errors.VariableAlreadyDefined, varDecl.Location, varDecl.Name);
+				errorLog.Add (Errors.VariableAlreadyDefined, varDecl.Location, varDecl.Name);
 			}
 		}
 

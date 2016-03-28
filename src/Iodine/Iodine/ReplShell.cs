@@ -38,11 +38,9 @@ namespace Iodine
 {
 	public sealed class ReplShell
 	{
-		IodineEngine engine;
 
 		public ReplShell (IodineContext context)
 		{
-			engine = new IodineEngine (context);
 		}
 
 		public void Run ()
@@ -50,13 +48,16 @@ namespace Iodine
 			var version = Assembly.GetEntryAssembly ().GetName ().Version;
 			Console.WriteLine ("Iodine v{0}-alpha", version.ToString (3));
 			Console.WriteLine ("Enter expressions to have them be evaluated");
-			engine ["prompt"] = ">>> ";
+
+			IodineContext context = new IodineContext ();
 			while (true) {
 				Console.Write (">>> ");
 				var source = Console.ReadLine ();
 				try {
 					if (source.Length > 0) {
-						Console.WriteLine (engine.DoString (source).ToString ());
+						SourceUnit unit = SourceUnit.CreateFromSource (source);
+						var result = unit.Compile (context);
+						Console.WriteLine (context.Invoke (result, new IodineObject[] { }));
 					}
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));

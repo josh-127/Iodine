@@ -42,10 +42,10 @@ namespace Iodine.Compiler
 		private int sourceLen;
 		private string source;
 		private string file;
-		private ErrorLog errorLog;
+		private ErrorSink errorLog;
 		private SourceLocation location;
 
-		public Tokenizer (ErrorLog errorLog, string source, string file = "")
+		public Tokenizer (ErrorSink errorLog, string source, string file = "")
 		{
 			this.errorLog = errorLog;
 			this.source = source;
@@ -143,7 +143,7 @@ namespace Iodine.Compiler
 				if (char.IsLetter (ch)) {
 					return ReadIdentifier ();
 				}
-				errorLog.AddError (Errors.UnexpectedToken, location, (char)ReadChar ());
+				errorLog.Add (Errors.UnexpectedToken, location, (char)ReadChar ());
 				
 				return null;
 			}
@@ -218,7 +218,7 @@ namespace Iodine.Compiler
 				ch = PeekChar ();
 			}
 			if (ReadChar () == -1) {
-				errorLog.AddError (Errors.UnterminatedStringLiteral, location);
+				errorLog.Add (Errors.UnterminatedStringLiteral, location);
 			}
 			return new Token (ch == '"' ? 
 				TokenClass.InterpolatedStringLiteral :
@@ -243,7 +243,7 @@ namespace Iodine.Compiler
 				ch = PeekChar ();
 			}
 			if (ReadChar () == -1) {
-				errorLog.AddError (Errors.UnterminatedStringLiteral, location);
+				errorLog.Add (Errors.UnterminatedStringLiteral, location);
 			}
 
 			return new Token (TokenClass.BinaryStringLiteral,
@@ -271,7 +271,7 @@ namespace Iodine.Compiler
 			case '\\':
 				return '\\';
 			}
-			errorLog.AddError (Errors.UnrecognizedEscapeSequence, location);
+			errorLog.Add (Errors.UnrecognizedEscapeSequence, location);
 			return '\0';
 		}
 
@@ -401,7 +401,7 @@ namespace Iodine.Compiler
 				}
 			}
 
-			errorLog.AddError (Errors.UnexpectedEndOfFile, location);
+			errorLog.Add (Errors.UnexpectedEndOfFile, location);
 		}
 
 		private void EatWhiteSpaces ()

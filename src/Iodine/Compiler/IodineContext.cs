@@ -89,6 +89,9 @@ namespace Iodine.Compiler
 			}
 		}
 
+		// Globals
+		private Dictionary<string, IodineObject> globalDictionary = new Dictionary<string, IodineObject> ();
+
 		public IodineContext ()
 			: this (new IodineConfiguration ())
 		{
@@ -103,13 +106,22 @@ namespace Iodine.Compiler
 			// Defaults
 			ShouldOptimize = true;
 			AllowBuiltins = true;
+
 		}
 
 		public IodineContext (IodineConfiguration config)
 		{
 			Configuration = config;
 			ErrorLog = new ErrorSink ();
-			VirtualMachine = new VirtualMachine (this);
+			VirtualMachine = new VirtualMachine (this, globalDictionary);
+
+			var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
+			foreach (IodineModule module in modules) {
+				foreach (KeyValuePair<string, IodineObject> value in module.Attributes) {
+					globalDictionary [value.Key] = value.Value;
+				}
+			}
+
 		}
 
 		/// <summary>

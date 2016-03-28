@@ -107,6 +107,7 @@ namespace Iodine.Runtime
 			}
 			IodineString format = args [0] as IodineString;
 			IodineBytes str = args [1] as IodineBytes;
+
 			if (format == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
@@ -116,6 +117,7 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineTypeException ("Tuple"));
 				return null;
 			}
+
 			List<IodineObject> items = new List<IodineObject> ();
 			using (MemoryStream ms = new MemoryStream (str.Value))
 			using (BinaryReader br = new BinaryReader (ms)) {

@@ -85,7 +85,14 @@ namespace Iodine.Compiler
 			Parser parser = Parser.CreateParser (context, this);
 			CompilationUnit root = parser.Parse ();
 			IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);
-			return compiler.Compile (moduleName);
+
+			IodineModule module = compiler.Compile (moduleName);
+
+			if (Path == null) {
+				module.IsAnonymous = true;
+			}
+
+			return module;
 		}
 	}
 }

@@ -117,7 +117,9 @@ namespace Iodine.Runtime
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
+				return null;
 			}
+
 			IodineString str = args [0] as IodineString;
 
 			if (str == null) {
@@ -185,6 +187,7 @@ namespace Iodine.Runtime
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
+				return null;
 			}
 
 			IodineString str = args [0] as IodineString;
