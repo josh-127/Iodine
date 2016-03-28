@@ -2,14 +2,14 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
     <id>libIodine</id>
-    <version>0.7.1.9374</version>
+    <version>0.7.1.10030</version>
     <authors>IodineLang Team</authors>
     <owners>GruntTheDivine</owners>
     <licenseUrl>https://opensource.org/licenses/BSD-3-Clause</licenseUrl>
     <projectUrl>https://github.com/IodineLang/Iodine</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>Iodine Programming Language Core</description>
-    <releaseNotes>Added experimental support for POSIX style merged switches.</releaseNotes>
+    <releaseNotes>Fixed REPL shell</releaseNotes>
     <copyright>GruntTheDivine</copyright>
     <tags>Iodine Library Core</tags>
   </metadata>
