@@ -27,24 +27,17 @@
 //   * DAMAGE.
 // /**
 using System;
-using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class ModuleNotFoundException : RuntimeException
+	/// <summary>
+	/// Base class for Iodine runtime exceptions, these cannot be caught by Iodine programs
+	/// and will be rethrown at the caller
+	/// </summary>
+	public class RuntimeException : Exception
 	{
-		public readonly string Name;
-		public readonly IEnumerable<string> SearchPath;
-
-		public ModuleNotFoundException (string name, IEnumerable<string> path)
+		public RuntimeException ()
 		{
-			SearchPath = path;
-			Name = name;
-		}
-
-		public override string ToString ()
-		{
-			return string.Format ("Could not find module '{0}'\n\nSearched in: {1}\n\t", Name, String.Join ("\n\t", SearchPath));
 		}
 	}
 }

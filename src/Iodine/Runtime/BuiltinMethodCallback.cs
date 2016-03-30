@@ -72,6 +72,8 @@ namespace Iodine.Runtime
 				//vm.Stack.EndFrame ();
 				IodineObject obj = Callback.Invoke (vm, Self, arguments);
 				return obj;
+			} catch (RuntimeException ex) {
+				throw ex;
 			} catch (SyntaxException ex) {
 				throw ex;
 			} catch (UnhandledIodineExceptionException e) {

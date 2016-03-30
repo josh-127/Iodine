@@ -220,6 +220,7 @@
     <Compile Include="Runtime\BuiltinMethodCallback.cs" />
     <Compile Include="Compiler\Parser\AstWalker.cs" />
     <Compile Include="Runtime\ModuleNotFoundException.cs" />
+    <Compile Include="Runtime\RuntimeException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
