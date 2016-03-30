@@ -38,7 +38,7 @@ class ConfigFile {
 
     func open (file) {
         with (fd = open (file, "r")) {
-            source = fd.readAllText ();
+            source = fd.readAll ();
             return ConfigFile.parse (source);
         }
     }
@@ -46,11 +46,11 @@ class ConfigFile {
     func parse (source) {
         file = ConfigFile ();
         source = source.trim ();
-        foreach (section in regex.matchexp (source, "(?ms)^\\[[^]\n]+](?:(?!^\\[[^]\n]+]).)*")) {
-            name = regex.matchexp (section.value, "\\[[^\\(]*\\]").value;
+        foreach (section in regex.find (source, "(?ms)^\\[[^]\n]+](?:(?!^\\[[^]\n]+]).)*")) {
+            name = regex.find (section.value, "\\[[^\\(]*\\]").value;
             name = name.replace ("[", "").replace ("]", "");
             dict = HashMap ();
-            foreach (m in regex.matchexp (section.value, "(?ms)^([^=;\r\n]+)=([^;\r\n]*)")) {
+            foreach (m in regex.find (section.value, "(?ms)^([^=;\r\n]+)=([^;\r\n]*)")) {
                 kv = m.value;
                 key = kv.substr (0, kv.indexOf ("=")).trim ();
                 value = kv.substr (kv.indexOf ("=") + 1).trim ();

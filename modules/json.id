@@ -39,14 +39,14 @@ class JsonFile {
 
     func _initialize (self, source) {
         self.position = 0;
-        self.length = source.getSize ();
+        self.length = len (source);
         self.source = source;
     }
 
     func _parse (self, tokens) {
         
         position = 0;
-        size = tokens.getSize ();
+        size = len (tokens);
 
         func matchToken (type) {
             if (position < size) {
