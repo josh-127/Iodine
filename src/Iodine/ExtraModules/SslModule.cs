@@ -46,7 +46,7 @@ namespace Iodine.Modules.Extras
 		public SslModule ()
 			: base ("ssl")
 		{
-			SetAttribute ("wrapStream", new InternalMethodCallback (wrapSsl, null));
+			SetAttribute ("wrapStream", new BuiltinMethodCallback (wrapSsl, null));
 		}
 
 		private IodineObject wrapSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -38,122 +38,135 @@ namespace Iodine.Runtime
 		public HashModule ()
 			: base ("hash")
 		{
-			SetAttribute ("sha1", new InternalMethodCallback (sha1, this));
-			SetAttribute ("sha256", new InternalMethodCallback (sha256, this));
-			SetAttribute ("sha512", new InternalMethodCallback (sha512, this));
-			SetAttribute ("md5", new InternalMethodCallback (md5, this));
+			SetAttribute ("sha1", new BuiltinMethodCallback (Sha1, this));
+			SetAttribute ("sha256", new BuiltinMethodCallback (Sha256, this));
+			SetAttribute ("sha512", new BuiltinMethodCallback (Sha512, this));
+			SetAttribute ("md5", new BuiltinMethodCallback (Md5, this));
 		}
 
-		private IodineObject sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: sha256 (data)
+		 * Description: Returns the SHA256 digest of data
+		 */
+		private IodineObject Sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 
-			byte[] bytes = new byte[]{};
 			byte[] hash = null;
 
-			SHA256Managed hashstring = new SHA256Managed();
+			SHA256Managed shaAlgol = new SHA256Managed();
 
-			if (args[0] is IodineString) {
-				bytes = System.Text.Encoding.UTF8.GetBytes (args[0].ToString ());
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineByteArray) {
-				bytes = ((IodineByteArray)args[0]).Array;
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineStream) {
-				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
-			} else {
-				vm.RaiseException (new IodineTypeException ("Str"));
-				return null;
+			hash = PreformHash (vm, args [0], shaAlgol);
+
+			if (hash != null) {
+				return new IodineBytes (hash);
 			}
 
-			return new IodineByteArray (hash);
+			return null;
 		}
 
-		private IodineObject sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: sha1 (data)
+		 * Description: Returns the SHA1 digest of data
+		 */
+		private IodineObject Sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 
-			byte[] bytes = new byte[]{};
 			byte[] hash = null;
 
-			SHA1Managed hashstring = new SHA1Managed();
+			SHA1Managed shaAlgol = new SHA1Managed();
 
-			if (args[0] is IodineString) {
-				bytes = System.Text.Encoding.UTF8.GetBytes (args[0].ToString ());
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineByteArray) {
-				bytes = ((IodineByteArray)args[0]).Array;
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineStream) {
-				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
-			} else {
-				vm.RaiseException (new IodineTypeException ("Str"));
-				return null;
+			hash = PreformHash (vm, args [0], shaAlgol);
+
+			if (hash != null) {
+				return new IodineBytes (hash);
 			}
 
-			return new IodineByteArray (hash);
+			return null;
+
 		}
 
-		private IodineObject sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: sha512 (data)
+		 * Description: Returns the SHA512 digest of data
+		 */
+		private IodineObject Sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 
-			byte[] bytes = new byte[]{};
 			byte[] hash = null;
 
-			SHA512Managed hashstring = new SHA512Managed();
+			SHA512Managed shaAlgol = new SHA512Managed();
 
-			if (args[0] is IodineString) {
-				bytes = System.Text.Encoding.UTF8.GetBytes (args[0].ToString ());
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineByteArray) {
-				bytes = ((IodineByteArray)args[0]).Array;
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineStream) {
-				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
-			} else {
-				vm.RaiseException (new IodineTypeException ("Str"));
-				return null;
+			hash = PreformHash (vm, args [0], shaAlgol);
+
+			if (hash != null) {
+				return new IodineBytes (hash);
 			}
 
-			return new IodineByteArray (hash);
+			return null;
 		}
 
-		private IodineObject md5 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: md5 (data)
+		 * Description: Returns the MD5 digest of data
+		 */
+		private IodineObject Md5 (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
 
-			byte[] bytes = new byte[]{};
 			byte[] hash = null;
 
-			MD5 hashstring = MD5.Create ();
+			MD5 md5Algol = MD5.Create ();
 
-			if (args[0] is IodineString) {
-				bytes = System.Text.Encoding.UTF8.GetBytes (args[0].ToString ());
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineByteArray) {
-				bytes = ((IodineByteArray)args[0]).Array;
-				hash = hashstring.ComputeHash(bytes);
-			} else if (args[0] is IodineStream) {
-				hash = hashstring.ComputeHash(((IodineStream)args[0]).File);
-			} else {
+			hash = PreformHash (vm, args [0], md5Algol);
+
+			if (hash != null) {
+				return new IodineBytes (hash);
+			}
+
+			return null;
+		}
+
+		private static byte[] GetBytes (IodineObject obj)
+		{
+			if (obj is IodineString) {
+				return System.Text.Encoding.UTF8.GetBytes (obj.ToString ());
+			} else if (obj is IodineBytes) {
+				return ((IodineBytes)obj).Value;
+			}
+			return null;
+		}
+
+		private static byte[] PreformHash (VirtualMachine vm, IodineObject obj, HashAlgorithm algol)
+		{
+			if (obj is IodineString || obj is IodineBytes) {
+				byte[] data = GetBytes (obj);
+
+				return algol.ComputeHash (data);
+			}
+
+			IodineStream stream = obj as IodineStream;
+
+			if (obj == null) {
 				vm.RaiseException (new IodineTypeException ("Str"));
 				return null;
 			}
 
-			return new IodineByteArray (hash);
+			return algol.ComputeHash (stream.File);
 		}
 	}
 }

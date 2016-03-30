@@ -41,18 +41,26 @@ namespace Iodine.Runtime
 		public RandomModule ()
 			: base ("random")
 		{
-			SetAttribute ("rand", new InternalMethodCallback (rand, this));
-			SetAttribute ("randInt", new InternalMethodCallback (randInt, this));
-			SetAttribute ("choice", new InternalMethodCallback (choice, this));
-			SetAttribute ("cryptoString", new InternalMethodCallback (cryptoString, this));
+			SetAttribute ("rand", new BuiltinMethodCallback (Rand, this));
+			SetAttribute ("randInt", new BuiltinMethodCallback (RandInt, this));
+			SetAttribute ("choice", new BuiltinMethodCallback (Choice, this));
+			SetAttribute ("cryptoString", new BuiltinMethodCallback (CryptoString, this));
 		}
 
-		private IodineObject rand (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: rand ()
+		 * Description: Returns a random number between 0 and 1
+		 */
+		private IodineObject Rand (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineFloat (rgn.NextDouble ());
 		}
 
-		private IodineObject randInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: rand (a, [b])
+		 * Description: returns a random integer between 0 and a, or between a and b (if b is supplied)
+		 */
+		private IodineObject RandInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				return new IodineInteger (rgn.Next (Int32.MinValue, Int32.MaxValue));
@@ -80,7 +88,10 @@ namespace Iodine.Runtime
 			}
 		}
 
-		private IodineObject cryptoString (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: cryptoString (size)
+		 */
+		private IodineObject CryptoString (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -99,13 +110,16 @@ namespace Iodine.Runtime
 			return new IodineString (Convert.ToBase64String (buf).Substring (0, (int)count.Value));
 		}
 
-		private IodineObject choice (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: choice (iterable)
+		 */
+		private IodineObject Choice (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineObject collection = args [0];
+			IodineObject collection = args [0].GetIterator (vm);
 			int count = 0;
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {

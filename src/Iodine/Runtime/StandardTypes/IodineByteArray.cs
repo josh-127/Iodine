@@ -62,7 +62,7 @@ namespace Iodine.Runtime
 			: base (TypeDefinition)
 		{
 			Array = bytes;
-			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
+			SetAttribute ("getSize", new BuiltinMethodCallback (getSize, this));
 		}
 
 		public override IodineObject Len (VirtualMachine vm)

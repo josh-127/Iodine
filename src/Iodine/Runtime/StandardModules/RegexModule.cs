@@ -45,12 +45,16 @@ namespace Iodine.Runtime
 				: base (RegexTypeDef)
 			{
 				this.Value = val;
-				SetAttribute ("matchexp", new InternalMethodCallback (match, this));
-				SetAttribute ("isMatch", new InternalMethodCallback (isMatch, this));
+				SetAttribute ("find", new BuiltinMethodCallback (Find, this));
+				SetAttribute ("isMatch", new BuiltinMethodCallback (IsMatch, this));
 
 			}
 
-			private IodineObject match (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Regex.find (self, pattern)
+			 * Description: Finds the first match of pattern
+			 */
+			private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
@@ -66,7 +70,11 @@ namespace Iodine.Runtime
 				return new IodineMatch (Value.Match (expr.ToString ()));
 			}
 
-			private IodineObject isMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Regex.isMatch (str)
+			 * Description: Returns true if str is a match
+			 */
+			private IodineObject IsMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
@@ -82,14 +90,18 @@ namespace Iodine.Runtime
 				return IodineBool.Create (Value.IsMatch (expr.ToString ()));
 			}
 
-			private IodineObject replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Regex.replace (self, pattern, value)
+			 * Description: Replaces all substrings that match pattern with value
+			 */
+			private IodineObject Replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 1) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
 				}
 				IodineString input = args [0] as IodineString;
-				IodineString val = args [0] as IodineString;
+				IodineString val = args [1] as IodineString;
 
 				if (input == null || val == null) {
 					vm.RaiseException (new IodineTypeException ("Str"));
@@ -116,7 +128,12 @@ namespace Iodine.Runtime
 				Value = val;
 				SetAttribute ("value", new IodineString (val.Value));
 				SetAttribute ("success", IodineBool.Create (val.Success));
-				SetAttribute ("getNextMatch", new InternalMethodCallback (getNextMatch, this));
+				SetAttribute ("getNextMatch", new BuiltinMethodCallback (GetNextMatch, this));
+			}
+
+			public override IodineObject GetIterator (VirtualMachine vm)
+			{
+				return this;
 			}
 
 			public override IodineObject IterGetCurrent (VirtualMachine vm)
@@ -139,7 +156,11 @@ namespace Iodine.Runtime
 				this.iterMatch = Value;
 			}
 
-			private IodineObject getNextMatch (VirtualMachine vm, IodineObject self, IodineObject[] EventArgs)
+			/**
+			 * Iodine Method: Match.getNextMatch (self)
+			 * Description: Returns the next match
+			 */
+			private IodineObject GetNextMatch (VirtualMachine vm, IodineObject self, IodineObject[] EventArgs)
 			{
 				return new IodineMatch (Value.NextMatch ());
 			}
@@ -148,12 +169,16 @@ namespace Iodine.Runtime
 		public RegexModule ()
 			: base ("regex")
 		{
-			SetAttribute ("compile", new InternalMethodCallback (compile, this));
-			SetAttribute ("matchexp", new InternalMethodCallback (match, this));
-			SetAttribute ("isMatch", new InternalMethodCallback (isMatch, this));
+			SetAttribute ("compile", new BuiltinMethodCallback (Compile, this));
+			SetAttribute ("find", new BuiltinMethodCallback (Find, this));
+			SetAttribute ("isMatch", new BuiltinMethodCallback (IsMatch, this));
 		}
 
-		private IodineObject compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: compile (pattern)
+		 * Description: Compiles a regular expression pattern
+		 */
+		private IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -169,7 +194,11 @@ namespace Iodine.Runtime
 			return new IodineRegex (new Regex (expr.ToString ()));
 		}
 
-		private IodineObject match (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: find (str, pattern)
+		 * Description: Finds the first match in str
+		 */
+		private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 1) {
 				vm.RaiseException (new IodineArgumentException (2));
@@ -186,7 +215,11 @@ namespace Iodine.Runtime
 			return new IodineMatch (Regex.Match (data.ToString (), pattern.ToString ()));
 		}
 
-		private IodineObject isMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: isMatch (str, pattern)
+		 * Description: Returns true if any values in str match pattern
+		 */
+		private IodineObject IsMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 1) {
 				vm.RaiseException (new IodineArgumentException (2));

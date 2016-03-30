@@ -53,8 +53,8 @@ namespace Iodine.Runtime
 
 		public IodineStringBuilder ()
 			: base (TypeDefinition) {
-			SetAttribute ("clear", new InternalMethodCallback (clear, null));
-			SetAttribute ("append", new InternalMethodCallback (append, null));
+			SetAttribute ("clear", new BuiltinMethodCallback (Clear, null));
+			SetAttribute ("append", new BuiltinMethodCallback (Append, null));
 		}
 
 		public override string ToString ()
@@ -72,7 +72,11 @@ namespace Iodine.Runtime
 			return new IodineString (buffer.ToString ());
 		}
 
-		private IodineObject append (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Method: StringBuffer.append (self, *args);
+		 * Description: Appends each item in *args to the string buffer
+		 */
+		private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			foreach (IodineObject obj in args) {
 				buffer.Append (obj.ToString (vm));
@@ -80,13 +84,15 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Method: StringBuffer.clear (self)
+		 * Description: Clears the string buffer
+		 */
+		private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			buffer.Clear ();
 			return null;
 		}
-
-
 	}
 }
 

@@ -135,9 +135,9 @@ namespace Iodine.Runtime
 
 	public class NativeStackFrame : StackFrame
 	{
-		public InternalMethodCallback NativeMethod { private set; get; }
+		public BuiltinMethodCallback NativeMethod { private set; get; }
 
-		public NativeStackFrame (InternalMethodCallback method, StackFrame parent)
+		public NativeStackFrame (BuiltinMethodCallback method, StackFrame parent)
 			: base (null, parent, null, 0)
 		{
 			this.NativeMethod = method;

@@ -55,6 +55,27 @@ namespace Iodine.Compiler.Ast
 		{
 			children.ForEach (p => p.Visit (visitor));
 		}
+
+		public override bool Reduce (out AstNode val)
+		{
+			bool success = false;
+			AstNode child = null;
+			List<AstNode> newChildren = new List<AstNode> ();
+			foreach (AstNode node in children) {
+				if (node.Reduce (out child)) {
+					newChildren.Add (child);
+					success = true;
+				} else {
+					newChildren.Add (node);
+				}
+			}
+
+			if (success) {
+				children = newChildren;
+			}
+			val = this;
+			return success;
+		}
 	}
 }
 

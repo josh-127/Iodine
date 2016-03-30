@@ -45,6 +45,10 @@ namespace Iodine.Runtime
 				{
 				}
 
+				/**
+				 * Iodine Class: Thread (func)
+				 * Description: Represents a thread, upon starting the thread, func () will be executed
+				 */
 				public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
 				{
 					if (args.Length <= 0) {
@@ -73,24 +77,36 @@ namespace Iodine.Runtime
 				: base (TypeDefinition)
 			{
 				Value = t;
-				SetAttribute ("start", new InternalMethodCallback (start, this));
-				SetAttribute ("abort", new InternalMethodCallback (abort, this));
-				SetAttribute ("isAlive", new InternalMethodCallback (isAlive, this));
+				SetAttribute ("start", new BuiltinMethodCallback (Start, this));
+				SetAttribute ("abort", new BuiltinMethodCallback (Abort, this));
+				SetAttribute ("isAlive", new BuiltinMethodCallback (IsAlive, this));
 			}
 
-			private IodineObject start (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Thread.start (self)
+			 * Description: Starts the thread
+			 */
+			private IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				Value.Start ();
 				return null;
 			}
 
-			private IodineObject abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Thread.abort (self)
+			 * Description: Aborts the thread
+			 */
+			private IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				Value.Abort ();
 				return null;
 			}
 
-			private IodineObject isAlive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Thread.isAlive (self)
+			 * Description: Returns true if the thread is alive
+			 */
+			private IodineObject IsAlive (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				return IodineBool.Create (Value.IsAlive);
 			}
@@ -118,12 +134,16 @@ namespace Iodine.Runtime
 			public IodineLock ()
 				: base (TypeDefinition)
 			{
-				SetAttribute ("aquire", new InternalMethodCallback (acquire, this));
-				SetAttribute ("release", new InternalMethodCallback (release, this));
-				SetAttribute ("locked", new InternalMethodCallback (locked, this));
+				SetAttribute ("acquire", new BuiltinMethodCallback (Acquire, this));
+				SetAttribute ("release", new BuiltinMethodCallback (Release, this));
+				SetAttribute ("locked", new BuiltinMethodCallback (IsLocked, this));
 			}
 
-			private IodineObject acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Lock.aquire (self)
+			 * Description: Aquires the log
+			 */
+			private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				while (_lock)
 					;
@@ -131,13 +151,21 @@ namespace Iodine.Runtime
 				return null;
 			}
 
-			private IodineObject release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/*
+			 * Iodine Method: Lock.release (self)
+			 * Description: Releases the lock
+			 */
+			private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				_lock = false;
 				return null;
 			}
 
-			private IodineObject locked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Lock.isLocked (self)
+			 * Description: Returns true if the lock has been aquired
+			 */
+			private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				return IodineBool.Create (_lock);
 			}
@@ -174,26 +202,36 @@ namespace Iodine.Runtime
 				: base (TypeDefinition)
 			{
 				this.semaphore = semaphore;
-				SetAttribute ("aquire", new InternalMethodCallback (acquire, this));
-				SetAttribute ("release", new InternalMethodCallback (release, this));
-				SetAttribute ("locked", new InternalMethodCallback (locked, this));
+				SetAttribute ("aquire", new BuiltinMethodCallback (Acquire, this));
+				SetAttribute ("release", new BuiltinMethodCallback (Release, this));
+				SetAttribute ("isLocked", new BuiltinMethodCallback (IsLocked, this));
 			}
 
-			private IodineObject acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Semaphore.acquire (self)
+			 * Description: Decrements the semaphore
+			 */
+			private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				semaphore--;
 				while (semaphore < 0)
-					;
+					; // Spin
 				return null;
 			}
-
-			private IodineObject release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Iodine Method: Semaphore.release (self)
+			 * Description: Increments the semaphore
+			 */
+			private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				semaphore++;
 				return null;
 			}
 
-			private IodineObject locked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+			/**
+			 * Returns true if the semaphore is less than 0
+			 */
+			private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				return IodineBool.Create (semaphore < 0);
 			}
@@ -205,10 +243,14 @@ namespace Iodine.Runtime
 			SetAttribute ("Thread", IodineThread.TypeDefinition);
 			SetAttribute ("Lock", IodineLock.TypeDefinition);
 			SetAttribute ("Semaphore", IodineSemaphore.TypeDefinition);
-			SetAttribute ("sleep", new InternalMethodCallback (sleep, this));
+			SetAttribute ("sleep", new BuiltinMethodCallback (Sleep, this));
 		}
 
-		private IodineObject sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: sleep (t)
+		 * Description: Suspends the current thread for t milliseconds 
+		 */
+		private IodineObject Sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));

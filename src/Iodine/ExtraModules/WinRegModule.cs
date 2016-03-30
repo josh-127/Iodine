@@ -57,17 +57,16 @@ namespace Iodine.Modules.Extras
 				: base (TypeDef)
 			{
 				Key = original;
-				SetAttribute ("setValue", new InternalMethodCallback (setValue, this));
-				SetAttribute ("getValue", new InternalMethodCallback (getValue, this));
-				SetAttribute ("deleteValue", new InternalMethodCallback (deleteValue, this));
+				SetAttribute ("setValue", new BuiltinMethodCallback (setValue, this));
+				SetAttribute ("getValue", new BuiltinMethodCallback (getValue, this));
+				SetAttribute ("deleteValue", new BuiltinMethodCallback (deleteValue, this));
 			}
 
 			private IodineObject setValue (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				string name = args [0].ToString ();
 				IodineObject ioval = args [1];
-				object val = null;
-				//IodineTypeConverter.Instance.ConvertToPrimative (ioval, out val);
+				object val = ConvertIodineObjectToObject (ioval);
 				Key.SetValue (name, val);
 				return null;
 			}
@@ -75,10 +74,8 @@ namespace Iodine.Modules.Extras
 			private IodineObject getValue (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				string name = args [0].ToString ();
-				IodineObject ioval = null;
 				object val = Key.GetValue (name);
-				//IodineTypeConverter.Instance.ConvertFromPrimative (val, out ioval);
-				return ioval;
+				return ConvertPrimativeToIodineObject (val);
 			}
 
 			private IodineObject deleteValue (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -123,8 +120,8 @@ namespace Iodine.Modules.Extras
 			SetAttribute ("CurrentConfig", new IodineRegistryKeyHandle (Registry.CurrentConfig));
 			SetAttribute ("CurrentUser", new IodineRegistryKeyHandle (Registry.CurrentUser));
 			SetAttribute ("LocalMachine", new IodineRegistryKeyHandle (Registry.LocalMachine));
-			SetAttribute ("setValue", new InternalMethodCallback (setValue, null));
-			SetAttribute ("getValue", new InternalMethodCallback (getValue, null));
+			SetAttribute ("setValue", new BuiltinMethodCallback (setValue, null));
+			SetAttribute ("getValue", new BuiltinMethodCallback (getValue, null));
 		}
 
 		private IodineObject setValue (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -132,8 +129,7 @@ namespace Iodine.Modules.Extras
 			string keyName = args [0].ToString ();
 			string name = args [1].ToString ();
 			IodineObject ioval = args [2];
-			object val = null;
-			//IodineTypeConverter.Instance.ConvertToPrimative (ioval, out val);
+			object val = ConvertIodineObjectToObject (ioval);
 			Registry.SetValue (keyName, name, val);
 			return null;
 		}
@@ -143,9 +139,37 @@ namespace Iodine.Modules.Extras
 			string keyName = args [0].ToString ();
 			string name = args [1].ToString ();
 			object val = Registry.GetValue (keyName, name, null);
-			IodineObject ioval = null;
-			//IodineTypeConverter.Instance.ConvertFromPrimative (val, out ioval);
-			return ioval;
+			return ConvertPrimativeToIodineObject (val);
+		}
+
+
+		private static object ConvertIodineObjectToObject (IodineObject obj)
+		{
+			if (obj is IodineInteger) {
+				return (Int32)(((IodineInteger)obj).Value);
+			}
+
+			if (obj is IodineString) {
+				return (((IodineString)obj).Value);
+			}
+
+			return null;
+		}
+
+		private static IodineObject ConvertPrimativeToIodineObject (object obj)
+		{
+			if (obj is Int32) {
+				return new IodineInteger ((int)obj);
+			}
+
+			if (obj is Int64) {
+				return new IodineInteger ((long)obj);
+			}
+
+			if (obj is String) {
+				return new IodineString ((string)obj);
+			}
+			return null;
 		}
 	}
 }

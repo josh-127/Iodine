@@ -46,20 +46,24 @@ namespace Iodine.Runtime
 			SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
 			// TODO: Make path accessible
 			//SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
-			SetAttribute ("exit", new InternalMethodCallback (exit, this));
-			SetAttribute ("path", new InternalIodineProperty (getPath, null));
+			SetAttribute ("exit", new BuiltinMethodCallback (Exit, this));
+			SetAttribute ("path", new InternalIodineProperty (GetPath, null));
 			SetAttribute ("VERSION_MAJOR", new IodineInteger (major));
 			SetAttribute ("VERSION_MINOR", new IodineInteger (minor));
 			SetAttribute ("VERSION_PATCH", new IodineInteger (patch));
 			SetAttribute ("VERSION_STR", new IodineString (String.Format ("v{0}.{1}.{2}", major, minor, patch)));
 		}
 
-		private IodineObject getPath (VirtualMachine vm)
+		private IodineObject GetPath (VirtualMachine vm)
 		{
 			return new IodineTuple (vm.Context.SearchPath.Select (p => new IodineString (p)).ToArray ());
 		}
 
-		private IodineObject exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: exit (code)
+		 * Description: Forcefully terminates the current process (Including the Iodine host)
+		 */
+		private IodineObject Exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));

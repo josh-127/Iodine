@@ -41,18 +41,18 @@ namespace Iodine.Runtime
 		{
 			SetAttribute ("PI", new IodineFloat (Math.PI));
 			SetAttribute ("E", new IodineFloat (Math.E));
-			SetAttribute ("pow", new InternalMethodCallback (pow, this));
-			SetAttribute ("sin", new InternalMethodCallback (sin, this));
-			SetAttribute ("cos", new InternalMethodCallback (cos, this));
-			SetAttribute ("tan", new InternalMethodCallback (tan, this));
-			SetAttribute ("asin", new InternalMethodCallback (asin, this));
-			SetAttribute ("acos", new InternalMethodCallback (acos, this));
-			SetAttribute ("atan", new InternalMethodCallback (atan, this));
-			SetAttribute ("abs", new InternalMethodCallback (abs, this));
-			SetAttribute ("sqrt", new InternalMethodCallback (sqrt, this));
-			SetAttribute ("floor", new InternalMethodCallback (floor, this));
-			SetAttribute ("ceiling", new InternalMethodCallback (ceiling, this));
-			SetAttribute ("log", new InternalMethodCallback (log, this));
+			SetAttribute ("pow", new BuiltinMethodCallback (pow, this));
+			SetAttribute ("sin", new BuiltinMethodCallback (sin, this));
+			SetAttribute ("cos", new BuiltinMethodCallback (cos, this));
+			SetAttribute ("tan", new BuiltinMethodCallback (tan, this));
+			SetAttribute ("asin", new BuiltinMethodCallback (asin, this));
+			SetAttribute ("acos", new BuiltinMethodCallback (acos, this));
+			SetAttribute ("atan", new BuiltinMethodCallback (atan, this));
+			SetAttribute ("abs", new BuiltinMethodCallback (abs, this));
+			SetAttribute ("sqrt", new BuiltinMethodCallback (sqrt, this));
+			SetAttribute ("floor", new BuiltinMethodCallback (floor, this));
+			SetAttribute ("ceiling", new BuiltinMethodCallback (ceiling, this));
+			SetAttribute ("log", new BuiltinMethodCallback (log, this));
 		}
 
 		private IodineObject pow (VirtualMachine vm, IodineObject self, IodineObject[] args)

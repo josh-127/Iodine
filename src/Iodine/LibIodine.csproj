@@ -9,6 +9,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>LibIodine</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,8 +22,6 @@
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
     <Commandlineparameters>/home/grunt/Iodine/tests/test.id</Commandlineparameters>
-    <AssemblyName>libIodine</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -32,8 +31,6 @@
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>COMPILE_EXTRAS</DefineConstants>
-    <AssemblyName>iodine</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Framework)' == '.NET 4.5|NET45' ">
     <Optimize>true</Optimize>
@@ -48,7 +45,8 @@
     <OutputPath>..\..\bin\lib</OutputPath>
     <DefineConstants>
     </DefineConstants>
-    <AssemblyName>LibIodine</AssemblyName>
+    <Optimize>false</Optimize>
+    <PlatformTarget>anycpu</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -62,7 +60,6 @@
     <Compile Include="Runtime\Instruction.cs" />
     <Compile Include="Runtime\Opcode.cs" />
     <Compile Include="Runtime\IodineObject.cs" />
-    <Compile Include="Runtime\InternalMethodCallback.cs" />
     <Compile Include="Runtime\VirtualMachine.cs" />
     <Compile Include="Runtime\IodineTypeDefinition.cs" />
     <Compile Include="Runtime\BuiltInModules.cs" />
@@ -193,7 +190,6 @@
     <Compile Include="Runtime\StandardModules\StructModule.cs" />
     <Compile Include="Runtime\StandardModules\BuiltinsModule.cs" />
     <Compile Include="Runtime\StandardModules\IterUtilsModules.cs" />
-    <Compile Include="Runtime\StandardModules\CollectionsModule.cs" />
     <Compile Include="Runtime\StandardModules\ReflectionModule.cs" />
     <Compile Include="Runtime\StandardTypes\IodineInteger.cs" />
     <Compile Include="Runtime\StandardTypes\IodineBool.cs" />
@@ -222,6 +218,8 @@
     <Compile Include="Runtime\IodineBuiltinMethod.cs" />
     <Compile Include="Compiler\SyntaxAnalysis\UnaryOperation.cs" />
     <Compile Include="Compiler\ErrorSink.cs" />
+    <Compile Include="Runtime\BuiltinMethodCallback.cs" />
+    <Compile Include="Compiler\Parser\AstWalker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

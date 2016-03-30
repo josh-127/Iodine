@@ -113,7 +113,7 @@ namespace Iodine.Runtime
 		public DateTimeModule ()
 			: base ("datetime")
 		{
-			SetAttribute ("now", new InternalMethodCallback (now, this));
+			SetAttribute ("now", new BuiltinMethodCallback (now, this));
 		}
 
 		private static IodineObject now (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -57,6 +57,11 @@ namespace Iodine.Compiler
 				while (!tokenStream.EndOfStream) {
 					root.Add (ParseStatement (tokenStream));
 				}
+
+				AstNode irrelevent = null;
+
+				while (root.Reduce (out irrelevent));
+
 				return root;
 			} catch (Exception) {
 				return new CompilationUnit (tokenStream.Location);
@@ -791,7 +796,7 @@ namespace Iodine.Compiler
 
 		private static AstNode ParseTernaryIfElse (TokenStream stream)
 		{
-			AstNode expr = ParsePipeline (stream);
+			AstNode expr = ParseRange (stream);
 			while (stream.Accept (TokenClass.Keyword, "when")) {
 				AstNode condition = ParseExpression (stream);
 				stream.Expect (TokenClass.Keyword, "else");
@@ -799,24 +804,6 @@ namespace Iodine.Compiler
 				expr = new TernaryExpression (expr.Location, condition, expr, altValue);
 			}
 			return expr;
-		}
-
-		// TODO: Decide whether or not to keep the |> operator
-		private static AstNode ParsePipeline (TokenStream stream)
-		{
-			
-			return ParseRange (stream); /*
-			while (stream.Accept (TokenClass.Operator, "|>")) {
-				CallExpression call = ParseRange (stream) as CallExpression;
-				if (call == null) {
-					stream.ErrorLog.AddError (Errors.PipeIntoNonFunction, stream.Location);
-				} else {
-					call.Arguments.Children.Insert (0, expr);
-					expr = call;
-				}
-			}
-			*/
-			return null;
 		}
 
 		private static AstNode ParseRange (TokenStream stream)

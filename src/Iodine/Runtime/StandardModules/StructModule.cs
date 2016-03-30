@@ -40,12 +40,16 @@ namespace Iodine.Runtime
 		public StructModule ()
 			: base ("struct")
 		{
-			SetAttribute ("pack", new InternalMethodCallback (pack, this));
-			SetAttribute ("unpack", new InternalMethodCallback (unpack, this));
-			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
+			SetAttribute ("pack", new BuiltinMethodCallback (Pack, this));
+			SetAttribute ("unpack", new BuiltinMethodCallback (Unpack, this));
+			SetAttribute ("getSize", new BuiltinMethodCallback (GetSize, this));
 		}
 
-		private IodineObject pack (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: pack (format, data)
+		 * Description: Packs a tuple, data into a byte string according to format
+		 */
+		private IodineObject Pack (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
 				vm.RaiseException (new IodineArgumentException (2));
@@ -88,7 +92,7 @@ namespace Iodine.Runtime
 								return null;
 							}
 							IodineObject obj = tuple.Objects [nextObj++];
-							if (!packObj (vm, bw, specifier, arg, obj)) {
+							if (!PackObj (vm, bw, specifier, arg, obj)) {
 								vm.RaiseException (new IodineException ("Invalid format"));
 								return null;
 							}
@@ -99,7 +103,11 @@ namespace Iodine.Runtime
 			}
 		}
 
-		private IodineObject unpack (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: unpack (format, bytes)
+		 * Description: Unpacks a tuple from a byte string according to format
+		 */
+		private IodineObject Unpack (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
 				vm.RaiseException (new IodineArgumentException (2));
@@ -145,7 +153,7 @@ namespace Iodine.Runtime
 								br.ReadByte ();
 							}
 						} else {
-							items.Add (unpackObj (vm, br, specifier, arg));
+							items.Add (UnpackObj (vm, br, specifier, arg));
 						}
 					}
 				}
@@ -153,7 +161,11 @@ namespace Iodine.Runtime
 			}
 		}
 
-		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: getSize (format)
+		 * Description: Returns the size in bytes of a struct packed using the supplied format specifier
+		 */
+		private IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 1) {
 				vm.RaiseException (new IodineArgumentException (2));
@@ -183,7 +195,7 @@ namespace Iodine.Runtime
 					if (specifier == 'x') {
 						ret += arg;
 					} else {
-						ret += getSize (specifier, arg);
+						ret += GetSize (specifier, arg);
 					}
 				}
 			}
@@ -191,7 +203,7 @@ namespace Iodine.Runtime
 		}
 
 
-		private bool packObj (VirtualMachine vm, BinaryWriter bw, char type, int arg, IodineObject obj)
+		private bool PackObj (VirtualMachine vm, BinaryWriter bw, char type, int arg, IodineObject obj)
 		{
 			switch (type) {
 			case '?':
@@ -317,7 +329,7 @@ namespace Iodine.Runtime
 			return true;
 		}
 
-		private IodineObject unpackObj (VirtualMachine vm, BinaryReader br, char type, int arg)
+		private IodineObject UnpackObj (VirtualMachine vm, BinaryReader br, char type, int arg)
 		{
 			switch (type) {
 			case '?':
@@ -367,7 +379,7 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private int getSize (char type, int arg)
+		private int GetSize (char type, int arg)
 		{
 			switch (type) {
 			case '?':

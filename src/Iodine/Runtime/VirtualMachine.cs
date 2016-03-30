@@ -558,6 +558,11 @@ namespace Iodine.Runtime
 					Push (new IodineClosure (Top, method));
 					break;
 				}
+			case Opcode.GetIter:
+				{
+					Push (Pop ().GetIterator (this));
+					break;
+				}
 			case Opcode.IterGetNext:
 				{
 					Push (Pop ().IterGetCurrent (this));
@@ -753,6 +758,20 @@ namespace Iodine.Runtime
 				);
 			}
 			return module;
+		}
+
+		/// <summary>
+		/// Sets a global variable 
+		/// </summary>
+		/// <param name="name">Name.</param>
+		/// <param name="val">Value.</param>
+		public void SetGlobal (string name, IodineObject val)
+		{
+			if (Top.Module.IsAnonymous) {
+				Globals [name] = val;
+			} else {
+				Top.Module.SetAttribute (name, val);
+			}
 		}
 	}
 }

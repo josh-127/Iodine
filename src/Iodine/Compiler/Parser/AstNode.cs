@@ -48,6 +48,24 @@ namespace Iodine.Compiler.Ast
 		public virtual void VisitChildren (IodineAstVisitor visitor)
 		{
 		}
+
+		public virtual bool Reduce (out AstNode val)
+		{
+			bool success = false;
+
+			AstWalker walker = new AstWalker (node => {
+				AstNode tmp = null;
+				if (node.Reduce (out tmp)) {
+					success = true;
+				}
+			});
+
+			VisitChildren (walker);
+
+			val = this;
+
+			return success;
+		}
 	}
 }
 

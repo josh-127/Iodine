@@ -87,6 +87,7 @@ namespace Iodine.Runtime
 		#region Operator implementations
 		public override IodineObject Add (VirtualMachine vm, IodineObject right)
 		{
+			Console.WriteLine ("Integer add");
 			IodineInteger intVal = right as IodineInteger;
 			if (intVal == null) {
 				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));

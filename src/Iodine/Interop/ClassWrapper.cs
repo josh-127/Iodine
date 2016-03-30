@@ -87,7 +87,7 @@ namespace Iodine.Interop
 			return wrapper;
 		}
 
-		private static InternalMethodCallback CreateMultiMethod (TypeRegistry registry,
+		private static BuiltinMethodCallback CreateMultiMethod (TypeRegistry registry,
 			Type type,
 			string name)
 		{

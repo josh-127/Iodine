@@ -48,7 +48,7 @@ namespace Iodine.Runtime
 				Value = proc;
 				SetAttribute ("id", new IodineInteger (proc.Id));
 				SetAttribute ("name", new IodineString (proc.ProcessName));
-				SetAttribute ("kill", new InternalMethodCallback (kill, this));
+				SetAttribute ("kill", new BuiltinMethodCallback (kill, this));
 				SetAttribute ("stdout", new IodineStream (Value.StandardOutput.BaseStream, false, true));
 				SetAttribute ("stderr", new IodineStream (Value.StandardError.BaseStream, false, true));
 				SetAttribute ("stdin", new IodineStream (Value.StandardInput.BaseStream, true, false));
@@ -67,16 +67,21 @@ namespace Iodine.Runtime
 			SetAttribute ("USER_DIR", new IodineString (Environment.GetFolderPath (
 				Environment.SpecialFolder.UserProfile)));
 			SetAttribute ("ENV_SEP", new IodineString (Path.PathSeparator.ToString ()));
-			SetAttribute ("getEnv", new InternalMethodCallback (getEnv, this));
-			SetAttribute ("setEnv", new InternalMethodCallback (setEnv, this));
-			SetAttribute ("getCwd", new InternalMethodCallback (getCwd, this));
-			SetAttribute ("setCwd", new InternalMethodCallback (setCwd, this));
-			SetAttribute ("getUsername", new InternalMethodCallback (getUsername, this));
-			SetAttribute ("spawn", new InternalMethodCallback (spawn, this));
-			SetAttribute ("getProcList", new InternalMethodCallback (getProcList, this));
+			SetAttribute ("getEnv", new BuiltinMethodCallback (GetEnv, this));
+			SetAttribute ("setEnv", new BuiltinMethodCallback (SetEnv, this));
+			SetAttribute ("putenv", new BuiltinMethodCallback (SetEnv, this));
+			SetAttribute ("getcwd", new BuiltinMethodCallback (GetCwd, this));
+			SetAttribute ("setcwd", new BuiltinMethodCallback (SetCwd, this));
+			SetAttribute ("getUsername", new BuiltinMethodCallback (GetUsername, this));
+			SetAttribute ("spawn", new BuiltinMethodCallback (Spawn, this));
+			SetAttribute ("getProcList", new BuiltinMethodCallback (GetProcList, this));
 		}
 
-		private IodineObject getProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: getProcList ()
+		 * Description: Returns a list of running processes
+		 */
+		private IodineObject GetProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			IodineList list = new IodineList (new IodineObject[] { });
 			foreach (Process proc in Process.GetProcesses ()) {
@@ -85,17 +90,29 @@ namespace Iodine.Runtime
 			return list;
 		}
 
-		private IodineObject getUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: getUsername ()
+		 * Description: Returns the username of the current user
+		 */
+		private IodineObject GetUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineString (Environment.UserName);
 		}
 
-		private IodineObject getCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: getCwd ();
+		 * Description: Gets the current working directory
+		 */
+		private IodineObject GetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineString (Environment.CurrentDirectory);
 		}
 
-		private IodineObject setCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: setCwd (cwd)
+		 * Description: Sets the current working directory
+		 */
+		private IodineObject SetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -113,7 +130,11 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject getEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: getEnv (name)
+		 * Description: Gets an environmental variable
+		 */
+		private IodineObject GetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -131,7 +152,11 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject setEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/*
+		 * Iodine Function: setEnv (name, value)
+		 * Description: Sets an environmental variable
+		 */
+		private IodineObject SetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -141,7 +166,7 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject spawn (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Spawn (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));

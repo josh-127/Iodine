@@ -53,7 +53,6 @@ namespace Iodine.Compiler.Ast
 			Target.Visit (visitor);
 			Arguments.Visit (visitor);
 		}
-			
 	}
 }
 

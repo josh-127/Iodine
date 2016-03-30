@@ -48,10 +48,10 @@ namespace Iodine.Modules.Extras
 			public IodineWebClient ()
 				: base (WebClientTypeDef)
 			{
-				SetAttribute ("downloadString", new InternalMethodCallback (downloadString, this));
-				SetAttribute ("downloadRaw", new InternalMethodCallback (downloadRaw, this));
-				SetAttribute ("downloadFile", new InternalMethodCallback (downloadFile, this));
-				SetAttribute ("uploadFile", new InternalMethodCallback (uploadFile, this));
+				SetAttribute ("downloadString", new BuiltinMethodCallback (downloadString, this));
+				SetAttribute ("downloadRaw", new BuiltinMethodCallback (downloadRaw, this));
+				SetAttribute ("downloadFile", new BuiltinMethodCallback (downloadFile, this));
+				SetAttribute ("uploadFile", new BuiltinMethodCallback (uploadFile, this));
 				WebProxy proxy = new WebProxy ();
 				client = new WebClient ();
 				client.Proxy = proxy;
@@ -112,8 +112,8 @@ namespace Iodine.Modules.Extras
 
 		public WebClientModule () : base ("webclient")
 		{
-			SetAttribute ("WebClient", new InternalMethodCallback (webclient, this));
-			SetAttribute ("disableCertificateCheck", new InternalMethodCallback (disableCertCheck, this));
+			SetAttribute ("WebClient", new BuiltinMethodCallback (webclient, this));
+			SetAttribute ("disableCertificateCheck", new BuiltinMethodCallback (disableCertCheck, this));
 		}
 
 		private IodineObject webclient (VirtualMachine vm, IodineObject self, IodineObject[] args)

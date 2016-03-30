@@ -35,9 +35,15 @@ namespace Iodine.Compiler.Ast
 	{
 		public readonly BinaryOperation Operation;
 
-		public readonly AstNode Left;
+		public AstNode Left {
+			private set;
+			get;
+		}
 
-		public readonly AstNode Right;
+		public AstNode Right {
+			private set;
+			get;
+		}
 
 		public BinaryExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
 			: base (location)
@@ -56,6 +62,62 @@ namespace Iodine.Compiler.Ast
 		{
 			Left.Visit (visitor);
 			Right.Visit (visitor);
+		}
+
+		public override bool Reduce (out AstNode val)
+		{
+			switch (Operation) {
+			case BinaryOperation.Add:
+				{
+					if (Left is IntegerExpression && Right is IntegerExpression) {
+						val = new IntegerExpression (Right.Location, ((IntegerExpression)Left).Value + ((IntegerExpression)Right).Value);
+						return true;
+					}
+					break;
+				}
+			case BinaryOperation.Sub:
+				{
+					if (Left is IntegerExpression && Right is IntegerExpression) {
+						val = new IntegerExpression (Right.Location, ((IntegerExpression)Left).Value - ((IntegerExpression)Right).Value);
+						return true;
+					}
+					break;
+				}
+			case BinaryOperation.Mul:
+				{
+					if (Left is IntegerExpression && Right is IntegerExpression) {
+						val = new IntegerExpression (Right.Location, ((IntegerExpression)Left).Value * ((IntegerExpression)Right).Value);
+						return true;
+					}
+					break;
+				}
+			case BinaryOperation.Div:
+				{
+					if (Left is IntegerExpression && Right is IntegerExpression) {
+						val = new IntegerExpression (Right.Location, ((IntegerExpression)Left).Value / ((IntegerExpression)Right).Value);
+						return true;
+					}
+					break;
+				}
+			}
+
+			AstNode newValue = null;
+
+			bool success = false;
+
+			if (Left.Reduce (out newValue)) {
+				Left = newValue;
+				success = true;
+			}
+
+			if (Right.Reduce (out newValue)) {
+				Right = newValue;
+				success = true;
+			}
+
+			val = this;
+
+			return success;
 		}
 	}
 }

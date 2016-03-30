@@ -13,7 +13,7 @@ namespace ModuleMySQL
 		public MySQLModule ()
 			: base ("mysql")
 		{
-			SetAttribute ("openDatabase", new InternalMethodCallback (openDatabase, this));
+			SetAttribute ("openDatabase", new BuiltinMethodCallback (openDatabase, this));
 		}
 
 		private IodineObject openDatabase (VirtualMachine vm, IodineObject self, IodineObject[] args)

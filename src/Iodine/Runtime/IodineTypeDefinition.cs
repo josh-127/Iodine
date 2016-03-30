@@ -97,8 +97,8 @@ namespace Iodine.Runtime
 			foreach (MethodInfo info in methods) {
 				IodineBuiltinMethod attr = (IodineBuiltinMethod)info.GetCustomAttributes (
 					typeof(IodineBuiltinMethod), false).First ();
-				SetAttribute (attr.Name, new InternalMethodCallback (
-					(IodineMethodCallback)Delegate.CreateDelegate (typeof(IodineMethodCallback), info), null)
+				SetAttribute (attr.Name, new BuiltinMethodCallback (
+					(IodineMethodDelegate)Delegate.CreateDelegate (typeof(IodineMethodDelegate), info), null)
 				);
 			}
 		}

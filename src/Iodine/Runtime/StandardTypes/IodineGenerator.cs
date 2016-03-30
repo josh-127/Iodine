@@ -57,6 +57,11 @@ namespace Iodine.Runtime
 			this.baseMethod = baseMethod.Method;
 		}
 
+		public override IodineObject GetIterator (VirtualMachine vm)
+		{
+			return this;
+		}
+
 		public override bool IterMoveNext (VirtualMachine vm)
 		{
 			if (stackFrame.AbortExecution) {

@@ -65,6 +65,7 @@ namespace Iodine.Runtime
 		BuildList,
 		BuildTuple,
 		BuildClosure,
+		GetIter,
 		IterGetNext,
 		IterMoveNext,
 		IterReset,

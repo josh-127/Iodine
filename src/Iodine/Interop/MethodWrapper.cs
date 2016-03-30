@@ -37,11 +37,11 @@ namespace Iodine.Interop
 {
 	static class MethodWrapper
 	{
-		public static InternalMethodCallback Create (TypeRegistry registry, 
+		public static BuiltinMethodCallback Create (TypeRegistry registry, 
 			MethodInfo info,
 			object self = null)
 		{
-			return new InternalMethodCallback (((VirtualMachine vm,
+			return new BuiltinMethodCallback (((VirtualMachine vm,
 				IodineObject @this, IodineObject[] arguments) => {
 				Type[] types = info.GetParameters ().Select (p => p.ParameterType).ToArray ();
 				int i = 0;
@@ -51,11 +51,11 @@ namespace Iodine.Interop
 			}), null);
 		}
 
-		public static InternalMethodCallback Create (TypeRegistry registry,
+		public static BuiltinMethodCallback Create (TypeRegistry registry,
 			IEnumerable<MethodInfo> info,
 			object self = null)
 		{
-			return new InternalMethodCallback (((VirtualMachine vm,
+			return new BuiltinMethodCallback (((VirtualMachine vm,
 				IodineObject @this, IodineObject[] arguments) => {
 				var suitableOverloads = info.Where (p => p.GetParameters ().Length == arguments.Length);
 

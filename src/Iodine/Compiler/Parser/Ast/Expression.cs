@@ -33,7 +33,10 @@ namespace Iodine.Compiler.Ast
 {
 	public class Expression : AstNode
 	{
-		public readonly AstNode Child;
+		public AstNode Child {
+			private set;
+			get;
+		}
 
 		public Expression (SourceLocation location, AstNode child)
 			: base (location)
@@ -48,6 +51,17 @@ namespace Iodine.Compiler.Ast
 		public override void VisitChildren (IodineAstVisitor visitor)
 		{
 			Child.Visit (visitor);
+		}
+
+		public override bool Reduce (out AstNode val)
+		{
+			AstNode item = null;
+			val = this;
+			if (Child.Reduce (out item)) {
+				Child = item;
+				return true;
+			}
+			return false;
 		}
 	}
 }

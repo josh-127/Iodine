@@ -34,7 +34,6 @@ namespace Iodine.Compiler.Ast
 	public class DoStatement : AstNode
 	{
 		public readonly AstNode Condition;
-
 		public readonly AstNode Body;
 
 		public DoStatement (SourceLocation location, AstNode condition, AstNode body)

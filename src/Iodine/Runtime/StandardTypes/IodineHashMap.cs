@@ -33,6 +33,7 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+	// TODO: Rewrite this, this is a *mess*
 	public class IodineHashMap : IodineObject
 	{
 		public static readonly IodineTypeDefinition TypeDefinition = new MapTypeDef ();
@@ -80,12 +81,12 @@ namespace Iodine.Runtime
 		{
 			values = new Dictionary<int, IodineObject> ();
 			keys = new Dictionary<int, IodineObject> ();
-			SetAttribute ("contains", new InternalMethodCallback (contains, this));
-			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
-			SetAttribute ("clear", new InternalMethodCallback (clear, this));
-			SetAttribute ("set", new InternalMethodCallback (set, this));
-			SetAttribute ("get", new InternalMethodCallback (get, this));
-			SetAttribute ("remove", new InternalMethodCallback (remove, this));
+			SetAttribute ("contains", new BuiltinMethodCallback (contains, this));
+			SetAttribute ("getSize", new BuiltinMethodCallback (getSize, this));
+			SetAttribute ("clear", new BuiltinMethodCallback (clear, this));
+			SetAttribute ("set", new BuiltinMethodCallback (set, this));
+			SetAttribute ("get", new BuiltinMethodCallback (get, this));
+			SetAttribute ("remove", new BuiltinMethodCallback (remove, this));
 		}
 
 		public override IodineObject Len (VirtualMachine vm)
@@ -132,6 +133,11 @@ namespace Iodine.Runtime
 				}
 			}
 			return accum;
+		}
+
+		public override IodineObject GetIterator (VirtualMachine vm)
+		{
+			return this;
 		}
 
 		public override IodineObject IterGetCurrent (VirtualMachine vm)

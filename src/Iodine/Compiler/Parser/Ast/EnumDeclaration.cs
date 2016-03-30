@@ -41,8 +41,8 @@ namespace Iodine.Compiler.Ast
 		public EnumDeclaration (SourceLocation location, string name)
 			: base (location)
 		{
-			this.Name = name;
-			this.Items = new Dictionary<string, int> ();
+			Name = name;
+			Items = new Dictionary<string, int> ();
 		}
 
 		public override void Visit (IodineAstVisitor visitor)

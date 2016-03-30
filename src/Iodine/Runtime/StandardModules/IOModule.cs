@@ -45,15 +45,19 @@ namespace Iodine.Runtime
 				: base (DirectoryTypeDef)
 			{
 				SetAttribute ("separator", new IodineString (Path.DirectorySeparatorChar.ToString ()));
-				SetAttribute ("getFiles", new InternalMethodCallback (listFiles, this));
-				SetAttribute ("getDirectories", new InternalMethodCallback (listDirectories, this));
-				SetAttribute ("remove", new InternalMethodCallback (remove, this));
-				SetAttribute ("removeTree", new InternalMethodCallback (removeTree, this));
-				SetAttribute ("exists", new InternalMethodCallback (exists, this));
-				SetAttribute ("create", new InternalMethodCallback (create, this));
-				SetAttribute ("copy", new InternalMethodCallback (copy, this));
+				SetAttribute ("getFiles", new BuiltinMethodCallback (listFiles, this));
+				SetAttribute ("getDirectories", new BuiltinMethodCallback (listDirectories, this));
+				SetAttribute ("remove", new BuiltinMethodCallback (remove, this));
+				SetAttribute ("removeTree", new BuiltinMethodCallback (removeTree, this));
+				SetAttribute ("exists", new BuiltinMethodCallback (exists, this));
+				SetAttribute ("create", new BuiltinMethodCallback (create, this));
+				SetAttribute ("copy", new BuiltinMethodCallback (copy, this));
 			}
 
+			/**
+			 * Iodine Function: Directory.getFiles (dir)
+			 * Description: Returns a list of all files in dir
+			 */
 			private IodineObject listFiles (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
@@ -80,6 +84,10 @@ namespace Iodine.Runtime
 				return ret;
 			}
 
+			/**
+			 * Iodine Function: Directory.getDirectories (dir)
+			 * Description: Returns a list of all directories in dir
+			 */
 			private IodineObject listDirectories (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
@@ -94,7 +102,8 @@ namespace Iodine.Runtime
 
 				if (!Directory.Exists (args [0].ToString ())) {
 					vm.RaiseException (new IodineIOException ("Directory '" + args [0].ToString () +
-					"' does not exist!"));
+						"' does not exist!")
+					);
 					return null;
 				}
 
@@ -106,6 +115,10 @@ namespace Iodine.Runtime
 				return ret;
 			}
 
+			/**
+			 * Iodine Function: Directory.remove (dir)
+			 * Description: Removes a directory
+			 */
 			private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
@@ -129,6 +142,10 @@ namespace Iodine.Runtime
 				return null;
 			}
 
+			/**
+			 * Iodine Function: Directory.removeTree (dir)
+			 * Description: Removes a directory and all associated sub directories
+			 */
 			private IodineObject removeTree (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
@@ -152,6 +169,10 @@ namespace Iodine.Runtime
 				return null;
 			}
 
+			/**
+			 * Iodine Function: Directory.exists (dir)
+			 * Description: Returns true if dir exists
+			 */
 			private IodineObject exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
@@ -167,6 +188,10 @@ namespace Iodine.Runtime
 				return IodineBool.Create (Directory.Exists (args [0].ToString ()));
 			}
 
+			/**
+			 * Iodine Function: Directory.create (dir)
+			 * Description: Creates directory dir
+			 */
 			private IodineObject create (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
 				if (args.Length <= 0) {
@@ -268,12 +293,12 @@ namespace Iodine.Runtime
 			public IodineFile ()
 				: base (FileTypeDef)
 			{
-				SetAttribute ("join", new InternalMethodCallback (join, this));
-				SetAttribute ("remove", new InternalMethodCallback (remove, this));
-				SetAttribute ("exists", new InternalMethodCallback (exists, this));
-				SetAttribute ("getNameWithoutExt", new InternalMethodCallback (getNameWithoutExt, this));
-				SetAttribute ("getName", new InternalMethodCallback (getName, this));
-				SetAttribute ("copy", new InternalMethodCallback (copy, this));
+				SetAttribute ("join", new BuiltinMethodCallback (join, this));
+				SetAttribute ("remove", new BuiltinMethodCallback (remove, this));
+				SetAttribute ("exists", new BuiltinMethodCallback (exists, this));
+				SetAttribute ("getNameWithoutExt", new BuiltinMethodCallback (getNameWithoutExt, this));
+				SetAttribute ("getName", new BuiltinMethodCallback (getName, this));
+				SetAttribute ("copy", new BuiltinMethodCallback (copy, this));
 			}
 
 			private IodineObject join (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -376,10 +401,185 @@ namespace Iodine.Runtime
 		{
 			SetAttribute ("Directory", new IodineDirectory ());
 			SetAttribute ("File", new IodineFile ());
-			SetAttribute ("getCreationTime", new InternalMethodCallback (getModifiedTime, this));
-			SetAttribute ("getModifiedTime", new InternalMethodCallback (getCreationTime, this));
+			SetAttribute ("exists", new BuiltinMethodCallback (exists, this));
+			SetAttribute ("isDir", new BuiltinMethodCallback (isDir, this));
+			SetAttribute ("isFile", new BuiltinMethodCallback (isFile, this));
+			SetAttribute ("mkdir", new BuiltinMethodCallback (mkdir, this));
+			SetAttribute ("rmdir", new BuiltinMethodCallback (rmdir, this));
+			SetAttribute ("rmtree", new BuiltinMethodCallback (rmtree, this));
+			SetAttribute ("getCreationTime", new BuiltinMethodCallback (getModifiedTime, this));
+			SetAttribute ("getModifiedTime", new BuiltinMethodCallback (getCreationTime, this));
 		}
 
+		/**
+		 * Iodine Function: exists (path)
+		 * Description: Returns true if path is a valid file on the disk
+		 */
+		private IodineObject exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineString path = args [0] as IodineString;
+
+			if (path == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			return IodineBool.Create (Directory.Exists (path.Value) || File.Exists (path.Value));
+		}
+
+		/**
+		 * Iodine Function: isDir (path)
+		 * Description: Returns true if path is a valid directory
+		 */
+		private IodineObject isDir (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineString path = args [0] as IodineString;
+
+			if (path == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			return IodineBool.Create (Directory.Exists (path.Value));
+		}
+
+		/**
+		 * Iodine Function: isFile (path)
+		 * Description: Returns true if path is a valid file
+		 */
+		private IodineObject isFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineString path = args [0] as IodineString;
+
+			if (path == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			return IodineBool.Create (File.Exists (path.Value));
+		}
+
+		/**
+		 * Iodine Function: mkdir (dir)
+		 * Description: Creates directory dir
+		 */
+		private IodineObject mkdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			if (!(args [0] is IodineString)) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+			Directory.CreateDirectory (args [0].ToString ());
+			return null;
+		}
+
+		/**
+		 * Iodine Function: rmdir (dir)
+		 * Description: Removes an empty directory
+		 */
+		private IodineObject rmdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineString path = args [0] as IodineString;
+
+			if (path == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			if (!Directory.Exists (path.Value)) {
+				vm.RaiseException (new IodineIOException ("Directory '" + args [0].ToString () +
+					"' does not exist!"
+				));
+				return null;
+			}
+
+			Directory.Delete (path.Value);
+
+			return null;
+		}
+
+		/**
+		 * Iodine Function: rmtree (dir)
+		 * Description: Removes an directory, deleting all subfiles
+		 */
+		private IodineObject rmtree (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineString path = args [0] as IodineString;
+
+			if (path == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			if (!Directory.Exists (path.Value)) {
+				vm.RaiseException (new IodineIOException ("Directory '" + args [0].ToString () +
+					"' does not exist!"
+				));
+				return null;
+			}
+
+			RemoveRecursive (path.Value);
+
+			return null;
+		}
+
+		private static bool RemoveRecursive (string target)
+		{
+			DirectoryInfo dir = new DirectoryInfo (target);
+			DirectoryInfo[] dirs = dir.GetDirectories ();
+
+			if (!dir.Exists) {
+				return false;
+			}
+
+			FileInfo[] files = dir.GetFiles ();
+			foreach (FileInfo file in files) {
+				string temppath = Path.Combine (target, file.Name);
+				File.Delete (temppath);
+			}
+
+			foreach (DirectoryInfo subdir in dirs) {
+				string temppath = Path.Combine (target, subdir.Name);
+				RemoveRecursive (temppath);
+			}
+			Directory.Delete (target);
+			return true;
+		}
+
+		/**
+		 * Iodine Function: getModifiedTime (dir)
+		 * Description: Removes an directory, deleting all subfiles
+		 */
 		private IodineObject getModifiedTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {

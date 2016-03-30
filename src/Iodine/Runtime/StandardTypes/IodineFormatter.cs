@@ -74,7 +74,7 @@ namespace Iodine.Runtime
 							return null;
 						}
 
-						accum.Append (formatObj (args [index], specifier));
+						accum.Append (FormatObj (args [index], specifier));
 
 					}
 				} else {
@@ -84,7 +84,7 @@ namespace Iodine.Runtime
 			return accum.ToString ();
 		}
 
-		private string formatObj (IodineObject obj, string specifier)
+		private string FormatObj (IodineObject obj, string specifier)
 		{
 			if (specifier.Length == 0) {
 				return obj.ToString ();

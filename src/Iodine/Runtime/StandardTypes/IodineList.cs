@@ -35,6 +35,7 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+	// TODO: Rewrite this
 	public class IodineList : IodineObject
 	{
 		public static readonly IodineTypeDefinition TypeDefinition = new ListTypeDef ();
@@ -50,7 +51,8 @@ namespace Iodine.Runtime
 			{
 				IodineList list = new IodineList (new IodineObject[0]);
 				if (args.Length > 0) {
-					foreach (IodineObject collection in args) {
+					foreach (IodineObject arg in args) {
+						IodineObject collection = arg.GetIterator (vm);
 						collection.IterReset (vm);
 						while (collection.IterMoveNext (vm)) {
 							IodineObject o = collection.IterGetCurrent (vm);
@@ -69,25 +71,41 @@ namespace Iodine.Runtime
 		public IodineList (List<IodineObject> list)
 			: base (TypeDefinition)
 		{
-			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
-			SetAttribute ("add", new InternalMethodCallback (add, this));
-			SetAttribute ("addRange", new InternalMethodCallback (addRange, this));
-			SetAttribute ("remove", new InternalMethodCallback (remove, this));
-			SetAttribute ("removeAt", new InternalMethodCallback (removeAt, this));
-			SetAttribute ("contains", new InternalMethodCallback (contains, this));
-			SetAttribute ("splice", new InternalMethodCallback (splice, this));
-			SetAttribute ("clear", new InternalMethodCallback (clear, this));
+			SetAttribute ("add", new BuiltinMethodCallback (Add, this));
+			SetAttribute ("addRange", new BuiltinMethodCallback (AddRange, this));
+			SetAttribute ("remove", new BuiltinMethodCallback (Remove, this));
+			SetAttribute ("removeAt", new BuiltinMethodCallback (RemoveAt, this));
+			SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
+			SetAttribute ("splice", new BuiltinMethodCallback (Splice, this));
+			SetAttribute ("clear", new BuiltinMethodCallback (Clear, this));
 
-			SetAttribute ("__iterReset__", new InternalMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+			SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+				return GetIterator (vm);
+			}, this));
+
+			SetAttribute ("__iterReset__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
 				IterReset (vm);
 				return IodineNull.Instance;
 			}, this));
-			SetAttribute ("__iterGetCurrent__", new InternalMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+
+			SetAttribute ("__iterGetCurrent__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
 				return IterGetCurrent (vm);
 			}, this));
-			SetAttribute ("__iterMoveNext__", new InternalMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+
+			SetAttribute ("__iterMoveNext__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
 				return IodineBool.Create (IterMoveNext (vm));
 			}, this));
+
+
+			SetAttribute ("__setIndex__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+				SetIndex (vm, args [0], args [1]);
+				return IodineNull.Instance;
+			}, this));
+
+			SetAttribute ("__getIndex__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+				return GetIndex (vm, args [0]);
+			}, this));
+
 			Objects = list;
 		}
 
@@ -147,7 +165,12 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineTypeException ("List"));
 				return null;
 			}
-			return IodineBool.Create (compare (this, listVal));
+			return IodineBool.Create (Compare (this, listVal));
+		}
+
+		public override IodineObject GetIterator (VirtualMachine vm)
+		{
+			return this;
 		}
 
 		public override IodineObject IterGetCurrent (VirtualMachine vm)
@@ -179,7 +202,7 @@ namespace Iodine.Runtime
 			Objects.Add (obj);
 		}
 
-		private bool compare (IodineList list1, IodineList list2)
+		private bool Compare (IodineList list1, IodineList list2)
 		{
 			if (list1.Objects.Count != list2.Objects.Count)
 				return false;
@@ -190,12 +213,11 @@ namespace Iodine.Runtime
 			return true;
 		}
 
-		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-		{
-			return new IodineInteger (((IodineList)self).Objects.Count);
-		}
-
-		private IodineObject add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		/**
+		 * Iodine Method: List.add (self, *items)
+		 * Description: Appends each item to the list
+		 */
+		private IodineObject Add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			if (arguments.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -208,13 +230,17 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject addRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		/**
+		 * Iodine Method: List.addRange (self, item)
+		 * Description: Iterates through item, appending each item to the list
+		 */
+		private IodineObject AddRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			if (arguments.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-			IodineObject collection = arguments [0];
+			IodineObject collection = arguments [0].GetIterator (vm);
 			collection.IterReset (vm);
 			while (collection.IterMoveNext (vm)) {
 				IodineObject o = collection.IterGetCurrent (vm);
@@ -223,7 +249,11 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		/**
+		 * Iodine Method: List.remove (self, item)
+		 * Description: Removes item from the list
+		 */
+		private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			if (arguments.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -237,7 +267,11 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject removeAt (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		/**
+		 * Iodine Method: List.removeAt (self, index)
+		 * Description: Removes the item at index
+		 */
+		private IodineObject RemoveAt (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			if (arguments.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -251,7 +285,11 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private IodineObject contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		/**
+		 * Iodine Method: List.contains (self, value)
+		 * Description: Appends each item to the list
+		 */
+		private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			if (arguments.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -269,7 +307,11 @@ namespace Iodine.Runtime
 			return IodineBool.Create (found);
 		}
 
-		private IodineObject splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		/**
+		 * Iodine Method: List.splice (self, start, [end])
+		 * Description: Returns a sublist starting at start, and optionally ending at end
+		 */
+		private IodineObject Splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			if (arguments.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -313,7 +355,11 @@ namespace Iodine.Runtime
 			return retList;
 		}
 
-		private IodineObject clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		/**
+		 * Iodine Method: List.clear (self)
+		 * Description: Clears all items in this list
+		 */
+		private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
 		{
 			Objects.Clear ();
 			return null;

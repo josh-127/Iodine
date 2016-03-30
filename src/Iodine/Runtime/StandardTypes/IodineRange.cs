@@ -48,6 +48,11 @@ namespace Iodine.Runtime
 			this.min = min;
 		}
 
+		public override IodineObject GetIterator (VirtualMachine vm)
+		{
+			return this;
+		}
+
 		public override IodineObject IterGetCurrent (VirtualMachine vm)
 		{
 			return new IodineInteger (iterIndex - 1);

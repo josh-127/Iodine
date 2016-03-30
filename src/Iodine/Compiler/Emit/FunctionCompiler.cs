@@ -374,6 +374,7 @@ namespace Iodine.Compiler
 			breakLabels.Push (breakLabel);
 			continueLabels.Push (foreachLabel);
 			foreachStmt.Iterator.Visit (this);
+			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.GetIter);
 			int tmp = methodBuilder.CreateTemporary (); 
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.Dup);
 			methodBuilder.EmitInstruction (foreachStmt.Iterator.Location, Opcode.StoreLocal, tmp);

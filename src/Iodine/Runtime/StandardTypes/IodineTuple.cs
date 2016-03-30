@@ -62,7 +62,6 @@ namespace Iodine.Runtime
 			: base (TypeDefinition)
 		{
 			Objects = items;
-			SetAttribute ("getSize", new InternalMethodCallback (getSize, this));
 		}
 
 		public override IodineObject Len (VirtualMachine vm)
@@ -77,6 +76,11 @@ namespace Iodine.Runtime
 				return Objects [(int)index.Value];
 			vm.RaiseException (new IodineIndexException ());
 			return null;
+		}
+
+		public override IodineObject GetIterator (VirtualMachine vm)
+		{
+			return this;
 		}
 
 		public override IodineObject IterGetCurrent (VirtualMachine vm)
@@ -101,11 +105,6 @@ namespace Iodine.Runtime
 		{
 			string repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
 			return new IodineString (String.Format ("({0})", repr));
-		}
-
-		private IodineObject getSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-		{
-			return new IodineInteger (Objects.Length);
 		}
 
 		public override int GetHashCode ()

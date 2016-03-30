@@ -92,20 +92,20 @@ namespace Iodine.Modules.Extras
 				: base (SocketTypeDef)
 			{
 				Socket = sock;
-				SetAttribute ("connect", new InternalMethodCallback (connect, this));
-				SetAttribute ("connectSsl", new InternalMethodCallback (connectSsl, this));
-				SetAttribute ("send", new InternalMethodCallback (send, this));
-				SetAttribute ("bind", new InternalMethodCallback (bind, this));
-				SetAttribute ("accept", new InternalMethodCallback (accept, this));
-				SetAttribute ("acceptSsl", new InternalMethodCallback (acceptSsl, this));
-				SetAttribute ("listen", new InternalMethodCallback (listen, this));
-				SetAttribute ("receive", new InternalMethodCallback (receive, this));
-				SetAttribute ("receiveRaw", new InternalMethodCallback (receiveRaw, this));
-				SetAttribute ("getBytesAvailable", new InternalMethodCallback (getBytesAvailable, this));
-				SetAttribute ("getStream", new InternalMethodCallback (getStream, this));
-				SetAttribute ("close", new InternalMethodCallback (close, this));
-				SetAttribute ("setHost", new InternalMethodCallback (setHost, this));
-				SetAttribute ("isConnected", new InternalMethodCallback (connected, this));
+				SetAttribute ("connect", new BuiltinMethodCallback (connect, this));
+				SetAttribute ("connectSsl", new BuiltinMethodCallback (connectSsl, this));
+				SetAttribute ("send", new BuiltinMethodCallback (send, this));
+				SetAttribute ("bind", new BuiltinMethodCallback (bind, this));
+				SetAttribute ("accept", new BuiltinMethodCallback (accept, this));
+				SetAttribute ("acceptSsl", new BuiltinMethodCallback (acceptSsl, this));
+				SetAttribute ("listen", new BuiltinMethodCallback (listen, this));
+				SetAttribute ("receive", new BuiltinMethodCallback (receive, this));
+				SetAttribute ("receiveRaw", new BuiltinMethodCallback (receiveRaw, this));
+				SetAttribute ("getBytesAvailable", new BuiltinMethodCallback (getBytesAvailable, this));
+				SetAttribute ("getStream", new BuiltinMethodCallback (getStream, this));
+				SetAttribute ("close", new BuiltinMethodCallback (close, this));
+				SetAttribute ("setHost", new BuiltinMethodCallback (setHost, this));
+				SetAttribute ("isConnected", new BuiltinMethodCallback (connected, this));
 				host = string.Empty;
 			}
 
@@ -357,7 +357,7 @@ namespace Iodine.Modules.Extras
 			SetAttribute ("PROTO_IPV4", new IodineProtocolType (ProtocolType.IPv4));
 			SetAttribute ("PROTO_IPV6", new IodineProtocolType (ProtocolType.IPv6));
 			SetAttribute ("PROTO_UDP", new IodineProtocolType (ProtocolType.Udp));
-			SetAttribute ("socket", new InternalMethodCallback (socket, this));
+			SetAttribute ("socket", new BuiltinMethodCallback (socket, this));
 		}
 
 		private IodineObject socket (VirtualMachine vm, IodineObject self, IodineObject[] args)
