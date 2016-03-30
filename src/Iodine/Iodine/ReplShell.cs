@@ -63,6 +63,8 @@ namespace Iodine
 					Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));
 					ex.PrintStack ();
 					Console.Error.WriteLine ();
+				} catch (ModuleNotFoundException ex) {
+					Console.Error.WriteLine (ex.ToString ());
 				} catch (SyntaxException syntaxException) {
 					DisplayErrors (syntaxException.ErrorLog);
 				} catch (Exception ex) {
