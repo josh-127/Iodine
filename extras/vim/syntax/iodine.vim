@@ -11,7 +11,7 @@ set shiftwidth=4
 set expandtab
 
 syn match iodineComment "#.*$"
-syn region iodineComment start='/*' end='*/'
+syn region iodineComment start="/\*" end="\*/"
 syn match iodineEscape	contained +\\["\\'0abfnrtvx]+
 
 syn match iodineNumber '\d\+'  
