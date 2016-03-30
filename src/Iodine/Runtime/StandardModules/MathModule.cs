@@ -41,21 +41,25 @@ namespace Iodine.Runtime
 		{
 			SetAttribute ("PI", new IodineFloat (Math.PI));
 			SetAttribute ("E", new IodineFloat (Math.E));
-			SetAttribute ("pow", new BuiltinMethodCallback (pow, this));
-			SetAttribute ("sin", new BuiltinMethodCallback (sin, this));
-			SetAttribute ("cos", new BuiltinMethodCallback (cos, this));
-			SetAttribute ("tan", new BuiltinMethodCallback (tan, this));
-			SetAttribute ("asin", new BuiltinMethodCallback (asin, this));
-			SetAttribute ("acos", new BuiltinMethodCallback (acos, this));
-			SetAttribute ("atan", new BuiltinMethodCallback (atan, this));
-			SetAttribute ("abs", new BuiltinMethodCallback (abs, this));
-			SetAttribute ("sqrt", new BuiltinMethodCallback (sqrt, this));
-			SetAttribute ("floor", new BuiltinMethodCallback (floor, this));
-			SetAttribute ("ceiling", new BuiltinMethodCallback (ceiling, this));
-			SetAttribute ("log", new BuiltinMethodCallback (log, this));
+			SetAttribute ("pow", new BuiltinMethodCallback (Pow, this));
+			SetAttribute ("sin", new BuiltinMethodCallback (Sin, this));
+			SetAttribute ("cos", new BuiltinMethodCallback (Cos, this));
+			SetAttribute ("tan", new BuiltinMethodCallback (Tan, this));
+			SetAttribute ("asin", new BuiltinMethodCallback (ASin, this));
+			SetAttribute ("acos", new BuiltinMethodCallback (ACos, this));
+			SetAttribute ("atan", new BuiltinMethodCallback (ATan, this));
+			SetAttribute ("abs", new BuiltinMethodCallback (Abs, this));
+			SetAttribute ("sqrt", new BuiltinMethodCallback (Sqrt, this));
+			SetAttribute ("floor", new BuiltinMethodCallback (Floor, this));
+			SetAttribute ("ceiling", new BuiltinMethodCallback (Ceiling, this));
+			SetAttribute ("log", new BuiltinMethodCallback (Log, this));
 		}
 
-		private IodineObject pow (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		/**
+		 * Iodine Function: pow (val, power)
+		 * Description: raises val to power
+		 */
+		private IodineObject Pow (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 1) {
 				vm.RaiseException (new IodineArgumentException (2));
@@ -78,7 +82,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Pow (a1, a2));
 		}
 
-		private IodineObject sin (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Sin (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -95,7 +99,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Sin (input));
 		}
 
-		private IodineObject cos (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Cos (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -111,7 +115,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Cos (input));
 		}
 
-		private IodineObject tan (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Tan (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -128,7 +132,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Tan (input));
 		}
 
-		private IodineObject asin (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject ASin (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -145,7 +149,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Asin (input));
 		}
 
-		private IodineObject acos (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject ACos (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -162,7 +166,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Acos (input));
 		}
 
-		private IodineObject atan (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject ATan (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -179,7 +183,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Atan (input));
 		}
 
-		private IodineObject abs (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Abs (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -196,7 +200,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Abs (input));
 		}
 
-		private IodineObject sqrt (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Sqrt (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -213,7 +217,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Sqrt (input));
 		}
 
-		private IodineObject floor (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Floor (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -230,7 +234,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Floor (input));
 		}
 
-		private IodineObject ceiling (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Ceiling (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -247,7 +251,7 @@ namespace Iodine.Runtime
 			return new IodineFloat (Math.Ceiling (input));
 		}
 
-		private IodineObject log (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Log (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
