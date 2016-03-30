@@ -99,6 +99,23 @@ namespace Iodine.Compiler.Ast
 					}
 					break;
 				}
+			
+			case BinaryOperation.LeftShift:
+				{
+					if (Left is IntegerExpression && Right is IntegerExpression) {
+						val = new IntegerExpression (Right.Location, ((IntegerExpression)Left).Value << (int)((IntegerExpression)Right).Value);
+						return true;
+					}
+					break;
+				}
+			case BinaryOperation.RightShift:
+				{
+					if (Left is IntegerExpression && Right is IntegerExpression) {
+						val = new IntegerExpression (Right.Location, ((IntegerExpression)Left).Value >> (int)((IntegerExpression)Right).Value);
+						return true;
+					}
+					break;
+				}
 			}
 
 			AstNode newValue = null;

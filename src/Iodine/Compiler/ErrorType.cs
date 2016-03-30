@@ -48,7 +48,8 @@ namespace Iodine.Compiler
 		PipeIntoNonFunction = 0x0C,
 		ExpectedIdentifier = 0x0D,
 		IllegalInterfaceDeclaration = 0x0E,
-		UnexpectedEndOfFile = 0x0F
+		UnexpectedEndOfFile = 0x0F,
+		IntegerOverBounds = 0x10
 	}
 
 	public sealed class Error
@@ -70,7 +71,8 @@ namespace Iodine.Compiler
 			"Expression must be piped into function",
 			"Illegal identifier",
 			"Interface declaration may only contain function prototypes",
-			"Unexpected end of file"
+			"Unexpected end of file",
+			"Integer value exceeds the maximum bounds of a 64 bit integer"
 		};
 
 		public readonly string Text;

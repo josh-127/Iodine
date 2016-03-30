@@ -375,7 +375,6 @@ namespace Iodine.Compiler
 			case "|=":
 			case "??":
 			case "..":
-			case "|>":
 			case ".?":
 				ReadChar ();
 				return new Token (TokenClass.Operator, nextTwoChars, location);
@@ -395,7 +394,8 @@ namespace Iodine.Compiler
 				char ch = (char)ReadChar ();
 
 				if (ch == '*') {
-					if ((char)ReadChar () == '/') {
+					if ((char)PeekChar () == '/') {
+						ReadChar ();
 						return;
 					}
 				}
@@ -437,8 +437,10 @@ namespace Iodine.Compiler
 			if (source [position] == '\n') {
 				location = new SourceLocation (location.Line + 1, 0, this.file); 
 			} else {
-				location = new SourceLocation (location.Line, location.Column + 1,
-					this.file); 
+				location = new SourceLocation (location.Line,
+					location.Column + 1,
+					this.file
+				); 
 			}
 			return source [position++];
 		}

@@ -1082,8 +1082,12 @@ namespace Iodine.Compiler
 			case TokenClass.Identifier:
 				return new NameExpression (stream.Location, stream.ReadToken ().Value);
 			case TokenClass.IntLiteral:
-				return new IntegerExpression (stream.Location, long.Parse ( 
-					stream.ReadToken ().Value));
+				long lval;
+				if (!long.TryParse (stream.Current.Value, out lval)) {
+					stream.ErrorLog.Add (Errors.IntegerOverBounds, stream.Current.Location);
+				}
+				stream.ReadToken ();
+				return new IntegerExpression (stream.Location, lval);
 			case TokenClass.FloatLiteral:
 				return new FloatExpression (stream.Location, double.Parse (
 					stream.ReadToken ().Value));
