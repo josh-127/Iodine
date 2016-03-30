@@ -65,12 +65,12 @@ namespace Iodine.Runtime
 			double a1 = 0;
 			double a2 = 0;
 
-			if (ConvertToDouble (args [0], out a1)) {
+			if (!ConvertToDouble (args [0], out a1)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
 
-			if (ConvertToDouble (args [1], out a2)) {
+			if (!ConvertToDouble (args [1], out a2)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -87,7 +87,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -104,7 +104,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -120,7 +120,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -137,7 +137,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -154,7 +154,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -171,7 +171,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -188,7 +188,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -205,7 +205,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -222,7 +222,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}
@@ -239,7 +239,7 @@ namespace Iodine.Runtime
 
 			double input = 0;
 
-			if (ConvertToDouble (args [0], out input)) {
+			if (!ConvertToDouble (args [0], out input)) {
 				vm.RaiseException (new IodineTypeException ("Float"));
 				return null;
 			}

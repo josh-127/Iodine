@@ -67,6 +67,7 @@ namespace Iodine.Compiler
 		{
 			ModuleBuilder moduleBuilder = new ModuleBuilder (moduleName);
 			EmitContext context = new EmitContext (symbolTable);
+
 			context.SetCurrentModule (moduleBuilder);
 
 			ModuleCompiler compiler = new ModuleCompiler (context);
