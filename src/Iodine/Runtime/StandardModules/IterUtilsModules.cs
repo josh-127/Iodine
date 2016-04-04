@@ -76,31 +76,20 @@ namespace Iodine.Runtime
 		public IterUtilsModule ()
 			: base ("iterutils")
 		{
-			SetAttribute ("chain", new BuiltinMethodCallback (chain, this));
-			SetAttribute ("take", new BuiltinMethodCallback (take, this));
-			SetAttribute ("skip", new BuiltinMethodCallback (skip, this));
-			SetAttribute ("each", new BuiltinMethodCallback (each, this));
-			SetAttribute ("takeWhile", new BuiltinMethodCallback (takeWhile, this));
-			SetAttribute ("skipWhile", new BuiltinMethodCallback (skipWhile, this));
+			SetAttribute ("chain", new BuiltinMethodCallback (Chain, this));
+			SetAttribute ("take", new BuiltinMethodCallback (Take, this));
+			SetAttribute ("skip", new BuiltinMethodCallback (Skip, this));
+			SetAttribute ("each", new BuiltinMethodCallback (Each, this));
+			SetAttribute ("takeWhile", new BuiltinMethodCallback (TakeWhile, this));
+			SetAttribute ("skipWhile", new BuiltinMethodCallback (SkipWhile, this));
 		}
 
-		private IodineObject chain (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Chain (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			return new InternalGenerator (() => internalChain (vm, args));
+			return new InternalGenerator (() => InternalChain (vm, args));
 		}
 
-		private IodineObject take (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length < 2) {
-				vm.RaiseException (new IodineArgumentException (2));
-				return null;
-			}
-			IodineInteger count = args [1] as IodineInteger;
-
-			return new InternalGenerator (() => internalTake (vm, args [0].GetIterator (vm), count.Value));
-		}
-
-		private IodineObject skip (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Take (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
 				vm.RaiseException (new IodineArgumentException (2));
@@ -108,28 +97,39 @@ namespace Iodine.Runtime
 			}
 			IodineInteger count = args [1] as IodineInteger;
 
-			return new InternalGenerator (() => internalSkip (vm, args [0].GetIterator (vm), count.Value));
+			return new InternalGenerator (() => InternalTake (vm, args [0].GetIterator (vm), count.Value));
 		}
 
-		private IodineObject takeWhile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject Skip (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			return new InternalGenerator (() => internalTakeWhile (vm, args [0].GetIterator (vm), args [1]));
+			IodineInteger count = args [1] as IodineInteger;
+
+			return new InternalGenerator (() => InternalSkip (vm, args [0].GetIterator (vm), count.Value));
 		}
 
-		private IodineObject skipWhile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject TakeWhile (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
 				vm.RaiseException (new IodineArgumentException (2));
 				return null;
 			}
-			return new InternalGenerator (() => internalSkipWhile (vm, args [0], args [1]));
+			return new InternalGenerator (() => InternalTakeWhile (vm, args [0].GetIterator (vm), args [1]));
 		}
 
-		private IodineObject each (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject SkipWhile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 2) {
+				vm.RaiseException (new IodineArgumentException (2));
+				return null;
+			}
+			return new InternalGenerator (() => InternalSkipWhile (vm, args [0], args [1]));
+		}
+
+		private IodineObject Each (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length < 2) {
 				vm.RaiseException (new IodineArgumentException (2));
@@ -144,7 +144,7 @@ namespace Iodine.Runtime
 			return null;
 		}
 
-		private static IEnumerator internalChain (VirtualMachine vm, IodineObject[] args)
+		private static IEnumerator InternalChain (VirtualMachine vm, IodineObject[] args)
 		{
 			foreach (IodineObject obj in args) {
 				IodineObject iterator = obj.GetIterator (vm);
@@ -155,7 +155,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		private static IEnumerator internalTake (VirtualMachine vm, IodineObject iterator, long count)
+		private static IEnumerator InternalTake (VirtualMachine vm, IodineObject iterator, long count)
 		{
 			iterator.IterReset (vm);
 			long i = 0;
@@ -167,7 +167,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		private static IEnumerator internalSkip (VirtualMachine vm, IodineObject iterator, long count)
+		private static IEnumerator InternalSkip (VirtualMachine vm, IodineObject iterator, long count)
 		{
 			iterator.IterReset (vm);
 			long i = 0;
@@ -179,7 +179,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		private static IEnumerator internalTakeWhile (VirtualMachine vm, IodineObject iterator,
+		private static IEnumerator InternalTakeWhile (VirtualMachine vm, IodineObject iterator,
 			IodineObject func)
 		{
 			iterator.IterReset (vm);
@@ -192,7 +192,7 @@ namespace Iodine.Runtime
 			}
 		}
 
-		private static IEnumerator internalSkipWhile (VirtualMachine vm, IodineObject iterator,
+		private static IEnumerator InternalSkipWhile (VirtualMachine vm, IodineObject iterator,
 			IodineObject func)
 		{
 			iterator.IterReset (vm);

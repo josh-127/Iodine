@@ -82,7 +82,7 @@ namespace Iodine.Runtime
 				}
 
 				Value.OutputDataReceived += (object sender, DataReceivedEventArgs e) => {
-					stream.File.Write (System.Text.Encoding.ASCII.GetBytes (e.Data), 0, e.Data.Length);
+					stream.File.Write (Encoding.ASCII.GetBytes (e.Data), 0, e.Data.Length);
 				};
 
 				Value.Start ();
@@ -138,7 +138,6 @@ namespace Iodine.Runtime
 
 			SetAttribute ("getEnv", new BuiltinMethodCallback (GetEnv, this)); // DEPRECATED
 			SetAttribute ("setEnv", new BuiltinMethodCallback (SetEnv, this)); // DEPRECATED
-
 			SetAttribute ("putenv", new BuiltinMethodCallback (SetEnv, this));
 			SetAttribute ("getenv", new BuiltinMethodCallback (GetEnv, this));
 			SetAttribute ("getcwd", new BuiltinMethodCallback (GetCwd, this));
@@ -147,15 +146,16 @@ namespace Iodine.Runtime
 			SetAttribute ("call", new BuiltinMethodCallback (Call, this));
 			SetAttribute ("spawn", new BuiltinMethodCallback (Spawn, this));
 			SetAttribute ("popen", new BuiltinMethodCallback (Popen, this));
-			SetAttribute ("getProcList", new BuiltinMethodCallback (GetProcList, this));
+			SetAttribute ("procs", new BuiltinMethodCallback (GetProcList, this));
 			SetAttribute ("unlink", new BuiltinMethodCallback (Unlink, this));
 			SetAttribute ("mkdir", new BuiltinMethodCallback (Mkdir, this));
 			SetAttribute ("rmdir", new BuiltinMethodCallback (Rmdir, this));
 			SetAttribute ("rmtree", new BuiltinMethodCallback (Rmtree, this));
+			SetAttribute ("system", new BuiltinMethodCallback (System, this));
 		}
 
 		/**
-		 * Iodine Function: getProcList ()
+		 * Iodine Function: procs ()
 		 * Description: Returns a list of running processes
 		 */
 		private IodineObject GetProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -245,7 +245,7 @@ namespace Iodine.Runtime
 			Environment.SetEnvironmentVariable (str.Value, args [1].ToString (), EnvironmentVariableTarget.User);
 			return null;
 		}
-			
+
 		private IodineObject Spawn (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
@@ -388,14 +388,14 @@ namespace Iodine.Runtime
 			                 || Environment.OSVersion.Platform == PlatformID.Xbox;
 
 			if (isWindows) {
-				return Popen_Win32 (command.Value, read, write);
+				return new IodineSubprocess (Popen_Win32 (command.Value, read, write), read, write);
 			} else {
-				return Popen_Unix (command.Value, read, write);
+				return new IodineSubprocess (Popen_Unix (command.Value, read, write), read, write);
 			}
 
 		}
 
-		private IodineObject Popen_Win32 (string command, bool read, bool write)
+		private Process Popen_Win32 (string command, bool read, bool write)
 		{
 			string systemPath = Environment.GetFolderPath (Environment.SpecialFolder.System);
 			string args = String.Format ("/K \"{0}\"", command);
@@ -406,10 +406,10 @@ namespace Iodine.Runtime
 			info.RedirectStandardInput = write;
 			Process proc = new Process ();
 			proc.StartInfo = info;
-			return new IodineSubprocess (proc, read, write);
+			return proc;
 		}
 
-		private IodineObject Popen_Unix (string command, bool read, bool write)
+		private Process Popen_Unix (string command, bool read, bool write)
 		{
 			string args = String.Format ("-c \"{0}\"", command);
 			ProcessStartInfo info = new ProcessStartInfo ("/bin/sh", args);
@@ -419,13 +419,54 @@ namespace Iodine.Runtime
 			info.RedirectStandardInput = write;
 			Process proc = new Process ();
 			proc.StartInfo = info;
-			return new IodineSubprocess (proc, read, write);
+			return proc;
 		}
 
 		/**
-		* Iodine Function: unlink (file)
-		* Description: Removes file
-		*/
+		 * Iodine Function: system (command)
+		 * Description: Runs command with the system shell
+		 */
+		private IodineObject System (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length < 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+
+			IodineString command = args [0] as IodineString;
+
+			if (command == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			bool isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT
+				|| Environment.OSVersion.Platform == PlatformID.Win32S
+				|| Environment.OSVersion.Platform == PlatformID.Win32Windows
+				|| Environment.OSVersion.Platform == PlatformID.WinCE
+				|| Environment.OSVersion.Platform == PlatformID.Xbox;
+
+
+			Process proc = null;
+
+			if (isWindows) {
+				proc = Popen_Win32 (command.Value, false, false);
+			} else {
+				proc = Popen_Unix (command.Value, false, false);
+			}
+
+			proc.Start ();
+
+			proc.WaitForExit ();
+
+			return new IodineInteger (proc.ExitCode);
+		}
+
+		/**
+		 * Iodine Function: unlink (file)
+		 * Description: Removes file
+		 */
 		private IodineObject Unlink (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
@@ -450,9 +491,9 @@ namespace Iodine.Runtime
 		}
 
 		/**
-		* Iodine Function: mkdir (dir)
-		* Description: Creates directory dir
-		*/
+		 * Iodine Function: mkdir (dir)
+		 * Description: Creates directory dir
+		 */
 		private IodineObject Mkdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {

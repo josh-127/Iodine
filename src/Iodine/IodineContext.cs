@@ -115,6 +115,7 @@ namespace Iodine.Compiler
 				SearchPath.AddRange (iodinePath.Split (':'));
 			}
 			// Defaults
+			WarningFilter = WarningType.DeprecationWarning | WarningType.SyntaxWarning;
 			ShouldOptimize = true;
 			AllowBuiltins = true;
 

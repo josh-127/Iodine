@@ -54,6 +54,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Numerics" />
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Runtime\Instruction.cs" />
@@ -222,6 +223,7 @@
     <Compile Include="Runtime\BuiltInModules.cs" />
     <Compile Include="Runtime\StandardModules\BuiltinsModule.cs" />
     <Compile Include="Warning.cs" />
+    <Compile Include="Runtime\StandardModules\FsutilsModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

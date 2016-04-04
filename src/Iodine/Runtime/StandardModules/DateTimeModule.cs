@@ -45,6 +45,7 @@ namespace Iodine.Runtime
 				: base (TimeStampTypeDef)
 			{
 				Value = val;
+				long unixEsposh = (long)(val.Subtract (new DateTime(1970, 1, 1))).TotalSeconds;
 				SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
 				SetAttribute ("second", new IodineInteger (val.Second));
 				SetAttribute ("minute", new IodineInteger (val.Minute));
@@ -52,6 +53,7 @@ namespace Iodine.Runtime
 				SetAttribute ("day", new IodineInteger (val.Day));
 				SetAttribute ("month", new IodineInteger (val.Month));
 				SetAttribute ("year", new IodineInteger (val.Year));
+				SetAttribute ("unixTime", new IodineInteger (unixEsposh));
 			}
 
 			public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
@@ -113,10 +115,10 @@ namespace Iodine.Runtime
 		public DateTimeModule ()
 			: base ("datetime")
 		{
-			SetAttribute ("now", new BuiltinMethodCallback (now, this));
+			SetAttribute ("now", new BuiltinMethodCallback (Now, this));
 		}
 
-		private static IodineObject now (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private static IodineObject Now (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			return new IodineTimeStamp (DateTime.Now);
 		}
