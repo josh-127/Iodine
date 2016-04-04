@@ -15,7 +15,7 @@ echo "Using prefix $prefix"
 mkdir -p $prefix/iodine
 mkdir -p $prefix/iodine/bin
 cp ./bin/iodine.exe $prefix/iodine/bin/iodine.exe
-cp ./bin/iodine.dll $prefix/iodine/bin/iodine.dll
+cp ./bin/LibIodine.dll $prefix/iodine/bin/LibIodine.dll
 cp -r ./modules $prefix/iodine/bin
 cp -r ./bin/extensions $prefix/iodine/bin
 cat ./iodine_run.sh > /usr/bin/iodine
