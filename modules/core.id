@@ -15,6 +15,9 @@
 # really shouldn't be used anymore
 
 use * from reflection
+use warnings;
+
+warnings.warn (warnings.DEPRECATION_WARNING, "Use of core module is deprecated");
 
 ###
 ### printf, printr, sprintf, sprintf_t
@@ -228,7 +231,7 @@ func repr (obj) {
 # lst     : list
 # returns : string
 func reprList (lst) {
-    return format ("[{}]", lambda () => {
+    return format ("[{}]", lambda () {
         buf = ""
         i = 0
         while (i < len (lst)) {
@@ -245,7 +248,7 @@ func reprList (lst) {
 # tpl     : tuple
 # returns : string
 func reprTuple (tpl) {
-    return format ("({})", lambda () => {
+    return format ("({})", lambda () {
         buf = ""
         i = 0
         while (i < len (tpl)) {
@@ -262,7 +265,7 @@ func reprTuple (tpl) {
 # dict    : hashmap
 # returns : string
 func reprHashMap (dict) {
-    return format ("{{{}}}", lambda () => {
+    return format ("{{{}}}", lambda () {
         buf = ""
         i = 0
         foreach (key in dict) {

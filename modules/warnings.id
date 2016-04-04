@@ -6,6 +6,9 @@ enum WarningType {
     DeprecationWarning = 4
 }
 
+USER_WARNING = 1;
+SYNTAX_WARNING = 2;
+DEPRECATION_WARNING = 4
 
 mask = property (
     lambda () {
