@@ -60,6 +60,7 @@ namespace Iodine.Runtime
 			 */
 			private IodineObject listFiles (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -90,6 +91,7 @@ namespace Iodine.Runtime
 			 */
 			private IodineObject listDirectories (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -121,6 +123,7 @@ namespace Iodine.Runtime
 			 */
 			private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -148,6 +151,7 @@ namespace Iodine.Runtime
 			 */
 			private IodineObject removeTree (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -175,6 +179,7 @@ namespace Iodine.Runtime
 			 */
 			private IodineObject exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -194,6 +199,7 @@ namespace Iodine.Runtime
 			 */
 			private IodineObject create (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -209,6 +215,7 @@ namespace Iodine.Runtime
 
 			private IodineObject copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 1) {
 					vm.RaiseException (new IodineArgumentException (2));
 					return null;
@@ -303,12 +310,14 @@ namespace Iodine.Runtime
 
 			private IodineObject join (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				string[] paths = args.Select (p => p.ToString ()).ToArray ();
 				return new IodineString (Path.Combine (paths));
 			}
 
 			private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -332,6 +341,7 @@ namespace Iodine.Runtime
 
 			private IodineObject exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -347,6 +357,7 @@ namespace Iodine.Runtime
 
 			private IodineObject getNameWithoutExt (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -361,6 +372,7 @@ namespace Iodine.Runtime
 
 			private IodineObject getName (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -375,6 +387,7 @@ namespace Iodine.Runtime
 
 			private IodineObject copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
 			{
+				vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 				if (args.Length <= 0) {
 					vm.RaiseException (new IodineArgumentException (1));
 					return null;
@@ -417,6 +430,7 @@ namespace Iodine.Runtime
 		 */
 		private IodineObject exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
@@ -438,6 +452,7 @@ namespace Iodine.Runtime
 		 */
 		private IodineObject isDir (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
@@ -459,6 +474,7 @@ namespace Iodine.Runtime
 		 */
 		private IodineObject isFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
@@ -480,6 +496,7 @@ namespace Iodine.Runtime
 		 */
 		private IodineObject mkdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
@@ -499,6 +516,7 @@ namespace Iodine.Runtime
 		 */
 		private IodineObject rmdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
@@ -529,6 +547,7 @@ namespace Iodine.Runtime
 		 */
 		private IodineObject rmtree (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
+			vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
