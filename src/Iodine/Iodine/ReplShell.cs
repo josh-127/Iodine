@@ -43,9 +43,8 @@ namespace Iodine
 		{
 		}
 
-		public void Run ()
-		{
-			var version = Assembly.GetEntryAssembly ().GetName ().Version;
+		public void Run () {
+			var version = typeof(IodineContext).Assembly.GetName ().Version;
 			Console.WriteLine ("Iodine v{0}-alpha", version.ToString (3));
 			Console.WriteLine ("Enter expressions to have them be evaluated");
 

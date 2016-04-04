@@ -127,20 +127,22 @@ namespace Iodine.Runtime
 			string fullPath = Path.GetFullPath (name);
 
 			if (args.Length == 1) {
+				// use <module>
 				if (VirtualMachine.ModuleCache.ContainsKey (fullPath)) {
 					IodineModule module = VirtualMachine.ModuleCache [fullPath];
 					vm.SetGlobal (Path.GetFileNameWithoutExtension (fullPath), module);
 				} else {
 					IodineModule module = vm.LoadModule (name);
-					vm.SetGlobal (Path.GetFileNameWithoutExtension (
-						fullPath), module
-					);
+					vm.SetGlobal (Path.GetFileNameWithoutExtension (fullPath), module);
+
 					VirtualMachine.ModuleCache [fullPath] = module;
+
 					if (module.Initializer != null) {
 						module.Initializer.Invoke (vm, new IodineObject[] { });
 					}
 				}
 			} else {
+				// use <types> from <module>
 				IodineTuple names = args [1] as IodineTuple;
 				if (names == null) {
 					vm.RaiseException (new IodineTypeCastException ("Tuple"));

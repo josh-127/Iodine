@@ -62,7 +62,6 @@
     <Compile Include="Runtime\IodineObject.cs" />
     <Compile Include="Runtime\VirtualMachine.cs" />
     <Compile Include="Runtime\IodineTypeDefinition.cs" />
-    <Compile Include="Runtime\BuiltInModules.cs" />
     <Compile Include="Runtime\IodineExceptionHandler.cs" />
     <Compile Include="Compiler\Lexer\Token.cs" />
     <Compile Include="Compiler\Lexer\TokenStream.cs" />
@@ -86,7 +85,6 @@
     <Compile Include="Runtime\Debug\DebugServer.cs" />
     <Compile Include="Runtime\Debug\DebugSession.cs" />
     <Compile Include="Compiler\SourceUnit.cs" />
-    <Compile Include="Compiler\IodineContext.cs" />
     <Compile Include="Compiler\Parser\AstNode.cs" />
     <Compile Include="Compiler\Parser\BinaryOperation.cs" />
     <Compile Include="Compiler\Parser\Parser.cs" />
@@ -188,7 +186,6 @@
     <Compile Include="Runtime\StandardModules\SysModule.cs" />
     <Compile Include="Runtime\StandardModules\MathModule.cs" />
     <Compile Include="Runtime\StandardModules\StructModule.cs" />
-    <Compile Include="Runtime\StandardModules\BuiltinsModule.cs" />
     <Compile Include="Runtime\StandardModules\IterUtilsModules.cs" />
     <Compile Include="Runtime\StandardModules\ReflectionModule.cs" />
     <Compile Include="Runtime\StandardTypes\IodineInteger.cs" />
@@ -222,6 +219,10 @@
     <Compile Include="Compiler\Parser\AstWalker.cs" />
     <Compile Include="Runtime\ModuleNotFoundException.cs" />
     <Compile Include="Runtime\RuntimeException.cs" />
+    <Compile Include="IodineContext.cs" />
+    <Compile Include="Runtime\BuiltInModules.cs" />
+    <Compile Include="Runtime\StandardModules\BuiltinsModule.cs" />
+    <Compile Include="Warning.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

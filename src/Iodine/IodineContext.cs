@@ -55,6 +55,7 @@ namespace Iodine.Compiler
 
 		// Globals
 		public readonly Dictionary<string, IodineObject> Globals = new Dictionary<string, IodineObject> ();
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> can use the 
 		/// built in Iodine standard library.
@@ -73,6 +74,16 @@ namespace Iodine.Compiler
 		public bool ShouldOptimize {
 			set;
 			get;
+		}
+
+
+		/// <summary>
+		/// Gets or sets the warning filter.
+		/// </summary>
+		/// <value>The warning filter.</value>
+		public WarningType WarningFilter {
+			get;
+			set;
 		}
 
 		private Dictionary<string, IodineModule> moduleCache = new Dictionary<string, IodineModule> ();
@@ -122,6 +133,20 @@ namespace Iodine.Compiler
 				}
 			}
 
+		}
+
+		/// <summary>
+		/// Displays a warning 
+		/// </summary>
+		/// <param name="type">Type.</param>
+		/// <param name="message">Message.</param>
+		public void Warn (WarningType type, string message)
+		{
+			WarningType filter = type & WarningFilter;
+
+			if (filter != WarningType.None) {
+				Console.Error.WriteLine ("*** WARN: {0}", message);
+			}
 		}
 
 		/// <summary>

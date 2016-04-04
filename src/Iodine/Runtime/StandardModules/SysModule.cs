@@ -47,6 +47,9 @@ namespace Iodine.Runtime
 			// TODO: Make path accessible
 			//SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
 			SetAttribute ("exit", new BuiltinMethodCallback (Exit, this));
+			SetAttribute ("_warn", new BuiltinMethodCallback (Warn, this));
+			SetAttribute ("_getWarnMask", new BuiltinMethodCallback (GetWarnMask, this));
+			SetAttribute ("_setWarnMask", new BuiltinMethodCallback (SetWarnMask, this));
 			SetAttribute ("path", new InternalIodineProperty (GetPath, null));
 			SetAttribute ("VERSION_MAJOR", new IodineInteger (major));
 			SetAttribute ("VERSION_MINOR", new IodineInteger (minor));
@@ -78,6 +81,68 @@ namespace Iodine.Runtime
 			}
 
 			Environment.Exit ((int)exitCode.Value);
+			return null;
+		}
+
+		/**
+		 * Iodine Function: _warn (type, msg)
+		 * Description: Internal low level function for issuing warnings
+		 * See modules/warnings.id
+		 */
+		private IodineObject Warn (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length <= 1) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineInteger warnType = args [0] as IodineInteger;
+			IodineString warnMsg = args [1] as IodineString;
+
+			if (warnType == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+
+			if (warnMsg == null) {
+				vm.RaiseException (new IodineTypeException ("Str"));
+				return null;
+			}
+
+			vm.Context.Warn ((WarningType)warnType.Value, warnMsg.ToString ());
+			return null;
+		}
+
+		/**
+		 * Iodine Function: _getWarnMask ()
+		 * Description: Internal low level function for obtaining the current warning mask
+		 * See modules/warnings.id
+		 */
+		private IodineObject GetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			return new IodineInteger ((long)vm.Context.WarningFilter);
+		}
+
+		/**
+		 * Iodine Function: _setWarnMask (val)
+		 * Description: Internal low level function for settings the current warning mask
+		 * See modules/warnings.id
+		 */
+		private IodineObject SetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineInteger value = args [0] as IodineInteger;
+
+			if (value == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+
+			vm.Context.WarningFilter = (WarningType)value.Value;
 			return null;
 		}
 	}
