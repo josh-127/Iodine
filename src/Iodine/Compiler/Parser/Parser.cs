@@ -59,9 +59,7 @@ namespace Iodine.Compiler
 				}
 
 				AstNode irrelevent = null;
-
 				while (root.Reduce (out irrelevent));
-
 				return root;
 			} catch (Exception) {
 				return new CompilationUnit (tokenStream.Location);

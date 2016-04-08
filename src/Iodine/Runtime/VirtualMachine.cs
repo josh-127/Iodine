@@ -101,6 +101,10 @@ namespace Iodine.Runtime
 			};
 		}
 
+		/// <summary>
+		/// Returns a string representing the current stack tracee
+		/// </summary>
+		/// <returns>The stack trace.</returns>
 		public string GetStackTrace ()
 		{
 			StringBuilder accum = new StringBuilder ();
@@ -123,6 +127,9 @@ namespace Iodine.Runtime
 			return accum.ToString ();
 		}
 
+		/// <summary>
+		/// Resumes execution
+		/// </summary>
 		public void ContinueExecution ()
 		{
 			pauseVirtualMachine.Set ();

@@ -59,8 +59,12 @@ namespace Iodine.Compiler
 		public override bool Reduce (out AstNode val)
 		{
 			bool success = false;
+			val = this;
+
 			AstNode child = null;
+
 			List<AstNode> newChildren = new List<AstNode> ();
+
 			foreach (AstNode node in children) {
 				if (node.Reduce (out child)) {
 					newChildren.Add (child);
@@ -73,7 +77,6 @@ namespace Iodine.Compiler
 			if (success) {
 				children = newChildren;
 			}
-			val = this;
 			return success;
 		}
 	}

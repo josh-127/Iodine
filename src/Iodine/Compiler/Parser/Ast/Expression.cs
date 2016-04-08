@@ -55,12 +55,7 @@ namespace Iodine.Compiler.Ast
 
 		public override bool Reduce (out AstNode val)
 		{
-			AstNode item = null;
 			val = this;
-			if (Child.Reduce (out item)) {
-				Child = item;
-				return true;
-			}
 			return false;
 		}
 	}
