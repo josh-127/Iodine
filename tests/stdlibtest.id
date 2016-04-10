@@ -1,0 +1,8 @@
+use describe, expect from espresso;
+
+describe ('Iodine Core', lambda (test) {
+    test.describe ("", lambda () {
+        `
+    });
+});
+

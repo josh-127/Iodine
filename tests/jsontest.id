@@ -7,7 +7,7 @@ describe ("json module", lambda (test) {
             file = JsonFile ();
             file._initialize ("{}[]:,");
             tokens = file._tokenize ();
-            expect (len (tokens).to.equal (6);
+            expect (len (tokens)).to.equal (6);
         });
         test.it ("'{}' should produce BEGIN_OBJECT and END_OBJECT tokens", lambda () {
             file = JsonFile ();
