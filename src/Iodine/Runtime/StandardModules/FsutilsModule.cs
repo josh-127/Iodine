@@ -43,8 +43,8 @@ namespace Iodine.Runtime
 			SetAttribute ("copy", new BuiltinMethodCallback (Copy, this));
 			SetAttribute ("copytree", new BuiltinMethodCallback (Exists, this));
 			SetAttribute ("exists", new BuiltinMethodCallback (Exists, this));
-			SetAttribute ("isdir", new BuiltinMethodCallback (Isdir, this));
-			SetAttribute ("isfile", new BuiltinMethodCallback (Isfile, this));;
+			SetAttribute ("isDir", new BuiltinMethodCallback (IsDir, this));
+			SetAttribute ("isFile", new BuiltinMethodCallback (IsFile, this));;
 			SetAttribute ("getCreationTime", new BuiltinMethodCallback (GetModifiedTime, this));
 			SetAttribute ("getModifiedTime", new BuiltinMethodCallback (GetCreationTime, this));
 		}
@@ -127,7 +127,7 @@ namespace Iodine.Runtime
 		 * Iodine Function: isDir (path)
 		 * Description: Returns true if path is a valid directory
 		 */
-		private IodineObject Isdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject IsDir (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));
@@ -148,7 +148,7 @@ namespace Iodine.Runtime
 		 * Iodine Function: isFile (path)
 		 * Description: Returns true if path is a valid file
 		 */
-		private IodineObject Isfile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		private IodineObject IsFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
 			if (args.Length <= 0) {
 				vm.RaiseException (new IodineArgumentException (1));

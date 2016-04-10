@@ -146,7 +146,7 @@ namespace Iodine.Compiler
 			WarningType filter = type & WarningFilter;
 
 			if (filter != WarningType.None) {
-				Console.Error.WriteLine ("*** WARN: {0}", message);
+				Console.Error.WriteLine ("*** WARN {0}: {1}", type.ToString (), message);
 			}
 		}
 
