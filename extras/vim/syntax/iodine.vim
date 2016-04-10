@@ -22,18 +22,20 @@ syn match iodineNumber '[-+]\d\+\.\d*'
 
 syn region iodineString start='"' end='"' contains=iodineEscape
 syn region iodineString start="'" end="'" contains=iodineEscape
-syn keyword iodineKeyword if else for func class while do break lambda self use return true false null foreach from in as is isnot try except raise with super interface enum yield given when default match case var
-
+syn keyword iodineKeyword use from if else for while do break self return foreach in as is isnot try except raise with super yield given when default match case var
+syn keyword iodineConstants true false null
 syn keyword iodineFunctions print println input map filter len map reduce range repr sum typeof typecast open zip
-syn keyword iodineTypes Bool Float HashMap Int List Object Str Tuple
+syn keyword iodineTypes func class interface enum lambda Bool Float HashMap Int List Object Str Tuple
 syn region iodineBlock start="{" end="}" fold transparent contains=ALL
 
 
 let b:current_syntax = "iodine"
 
 hi def link iodineComment     Comment
+hi def link iodinePreproc     Preproc
 hi def link iodineKeyword     Statement
 hi def link iodineFunctions   Function
 hi def link iodineTypes       Type
 hi def link iodineString      Constant
 hi def link iodineNumber      Constant
+hi def link iodineConstants   Constant
