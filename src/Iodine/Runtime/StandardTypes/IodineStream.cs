@@ -57,6 +57,7 @@ namespace Iodine.Runtime
 			CanWrite = canWrite;
 			SetAttribute ("write", new BuiltinMethodCallback (Write, this));
 			SetAttribute ("read", new BuiltinMethodCallback (Read, this));
+			SetAttribute ("readln", new BuiltinMethodCallback (Readln, this));
 			SetAttribute ("close", new BuiltinMethodCallback (Close, this));
 			SetAttribute ("flush", new BuiltinMethodCallback (Flush, this));
 			SetAttribute ("readAllText", new BuiltinMethodCallback (ReadAll, this));
@@ -138,6 +139,24 @@ namespace Iodine.Runtime
 				byte[] buf = new byte[(int)intv.Value];
 				File.Read (buf, 0, buf.Length);
 				return new IodineString (Encoding.UTF8.GetString (buf));
+			} else {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			return new IodineString (ReadLine ());
+		}
+
+		private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] argss)
+		{
+			if (Closed) { 
+				vm.RaiseException ("Stream has been closed!");
+				return null;
+			}
+
+			if (!CanRead) {
+				vm.RaiseException ("Stream is not open for reading!");
+				return null;
 			}
 
 			return new IodineString (ReadLine ());
