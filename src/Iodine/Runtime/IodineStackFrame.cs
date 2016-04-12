@@ -43,6 +43,7 @@ namespace Iodine.Runtime
 		public readonly int LocalCount;
 		public readonly IodineMethod Method;
 		public readonly IodineObject Self;
+		public readonly IodineObject[] Arguments;
 		public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
 		public readonly LinkedStack<IodineExceptionHandler> ExceptionHandlers = new LinkedStack<IodineExceptionHandler> ();
 
@@ -64,18 +65,27 @@ namespace Iodine.Runtime
 		private IodineObject[] locals;
 		private IodineObject[] parentLocals = null;
 
-		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount)
+		public StackFrame (IodineMethod method,
+			IodineObject[] arguments,
+			StackFrame parent,
+			IodineObject self,
+			int localCount)
 		{
 			LocalCount = localCount;
 			locals = new IodineObject[localCount];
 			parentLocals = locals;
 			Method = method;
 			Self = self;
+			Arguments = arguments;
 			Parent = parent;
 		}
 
-		public StackFrame (IodineMethod method, StackFrame parent, IodineObject self, int localCount,
-		                   IodineObject[] locals) : this (method, parent, self, localCount)
+		public StackFrame (IodineMethod method,
+			IodineObject[] arguments,
+			StackFrame parent,
+			IodineObject self,
+			int localCount,
+			IodineObject[] locals) : this (method, arguments, parent, self, localCount)
 		{
 			parentLocals = locals;
 			this.locals = new IodineObject[localCount];
@@ -129,18 +139,7 @@ namespace Iodine.Runtime
 				locals = new IodineObject[localCount];
 				Array.Copy (oldLocals, locals, oldLocals.Length);
 			}
-			return new StackFrame (Method, top, Self, Math.Max (LocalCount, localCount), locals);
-		}
-	}
-
-	public class NativeStackFrame : StackFrame
-	{
-		public BuiltinMethodCallback NativeMethod { private set; get; }
-
-		public NativeStackFrame (BuiltinMethodCallback method, StackFrame parent)
-			: base (null, parent, null, 0)
-		{
-			this.NativeMethod = method;
+			return new StackFrame (Method, Arguments, top, Self, Math.Max (LocalCount, localCount), locals);
 		}
 	}
 }

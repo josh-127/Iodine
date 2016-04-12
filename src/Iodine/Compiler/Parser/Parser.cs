@@ -292,6 +292,7 @@ namespace Iodine.Compiler
 					return ret;
 				}
 			}
+
 			while (!stream.Match (TokenClass.CloseParan)) {
 				if (!hasKeywordArgs && stream.Accept (TokenClass.Operator, "*")) {
 					if (stream.Accept (TokenClass.Operator, "*")) {

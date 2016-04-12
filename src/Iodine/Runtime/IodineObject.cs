@@ -81,7 +81,7 @@ namespace Iodine.Runtime
 			if (value is IodineMethod) {
 				IodineMethod method = (IodineMethod)value;
 				if (method.InstanceMethod) {
-					Attributes [name] = new IodineInstanceMethodWrapper (this, method);
+					Attributes [name] = new IodineBoundMethod (this, method);
 				} else {
 					Attributes [name] = value;
 				}
@@ -89,9 +89,9 @@ namespace Iodine.Runtime
 				BuiltinMethodCallback callback = (BuiltinMethodCallback)value;
 				callback.Self = this;
 				Attributes [name] = value;
-			} else if (value is IodineInstanceMethodWrapper) {
-				IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)value;
-				Attributes [name] = new IodineInstanceMethodWrapper (this, wrapper.Method);
+			} else if (value is IodineBoundMethod) {
+				IodineBoundMethod wrapper = (IodineBoundMethod)value;
+				Attributes [name] = new IodineBoundMethod (this, wrapper.Method);
 			} else if (value is IodineProperty) {
 				IodineProperty property = (IodineProperty)value;
 				Attributes [name] = new IodineProperty (property.Getter, property.Setter, this); 

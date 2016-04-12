@@ -48,22 +48,22 @@ namespace Iodine.Runtime
 		}
 	}
 
-	public class IodineInstanceMethodWrapper : IodineObject
+	public class IodineBoundMethod : IodineObject
 	{
-		private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("InstanceMethod");
+		private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("BoundMethod");
 
 		public IodineMethod Method { private set; get; }
 
 		public IodineObject Self { private set; get; }
 
-		public IodineInstanceMethodWrapper (IodineObject self, IodineMethod method)
+		public IodineBoundMethod (IodineObject self, IodineMethod method)
 			: base (InstanceTypeDef)
 		{
 			Method = method;
 			Self = self;
 		}
 
-		public void Rewrap (IodineObject newSelf)
+		public void Bind (IodineObject newSelf)
 		{
 			Self = newSelf;
 		}
@@ -75,8 +75,10 @@ namespace Iodine.Runtime
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			if (Method.Generator)
-				return new IodineGenerator (vm.Top, this, arguments);
+			if (Method.Generator) {
+				IodineObject initialValue = vm.InvokeMethod (Method, vm.Top, Self, arguments);
+				return new IodineGenerator (vm.Top, this, arguments, initialValue);
+			}
 			return vm.InvokeMethod (Method, Self, arguments);
 		}
 	}
@@ -85,8 +87,6 @@ namespace Iodine.Runtime
 	public abstract class IodineMethod : IodineObject
 	{
 		private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
-
-		private IodineMethod parent = null;
 
 		public Instruction[] Body {
 			get;
@@ -140,7 +140,6 @@ namespace Iodine.Runtime
 		{
 		}
 
-
 		public override bool IsCallable ()
 		{
 			return true;
@@ -149,7 +148,9 @@ namespace Iodine.Runtime
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			if (Generator) {
-				return new IodineGenerator (vm.Top, this, arguments);
+				StackFrame frame = new StackFrame (this, vm.Top.Arguments, vm.Top, null, LocalCount);
+				IodineObject initialValue = vm.InvokeMethod (this, frame, null, arguments);
+				return new IodineGenerator (frame, this, arguments, initialValue);
 			}
 			return vm.InvokeMethod (this, null, arguments);
 		}

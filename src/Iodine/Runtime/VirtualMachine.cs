@@ -110,17 +110,12 @@ namespace Iodine.Runtime
 			StringBuilder accum = new StringBuilder ();
 			StackFrame top = Top;
 			while (top != null) {
-				if (top is NativeStackFrame) {
-					NativeStackFrame frame = top as NativeStackFrame;
-					accum.AppendFormat (" at {0} <internal method>\n",
-						frame.NativeMethod.Callback.Method.Name);
-				} else {
-					accum.AppendFormat (" at {0} (Module: {1}, Line: {2})\n",
-						top.Method.Name,
-						top.Module.Name,
-						top.Location.Line + 1
-					);
-				}
+				accum.AppendFormat (" at {0} (Module: {1}, Line: {2})\n",
+					top.Method.Name,
+					top.Module.Name,
+					top.Location.Line + 1
+				);
+
 				top = top.Parent;
 			}
 
@@ -151,7 +146,7 @@ namespace Iodine.Runtime
 				return null;
 			}
 
-			NewFrame (method, self, method.LocalCount);
+			NewFrame (method, arguments, self, method.LocalCount);
 
 			return Invoke (method, arguments);
 		}
@@ -212,6 +207,7 @@ namespace Iodine.Runtime
 				ExecuteInstruction ();
 				top.Location = currentLocation;
 			}
+				
 
 			IodineObject retVal = lastObject ?? IodineNull.Instance;
 
@@ -732,11 +728,11 @@ namespace Iodine.Runtime
 		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		private void NewFrame (IodineMethod method, IodineObject self, int localCount)
+		private void NewFrame (IodineMethod method, IodineObject[] args, IodineObject self, int localCount)
 		{
 			frameCount++;
 			stackSize++;
-			Top = new StackFrame (method, Top, self, localCount);
+			Top = new StackFrame (method, args, Top, self, localCount);
 			frames.Push (Top);
 		}
 

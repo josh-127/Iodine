@@ -35,25 +35,35 @@ namespace Iodine.Runtime
 	{
 		private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Generator");
 
+		private bool initialAccess = false;
 		private IodineMethod baseMethod;
 		private IodineObject self;
 		private IodineObject value;
 		private IodineObject[] arguments;
 		private StackFrame stackFrame;
 
-		public IodineGenerator (StackFrame parentFrame, IodineMethod baseMethod, IodineObject[] args)
+		public IodineGenerator (StackFrame frame,
+			IodineMethod baseMethod,
+			IodineObject[] args, 
+			IodineObject initialValue)
 			: base (TypeDefinition)
 		{
 			arguments = args;
+			value = initialValue;
+			stackFrame = frame;
 			this.baseMethod = baseMethod;
 		}
 
-		public IodineGenerator (StackFrame parentFrame, IodineInstanceMethodWrapper baseMethod,
-			IodineObject[] args)
+		public IodineGenerator (StackFrame frame,
+			IodineBoundMethod baseMethod,
+			IodineObject[] args,
+			IodineObject initialValue)
 			: base (TypeDefinition)
 		{
 			arguments = args;
 			self = baseMethod.Self;
+			value = initialValue;
+			stackFrame = frame;
 			this.baseMethod = baseMethod.Method;
 		}
 
@@ -67,8 +77,15 @@ namespace Iodine.Runtime
 			if (stackFrame.AbortExecution) {
 				return false;
 			}
-			value = vm.InvokeMethod (baseMethod, stackFrame, self, arguments);
-			return stackFrame.Yielded;
+
+			if (initialAccess) {
+				value = vm.InvokeMethod (baseMethod, stackFrame, self, arguments);
+
+				return stackFrame.Yielded;
+			} else {
+				initialAccess = true;
+				return true;
+			}
 		}
 
 		public override IodineObject IterGetCurrent (VirtualMachine vm)
@@ -79,7 +96,6 @@ namespace Iodine.Runtime
 
 		public override void IterReset (VirtualMachine vm)
 		{
-			stackFrame = new StackFrame (baseMethod, vm.Top, null, this.baseMethod.LocalCount);
 		}
 	}
 }

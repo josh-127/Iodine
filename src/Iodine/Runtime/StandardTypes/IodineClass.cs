@@ -101,9 +101,9 @@ namespace Iodine.Runtime
 			Dictionary<string, IodineObject> childAttributes = obj.Attributes;
 
 			foreach (KeyValuePair<string, IodineObject> kv in childAttributes) {
-				if (kv.Value is IodineInstanceMethodWrapper) {
-					IodineInstanceMethodWrapper wrapper = (IodineInstanceMethodWrapper)kv.Value;
-					wrapper.Rewrap (self);
+				if (kv.Value is IodineBoundMethod) {
+					IodineBoundMethod wrapper = (IodineBoundMethod)kv.Value;
+					wrapper.Bind (self);
 				}
 			}
 			self.SetAttribute ("__super__", obj);

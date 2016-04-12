@@ -51,8 +51,8 @@ namespace Iodine.Runtime
 		{
 			if (Setter is IodineMethod) {
 				return vm.InvokeMethod ((IodineMethod)Setter, self, new IodineObject[] { value });
-			} else if (Setter is IodineInstanceMethodWrapper) {
-				return vm.InvokeMethod (((IodineInstanceMethodWrapper)Setter).Method, self,
+			} else if (Setter is IodineBoundMethod) {
+				return vm.InvokeMethod (((IodineBoundMethod)Setter).Method, self,
 					new IodineObject[] { value });
 			}
 			return Setter.Invoke (vm, new IodineObject[] { value });
@@ -62,8 +62,8 @@ namespace Iodine.Runtime
 		{
 			if (Getter is IodineMethod) {
 				return vm.InvokeMethod ((IodineMethod)Getter, self, new IodineObject[0]);
-			} else if (Getter is IodineInstanceMethodWrapper) {
-				return vm.InvokeMethod (((IodineInstanceMethodWrapper)Getter).Method, self,
+			} else if (Getter is IodineBoundMethod) {
+				return vm.InvokeMethod (((IodineBoundMethod)Getter).Method, self,
 					new IodineObject[0]);
 			}
 			return Getter.Invoke (vm, new IodineObject[0]);
