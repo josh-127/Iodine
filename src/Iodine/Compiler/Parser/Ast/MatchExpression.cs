@@ -59,6 +59,12 @@ namespace Iodine.Compiler.Ast
 			Expression.Visit (visitor);
 			MatchCases.ForEach (p => p.Visit (visitor));
 		}
+
+		public override bool Reduce (out AstNode val)
+		{
+			val = this;
+			return false;
+		}
 	}
 }
 
