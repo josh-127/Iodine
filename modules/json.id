@@ -210,7 +210,7 @@ class JsonFile {
 
         eatWhitespace ();
         while (position < self.length) {
-            last = tokens.getSize ();
+            last = len (tokens);
             ch = peekChar ();
             given (ch) {
                 when "{" {
@@ -249,7 +249,7 @@ class JsonFile {
                 tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
             } else if (ch.isLetter ()) {
                 tokens.add (scanConstant ());           
-            } else if (tokens.getSize () == last) {
+            } else if (len (tokens) == last) {
                 raise InvalidJsonException ();
             }
             eatWhitespace ();
