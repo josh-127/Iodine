@@ -104,8 +104,9 @@ namespace Iodine.Compiler
 
 		public int CreateTemporary ()
 		{
-			if (parent != null)
+			if (parent != null) {
 				parent.CreateTemporary ();
+			}
 			return LocalCount++;
 		}
 
@@ -124,7 +125,8 @@ namespace Iodine.Compiler
 			foreach (int position in labelReferences.Keys) {
 				instructions [position] = new Instruction (instructions [position].Location,
 					instructions [position].OperationCode,
-					labelReferences [position]._Position);
+					labelReferences [position]._Position
+				);
 			}
 			Body = instructions.ToArray ();
 		}
