@@ -86,6 +86,11 @@ namespace Iodine.Runtime
 			}
 			return vm.InvokeMethod (Method, Self, arguments);
 		}
+
+		public override string ToString ()
+		{
+			return string.Format ("<Bound {0}>", Method.Name);
+		}
 	}
 
 	// TODO: Abtract bytecode implementation away from IodineMethod

@@ -143,8 +143,6 @@ namespace Iodine.Runtime
 				vm.RaiseException (new IodineArgumentException (1));
 				return null;
 			}
-
-			return new IodineString (ReadLine ());
 		}
 
 		private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] argss)
@@ -168,8 +166,9 @@ namespace Iodine.Runtime
 		 */
 		private IodineObject Tell (VirtualMachine vm, IodineObject self, IodineObject[] args)
 		{
-			if (this.Closed) { 
+			if (Closed) { 
 				vm.RaiseException ("Stream has been closed!");
+				return null;
 			}
 			return new IodineInteger (File.Position);
 		}
@@ -182,6 +181,7 @@ namespace Iodine.Runtime
 		{
 			if (this.Closed) { 
 				vm.RaiseException ("Stream has been closed!");
+				return null;
 			}
 			File.Close ();
 			return null;
@@ -195,6 +195,7 @@ namespace Iodine.Runtime
 		{
 			if (this.Closed) { 
 				vm.RaiseException ("Stream has been closed!");
+				return null;
 			}
 			File.Flush ();
 			return null;
@@ -209,6 +210,7 @@ namespace Iodine.Runtime
 		{
 			if (this.Closed) { 
 				vm.RaiseException ("Stream has been closed!");
+				return null;
 			}
 
 			StringBuilder builder = new StringBuilder ();
