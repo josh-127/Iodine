@@ -25,7 +25,7 @@ syn region iodineString start="'" end="'" contains=iodineEscape
 syn keyword iodineKeyword use from if else for while do break self return foreach in as is isnot try except raise with super yield given when default match case var
 syn keyword iodineConstants true false null
 syn keyword iodineFunctions print println input map filter len map reduce range repr sum typeof typecast open zip
-syn keyword iodineTypes func class interface enum lambda Bool Float HashMap Int List Object Str Tuple
+syn keyword iodineTypes func class contract trait enum lambda Bool Float HashMap Int List Object Str Tuple
 syn region iodineBlock start="{" end="}" fold transparent contains=ALL
 
 
