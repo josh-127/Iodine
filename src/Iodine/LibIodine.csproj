@@ -110,7 +110,6 @@
     <Compile Include="Compiler\Parser\Ast\IfStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\IndexerExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\IntegerExpression.cs" />
-    <Compile Include="Compiler\Parser\Ast\InterfaceDeclaration.cs" />
     <Compile Include="Compiler\Parser\Ast\KeywordArgumentList.cs" />
     <Compile Include="Compiler\Parser\Ast\LambdaExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\ListCompExpression.cs" />
@@ -160,15 +159,9 @@
     <Compile Include="Compiler\Parser\Ast\VariableDeclaration.cs" />
     <Compile Include="Compiler\Parser\CompilationUnit.cs" />
     <Compile Include="Compiler\Parser\Ast\StatementList.cs" />
-    <Compile Include="Compiler\SyntaxAnalysis\FunctionAnalyser.cs" />
-    <Compile Include="Compiler\SyntaxAnalysis\PatternAnalyser.cs" />
-    <Compile Include="Compiler\SyntaxAnalysis\RootAnalyser.cs" />
     <Compile Include="Compiler\SyntaxAnalysis\SemanticAnalyser.cs" />
-    <Compile Include="Compiler\Emit\FunctionCompiler.cs" />
     <Compile Include="Compiler\Emit\IBytecodeOptimization.cs" />
     <Compile Include="Compiler\Emit\IodineCompiler.cs" />
-    <Compile Include="Compiler\Emit\ModuleCompiler.cs" />
-    <Compile Include="Compiler\Emit\PatternCompiler.cs" />
     <Compile Include="Compiler\Emit\Optimizations\ControlFlowOptimization.cs" />
     <Compile Include="Compiler\Emit\Optimizations\InstructionOptimization.cs" />
     <Compile Include="Compiler\Emit\MethodBuilder.cs" />
@@ -210,7 +203,6 @@
     <Compile Include="Runtime\StandardTypes\IodineClosure.cs" />
     <Compile Include="Runtime\StandardTypes\IodineEnum.cs" />
     <Compile Include="Runtime\StandardTypes\IodineException.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineInterface.cs" />
     <Compile Include="Runtime\IodineBuiltinType.cs" />
     <Compile Include="Runtime\IodineBuiltinMethod.cs" />
     <Compile Include="Compiler\SyntaxAnalysis\UnaryOperation.cs" />
@@ -224,6 +216,12 @@
     <Compile Include="Runtime\StandardModules\BuiltinsModule.cs" />
     <Compile Include="Warning.cs" />
     <Compile Include="Runtime\StandardModules\FsutilsModule.cs" />
+    <Compile Include="Compiler\Emit\Compiler.cs" />
+    <Compile Include="Compiler\Parser\Ast\PatternExpression.cs" />
+    <Compile Include="Compiler\Parser\Ast\ContractDeclaration.cs" />
+    <Compile Include="Runtime\IodineContract.cs" />
+    <Compile Include="Runtime\IodineTrait.cs" />
+    <Compile Include="Compiler\Parser\Ast\TraitDeclaration.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -187,7 +187,7 @@ namespace Iodine.Compiler
 			useStmt.VisitChildren (this);
 		}
 
-		public override void Accept (InterfaceDeclaration interfaceDecl)
+		public override void Accept (ContractDeclaration interfaceDecl)
 		{
 			callback (interfaceDecl);
 			interfaceDecl.VisitChildren (this);

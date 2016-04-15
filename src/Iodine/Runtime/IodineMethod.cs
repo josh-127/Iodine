@@ -76,7 +76,7 @@ namespace Iodine.Runtime
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			if (Method.Generator) {
-				StackFrame frame = new StackFrame (Method, vm.Top.Arguments, vm.Top, Self, Method.LocalCount);
+				StackFrame frame = new StackFrame (Method, vm.Top.Arguments, vm.Top, Self);
 				IodineObject initialValue = vm.InvokeMethod (Method, frame, Self, arguments);
 
 				if (frame.Yielded) {
@@ -109,11 +109,6 @@ namespace Iodine.Runtime
 		}
 
 		public int ParameterCount {
-			get;
-			protected set;
-		}
-
-		public int LocalCount {
 			get;
 			protected set;
 		}
@@ -158,7 +153,7 @@ namespace Iodine.Runtime
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
 			if (Generator) {
-				StackFrame frame = new StackFrame (this, vm.Top.Arguments, vm.Top, null, LocalCount);
+				StackFrame frame = new StackFrame (this, vm.Top.Arguments, vm.Top, null);
 				IodineObject initialValue = vm.InvokeMethod (this, frame, null, arguments);
 
 				if (frame.Yielded) {

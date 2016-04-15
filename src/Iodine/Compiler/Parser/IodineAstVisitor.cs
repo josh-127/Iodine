@@ -134,7 +134,11 @@ namespace Iodine.Compiler
 		{
 		}
 
-		public virtual void Accept (InterfaceDeclaration interfaceDecl)
+		public virtual void Accept (ContractDeclaration interfaceDecl)
+		{
+		}
+
+		public virtual void Accept (TraitDeclaration traitDecl)
 		{
 		}
 
@@ -227,6 +231,10 @@ namespace Iodine.Compiler
 		}
 
 		public virtual void Accept (CaseExpression caseExpr)
+		{
+		}
+
+		public virtual void Accept (PatternExpression expression)
 		{
 		}
 

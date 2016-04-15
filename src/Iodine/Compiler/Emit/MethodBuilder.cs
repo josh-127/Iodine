@@ -35,7 +35,7 @@ namespace Iodine.Compiler
 	public class MethodBuilder : IodineMethod
 	{
 		private static int nextLabelID = 0;
-
+		private int nextTemporary = 2048;
 		private MethodBuilder parent;
 		private Dictionary<int, IodineLabel> labelReferences = new Dictionary<int, IodineLabel> ();
 		protected List<Instruction> instructions = new List<Instruction> ();
@@ -44,14 +44,12 @@ namespace Iodine.Compiler
 			string name,
 			bool isInstance,
 			int parameterCount,
-			int localCount,
 			bool isVariadic,
 			bool acceptsKwargs) : base ()
 		{
 			Name = name;
 			ParameterCount = parameterCount;
 			Module = module;
-			LocalCount = localCount;
 			InstanceMethod = isInstance;
 			Variadic = isVariadic;
 			AcceptsKeywordArgs = acceptsKwargs;
@@ -63,9 +61,8 @@ namespace Iodine.Compiler
 			string name,
 			bool isInstance,
 			int parameterCount,
-			int localCount,
 			bool isVariadic,
-			bool acceptsKwargs) : this (module, name, isInstance, parameterCount, localCount, isVariadic, acceptsKwargs)
+			bool acceptsKwargs) : this (module, name, isInstance, parameterCount, isVariadic, acceptsKwargs)
 		{
 			this.parent = parent;
 		}
@@ -107,7 +104,7 @@ namespace Iodine.Compiler
 			if (parent != null) {
 				parent.CreateTemporary ();
 			}
-			return LocalCount++;
+			return nextTemporary++;
 		}
 
 		public IodineLabel CreateLabel ()

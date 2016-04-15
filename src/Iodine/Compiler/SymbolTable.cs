@@ -37,204 +37,90 @@ namespace Iodine.Compiler
 	/// </summary>
 	public class SymbolTable
 	{
-		class LocalScope
+		class Scope 
 		{
-			public int NextLocal { set; get; }
+			private Dictionary<string, int> symbols = new Dictionary<string, int> ();
 
-			public LocalScope ParentScope { private set; get; }
-
-			public LocalScope (LocalScope parentScope)
+			public int GetSymbol (string name)
 			{
-				ParentScope = parentScope;
-				NextLocal = 0;
+				return symbols [name];
 			}
 
+			public bool FindSymbol (string name)
+			{
+				return symbols.ContainsKey (name);
+			}
+
+			public void AddSymbol (string name, int index)
+			{
+				symbols [name] = index;
+			}
 		}
 
-		private int nextGlobalIndex = 0;
 		private Scope globalScope = new Scope ();
-		private Scope lastScope = null;
-		private LocalScope currentLocalScope = null;
+		private Stack<Scope> scopes = new Stack<Scope> ();
+		private int nextIndex = 0;
 
-		public Scope CurrentScope { private set; get; }
+		public bool IsInGlobalScope {
+			get {
+				return scopes.Peek () == globalScope;
+			}
+		}
 
 		public SymbolTable ()
 		{
-			CurrentScope = globalScope;
+			scopes.Push (globalScope);
 		}
 
-		public Scope NextScope ()
+		public void EnterScope () 
 		{
-			if (CurrentScope == null)
-				CurrentScope = globalScope;
-			CurrentScope = CurrentScope.NextScope;
-			return CurrentScope;
+			scopes.Push (new Scope ());
 		}
 
-		/// <summary>
-		/// Leaves the scope.
-		/// </summary>
-		/// <returns>The scope.</returns>
-		public Scope LeaveScope ()
+		public void ExitScope () 
 		{
-			Scope old = CurrentScope;
-			CurrentScope = old.ParentScope;
-			CurrentScope.NextScope = old.NextScope;
-			return CurrentScope;
-		}
+			scopes.Pop ();
 
-		/// <summary>
-		/// Begins a new scope.
-		/// </summary>
-		/// <param name="isLocalScope">If set to <c>true</c> is local scope.</param>
-		public void BeginScope (bool isLocalScope = false)
-		{
-			if (isLocalScope) {
-				currentLocalScope = new LocalScope (currentLocalScope);
+			if (scopes.Count == 1) {
+				nextIndex = 0;
 			}
-			Scope newScope = new Scope (CurrentScope);
-			if (lastScope != null) {
-				lastScope.NextScope = newScope;
-			} else {
-				globalScope.NextScope = newScope;
-			}
-			CurrentScope.AddScope (newScope);
-			CurrentScope = newScope;
-			lastScope = newScope;
 		}
 
-		/// <summary>
-		/// Ends a scope.
-		/// </summary>
-		/// <param name="isLocalScope">If set to <c>true</c> is local scope.</param>
-		public void EndScope (bool isLocalScope = false)
+		public bool IsGlobal (string name)
 		{
-			if (isLocalScope) {
-				currentLocalScope = currentLocalScope.ParentScope;
+			foreach (Scope scope in scopes) {
+				if (scope.FindSymbol (name) && scope != globalScope) {
+					return false;
+				}
 			}
-
-			CurrentScope = CurrentScope.ParentScope;
+			return true;
 		}
 
-		/// <summary>
-		/// Adds a symbol.
-		/// </summary>
-		/// <returns>The symbol.</returns>
-		/// <param name="name">Symbol name.</param>
-		public int AddSymbol (string name)
+		public int GetSymbolIndex (string name)
 		{
-			if (this.CurrentScope.ParentScope != null) {
-				return CurrentScope.AddSymbol (SymbolType.Local, name, currentLocalScope.NextLocal++);
+			foreach (Scope scope in scopes) {
+				if (scope.FindSymbol (name)) {
+					return scope.GetSymbol (name);
+				}
 			}
-			return CurrentScope.AddSymbol (SymbolType.Global, name, nextGlobalIndex++);
+			return -1;
 		}
 
-		/// <summary>
-		/// Determines whether this scope has a definition for a specified symbol name.
-		/// </summary>
-		/// <returns><c>true</c> if this instance name is defined; otherwise, <c>false</c>.</returns>
-		/// <param name="name">Name.</param>
 		public bool IsSymbolDefined (string name)
 		{
-			Scope curr = CurrentScope;
-			while (curr != null) {
-				Symbol sym;
-				if (curr.GetSymbol (name, out sym)) {
-					return true;
-				}
-				curr = curr.ParentScope;
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Gets a symbol based on its name, returns null if the symbol is not defined
-		/// </summary>
-		/// <returns>A symbol.</returns>
-		/// <param name="name">The symbol name.</param>
-		public Symbol GetSymbol (string name)
-		{
-			Scope curr = CurrentScope;
-			while (curr != null) {
-				Symbol sym;
-				if (curr.GetSymbol (name, out sym)) {
-					return sym;
-				}
-				curr = curr.ParentScope;
-			}
-			return null;
-		}
-	}
-
-	/// <summary>
-	/// Scope.
-	/// </summary>
-	public class Scope
-	{
-		private List<Symbol> symbols = new List<Symbol> ();
-		private List<Scope> childScopes = new List<Scope> ();
-
-		public readonly Scope ParentScope;
-
-		public Scope NextScope { set; get; }
-
-		public IList<Scope> ChildScopes {
-			get {
-				return childScopes;
-			}
-		}
-
-		public int SymbolCount {
-			get {
-				int val = symbols.Count;
-				foreach (Scope scope in childScopes) {
-					val += scope.SymbolCount;
-				}
-				return val;
-			}
-		}
-
-		public Scope ()
-		{
-			ParentScope = null;
-		}
-
-		public Scope (Scope parent)
-		{
-			ParentScope = parent;
-		}
-
-		public int AddSymbol (SymbolType type, string name, int index)
-		{
-			symbols.Add (new Symbol (type, name, index));
-			return index;
-		}
-
-		public void AddScope (Scope scope)
-		{
-			childScopes.Add (scope);
-		}
-
-		public bool IsSymbolDefined (string name) 
-		{
-			foreach (Symbol sym in symbols) {
-				if (sym.Name == name) {
+			foreach (Scope scope in scopes) {
+				if (scope.FindSymbol (name)) {
 					return true;
 				}
 			}
 			return false;
 		}
 
-		public bool GetSymbol (string name, out Symbol symbol)
+		public int AddSymbol (string name)
 		{
-			foreach (Symbol sym in symbols) {
-				if (sym.Name == name) {
-					symbol = sym;
-					return true;
-				}
-			}
-			symbol = null;
-			return false;
+			scopes.Peek ().AddSymbol (name, nextIndex);
+			nextIndex++;
+			return nextIndex - 1;
 		}
 	}
 }

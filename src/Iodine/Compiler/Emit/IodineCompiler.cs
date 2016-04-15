@@ -66,11 +66,11 @@ namespace Iodine.Compiler
 		public IodineModule Compile (string moduleName)
 		{
 			ModuleBuilder moduleBuilder = new ModuleBuilder (moduleName);
-			EmitContext context = new EmitContext (symbolTable);
+			EmitContext context = new EmitContext (symbolTable, moduleBuilder, moduleBuilder.Initializer);
 
 			context.SetCurrentModule (moduleBuilder);
 
-			ModuleCompiler compiler = new ModuleCompiler (context);
+			Compiler compiler = new Compiler (context);
 
 			root.Visit (compiler);
 

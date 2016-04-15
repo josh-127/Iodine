@@ -158,12 +158,12 @@ namespace Iodine.Compiler
 		 *     ...
 		 * }
 		 */
-		private static AstNode ParseInterface (TokenStream stream)
+		private static AstNode ParseContract (TokenStream stream)
 		{
-			stream.Expect (TokenClass.Keyword, "interface");
+			stream.Expect (TokenClass.Keyword, "contract");
 			string name = stream.Expect (TokenClass.Identifier).Value;
 
-			InterfaceDeclaration contract = new InterfaceDeclaration (stream.Location, name);
+			ContractDeclaration contract = new ContractDeclaration (stream.Location, name);
 
 			stream.Expect (TokenClass.OpenBrace);
 
@@ -180,6 +180,35 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.CloseBrace);
 
 			return contract;
+		}
+
+		/*
+		 * trait <name> {
+		 *     ...
+		 * }
+		 */
+		private static AstNode ParseTrait (TokenStream stream)
+		{
+			stream.Expect (TokenClass.Keyword, "trait");
+			string name = stream.Expect (TokenClass.Identifier).Value;
+
+			TraitDeclaration trait = new TraitDeclaration (stream.Location, name);
+
+			stream.Expect (TokenClass.OpenBrace);
+
+			while (!stream.Match (TokenClass.CloseBrace)) {
+				if (stream.Match (TokenClass.Keyword, "func")) {
+					FunctionDeclaration func = ParseFunction (stream, true) as FunctionDeclaration;
+					trait.AddMember (func);
+				} else {
+					stream.ErrorLog.Add (Errors.IllegalInterfaceDeclaration, stream.Location);
+				}
+				while (stream.Accept (TokenClass.SemiColon));
+			}
+
+			stream.Expect (TokenClass.CloseBrace);
+
+			return trait;
 		}
 
 		private static string ParseClassName (TokenStream stream)
@@ -225,7 +254,8 @@ namespace Iodine.Compiler
 				nodes.AddStatement (new Expression (stream.Location, new BinaryExpression (stream.Location,
 					BinaryOperation.Assign,
 					new NameExpression (stream.Location, idecl.Name),
-					new CallExpression (stream.Location, expr, args))));
+					new CallExpression (stream.Location, expr, args)))
+				);
 				return nodes;
 			}
 			stream.Expect (TokenClass.Keyword, "func");
@@ -392,8 +422,10 @@ namespace Iodine.Compiler
 					return ParseClass (stream);
 				case "enum":
 					return ParseEnum (stream);
-				case "interface":
-					return ParseInterface (stream);
+				case "contract":
+					return ParseContract (stream);
+				case "trait":
+					return ParseTrait (stream);
 				case "func":
 					return ParseFunction (stream);
 				case "if":
@@ -550,10 +582,8 @@ namespace Iodine.Compiler
 			stream.Expect (TokenClass.Keyword, "when");
 			AstNode value = ParseExpression (stream);
 			AstNode body = ParseStatement (stream);
-			LambdaExpression lambda = new LambdaExpression (body.Location, false, false, false,
-				new System.Collections.Generic.List<string> ());
-			lambda.AddStatement (body);
-			return new WhenStatement (location, value, lambda);
+
+			return new WhenStatement (location, value, body);
 		}
 
 		/*
@@ -1168,8 +1198,11 @@ namespace Iodine.Compiler
 			AstNode expr = ParsePatternAnd (stream);
 			while (stream.Match (TokenClass.Operator, "|")) {
 				stream.Accept (TokenClass.Operator);
-				expr = new BinaryExpression (stream.Location, BinaryOperation.Or, expr,
-					ParsePatternAnd (stream));
+				expr = new PatternExpression (stream.Location,
+					BinaryOperation.Or,
+					expr,
+					ParsePatternAnd (stream)
+				);
 			}
 			return expr;
 		}
@@ -1179,8 +1212,11 @@ namespace Iodine.Compiler
 			AstNode expr = ParsePatternTerm (stream);
 			while (stream.Match (TokenClass.Operator, "&")) {
 				stream.Accept (TokenClass.Operator);
-				expr = new BinaryExpression (stream.Location, BinaryOperation.And, expr,
-					ParsePatternTerm (stream));
+				expr = new PatternExpression (stream.Location,
+					BinaryOperation.And,
+					expr,
+					ParsePatternTerm (stream)
+				);
 			}
 			return expr;
 		}

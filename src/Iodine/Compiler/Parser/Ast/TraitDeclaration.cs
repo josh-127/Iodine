@@ -30,43 +30,32 @@
 using System;
 using System.Collections.Generic;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler.Ast
 {
-	public class IodineInterface : IodineTypeDefinition
+	public class TraitDeclaration : AstNode
 	{
-		public IList<IodineMethod> RequiredMethods { private set; get; }
+		public readonly string Name;
+		public readonly List<AstNode> Members = new List<AstNode> ();
 
-		public IodineInterface (string name)
-			: base (name)
+		public TraitDeclaration (SourceLocation location, string name)
+			: base (location)
 		{
-			RequiredMethods = new List<IodineMethod> ();
+			Name = name;
 		}
 
-		public void AddMethod (IodineMethod method)
+		public void AddMember (AstNode member)
 		{
-			RequiredMethods.Add (method);
+			Members.Add (member);
 		}
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+		public override void Visit (IodineAstVisitor visitor)
 		{
-			vm.RaiseException (new IodineNotSupportedException ());
-			return null;
+			visitor.Accept (this);
 		}
 
-		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		public override void VisitChildren (IodineAstVisitor visitor)
 		{
-			foreach (IodineMethod method in RequiredMethods) {
-				if (!self.HasAttribute (method.Name)) {
-					vm.RaiseException (new IodineNotSupportedException ());
-					return;
-				}
-			}
-			self.Interfaces.Add (this);
-		}
-
-		public override string ToString ()
-		{
-			return string.Format ("<Interface {0}>", Name);
+			Members.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

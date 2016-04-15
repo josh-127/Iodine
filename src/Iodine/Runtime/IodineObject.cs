@@ -46,7 +46,7 @@ namespace Iodine.Runtime
 
 		public IodineObject Base { set; get; }
 
-		public readonly List<IodineInterface> Interfaces = new List<IodineInterface> ();
+		public readonly List<IodineContract> Interfaces = new List<IodineContract> ();
 
 		public IodineObject (IodineTypeDefinition typeDef)
 		{
@@ -562,7 +562,14 @@ namespace Iodine.Runtime
 
 		public bool InstanceOf (IodineTypeDefinition def)
 		{
-			foreach (IodineInterface contract in this.Interfaces) {
+			if (def is IodineTrait) {
+
+				IodineTrait trait = def as IodineTrait;
+
+				return trait.HasTrait (this);
+			}
+
+			foreach (IodineContract contract in this.Interfaces) {
 				if (contract == def) {
 					return true;
 				}

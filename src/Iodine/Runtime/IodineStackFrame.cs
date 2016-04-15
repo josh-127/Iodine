@@ -40,7 +40,6 @@ namespace Iodine.Runtime
 	/// </summary>
 	public class StackFrame
 	{
-		public readonly int LocalCount;
 		public readonly IodineMethod Method;
 		public readonly IodineObject Self;
 		public readonly IodineObject[] Arguments;
@@ -62,17 +61,15 @@ namespace Iodine.Runtime
 		}
 
 		private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();
-		private IodineObject[] locals;
-		private IodineObject[] parentLocals = null;
+		private Dictionary<int, IodineObject> locals;
+		private Dictionary<int, IodineObject> parentLocals = null;
 
 		public StackFrame (IodineMethod method,
 			IodineObject[] arguments,
 			StackFrame parent,
-			IodineObject self,
-			int localCount)
+			IodineObject self)
 		{
-			LocalCount = localCount;
-			locals = new IodineObject[localCount];
+			locals = new Dictionary<int, IodineObject> ();
 			parentLocals = locals;
 			Method = method;
 			Self = self;
@@ -84,13 +81,13 @@ namespace Iodine.Runtime
 			IodineObject[] arguments,
 			StackFrame parent,
 			IodineObject self,
-			int localCount,
-			IodineObject[] locals) : this (method, arguments, parent, self, localCount)
+			Dictionary<int, IodineObject> locals) : this (method, arguments, parent, self)
 		{
 			parentLocals = locals;
-			this.locals = new IodineObject[localCount];
-			for (int i = 0; i < localCount; i++) {
-				this.locals [i] = locals [i]; 
+			this.locals = new Dictionary<int, IodineObject> ();
+
+			foreach (int key in locals.Keys) {
+				this.locals.Add (key, locals [key]);
 			}
 		}
 
@@ -99,7 +96,7 @@ namespace Iodine.Runtime
 		#endif
 		internal void StoreLocal (int index, IodineObject obj)
 		{
-			if (parentLocals [index] != null) {
+			if (parentLocals.ContainsKey (index)) {
 				parentLocals [index] = obj;
 			}
 			locals [index] = obj;
@@ -132,14 +129,17 @@ namespace Iodine.Runtime
 		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		internal StackFrame Duplicate (StackFrame top, int localCount)
+		internal StackFrame Duplicate (StackFrame top)
 		{
-			if (localCount > LocalCount) {
-				IodineObject[] oldLocals = locals;
-				locals = new IodineObject[localCount];
-				Array.Copy (oldLocals, locals, oldLocals.Length);
+			Dictionary<int, IodineObject> oldLocals = locals;
+
+			locals = new Dictionary<int, IodineObject> ();
+
+			foreach (int key in oldLocals.Keys) {
+				locals [key] = oldLocals [key];
 			}
-			return new StackFrame (Method, Arguments, top, Self, Math.Max (LocalCount, localCount), locals);
+
+			return new StackFrame (Method, Arguments, top, Self, locals);
 		}
 	}
 }

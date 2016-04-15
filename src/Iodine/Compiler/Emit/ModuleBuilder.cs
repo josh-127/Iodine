@@ -41,7 +41,7 @@ namespace Iodine.Compiler
 		public ModuleBuilder (string name)
 			: base (name)
 		{
-			Initializer = new MethodBuilder (this, "__init__", false, 0, 9999, false, false);
+			Initializer = new MethodBuilder (this, "__init__", false, 0, false, false);
 			base.Initializer = Initializer;
 		}
 

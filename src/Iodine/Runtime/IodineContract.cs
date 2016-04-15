@@ -28,37 +28,45 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class IodineClosure : IodineObject
+	public class IodineContract : IodineTypeDefinition
 	{
-		public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Closure");
+		public IList<IodineMethod> RequiredMethods { private set; get; }
 
-		public readonly IodineMethod Target;
-		private StackFrame frame;
-
-		public IodineClosure (StackFrame frame, IodineMethod target)
-			: base (TypeDefinition)
+		public IodineContract (string name)
+			: base (name)
 		{
-			this.frame = frame;
-			Target = target;
+			RequiredMethods = new List<IodineMethod> ();
 		}
 
-		public override bool IsCallable ()
+		public void AddMethod (IodineMethod method)
 		{
-			return true;
+			RequiredMethods.Add (method);
 		}
 
 		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
 		{
-			return vm.InvokeMethod (Target, frame.Duplicate (vm.Top),
-				frame.Self, arguments);
+			vm.RaiseException (new IodineNotSupportedException ());
+			return null;
+		}
+
+		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+		{
+			foreach (IodineMethod method in RequiredMethods) {
+				if (!self.HasAttribute (method.Name)) {
+					vm.RaiseException (new IodineNotSupportedException ());
+					return;
+				}
+			}
+			self.Interfaces.Add (this);
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("<Anonymous Function>");
+			return string.Format ("<Interface {0}>", Name);
 		}
 	}
 }

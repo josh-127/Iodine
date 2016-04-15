@@ -27,59 +27,40 @@
 //   * DAMAGE.
 // /**
 using System;
-using System.Collections.Generic;
-using Iodine.Runtime;
 
-namespace Iodine.Compiler
+namespace Iodine.Compiler.Ast
 {
-	public class EmitContext
+	public class PatternExpression : AstNode
 	{
-		public SymbolTable SymbolTable {
+		public readonly BinaryOperation Operation;
+
+		public AstNode Left {
 			private set;
 			get;
 		}
 
-		public MethodBuilder CurrentMethod {
+		public AstNode Right {
 			private set;
 			get;
 		}
 
-		public ModuleBuilder CurrentModule {
-			private set;
-			get;
-		}
-
-		public bool ShouldOptimize {
-			set;
-			get;
-		}
-
-		public readonly Stack<IodineLabel> BreakLabels = new Stack<IodineLabel> (); 
-		public readonly Stack<IodineLabel> ContinueLabels = new Stack<IodineLabel> (); 
-		public readonly int PatternTemporary = 0;
-		public readonly bool IsPatternExpression = false;
-
-		public EmitContext (SymbolTable symbolTable,
-			ModuleBuilder module,
-			MethodBuilder method,
-			bool isPatternExpression = false,
-			int patternTempory = 0)
+		public PatternExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
+			: base (location)
 		{
-			SymbolTable = symbolTable;
-			CurrentMethod = method;
-			CurrentModule = module;
-			IsPatternExpression = isPatternExpression;
-			PatternTemporary = patternTempory;
+			Operation = op;
+			Left = left;
+			Right = right;
 		}
 
-		public void SetCurrentMethod (MethodBuilder method)
+		public override void Visit (IodineAstVisitor visitor)
 		{
-			CurrentMethod = method;
+			visitor.Accept (this);
 		}
 
-		public void SetCurrentModule (ModuleBuilder builder)
+		public override void VisitChildren (IodineAstVisitor visitor)
 		{
-			CurrentModule = builder;
+			Left.Visit (visitor);
+			Right.Visit (visitor);
 		}
 	}
 }

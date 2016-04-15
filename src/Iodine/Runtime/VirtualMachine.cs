@@ -146,7 +146,7 @@ namespace Iodine.Runtime
 				return null;
 			}
 
-			NewFrame (method, arguments, self, method.LocalCount);
+			NewFrame (method, arguments, self);
 
 			return Invoke (method, arguments);
 		}
@@ -728,11 +728,11 @@ namespace Iodine.Runtime
 		#if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		private void NewFrame (IodineMethod method, IodineObject[] args, IodineObject self, int localCount)
+		private void NewFrame (IodineMethod method, IodineObject[] args, IodineObject self)
 		{
 			frameCount++;
 			stackSize++;
-			Top = new StackFrame (method, args, Top, self, localCount);
+			Top = new StackFrame (method, args, Top, self);
 			frames.Push (Top);
 		}
 

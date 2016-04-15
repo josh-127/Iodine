@@ -30,32 +30,56 @@
 using System;
 using System.Collections.Generic;
 
-namespace Iodine.Compiler.Ast
+namespace Iodine.Runtime
 {
-	public class InterfaceDeclaration : AstNode
+	public class IodineTrait : IodineTypeDefinition
 	{
-		public readonly string Name;
-		public readonly List<AstNode> Members = new List<AstNode> ();
+		public IList<IodineMethod> RequiredMethods { private set; get; }
 
-		public InterfaceDeclaration (SourceLocation location, string name)
-			: base (location)
+		public IodineTrait (string name)
+			: base (name)
 		{
-			Name = name;
+			RequiredMethods = new List<IodineMethod> ();
 		}
 
-		public void AddMember (AstNode member)
+		public void AddMethod (IodineMethod method)
 		{
-			Members.Add (member);
+			RequiredMethods.Add (method);
 		}
 
-		public override void Visit (IodineAstVisitor visitor)
+		public bool HasTrait (IodineObject obj)
 		{
-			visitor.Accept (this);
+			foreach (IodineMethod method in RequiredMethods) {
+				if (obj.HasAttribute (method.Name)) {
+					IodineObject attr = obj.GetAttribute (method.Name);
+
+					IodineMethod objMethod = attr as IodineMethod;
+
+					if (objMethod == null) {
+						if (attr is IodineBoundMethod) {
+							objMethod = ((IodineBoundMethod)attr).Method;
+						} else {
+							return false;
+						}
+					}
+
+					bool match = method.AcceptsKeywordArgs == objMethod.AcceptsKeywordArgs
+						&& method.Variadic == objMethod.Variadic
+						&& method.ParameterCount == objMethod.ParameterCount
+						&& method.InstanceMethod == objMethod.InstanceMethod;
+
+					if (!match) {
+						return false;
+					}
+				}
+			}
+
+			return true;
 		}
 
-		public override void VisitChildren (IodineAstVisitor visitor)
+		public override string ToString ()
 		{
-			Members.ForEach (p => p.Visit (visitor));
+			return string.Format ("<Trait {0}>", Name);
 		}
 	}
 }

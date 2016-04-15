@@ -28,37 +28,34 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler.Ast
 {
-	public class IodineClosure : IodineObject
+	public class ContractDeclaration : AstNode
 	{
-		public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Closure");
+		public readonly string Name;
+		public readonly List<AstNode> Members = new List<AstNode> ();
 
-		public readonly IodineMethod Target;
-		private StackFrame frame;
-
-		public IodineClosure (StackFrame frame, IodineMethod target)
-			: base (TypeDefinition)
+		public ContractDeclaration (SourceLocation location, string name)
+			: base (location)
 		{
-			this.frame = frame;
-			Target = target;
+			Name = name;
 		}
 
-		public override bool IsCallable ()
+		public void AddMember (AstNode member)
 		{
-			return true;
+			Members.Add (member);
 		}
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+		public override void Visit (IodineAstVisitor visitor)
 		{
-			return vm.InvokeMethod (Target, frame.Duplicate (vm.Top),
-				frame.Self, arguments);
+			visitor.Accept (this);
 		}
 
-		public override string ToString ()
+		public override void VisitChildren (IodineAstVisitor visitor)
 		{
-			return string.Format ("<Anonymous Function>");
+			Members.ForEach (p => p.Visit (visitor));
 		}
 	}
 }

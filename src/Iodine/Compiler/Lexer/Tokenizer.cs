@@ -314,7 +314,8 @@ namespace Iodine.Compiler
 			case "super":
 			case "enum":
 			case "raise":
-			case "interface":
+			case "contract":
+			case "trait":
 			case "given":
 			case "case":
 			case "yield":
