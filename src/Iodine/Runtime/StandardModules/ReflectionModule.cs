@@ -51,6 +51,27 @@ namespace Iodine.Runtime
 				parentMethod = method;
 				SetAttribute ("opcode", new IodineInteger ((long)instruction.OperationCode));
 				SetAttribute ("immediate", new IodineInteger (instruction.Argument));
+				SetAttribute ("line", new IodineInteger (instruction.Location.Line));
+				SetAttribute ("col", new IodineInteger (instruction.Location.Column));
+				SetAttribute ("file", new IodineString (instruction.Location.File));
+
+				switch (instruction.OperationCode) {
+				case Opcode.LoadConst:
+				case Opcode.StoreGlobal:
+				case Opcode.LoadGlobal:
+				case Opcode.StoreAttribute:
+				case Opcode.LoadAttribute:
+				case Opcode.LoadAttributeOrNull:
+
+					SetAttribute ("immediateRef", method.Module.ConstantPool[instruction.Argument]);
+					break;
+				default:
+
+					SetAttribute ("immediateRef", IodineNull.Instance);
+					break;
+				}
+
+
 			}
 
 			public override string ToString ()
