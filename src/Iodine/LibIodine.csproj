@@ -161,7 +161,6 @@
     <Compile Include="Compiler\Parser\Ast\StatementList.cs" />
     <Compile Include="Compiler\SyntaxAnalysis\SemanticAnalyser.cs" />
     <Compile Include="Compiler\Emit\IBytecodeOptimization.cs" />
-    <Compile Include="Compiler\Emit\IodineCompiler.cs" />
     <Compile Include="Compiler\Emit\Optimizations\ControlFlowOptimization.cs" />
     <Compile Include="Compiler\Emit\Optimizations\InstructionOptimization.cs" />
     <Compile Include="Compiler\Emit\MethodBuilder.cs" />
@@ -216,12 +215,12 @@
     <Compile Include="Runtime\StandardModules\BuiltinsModule.cs" />
     <Compile Include="Warning.cs" />
     <Compile Include="Runtime\StandardModules\FsutilsModule.cs" />
-    <Compile Include="Compiler\Emit\Compiler.cs" />
     <Compile Include="Compiler\Parser\Ast\PatternExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\ContractDeclaration.cs" />
     <Compile Include="Runtime\IodineContract.cs" />
     <Compile Include="Runtime\IodineTrait.cs" />
     <Compile Include="Compiler\Parser\Ast\TraitDeclaration.cs" />
+    <Compile Include="Compiler\Emit\IodineCompiler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
