@@ -1,5 +1,6 @@
 git clone https://github.com/IodineLang/Ion
 mono -V
+./build_iodine.sh
 cd tests
 module_path=$(readlink -f ../modules)
 echo $module_path
