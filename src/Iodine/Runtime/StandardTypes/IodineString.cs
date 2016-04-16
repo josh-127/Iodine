@@ -81,6 +81,8 @@ namespace Iodine.Runtime
 			SetAttribute ("isLetterOrDigit", new BuiltinMethodCallback (IsLetterOrDigit, this));
 			SetAttribute ("isWhiteSpace", new BuiltinMethodCallback (IsWhiteSpace, this));
 			SetAttribute ("isSymbol", new BuiltinMethodCallback (IsSymbol, this));
+			SetAttribute ("padRight", new BuiltinMethodCallback (PadRight, this));
+			SetAttribute ("padLeft", new BuiltinMethodCallback (PadLeft, this));
 		}
 
 		public override IodineObject Len (VirtualMachine vm)
@@ -444,6 +446,75 @@ namespace Iodine.Runtime
 				}
 			}
 			return IodineBool.Create (result);
+		}
+
+
+		/**
+		 * Iodine Method: Str.padRight (self, amount [, char]);
+		 * Description: Returns true if this string is a symbol
+		 */
+		private IodineObject PadRight (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			char ch = ' ';
+
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineInteger width = args [0] as IodineInteger;
+
+			if (width == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+
+			if (args.Length > 1) {
+				IodineString chStr = args [0] as IodineString;
+
+				if (chStr == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+
+				ch = chStr.Value [0];
+			}
+
+			return new IodineString (Value.PadRight ((int)width.Value, ch));
+		}
+
+		/**
+		 * Iodine Method: Str.padLeft (self, amount [, char]);
+		 * Description: Returns true if this string is a symbol
+		 */
+		private IodineObject PadLeft (VirtualMachine vm, IodineObject self, IodineObject[] args)
+		{
+			char ch = ' ';
+
+			if (args.Length == 0) {
+				vm.RaiseException (new IodineArgumentException (1));
+				return null;
+			}
+
+			IodineInteger width = args [0] as IodineInteger;
+
+			if (width == null) {
+				vm.RaiseException (new IodineTypeException ("Int"));
+				return null;
+			}
+
+			if (args.Length > 1) {
+				IodineString chStr = args [0] as IodineString;
+
+				if (chStr == null) {
+					vm.RaiseException (new IodineTypeException ("Str"));
+					return null;
+				}
+
+				ch = chStr.Value [0];
+			}
+
+			return new IodineString (Value.PadLeft ((int)width.Value, ch));
 		}
 	}
 }
