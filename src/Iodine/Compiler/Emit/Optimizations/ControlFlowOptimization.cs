@@ -73,6 +73,7 @@ namespace Iodine.Compiler
 					ShiftLabels (next, newInstructions);
 				}
 			}
+
 			method.Body = newInstructions;
 		}
 

@@ -50,8 +50,6 @@ namespace Iodine.Runtime
 					vm.RaiseException (new IodineArgumentException (1));
 				}
 
-
-
 				return new IodineString (args [0].ToString ());
 			}
 		}

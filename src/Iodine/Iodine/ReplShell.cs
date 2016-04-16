@@ -49,6 +49,7 @@ namespace Iodine
 			Console.WriteLine ("Enter expressions to have them be evaluated");
 
 			IodineContext context = new IodineContext ();
+			context.ShouldOptimize = false;
 			while (true) {
 				Console.Write (">>> ");
 				var source = Console.ReadLine ();
@@ -56,7 +57,10 @@ namespace Iodine
 					if (source.Length > 0) {
 						SourceUnit unit = SourceUnit.CreateFromSource (source);
 						var result = unit.Compile (context);
-						Console.WriteLine (context.Invoke (result, new IodineObject[] { }));
+						IodineObject ret = context.Invoke (result, new IodineObject[] { });
+						if (!(ret is IodineNull)) {
+							Console.WriteLine (ret);
+						}
 					}
 				} catch (UnhandledIodineExceptionException ex) {
 					Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));
@@ -79,8 +83,10 @@ namespace Iodine
 		{
 			foreach (Error err in errorLog) {
 				SourceLocation loc = err.Location;
-				Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
-					loc.Line, loc.Column, err.Text);
+				Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}",
+					Path.GetFileName (loc.File),
+					loc.Line, loc.Column, err.Text
+				);
 			}
 		}
 	}

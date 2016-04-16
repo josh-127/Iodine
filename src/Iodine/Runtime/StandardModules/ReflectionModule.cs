@@ -51,10 +51,16 @@ namespace Iodine.Runtime
 				parentMethod = method;
 				SetAttribute ("opcode", new IodineInteger ((long)instruction.OperationCode));
 				SetAttribute ("immediate", new IodineInteger (instruction.Argument));
-				SetAttribute ("line", new IodineInteger (instruction.Location.Line));
-				SetAttribute ("col", new IodineInteger (instruction.Location.Column));
-				SetAttribute ("file", new IodineString (instruction.Location.File));
+				if (instruction.Location != null) {
+					SetAttribute ("line", new IodineInteger (instruction.Location.Line));
+					SetAttribute ("col", new IodineInteger (instruction.Location.Column));
+					SetAttribute ("file", new IodineString (instruction.Location.File ?? ""));
+				} else {
 
+					SetAttribute ("line", new IodineInteger (0));
+					SetAttribute ("col", new IodineInteger (0));
+					SetAttribute ("file", new IodineString (""));
+				}
 				switch (instruction.OperationCode) {
 				case Opcode.LoadConst:
 				case Opcode.StoreGlobal:
@@ -62,16 +68,12 @@ namespace Iodine.Runtime
 				case Opcode.StoreAttribute:
 				case Opcode.LoadAttribute:
 				case Opcode.LoadAttributeOrNull:
-
 					SetAttribute ("immediateRef", method.Module.ConstantPool[instruction.Argument]);
 					break;
 				default:
-
 					SetAttribute ("immediateRef", IodineNull.Instance);
 					break;
 				}
-
-
 			}
 
 			public override string ToString ()
@@ -225,6 +227,7 @@ namespace Iodine.Runtime
 			foreach (Instruction ins in method.Body) {
 				ret.Add (new IodineInstruction (method, ins));
 			}
+
 			return ret;
 		}
 

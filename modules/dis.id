@@ -1,0 +1,115 @@
+use reflection;
+
+
+_instructions = [
+    "NOP",
+    "BINARY_OP",
+    "UNARY_OP",
+    "POP",
+    "DUP",
+    "DUP3",
+    "LOAD_CONST",
+    "LOAD_NULL",
+    "LOAD_SELF",
+    "LOAD_TRUE",
+    "LOAD_FALSE",
+    "LOAD_LOCAL",
+    "STORE_LOCAL",
+    "LOAD_GLOBAL",
+    "STORE_GLOBAL",
+    "LOAD_DEFAULT_ATTR",
+    "LOAD_ATTR",
+    "STORE_ATTR",
+    "LOAD_INDEX",
+    "STORE_INDEX",
+    "INVOKE",
+    "INVOKE_SUPER",
+    "INVOKE_VAR",
+    "RETURN",
+    "YIELD",
+    "JUMP_IF_TRUE",
+    "JUMP_IF_FALSE",
+    "JUMP",
+    "BUILD_HASHMAP",
+    "BUILD_LIST",
+    "BUILD_TUPLE",
+    "BUILD_CLOSURE",
+    "GET_ITER",
+    "ITER_GET_NEXT",
+    "ITER_MOVE_NEXT",
+    "ITER_RESET",
+    "RAISE",
+    "PUSH_EXCEPTION",
+    "POP_EXCEPTION",
+    "LOAD_LAST_EXCEPTION",
+    "BEGIN_EXCEPT",
+    "INSTANCE_OF",
+    "DYNAMIC_CAST",
+    "IMPORT",
+    "IMPORT_FROM",
+    "IMPORT_ALL",
+    "SWITCH_LOOKUP",
+    "NULL_COALESCE",
+    "BEGIN_WITH",
+    "END_WITH"
+];
+
+_binopLookup = [
+    null,
+    null,
+    null,
+    "BINARY_OR",
+    "BINARY_XOR",
+    "BINARY_AND",
+    "BINARY_EQUALS",
+    "BINARY_NOT_EQUALS",
+    "BINARY_LEFT_SHIFT",
+    "BINARY_RIGHT_SHIFT",
+    "BINARY_GREATER_THAN",
+    "BINARY_LESS_THAN",
+    "BINARY_GREATER_THAN_OR_EQU",
+    "BINARY_LESS_THAN_OR_EQU",
+    "BINARY_ADD",
+    "BINARY_SUB",
+    "BINARY_MUL",
+    "BINARY_DIV",
+    "BINARY_MOD",
+    null,
+    null,
+    null,
+    null,
+    null
+];
+
+func _getMnemonic (opcode, argument) {
+    if (opcode == 1) {
+        return _binopLookup [argument];       
+    }
+    return _instructions [opcode];
+}
+
+func disassemble (obj) {
+
+    bytecode = reflection.getBytecode (obj);
+
+    lastLine = -1;
+    
+
+    foreach (ins in bytecode) {
+
+        buffer = StringBuffer ();
+        if (ins.line != lastLine) {
+            buffer.append (Str (ins.line).padRight (8));
+        } else {
+            buffer.append ("".padLeft (8));
+        }
+        lastLine = ins.line;
+        buffer.append (_getMnemonic (ins.opcode, ins.immediate).padRight (30));
+        
+        buffer.append (ins.immediate);
+        if (ins.immediateRef isnot null.__type__) {
+            buffer.append (" (#{Str (ins.immediateRef)})");
+        }
+        print (buffer);
+    }
+}

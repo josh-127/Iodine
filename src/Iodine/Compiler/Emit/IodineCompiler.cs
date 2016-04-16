@@ -869,13 +869,36 @@ namespace Iodine.Compiler
 				binop.Left.Visit (this);
 				Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.DynamicCast);
 				return;
-
+			case BinaryOperation.Add:
+			case BinaryOperation.Sub:
+			case BinaryOperation.Mul:
+			case BinaryOperation.Div:
+			case BinaryOperation.Mod:
+			case BinaryOperation.And:
+			case BinaryOperation.Or:
+			case BinaryOperation.Xor:
+			case BinaryOperation.GreaterThan:
+			case BinaryOperation.GreaterThanOrEqu:
+			case BinaryOperation.LessThan:
+			case BinaryOperation.LessThanOrEqu:
+			case BinaryOperation.ClosedRange:
+			case BinaryOperation.HalfRange:
+			case BinaryOperation.LeftShift:
+			case BinaryOperation.RightShift:
+				binop.Left.Visit (this);
+				binop.Right.Visit (this);
+				Context.CurrentMethod.EmitInstruction (binop.Location,
+					Opcode.BinOp,
+					(int)binop.Operation
+				);
+				return;
 			}
 
 			IodineLabel shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
 			IodineLabel shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
 			IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
 			binop.Left.Visit (this);
+
 			/*
 			 * Short circuit evaluation 
 			 */
@@ -892,6 +915,7 @@ namespace Iodine.Compiler
 				break;
 			}
 			binop.Right.Visit (this);
+
 			Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.BinOp, (int)binop.Operation);
 			Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
 			Context.CurrentMethod.MarkLabelPosition (shortCircuitTrueLabel);
