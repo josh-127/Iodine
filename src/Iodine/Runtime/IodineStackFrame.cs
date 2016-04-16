@@ -131,12 +131,10 @@ namespace Iodine.Runtime
 		#endif
 		internal StackFrame Duplicate (StackFrame top)
 		{
-			Dictionary<int, IodineObject> oldLocals = locals;
+			Dictionary<int, IodineObject> oldLocals =  new Dictionary<int, IodineObject> ();
 
-			locals = new Dictionary<int, IodineObject> ();
-
-			foreach (int key in oldLocals.Keys) {
-				locals [key] = oldLocals [key];
+			foreach (int key in locals.Keys) {
+				oldLocals [key] = locals [key];
 			}
 
 			return new StackFrame (Method, Arguments, top, Self, locals);
