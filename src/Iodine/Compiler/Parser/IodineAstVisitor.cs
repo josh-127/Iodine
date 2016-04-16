@@ -166,7 +166,7 @@ namespace Iodine.Compiler
 		{
 		}
 
-		public virtual void Accept (SelfStatement self)
+		public virtual void Accept (SelfExpression self)
 		{
 		}
 
@@ -210,7 +210,7 @@ namespace Iodine.Compiler
 		{
 		}
 
-		public virtual void Accept (SuperCallExpression super)
+		public virtual void Accept (SuperCallStatement super)
 		{
 		}
 

@@ -28,7 +28,7 @@
 **/
 
 using System;
-
+using System.Diagnostics;
 namespace Iodine.Compiler.Ast
 {
 	public class Expression : AstNode
@@ -44,19 +44,14 @@ namespace Iodine.Compiler.Ast
 			Child = child;
 		}
 
-		public override void Visit (IodineAstVisitor visitor) {
+		public override void Visit (IodineAstVisitor visitor)
+		{
 			visitor.Accept (this);
 		}
 
 		public override void VisitChildren (IodineAstVisitor visitor)
 		{
 			Child.Visit (visitor);
-		}
-
-		public override bool Reduce (out AstNode val)
-		{
-			val = this;
-			return false;
 		}
 	}
 }

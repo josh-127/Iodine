@@ -59,7 +59,6 @@ namespace Iodine.Compiler
 				}
 
 				AstNode irrelevent = null;
-				//while (root.Reduce (out irrelevent));
 				return root;
 			} catch (Exception) {
 				return new CompilationUnit (tokenStream.Location);
@@ -291,7 +290,7 @@ namespace Iodine.Compiler
 						/*
 						 * If this is infact a constructor and no super call is provided, we must implicitly call super ()
 						 */
-						scope.Add (new SuperCallExpression (decl.Location, cdecl, new ArgumentList (decl.Location)));
+						scope.Add (new SuperCallStatement (decl.Location, cdecl, new ArgumentList (decl.Location)));
 					}
 
 					while (!stream.Match (TokenClass.CloseBrace)) {
@@ -1147,7 +1146,7 @@ namespace Iodine.Compiler
 				switch (stream.Current.Value) {
 				case "self":
 					stream.ReadToken ();
-					return new SelfStatement (stream.Location);
+					return new SelfExpression (stream.Location);
 				case "true":
 					stream.ReadToken ();
 					return new TrueExpression (stream.Location);
@@ -1271,14 +1270,14 @@ namespace Iodine.Compiler
 			return new GetDefaultExpression (stream.Location, lvalue, ident.Value);
 		}
 
-		public static SuperCallExpression ParseSuperCall (TokenStream stream, ClassDeclaration parent)
+		public static SuperCallStatement ParseSuperCall (TokenStream stream, ClassDeclaration parent)
 		{
 			SourceLocation location = stream.Location;
 			stream.Expect (TokenClass.Keyword, "super");
 			ArgumentList argumentList = ParseArgumentList (stream);
 			while (stream.Accept (TokenClass.SemiColon))
 				;
-			return new SuperCallExpression (location, parent, argumentList);
+			return new SuperCallStatement (location, parent, argumentList);
 		}
 
 		private static ArgumentList ParseArgumentList (TokenStream stream)

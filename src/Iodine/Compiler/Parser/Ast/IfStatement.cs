@@ -33,11 +33,20 @@ namespace Iodine.Compiler.Ast
 {
 	public class IfStatement : AstNode
 	{
-		public readonly AstNode Condition;
+		public AstNode Condition { 
+			private set;
+			get;
+		}
 
-		public readonly AstNode Body;
+		public AstNode Body {
+			private set;
+			get;
+		}
 
-		public readonly AstNode ElseBody;
+		public AstNode ElseBody {
+			private set;
+			get;
+		}
 
 		public IfStatement (SourceLocation location, AstNode condition, AstNode body, AstNode elseBody = null)
 			: base (location)

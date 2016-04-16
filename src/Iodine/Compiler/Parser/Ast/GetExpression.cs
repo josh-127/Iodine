@@ -33,8 +33,12 @@ namespace Iodine.Compiler.Ast
 {
 	public class GetExpression : AstNode
 	{
-		public readonly AstNode Target;
 		public readonly string Field;
+
+		public AstNode Target {
+			private set;
+			get;
+		}
 
 		public GetExpression (SourceLocation location, AstNode target, string field)
 			: base (location)

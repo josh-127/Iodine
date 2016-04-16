@@ -119,10 +119,8 @@
     <Compile Include="Compiler\Parser\Ast\NullExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\RaiseStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\ReturnStatement.cs" />
-    <Compile Include="Compiler\Parser\Ast\SelfStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\Statement.cs" />
     <Compile Include="Compiler\Parser\Ast\StringExpression.cs" />
-    <Compile Include="Compiler\Parser\Ast\SuperCallExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\TernaryExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\TrueExpression.cs" />
     <Compile Include="Compiler\Parser\Ast\TryExceptStatement.cs" />
@@ -221,6 +219,8 @@
     <Compile Include="Runtime\IodineTrait.cs" />
     <Compile Include="Compiler\Parser\Ast\TraitDeclaration.cs" />
     <Compile Include="Compiler\Emit\IodineCompiler.cs" />
+    <Compile Include="Compiler\Parser\Ast\SuperCallStatement.cs" />
+    <Compile Include="Compiler\Parser\Ast\SelfExpression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

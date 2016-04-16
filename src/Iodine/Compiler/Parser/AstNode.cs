@@ -49,22 +49,9 @@ namespace Iodine.Compiler.Ast
 		{
 		}
 
-		public virtual bool Reduce (out AstNode val)
+		public virtual AstNode Reduce ()
 		{
-			bool success = false;
-
-			AstWalker walker = new AstWalker (node => {
-				AstNode tmp = null;
-				if (node.Reduce (out tmp)) {
-					success = true;
-				}
-			});
-
-			VisitChildren (walker);
-
-			val = this;
-
-			return success;
+			return this;
 		}
 	}
 }

@@ -31,9 +31,9 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class SelfStatement : AstNode
+	public class SelfExpression : AstNode
 	{
-		public SelfStatement (SourceLocation location)
+		public SelfExpression (SourceLocation location)
 			: base (location)
 		{
 		}

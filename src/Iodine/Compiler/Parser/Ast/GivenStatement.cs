@@ -34,11 +34,17 @@ namespace Iodine.Compiler.Ast
 {
 	public class GivenStatement : AstNode
 	{
-		public readonly AstNode GivenValue;
+		public AstNode GivenValue {
+			private set;
+			get;
+		}
+
+		public AstNode DefaultStatement {
+			private set;
+			get;
+		}
 
 		public readonly List<WhenStatement> WhenStatements = new List<WhenStatement> ();
-
-		public readonly AstNode DefaultStatement;
 
 		public GivenStatement (SourceLocation location, AstNode givenValue, IEnumerable<WhenStatement> whenStatements, AstNode defaultStatement)
 			: base (location)

@@ -178,7 +178,12 @@ namespace Iodine.Compiler
 			foreach (AstNode member in classDecl.Members) {
 				if (member is FunctionDeclaration) {
 					FunctionDeclaration func = member as FunctionDeclaration;
-					if (func.InstanceMethod) {
+
+					if (func.Name == "__init__") {
+						CreateContext (initializer);
+						func.Body.Visit (this);
+						DestroyContext ();
+					} else if (func.InstanceMethod) {
 						clazz.AddInstanceMethod (CompileGlobalMethod (func));
 					} else {
 						clazz.SetAttribute (func.Name, CompileGlobalMethod (func));
@@ -189,9 +194,14 @@ namespace Iodine.Compiler
 				} else if (member is EnumDeclaration) {
 					EnumDeclaration enumeration = member as EnumDeclaration;
 					clazz.SetAttribute (enumeration.Name, CompileEnum (enumeration));
-				} else if (member is BinaryExpression) {
-					BinaryExpression expr = member as BinaryExpression;
+				} else if (member is Expression) {
+
+					BinaryExpression expr = ((Expression)member).Child as BinaryExpression;
+
 					NameExpression name = expr.Left as NameExpression;
+
+					CreateContext (initializer);
+
 					expr.Right.Visit (this);
 					initializer.EmitInstruction (classDecl.Location,
 						Opcode.LoadGlobal,
@@ -202,6 +212,8 @@ namespace Iodine.Compiler
 						Opcode.StoreAttribute,
 						Context.CurrentModule.DefineConstant (new IodineName (name.Value))
 					);
+
+					DestroyContext ();
 				} else {
 					member.Visit (this);
 				}
@@ -332,7 +344,7 @@ namespace Iodine.Compiler
 		public override void Accept (ClassDeclaration classDecl)
 		{
 			IodineClass clazz = CompileClass (classDecl);
-
+		
 			if (Context.SymbolTable.IsInGlobalScope) {
 				Context.CurrentModule.SetAttribute (classDecl.Name, clazz);
 			} else {
@@ -744,6 +756,45 @@ namespace Iodine.Compiler
 			);
 		}
 
+		public override void Accept (SuperCallStatement super)
+		{
+			string[] subclass = super.Parent.Base [0].Split ('.');
+			super.Arguments.Visit (this);
+
+			Context.CurrentMethod.EmitInstruction (super.Location,
+				Opcode.LoadGlobal,
+				Context.CurrentModule.DefineConstant (new IodineName (subclass [0]))
+			);
+
+			for (int i = 1; i < subclass.Length; i++) {
+				Context.CurrentMethod.EmitInstruction (super.Location,
+					Opcode.LoadAttribute,
+					Context.CurrentModule.DefineConstant (new IodineName (subclass [0]))
+				);
+			}
+
+			Context.CurrentMethod.EmitInstruction (super.Location,
+				Opcode.InvokeSuper,
+				super.Arguments.Arguments.Count
+			);
+
+			for (int i = 1; i < super.Parent.Base.Count; i++) {
+				string[] contract = super.Parent.Base [i].Split ('.');
+				Context.CurrentMethod.EmitInstruction (super.Location,
+					Opcode.LoadGlobal,
+					Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
+				);
+
+				for (int j = 1; j < contract.Length; j++) {
+					Context.CurrentMethod.EmitInstruction (super.Location,
+						Opcode.LoadAttribute,
+						Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
+					);
+				}
+				Context.CurrentMethod.EmitInstruction (super.Location, Opcode.InvokeSuper, 0);
+			}
+		}
+
 		public override void Accept (Expression expr)
 		{
 			expr.VisitChildren (this);
@@ -932,45 +983,6 @@ namespace Iodine.Compiler
 		{
 			unaryop.VisitChildren (this);
 			Context.CurrentMethod.EmitInstruction (unaryop.Location, Opcode.UnaryOp, (int)unaryop.Operation);
-		}
-
-		public override void Accept (SuperCallExpression super)
-		{
-			string[] subclass = super.Parent.Base [0].Split ('.');
-			super.Arguments.Visit (this);
-
-			Context.CurrentMethod.EmitInstruction (super.Location,
-				Opcode.LoadGlobal,
-				Context.CurrentModule.DefineConstant (new IodineName (subclass [0]))
-			);
-
-			for (int i = 1; i < subclass.Length; i++) {
-				Context.CurrentMethod.EmitInstruction (super.Location,
-					Opcode.LoadAttribute,
-					Context.CurrentModule.DefineConstant (new IodineName (subclass [0]))
-				);
-			}
-
-			Context.CurrentMethod.EmitInstruction (super.Location,
-				Opcode.InvokeSuper,
-				super.Arguments.Arguments.Count
-			);
-
-			for (int i = 1; i < super.Parent.Base.Count; i++) {
-				string[] contract = super.Parent.Base [i].Split ('.');
-				Context.CurrentMethod.EmitInstruction (super.Location,
-					Opcode.LoadGlobal,
-					Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
-				);
-
-				for (int j = 1; j < contract.Length; j++) {
-					Context.CurrentMethod.EmitInstruction (super.Location,
-						Opcode.LoadAttribute,
-						Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
-					);
-				}
-				Context.CurrentMethod.EmitInstruction (super.Location, Opcode.InvokeSuper, 0);
-			}
 		}
 
 		public override void Accept (CallExpression call)
@@ -1394,7 +1406,7 @@ namespace Iodine.Compiler
 			}
 		}
 
-		public override void Accept (SelfStatement self)
+		public override void Accept (SelfExpression self)
 		{
 			Context.CurrentMethod.EmitInstruction (self.Location, Opcode.LoadSelf);
 		}

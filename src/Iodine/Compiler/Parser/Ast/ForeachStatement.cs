@@ -35,8 +35,15 @@ namespace Iodine.Compiler.Ast
 	{
 		public readonly string Item;
 
-		public readonly AstNode Iterator;
-		public readonly AstNode Body;
+		public AstNode Iterator {
+			private set;
+			get;
+		}
+
+		public AstNode Body {
+			private set;
+			get;
+		}
 
 		public ForeachStatement (SourceLocation location, string item, AstNode iterator, AstNode body)
 			: base (location)

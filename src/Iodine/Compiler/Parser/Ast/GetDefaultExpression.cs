@@ -33,7 +33,10 @@ namespace Iodine.Compiler.Ast
 {
 	public class GetDefaultExpression : AstNode
 	{
-		public readonly AstNode Target;
+		public AstNode Target {
+			private set;
+			get;
+		}
 
 		public readonly string Field;
 

@@ -120,7 +120,7 @@ namespace Iodine.Compiler
 			givenStmt.VisitChildren (this);
 		}
 
-		public override void Accept (SuperCallExpression super)
+		public override void Accept (SuperCallStatement super)
 		{
 			super.VisitChildren (this);
 		}

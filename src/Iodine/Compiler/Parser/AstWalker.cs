@@ -35,7 +35,6 @@ namespace Iodine.Compiler
 	delegate void WalkCallback (AstNode node);
 	class AstWalker : IodineAstVisitor
 	{
-
 		private WalkCallback callback;
 
 		public AstWalker (WalkCallback callback)
@@ -46,67 +45,67 @@ namespace Iodine.Compiler
 		public override void Accept (CompilationUnit ast)
 		{
 			callback (ast);
-			ast.VisitChildren (this);
+			//ast.VisitChildren (this);
 		}
 
 		public override void Accept (Expression expr)
 		{
 			callback (expr);
-			expr.VisitChildren (this);
+			//expr.VisitChildren (this);
 		}
 
 		public override void Accept (StatementList stmtList)
 		{
 			callback (stmtList);
-			stmtList.VisitChildren (this);
+			//stmtList.VisitChildren (this);
 		}
 
 		public override void Accept (Statement stmt)
 		{
 			callback (stmt);
-			stmt.VisitChildren (this);
+			//stmt.VisitChildren (this);
 		}
 
 		public override void Accept (BinaryExpression binop)
 		{
 			callback (binop);
-			binop.VisitChildren (this);
+			//binop.VisitChildren (this);
 		}
 
 		public override void Accept (UnaryExpression unaryop)
 		{
 			callback (unaryop);
-			unaryop.VisitChildren (this);
+			//unaryop.VisitChildren (this);
 		}
 
 		public override void Accept (NameExpression ident)
 		{
 			callback (ident);
-			ident.VisitChildren (this);
+			//ident.VisitChildren (this);
 		}
 
 		public override void Accept (CallExpression call)
 		{
 			callback (call);
-			call.VisitChildren (this);
+			//call.VisitChildren (this);
 		}
 
 		public override void Accept (ArgumentList arglist)
 		{
 			callback (arglist);
-			arglist.VisitChildren (this);
+			//arglist.VisitChildren (this);
 		}
 
 		public override void Accept (KeywordArgumentList kwargs)
 		{
 			callback (kwargs);
-			kwargs.VisitChildren (this);
+			//kwargs.VisitChildren (this);
 		}
 
 		public override void Accept (GetExpression getAttr)
 		{
 			callback (getAttr);
-			getAttr.VisitChildren (this);
+			//getAttr.VisitChildren (this);
 		}
 
 		public override void Accept (GetDefaultExpression getAttr)
@@ -118,43 +117,43 @@ namespace Iodine.Compiler
 		public override void Accept (IntegerExpression integer)
 		{
 			callback (integer);
-			integer.VisitChildren (this);
+			//integer.VisitChildren (this);
 		}
 
 		public override void Accept (IfStatement ifStmt)
 		{
 			callback (ifStmt);
-			ifStmt.VisitChildren (this);
+			//ifStmt.VisitChildren (this);
 		}
 
 		public override void Accept (WhileStatement whileStmt)
 		{
 			callback (whileStmt);
-			whileStmt.VisitChildren (this);
+			//whileStmt.VisitChildren (this);
 		}
 
 		public override void Accept (DoStatement doStmt)
 		{
 			callback (doStmt);
-			doStmt.VisitChildren (this);
+			//doStmt.VisitChildren (this);
 		}
 
 		public override void Accept (ForStatement forStmt)
 		{
 			callback (forStmt);
-			forStmt.VisitChildren (this);
+			//forStmt.VisitChildren (this);
 		}
 
 		public override void Accept (ForeachStatement foreachStmt)
 		{
 			callback (foreachStmt);
-			foreachStmt.VisitChildren (this);
+			//foreachStmt.VisitChildren (this);
 		}
 
 		public override void Accept (GivenStatement switchStmt)
 		{
 			callback (switchStmt);
-			switchStmt.VisitChildren (this);
+			//switchStmt.VisitChildren (this);
 		}
 
 		public override void Accept (WhenStatement caseStmt)
@@ -166,181 +165,180 @@ namespace Iodine.Compiler
 		public override void Accept (FunctionDeclaration funcDecl)
 		{
 			callback (funcDecl);
-			funcDecl.VisitChildren (this);
+			//funcDecl.VisitChildren (this);
 		}
 
 		public override void Accept (CodeBlock scope)
 		{
 			callback (scope);
-			scope.VisitChildren (this);
+			//scope.VisitChildren (this);
 		}
 
 		public override void Accept (StringExpression stringConst)
 		{
 			callback (stringConst);
-			stringConst.VisitChildren (this);
 		}
 
 		public override void Accept (UseStatement useStmt)
 		{
 			callback (useStmt);
-			useStmt.VisitChildren (this);
+			//useStmt.VisitChildren (this);
 		}
 
 		public override void Accept (ContractDeclaration interfaceDecl)
 		{
 			callback (interfaceDecl);
-			interfaceDecl.VisitChildren (this);
+			//interfaceDecl.VisitChildren (this);
 		}
 
 		public override void Accept (ClassDeclaration classDecl)
 		{
 			callback (classDecl);
-			classDecl.VisitChildren (this);
+			//classDecl.VisitChildren (this);
 		}
 
 		public override void Accept (ReturnStatement returnStmt)
 		{
 			callback (returnStmt);
-			returnStmt.VisitChildren (this);
+			//eturnStmt.VisitChildren (this);
 		}
 
 		public override void Accept (YieldStatement yieldStmt)
 		{
 			callback (yieldStmt);
-			yieldStmt.VisitChildren (this);
+			//yieldStmt.VisitChildren (this);
 		}
 
 		public override void Accept (IndexerExpression indexer)
 		{
 			callback (indexer);
-			indexer.VisitChildren (this);
+			//indexer.VisitChildren (this);
 		}
 
 		public override void Accept (ListExpression list)
 		{
 			callback (list);
-			list.VisitChildren (this);
+			//list.VisitChildren (this);
 		}
 
 		public override void Accept (HashExpression hash)
 		{
 			callback (hash);
-			hash.VisitChildren (this);
+			//hash.VisitChildren (this);
 		}
 
-		public override void Accept (SelfStatement self)
+		public override void Accept (SelfExpression self)
 		{
 			callback (self);
-			self.VisitChildren (this);
+			//self.VisitChildren (this);
 		}
 
 		public override void Accept (TrueExpression ntrue)
 		{
 			callback (ntrue);
-			ntrue.VisitChildren (this);
+			//ntrue.VisitChildren (this);
 		}
 
 		public override void Accept (FalseExpression nfalse)
 		{
 			callback (nfalse);
-			nfalse.VisitChildren (this);
+			//nfalse.VisitChildren (this);
 		}
 
 		public override void Accept (NullExpression nil)
 		{
 			callback (nil);
-			nil.VisitChildren (this);
+			//nil.VisitChildren (this);
 		}
 
 		public override void Accept (LambdaExpression lambda)
 		{
 			callback (lambda);
-			lambda.VisitChildren (this);
+			//lambda.VisitChildren (this);
 		}
 
 		public override void Accept (TryExceptStatement tryCatch)
 		{
 			callback (tryCatch);
-			tryCatch.VisitChildren (this);
+			//tryCatch.VisitChildren (this);
 		}
 
 		public override void Accept (WithStatement with)
 		{
 			callback (with);
-			with.VisitChildren (this);
+			//with.VisitChildren (this);
 		}
 
 		public override void Accept (BreakStatement brk)
 		{
 			callback (brk);
-			brk.VisitChildren (this);
+			//brk.VisitChildren (this);
 		}
 
 		public override void Accept (ContinueStatement cont)
 		{
 			callback (cont);
-			cont.VisitChildren (this);
+			//cont.VisitChildren (this);
 		}
 
 		public override void Accept (TupleExpression tuple)
 		{
 			callback (tuple);
-			tuple.VisitChildren (this);
+			//tuple.VisitChildren (this);
 		}
 
 		public override void Accept (FloatExpression dec)
 		{
 			callback (dec);
-			dec.VisitChildren (this);
+			//dec.VisitChildren (this);
 		}
 
-		public override void Accept (SuperCallExpression super)
+		public override void Accept (SuperCallStatement super)
 		{
 			callback (super);
-			super.VisitChildren (this);
+			//super.VisitChildren (this);
 		}
 
 		public override void Accept (EnumDeclaration enumDecl)
 		{
 			callback (enumDecl);
-			enumDecl.VisitChildren (this);
+			//enumDecl.VisitChildren (this);
 		}
 
 		public override void Accept (VariableDeclaration varDecl)
 		{
 			callback (varDecl);
-			varDecl.VisitChildren (this);
+			//varDecl.VisitChildren (this);
 		}
 
 		public override void Accept (RaiseStatement raise)
 		{
 			callback (raise);
-			raise.VisitChildren (this);
+			//raise.VisitChildren (this);
 		}
 
 		public override void Accept (MatchExpression match)
 		{
 			callback (match);
-			match.VisitChildren (this);
+			//match.VisitChildren (this);
 		}
 
 		public override void Accept (CaseExpression caseExpr)
 		{
 			callback (caseExpr);
-			caseExpr.VisitChildren (this);
+			//caseExpr.VisitChildren (this);
 		}
 
 		public override void Accept (ListCompExpression list)
 		{
 			callback (list);
-			list.VisitChildren (this);
+			//list.VisitChildren (this);
 		}
 
 		public override void Accept (TernaryExpression ifExpr)
 		{
 			callback (ifExpr);
-			ifExpr.VisitChildren (this);
+			//ifExpr.VisitChildren (this);
 		}
 
 	}

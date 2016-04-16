@@ -45,7 +45,6 @@ namespace Iodine.Compiler
 			base.Initializer = Initializer;
 		}
 
-
 		public void AddMethod (IodineMethod method)
 		{
 			Attributes [method.Name] = method;

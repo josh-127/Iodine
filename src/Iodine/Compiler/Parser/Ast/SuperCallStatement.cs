@@ -31,14 +31,13 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class SuperCallExpression : AstNode
+	public class SuperCallStatement : AstNode
 	{
-
 		public readonly ArgumentList Arguments;
 
 		public readonly ClassDeclaration Parent;
 
-		public SuperCallExpression (SourceLocation location, ClassDeclaration parent, ArgumentList argumentList)
+		public SuperCallStatement (SourceLocation location, ClassDeclaration parent, ArgumentList argumentList)
 			: base (location)
 		{
 			Parent = parent;

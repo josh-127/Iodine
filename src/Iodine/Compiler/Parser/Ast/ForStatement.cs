@@ -34,9 +34,17 @@ namespace Iodine.Compiler.Ast
 	public class ForStatement : AstNode
 	{
 		public readonly AstNode Initializer;
-		public readonly AstNode Condition;
 		public readonly AstNode AfterThought;
-		public readonly AstNode Body;
+
+		public AstNode Condition {
+			private set;
+			get;
+		}
+
+		public AstNode Body {
+			private set;
+			get;
+		}
 
 		public ForStatement (SourceLocation location, AstNode initializer, AstNode condition, AstNode afterThought, AstNode body)
 			: base (location)
