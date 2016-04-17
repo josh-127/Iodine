@@ -78,6 +78,15 @@ namespace Iodine.Compiler
             get;
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> is being ran with
+        /// a debugger.
+        /// </summary>
+        /// <value><c>true</c> if debug; otherwise, <c>false</c>.</value>
+        public bool Debug {
+            set;
+            get;
+        }
 
         /// <summary>
         /// Gets or sets the warning filter.

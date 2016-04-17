@@ -69,18 +69,18 @@ namespace Iodine.Compiler
 
         public void EmitInstruction (Opcode opcode)
         {
-            instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode));
+            instructions.Add (new Instruction (null, opcode));
         }
 
         public void EmitInstruction (Opcode opcode, int arg)
         {
-            instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, arg));
+            instructions.Add (new Instruction (null, opcode, arg));
         }
 
         public void EmitInstruction (Opcode opcode, IodineLabel label)
         {
             labelReferences [instructions.Count] = label;
-            instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, 0));
+            instructions.Add (new Instruction (null, opcode, 0));
         }
 
         public void EmitInstruction (SourceLocation loc, Opcode opcode)

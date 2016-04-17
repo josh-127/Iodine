@@ -166,6 +166,9 @@ namespace Iodine.Runtime
             return Invoke (method, arguments);
         }
 
+        /*
+         * Internal implementation of Invoke
+         */
         private IodineObject Invoke (IodineMethod method, IodineObject[] arguments)
         {
             if (method.Body.Length > 0) {
@@ -177,12 +180,18 @@ namespace Iodine.Runtime
             int i = 0;
             lastObject = null;
 
+            /*
+             * Store function arguments into their respective local variable slots
+             */
             foreach (string param in method.Parameters.Keys) {
-                if (method.Variadic && (method.AcceptsKeywordArgs ? i == method.Parameters.Keys.Count - 2 :
-					i == method.Parameters.Keys.Count - 1)) {
+                if (method.Variadic && (method.AcceptsKeywordArgs 
+                    ? i == method.Parameters.Keys.Count - 2 
+                    :i == method.Parameters.Keys.Count - 1)) {
+                    // Variable list arguments
                     IodineObject[] tupleItems = new IodineObject[arguments.Length - i];
                     Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
                     Top.StoreLocal (method.Parameters [param], new IodineTuple (tupleItems));
+
                 } else if (i == method.Parameters.Keys.Count - 1 && method.AcceptsKeywordArgs) {
                     if (i < arguments.Length && arguments [i] is IodineHashMap) {
                         Top.StoreLocal (method.Parameters [param], arguments [i]);
@@ -198,10 +207,12 @@ namespace Iodine.Runtime
             if (traceCallback != null) {
                 Trace (TraceType.Function, top, currentLocation);
             }
-
+            top.Location = currentLocation;
             while (top.InstructionPointer < insCount && !top.AbortExecution && !Top.Yielded) {
                 instruction = method.Body [Top.InstructionPointer++];
-                if (traceCallback != null && instruction.Location.Line != currentLocation.Line) {
+                if (traceCallback != null && 
+                    instruction.Location != null &&
+                    instruction.Location.Line != top.Location.Line) {
                     Trace (TraceType.Line, top, instruction.Location);
                 }
                 ExecuteInstruction ();
@@ -316,7 +327,10 @@ namespace Iodine.Runtime
 		#endif
         private void ExecuteInstruction ()
         {
-            currentLocation = instruction.Location;
+            if (instruction.Location != null) {
+                currentLocation = instruction.Location;
+            }
+
             switch (instruction.OperationCode) {
             case Opcode.Pop:
                 {

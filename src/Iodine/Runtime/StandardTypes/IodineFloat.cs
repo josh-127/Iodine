@@ -66,7 +66,8 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return new IodineFloat (Value + floatVal);
@@ -77,10 +78,23 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return new IodineFloat (Value - floatVal);
+        }
+
+        public override IodineObject Mul (VirtualMachine vm, IodineObject right)
+        {
+            double floatVal;
+            if (!(TryConvertToFloat (right, out floatVal))) {
+                vm.RaiseException (new IodineTypeException (
+                    "Right hand value expected to be of type Float"
+                ));
+                return null;
+            }
+            return new IodineFloat (Value * floatVal);
         }
 
         public override IodineObject Div (VirtualMachine vm, IodineObject right)
@@ -88,7 +102,8 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return new IodineFloat (Value / floatVal);
@@ -99,7 +114,8 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return new IodineFloat (Value % floatVal);
@@ -133,7 +149,8 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return IodineBool.Create (Value > floatVal);
@@ -145,7 +162,8 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return IodineBool.Create (Value >= floatVal);
@@ -156,7 +174,8 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return IodineBool.Create (Value < floatVal);
@@ -167,7 +186,8 @@ namespace Iodine.Runtime
             double floatVal;
             if (!(TryConvertToFloat (right, out floatVal))) {
                 vm.RaiseException (new IodineTypeException (
-                    "Right hand value expected to be of type Float"));
+                    "Right hand value expected to be of type Float"
+                ));
                 return null;
             }
             return IodineBool.Create (Value <= floatVal);

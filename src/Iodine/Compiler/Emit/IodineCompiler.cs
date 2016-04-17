@@ -37,6 +37,9 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
+    /// <summary>
+    /// Responsible for compiling an Iodine abstract syntax tree
+    /// </summary>
     public class IodineCompiler : IodineAstVisitor
     {
         private static List<IBytecodeOptimization> Optimizations = new List<IBytecodeOptimization> ();
@@ -182,12 +185,12 @@ namespace Iodine.Compiler
             }
 
             MethodBuilder initializer = new MethodBuilder (Context.CurrentModule,
-                                            "__init__",
-                                            false,
-                                            0,
-                                            false,
-                                            false
-                                        );
+                "__init__",
+                false,
+                0,
+                false,
+                false
+            );
 
             IodineClass clazz = new IodineClass (classDecl.Name, initializer, constructor, Context.CurrentClass);
 
@@ -289,12 +292,12 @@ namespace Iodine.Compiler
             Context.SymbolTable.EnterScope ();
 
             MethodBuilder methodBuilder = new MethodBuilder (Context.CurrentModule,
-                                              funcDecl.Name,
-                                              funcDecl.InstanceMethod,
-                                              funcDecl.Parameters.Count,
-                                              funcDecl.Variadic,
-                                              funcDecl.AcceptsKeywordArgs
-                                          );
+                funcDecl.Name,
+                funcDecl.InstanceMethod,
+                funcDecl.Parameters.Count,
+                funcDecl.Variadic,
+                funcDecl.AcceptsKeywordArgs
+            );
 
             for (int i = 0; i < funcDecl.Parameters.Count; i++) {
                 methodBuilder.Parameters [funcDecl.Parameters [i]] =
@@ -323,13 +326,13 @@ namespace Iodine.Compiler
             Context.SymbolTable.EnterScope ();
 
             MethodBuilder anonMethod = new MethodBuilder (Context.CurrentMethod,
-                                           Context.CurrentModule,
-                                           null,
-                                           funcDecl.InstanceMethod,
-                                           funcDecl.Parameters.Count,
-                                           funcDecl.Variadic,
-                                           funcDecl.AcceptsKeywordArgs
-                                       );
+                Context.CurrentModule,
+                null,
+                funcDecl.InstanceMethod,
+                funcDecl.Parameters.Count,
+                funcDecl.Variadic,
+                funcDecl.AcceptsKeywordArgs
+            );
 
             for (int i = 0; i < funcDecl.Parameters.Count; i++) {
                 anonMethod.Parameters [funcDecl.Parameters [i]] = Context.SymbolTable.AddSymbol (funcDecl.Parameters [i]);
@@ -847,13 +850,13 @@ namespace Iodine.Compiler
             Context.SymbolTable.EnterScope ();
 
             MethodBuilder anonMethod = new MethodBuilder (Context.CurrentMethod,
-                                           Context.CurrentModule,
-                                           null,
-                                           lambda.InstanceMethod, 
-                                           lambda.Parameters.Count,
-                                           lambda.Variadic,
-                                           lambda.AcceptsKeywordArguments
-                                       );
+                Context.CurrentModule,
+                null,
+                lambda.InstanceMethod, 
+                lambda.Parameters.Count,
+                lambda.Variadic,
+                lambda.AcceptsKeywordArguments
+            );
 
             for (int i = 0; i < lambda.Parameters.Count; i++) {
                 anonMethod.Parameters [lambda.Parameters [i]] =
