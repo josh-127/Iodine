@@ -116,9 +116,9 @@ namespace Iodine.Runtime.Debug
             ManualResetEvent done = new ManualResetEvent (false);
             DebugResponse response = null;
             virtualMachine.SetTrace (((TraceType type,
-                              VirtualMachine vm,
-                              StackFrame frame,
-                              SourceLocation location) => {
+                VirtualMachine vm,
+                StackFrame frame,
+                SourceLocation location) => {
                 if (type == TraceType.Line) {
                     response = new DebugResponse (location, frame);
                     done.Set ();
@@ -138,9 +138,9 @@ namespace Iodine.Runtime.Debug
             DebugResponse response = null;
             StackFrame currentFrame = virtualMachine.Top;
             virtualMachine.SetTrace (((TraceType type,
-                              VirtualMachine vm,
-                              StackFrame frame,
-                              SourceLocation location) => {
+                VirtualMachine vm,
+                StackFrame frame,
+                SourceLocation location) => {
                 if (type == TraceType.Line && frame == currentFrame) {
                     response = new DebugResponse (location, frame);
                     done.Set ();
@@ -160,9 +160,9 @@ namespace Iodine.Runtime.Debug
             DebugResponse response = null;
             StackFrame currentFrame = virtualMachine.Top;
             virtualMachine.SetTrace (((TraceType type,
-                              VirtualMachine vm,
-                              StackFrame frame,
-                              SourceLocation location) => {
+                VirtualMachine vm,
+                StackFrame frame,
+                SourceLocation location) => {
                 if (type == TraceType.Line && frame.Parent == currentFrame) {
                     response = new DebugResponse (location, frame);
                     done.Set ();

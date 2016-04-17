@@ -50,11 +50,11 @@ namespace Iodine.Compiler.Ast
         public readonly StatementList Body;
 
         public FunctionDeclaration (SourceLocation location,
-                                    string name,
-                                    bool isInstanceMethod,
-                                    bool isVariadic,
-                                    bool hasKeywordArgs,
-                                    IList<string> parameters)
+            string name,
+            bool isInstanceMethod,
+            bool isVariadic,
+            bool hasKeywordArgs,
+            IList<string> parameters)
             : base (location)
         {
             Name = name;

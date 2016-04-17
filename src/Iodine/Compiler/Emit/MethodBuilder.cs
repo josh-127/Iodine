@@ -41,11 +41,11 @@ namespace Iodine.Compiler
         protected List<Instruction> instructions = new List<Instruction> ();
 
         public MethodBuilder (IodineModule module,
-                              string name,
-                              bool isInstance,
-                              int parameterCount,
-                              bool isVariadic,
-                              bool acceptsKwargs) : base ()
+            string name,
+            bool isInstance,
+            int parameterCount,
+            bool isVariadic,
+            bool acceptsKwargs) : base ()
         {
             Name = name;
             ParameterCount = parameterCount;
@@ -57,12 +57,12 @@ namespace Iodine.Compiler
         }
 
         public MethodBuilder (MethodBuilder parent,
-                              IodineModule module,
-                              string name,
-                              bool isInstance,
-                              int parameterCount,
-                              bool isVariadic,
-                              bool acceptsKwargs) : this (module, name, isInstance, parameterCount, isVariadic, acceptsKwargs)
+            IodineModule module,
+            string name,
+            bool isInstance,
+            int parameterCount,
+            bool isVariadic,
+            bool acceptsKwargs) : this (module, name, isInstance, parameterCount, isVariadic, acceptsKwargs)
         {
             this.parent = parent;
         }

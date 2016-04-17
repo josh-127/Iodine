@@ -50,13 +50,13 @@ namespace Iodine.Interop
             int i = 0;
 
             var suitableOverload = type.GetConstructors ().Where (p => p.GetParameters ().Length ==
-                          arguments.Length).
+                                   arguments.Length).
 				FirstOrDefault ();
 			
             Type[] types = suitableOverload.GetParameters ().Select (p => p.ParameterType).ToArray ();
 
             object[] objects = arguments.Select (p => typeRegistry.ConvertToNativeObject (p,
-                          types [i++])).ToArray ();
+                                   types [i++])).ToArray ();
 			
             return ObjectWrapper.CreateFromObject (typeRegistry, this, suitableOverload.Invoke (objects));
         }
@@ -88,8 +88,8 @@ namespace Iodine.Interop
         }
 
         private static BuiltinMethodCallback CreateMultiMethod (TypeRegistry registry,
-                                                          Type type,
-                                                          string name)
+            Type type,
+            string name)
         {
             var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Static)
 				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)

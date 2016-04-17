@@ -53,7 +53,7 @@ namespace Iodine.Compiler.Ast
         }
 
         public UseStatement (SourceLocation location, string module, List<string> imports, bool wildcard,
-                             bool relative = false)
+            bool relative = false)
             : base (location)
         {
             Module = module;

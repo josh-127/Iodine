@@ -235,7 +235,7 @@ namespace Iodine.Compiler
 
 
         private static AstNode ParseFunction (TokenStream stream, bool prototype = false,
-                                              ClassDeclaration cdecl = null)
+            ClassDeclaration cdecl = null)
         {
             if (stream.Accept (TokenClass.Operator, "@")) {
                 /*
@@ -315,9 +315,9 @@ namespace Iodine.Compiler
         }
 
         private static List<string> ParseFuncParameters (TokenStream stream,
-                                                         out bool isInstanceMethod,
-                                                         out bool isVariadic,
-                                                         out bool hasKeywordArgs)
+            out bool isInstanceMethod,
+            out bool isVariadic,
+            out bool hasKeywordArgs)
         {
             isVariadic = false;
             hasKeywordArgs = false;

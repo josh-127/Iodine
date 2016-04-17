@@ -180,7 +180,7 @@ namespace Iodine.Runtime
         }
 
         private static IEnumerator InternalTakeWhile (VirtualMachine vm, IodineObject iterator,
-                                                IodineObject func)
+            IodineObject func)
         {
             iterator.IterReset (vm);
             while (iterator.IterMoveNext (vm)) {
@@ -193,7 +193,7 @@ namespace Iodine.Runtime
         }
 
         private static IEnumerator InternalSkipWhile (VirtualMachine vm, IodineObject iterator,
-                                                IodineObject func)
+            IodineObject func)
         {
             iterator.IterReset (vm);
             while (iterator.IterMoveNext (vm)) {

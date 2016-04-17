@@ -38,25 +38,25 @@ namespace Iodine.Interop
     static class MethodWrapper
     {
         public static BuiltinMethodCallback Create (TypeRegistry registry, 
-                                              MethodInfo info,
-                                              object self = null)
+            MethodInfo info,
+            object self = null)
         {
             return new BuiltinMethodCallback (((VirtualMachine vm,
-                                       IodineObject @this, IodineObject[] arguments) => {
+                IodineObject @this, IodineObject[] arguments) => {
                 Type[] types = info.GetParameters ().Select (p => p.ParameterType).ToArray ();
                 int i = 0;
                 object[] objects = arguments.Select (p => registry.ConvertToNativeObject (p,
-                           types [i++])).ToArray ();
+                                       types [i++])).ToArray ();
                 return registry.ConvertToIodineObject (info.Invoke (self, objects));
             }), null);
         }
 
         public static BuiltinMethodCallback Create (TypeRegistry registry,
-                                              IEnumerable<MethodInfo> info,
-                                              object self = null)
+            IEnumerable<MethodInfo> info,
+            object self = null)
         {
             return new BuiltinMethodCallback (((VirtualMachine vm,
-                                       IodineObject @this, IodineObject[] arguments) => {
+                IodineObject @this, IodineObject[] arguments) => {
                 var suitableOverloads = info.Where (p => p.GetParameters ().Length == arguments.Length);
 
                 foreach (MethodInfo overload in suitableOverloads) {

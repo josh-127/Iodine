@@ -161,8 +161,8 @@ namespace Iodine
             }
             string exePath = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
             string commonAppData = Environment.GetFolderPath (
-                              Environment.SpecialFolder.CommonApplicationData
-                          );
+                                       Environment.SpecialFolder.CommonApplicationData
+                                   );
             string appData = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 
             if (File.Exists (Path.Combine (exePath, "iodine.conf"))) {

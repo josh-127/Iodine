@@ -96,7 +96,7 @@ namespace Iodine.Runtime
 				Where (p => p.IsStatic && p.IsDefined (typeof(IodineBuiltinMethod)));
             foreach (MethodInfo info in methods) {
                 IodineBuiltinMethod attr = (IodineBuiltinMethod)info.GetCustomAttributes (
-                                   typeof(IodineBuiltinMethod), false).First ();
+                                               typeof(IodineBuiltinMethod), false).First ();
                 SetAttribute (attr.Name, new BuiltinMethodCallback (
                     (IodineMethodDelegate)Delegate.CreateDelegate (typeof(IodineMethodDelegate), info), null)
                 );

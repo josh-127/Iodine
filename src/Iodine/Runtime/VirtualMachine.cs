@@ -141,7 +141,7 @@ namespace Iodine.Runtime
         {
             int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 : method.ParameterCount;
             if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
-            (!method.Variadic && arguments.Length < requiredArgs)) {
+                (!method.Variadic && arguments.Length < requiredArgs)) {
                 RaiseException (new IodineArgumentException (method.ParameterCount));
                 return null;
             }
@@ -152,12 +152,12 @@ namespace Iodine.Runtime
         }
 
         public IodineObject InvokeMethod (IodineMethod method, StackFrame frame, IodineObject self,
-                                    IodineObject[] arguments)
+            IodineObject[] arguments)
         {
             int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 :
 				method.ParameterCount;
             if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
-            (!method.Variadic && arguments.Length < requiredArgs)) {
+                (!method.Variadic && arguments.Length < requiredArgs)) {
                 RaiseException (new IodineArgumentException (method.ParameterCount));
                 return null;
             }
@@ -398,7 +398,7 @@ namespace Iodine.Runtime
                     IodineObject value = Pop ();
                     string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
                     if (target.Attributes.ContainsKey (attribute) &&
-                    target.Attributes [attribute] is IIodineProperty) {
+                        target.Attributes [attribute] is IIodineProperty) {
                         IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
                         property.Set (this, value);
                         break;
@@ -411,7 +411,7 @@ namespace Iodine.Runtime
                     IodineObject target = Pop ();
                     string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
                     if (target.Attributes.ContainsKey (attribute) &&
-                    target.Attributes [attribute] is IIodineProperty) {
+                        target.Attributes [attribute] is IIodineProperty) {
                         IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
                         Push (property.Get (this));
                         break;

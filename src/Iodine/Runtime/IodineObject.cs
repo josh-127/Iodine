@@ -143,7 +143,10 @@ namespace Iodine.Runtime
         public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
         {
             if (Attributes.ContainsKey ("__setIndex__")) {
-                Attributes ["__setIndex__"].Invoke (vm, new IodineObject[] { key, value });
+                Attributes ["__setIndex__"].Invoke (vm, new IodineObject[] {
+                    key,
+                    value
+                });
             }
         }
 
@@ -156,8 +159,8 @@ namespace Iodine.Runtime
         }
 
         public IodineObject PerformBinaryOperation (VirtualMachine vm,
-                                              BinaryOperation binop,
-                                              IodineObject rvalue)
+            BinaryOperation binop,
+            IodineObject rvalue)
         {
             switch (binop) {
             case BinaryOperation.Add:

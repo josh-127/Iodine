@@ -59,7 +59,7 @@ namespace Iodine.Interop
         }
 
         public static PropertyWrapper Create (TypeRegistry registry, PropertyInfo property,
-                                        object self = null)
+            object self = null)
         {
             return new PropertyWrapper (registry, property, self);
         }

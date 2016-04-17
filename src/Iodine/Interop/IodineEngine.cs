@@ -143,7 +143,7 @@ namespace Iodine.Interop
                         module = modules [type.Namespace];
                     }
                     ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type,
-                                type.Name);
+                                               type.Name);
                     module.SetAttribute (type.Name, wrapper);
                     typeRegistry.AddTypeMapping (type, wrapper, null);
 					

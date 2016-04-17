@@ -42,10 +42,10 @@ namespace Iodine.Compiler.Ast
         public readonly ArgumentList TypeList;
 
         public TryExceptStatement (SourceLocation location,
-                                   string ident,
-                                   AstNode tryBody,
-                                   AstNode exceptBody,
-                                   ArgumentList typeList = null)
+            string ident,
+            AstNode tryBody,
+            AstNode exceptBody,
+            ArgumentList typeList = null)
             : base (location)
         {
             ExceptionIdentifier = ident;

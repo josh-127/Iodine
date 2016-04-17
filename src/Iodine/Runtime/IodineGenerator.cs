@@ -43,9 +43,9 @@ namespace Iodine.Runtime
         private StackFrame stackFrame;
 
         public IodineGenerator (StackFrame frame,
-                          IodineMethod baseMethod,
-                          IodineObject[] args, 
-                          IodineObject initialValue)
+            IodineMethod baseMethod,
+            IodineObject[] args, 
+            IodineObject initialValue)
             : base (TypeDefinition)
         {
             arguments = args;
@@ -55,9 +55,9 @@ namespace Iodine.Runtime
         }
 
         public IodineGenerator (StackFrame frame,
-                          IodineBoundMethod baseMethod,
-                          IodineObject[] args,
-                          IodineObject initialValue)
+            IodineBoundMethod baseMethod,
+            IodineObject[] args,
+            IodineObject initialValue)
             : base (TypeDefinition)
         {
             arguments = args;

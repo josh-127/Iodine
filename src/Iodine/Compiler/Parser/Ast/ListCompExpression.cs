@@ -42,9 +42,9 @@ namespace Iodine.Compiler.Ast
         public AstNode Predicate;
 
         public ListCompExpression (SourceLocation location, AstNode expression,
-                                   string ident,
-                                   AstNode iterator,
-                                   AstNode predicate = null)
+            string ident,
+            AstNode iterator,
+            AstNode predicate = null)
             : base (location)
         {
             Expression = expression;

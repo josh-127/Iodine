@@ -67,12 +67,12 @@ namespace Iodine.Compiler
         public readonly bool IsInClass = false;
 
         public EmitContext (SymbolTable symbolTable,
-                            ModuleBuilder module,
-                            MethodBuilder method,
-                            bool isInClass = false,
-                            IodineClass clazz = null,
-                            bool isPatternExpression = false,
-                            int patternTempory = 0)
+            ModuleBuilder module,
+            MethodBuilder method,
+            bool isInClass = false,
+            IodineClass clazz = null,
+            bool isPatternExpression = false,
+            int patternTempory = 0)
         {
             SymbolTable = symbolTable;
             CurrentMethod = method;

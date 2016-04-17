@@ -65,9 +65,9 @@ namespace Iodine.Runtime
         private Dictionary<int, IodineObject> parentLocals = null;
 
         public StackFrame (IodineMethod method,
-                     IodineObject[] arguments,
-                     StackFrame parent,
-                     IodineObject self)
+            IodineObject[] arguments,
+            StackFrame parent,
+            IodineObject self)
         {
             locals = new Dictionary<int, IodineObject> ();
             parentLocals = locals;
@@ -78,10 +78,10 @@ namespace Iodine.Runtime
         }
 
         public StackFrame (IodineMethod method,
-                     IodineObject[] arguments,
-                     StackFrame parent,
-                     IodineObject self,
-                     Dictionary<int, IodineObject> locals) : this (method, arguments, parent, self)
+            IodineObject[] arguments,
+            StackFrame parent,
+            IodineObject self,
+            Dictionary<int, IodineObject> locals) : this (method, arguments, parent, self)
         {
             parentLocals = locals;
             this.locals = new Dictionary<int, IodineObject> ();

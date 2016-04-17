@@ -227,7 +227,7 @@ namespace Iodine.Runtime
 
         public IodineInternalErrorException (Exception ex)
             : base (TypeDefinition, "Internal exception: {0}\n Inner Exception: ",
-            ex.Message, ex.InnerException == null ? "" : ex.InnerException.Message)
+                ex.Message, ex.InnerException == null ? "" : ex.InnerException.Message)
         {
             Base = new IodineException ();
         }
@@ -292,7 +292,7 @@ namespace Iodine.Runtime
             foreach (Error error in errorLog.Errors) {
                 SourceLocation loc = error.Location;
                 string text = String.Format ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
-                      loc.Line, loc.Column, error.Text);
+                                  loc.Line, loc.Column, error.Text);
                 errors [i++] = new IodineString (text);
             }
             SetAttribute ("errors", new IodineTuple (errors));

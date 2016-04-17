@@ -433,10 +433,10 @@ namespace Iodine.Runtime
             }
 
             bool isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT
-                    || Environment.OSVersion.Platform == PlatformID.Win32S
-                    || Environment.OSVersion.Platform == PlatformID.Win32Windows
-                    || Environment.OSVersion.Platform == PlatformID.WinCE
-                    || Environment.OSVersion.Platform == PlatformID.Xbox;
+                             || Environment.OSVersion.Platform == PlatformID.Win32S
+                             || Environment.OSVersion.Platform == PlatformID.Win32Windows
+                             || Environment.OSVersion.Platform == PlatformID.WinCE
+                             || Environment.OSVersion.Platform == PlatformID.Xbox;
 
             if (isWindows) {
                 return new IodineSubprocess (Popen_Win32 (command.Value, read, write), read, write);
@@ -493,10 +493,10 @@ namespace Iodine.Runtime
             }
 
             bool isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT
-                    || Environment.OSVersion.Platform == PlatformID.Win32S
-                    || Environment.OSVersion.Platform == PlatformID.Win32Windows
-                    || Environment.OSVersion.Platform == PlatformID.WinCE
-                    || Environment.OSVersion.Platform == PlatformID.Xbox;
+                             || Environment.OSVersion.Platform == PlatformID.Win32S
+                             || Environment.OSVersion.Platform == PlatformID.Win32Windows
+                             || Environment.OSVersion.Platform == PlatformID.WinCE
+                             || Environment.OSVersion.Platform == PlatformID.Xbox;
 
 
             Process proc = null;

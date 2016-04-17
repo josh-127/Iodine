@@ -69,9 +69,9 @@ namespace Iodine.Interop
         }
 
         private static BuiltinMethodCallback CreateMultiMethod (TypeRegistry registry,
-                                                          Type type,
-                                                          object self, 
-                                                          string name)
+            Type type,
+            object self, 
+            string name)
         {
             var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Instance)
 				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)

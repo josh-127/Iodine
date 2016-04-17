@@ -123,8 +123,8 @@ namespace Iodine.Interop
                 return TypeMappingExists (from, to.GetElementType ());
             }
             TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == from &&
-                             p.NativeType != null &&
-                             p.NativeType.IsAssignableFrom (to)).FirstOrDefault ();
+                                      p.NativeType != null &&
+                                      p.NativeType.IsAssignableFrom (to)).FirstOrDefault ();
             return entry != null;
         }
 
@@ -141,8 +141,8 @@ namespace Iodine.Interop
             IodineTypeDefinition key = obj.TypeDef;
 
             TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == key &&
-                             p.NativeType != null &&
-                             p.NativeType.IsAssignableFrom (expectedType)).FirstOrDefault ();
+                                      p.NativeType != null &&
+                                      p.NativeType.IsAssignableFrom (expectedType)).FirstOrDefault ();
 
             if (entry != null) {
                 return entry.Mapping.ConvertFrom (this, obj);

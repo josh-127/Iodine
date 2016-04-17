@@ -45,10 +45,10 @@ namespace Iodine.Compiler.Ast
         private List<AstNode> body = new List<AstNode> ();
 
         public LambdaExpression (SourceLocation location,
-                                 bool isInstanceMethod,
-                                 bool variadic,
-                                 bool acceptsKeywordArguments,
-                                 IList<string> parameters)
+            bool isInstanceMethod,
+            bool variadic,
+            bool acceptsKeywordArguments,
+            IList<string> parameters)
             : base (location)
         {
             Parameters = parameters;
