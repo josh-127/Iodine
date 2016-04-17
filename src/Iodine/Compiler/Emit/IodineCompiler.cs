@@ -1490,7 +1490,7 @@ namespace Iodine.Compiler
 
         public override void Accept (NullExpression nil)
         {
-            Context.CurrentMethod.EmitInstruction (nil.Location, Opcode.LoadTrue);
+            Context.CurrentMethod.EmitInstruction (nil.Location, Opcode.LoadNull);
 
             if (Context.IsPatternExpression) {
                 Context.CurrentMethod.EmitInstruction (nil.Location,

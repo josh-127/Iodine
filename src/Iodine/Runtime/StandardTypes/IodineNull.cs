@@ -33,11 +33,19 @@ namespace Iodine.Runtime
 {
     public class IodineNull : IodineObject
     {
-        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Null");
+        public class NullType : IodineTypeDefinition
+        {
+            public static readonly NullType Instance = new NullType ();
+            private NullType () 
+                : base ("Null")
+            {
+            }
+        }
+
         public static readonly IodineNull Instance = new IodineNull ();
 
-        protected IodineNull ()
-            : base (TypeDefinition)
+        public IodineNull ()
+            : base (NullType.Instance)
         {
 
         }
