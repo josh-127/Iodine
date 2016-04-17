@@ -1,20 +1,32 @@
-# File        : events.id
-# Name        : events
-# Author      : GruntTheDivine
-# Description : Provides several classes for event handling and dispatch
+/**
+ * Provides several classes for handling and dispatching events
+ * @module events
+ * @author GruntTheDivine
+ */
 
-
-# Class       : EventEmitter
-# Description : Provides a node.js like EventEmitter class
+/**
+ * Provides a node.js like EventEmitter class for handling events
+ */
 class EventEmitter {
     func EventEmitter (self) {
         self.dict = {};
     }
 
+    /**
+     * Defines an event handler for a specified event
+     * @param event The name of the event
+     * @param callback The event handler
+     */
     func on (self, event, callback) {
         self.dict [event] = callback;
     }
 
+    /**
+     * Defines an event handler for a specified event which will be called once
+     * then removed 
+     * @param event The name of the event
+     * @param callback The event handler
+     */
     func once (self, event, callback) {
         self.dict [event] = lambda (*args) {
             callback (*args);
@@ -22,10 +34,20 @@ class EventEmitter {
         };
     }
 
+    /**
+     * Removes an event handler
+     * @param callback The event handler to remove
+     */
     func remove (self, callback) {
         self.dict.remove (callback);
     }
 
+    /**
+     * Raises an event and dispatches the appropriate event handler if it
+     * exists 
+     * @param event The name of the event
+     * @param args Arguments to be passed to the event hander
+     */
     func emit (self, event, *args) {
         if (self.dict.contains (event)) {
             self.dict [event] (*args);
@@ -33,25 +55,39 @@ class EventEmitter {
     }
 }
 
-
-# Class       : Event
-# Description : Provides a class for a single event
+/**
+ * Represents a single event in which multiple event handlers can be added
+ */
 class Event {
     func Event (self) {
         self._handlers = [];
     }
 
+    /**
+     * Raises the event, invoking all registered event handlers
+     * @param *args Arguments to pass on to each handler
+     */
     func __invoke__ (self, *args) {
         foreach (handler in self._handlers) {
             handler (*args);
         }   
     }
 
+    /**
+     * Overloaded the + operator allowing for events to be added simply by
+     * doing myEvent += handler
+     * @param callback The event handler
+     */
     func __add__ (self, callback) {
         self._handlers.add (callback);
         return self;
     }
 
+    /**
+     * Overloads the - operator, allowing for events to be removed simply
+     * by doing myEvent -= handler
+     * @param callback The event handler
+     */
     func __sub__ (self, callback) {
         self._handlers.remove (callback);
     }

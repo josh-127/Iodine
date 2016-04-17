@@ -8,6 +8,11 @@
 
 _characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
+/**
+ * Encodes a string into base64
+ * @param Str dataStr String to encode
+ * 
+ */
 func encode (dataStr) {
     r = "";
     p = "";

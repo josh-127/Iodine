@@ -1,3 +1,9 @@
+/**
+ * Provides methods for disassembling Iodine bytecode
+ * @module dis
+ * @author GruntTheDivine
+ */
+
 use reflection;
 
 
@@ -88,6 +94,10 @@ func _getMnemonic (opcode, argument) {
     return _instructions [opcode];
 }
 
+/**
+ * Disassembles an iodine method, printing the disassembly to the screen
+ * @param obj An iodine function to disassemble
+ */
 func disassemble (obj) {
 
     bytecode = reflection.getBytecode (obj);

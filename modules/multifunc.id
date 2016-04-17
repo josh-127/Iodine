@@ -1,15 +1,24 @@
-###
-# File        : multifunc.id
-# Author      : GruntTheDivine
-# Description : Provides classes for implementing function overloading
-###
+/**
+ * Provides classes for implementing function overloading
+ * @module multifunc
+ * @author GruntTheDivine
+ */
 
+
+/**
+ * Overload exception is raised when a suitable overload is not found in a
+ * overloaded multifunc
+ */
 class OverloadException : Exception {
     func OverloadException (self) {
         super ("No suitable overload was found!");
     }   
 }
 
+/**
+ * Represents a multifunction where signatures are defined based on argument
+ * count
+ */
 class MultiFunc {
     func MultiFunc (self) {
         self._dispatchTable = {};
@@ -18,10 +27,21 @@ class MultiFunc {
         };
     }
 
+    /**
+     * Defines a function that will be invoked when this multifunc instance
+     * is called matching this signature
+     * @param method Method callback
+     * @param argc How many arguments are required for callback
+     */
     func define (self, method, argc) {
         self._dispatchTable [argc] = method;   
     }
 
+    /**
+     * Defines a default callback which will be invoked if no suitable
+     * overload was found.
+     * @param meth Method Callback
+     */
     func defineDefault (self, meth) {
         self._default = meth;
     }
@@ -36,6 +56,10 @@ class MultiFunc {
     }
 }
 
+/**
+ * Represents a multifunction where signatures are defined based on argument
+ * types
+ */
 class TypedMultiFunc {
     class TypedOverload {
         func TypedOverload (self, method, types) {
@@ -65,7 +89,13 @@ class TypedMultiFunc {
             raise OverloadException ();
         }
     }
-
+    
+    /**
+     * Defines an overload which will be invoked if the arguments passed to
+     * this multifunction matches the types described in type list
+     * @param method Method callback
+     * @param typeList A list of types that define this signature
+     */
     func define (self, method, *typeList) {
         self._dispatchTable.add (TypedMultiFunc.TypedOverload (method, typeList));
     }

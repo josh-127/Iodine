@@ -1,10 +1,21 @@
+/**
+  * Provides classes and methods for parsing JSON
+  * @module json
+  * @author GruntTheDivine
+  */
 
+/**
+ * Raised when ever malformed JSON is parsed
+ */
 class InvalidJsonException : Exception {
     func InvalidJsonException (self) {
         super ("Attempted to parse invalid JSON!");
     }
 }
 
+/**
+ * Represents a JSON file
+ */
 class JsonFile {
     # JSON token types   
     enum JsonTokenType {
@@ -121,7 +132,6 @@ class JsonFile {
                     raise InvalidJsonException ();
                 }
             }
-
             return ret;
         }
         
@@ -258,13 +268,22 @@ class JsonFile {
     }
 }
 
-
+/**
+ * Parses a JSON string
+ * @param json the Json to parse
+ * @returns The Iodine representation of the JSON string
+ */
 func parse (json) {
     file = JsonFile ();
     file._initialize (json);
     return file._parse (file._tokenize ());
 }
 
+/**
+ * Converts an Iodine object into json
+ * @param item The item to dump
+ * @returns A JSON string
+ */
 func dump (item) {
     return _dump (item);
 }

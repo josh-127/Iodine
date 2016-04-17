@@ -1,29 +1,50 @@
-###
-# Name        : configfile
-# Author      : @GruntTheDivine
-# Description : Module for parsing simple INI files
-# Please add yourself as author if you make changes
-###
-
+/*
+ * Module for parsing simple .INI configuration files
+ * @module configfile
+ * @author GruntTheDivine
+ */
 use regex;
 
+/**
+ * Represents a INI configuration file
+ */
 class ConfigFile {
     func ConfigFile (self) {
         self.sections = HashMap ();
     }
 
+    /**
+     * Returns true if this configuration file has the specified section
+     * @param name The name of the section
+     * @returns True if the configuration file contains the specified section,
+     *          otherwise false
+     */
     func hasSection (self, name) {
         return self.sections.contains (name);
     }
 
+    /**
+     * Adds a new section to this configuration file
+     * @param name The name of the file
+     * @param values A list of values for this section
+     */
     func addSection (self, name, values) {
         self.sections [name] = typecast (HashMap, values);  
     }
 
+    /**
+     * Returns a section of this configuration file as a hashmap
+     * @param name The name of the section
+     * @returns A hashmap containing all the values of this section
+     */
     func getSection (self, name) {
         return self.sections [name];
     }
 
+    /**
+     * Saves the configuration file onto the disk
+     * @param path The path of the file to write to
+     */
     func save (self, path) {
         with (file = open (path, "w")) {
             foreach (section in self.sections) {
@@ -36,13 +57,23 @@ class ConfigFile {
         }
     }
 
+    /**
+     * Loads an existing INI configuration file
+     * @param file The path on the disk
+     * @returns A new ConfigFile instance
+     */
     func open (file) {
         with (fd = open (file, "r")) {
             source = fd.readAll ();
             return ConfigFile.parse (source);
         }
     }
-
+    
+    /**
+     * Parses a string from an INI file
+     * @param source The code to parse
+     * @returns A new ConfigFile instance
+     */
     func parse (source) {
         file = ConfigFile ();
         source = source.trim ();

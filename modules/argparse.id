@@ -1,13 +1,13 @@
-###
-# Name          : argparse
-# Author        : @GruntTheDivine
-# Description   : Simple command line argument parsing module
-####
 
+/**
+ * Simple command line argument parsing module
+ * @author Sloan Crandell <sloancrandell@gmail.com>
+ * @module argparse
+ */
 use reflection;
 
 class CommandLineOptions {
-    
+       
     class CommandLineOption {
         func CommandLineOption (self, defaultValue, required) {
             self.defaultValue = defaultValue;
