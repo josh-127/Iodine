@@ -33,42 +33,42 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class ClassDeclaration : AstNode
-	{
-		public readonly string Name;
+    public class ClassDeclaration : AstNode
+    {
+        public readonly string Name;
 
-		public readonly List<string> Base;
+        public readonly List<string> Base;
 
-		public FunctionDeclaration Constructor {
-			get;
-			set;
-		}
+        public FunctionDeclaration Constructor {
+            get;
+            set;
+        }
 
-		public readonly List<AstNode> Members = new List<AstNode> ();
+        public readonly List<AstNode> Members = new List<AstNode> ();
 
-		public ClassDeclaration (SourceLocation location, string name, List<string> baseClass)
-			: base (location)
-		{
-			Name = name;
-			Base = baseClass;
-			FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, new List<string> ());
-			Constructor = dummyCtor;
-		}
+        public ClassDeclaration (SourceLocation location, string name, List<string> baseClass)
+            : base (location)
+        {
+            Name = name;
+            Base = baseClass;
+            FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, new List<string> ());
+            Constructor = dummyCtor;
+        }
 
-		public void Add (AstNode item)
-		{
-			Members.Add (item);
-		}
+        public void Add (AstNode item)
+        {
+            Members.Add (item);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Constructor.Visit (visitor);
-			Members.ForEach (p => p.Visit (visitor));
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Constructor.Visit (visitor);
+            Members.ForEach (p => p.Visit (visitor));
+        }
+    }
 }

@@ -33,74 +33,74 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler
 {
-	/// <summary>
-	/// Error log.
-	/// </summary>
-	public sealed class ErrorSink : IEnumerable <Error>
-	{
-		private List<Error> errors = new List<Error> ();
+    /// <summary>
+    /// Error log.
+    /// </summary>
+    public sealed class ErrorSink : IEnumerable <Error>
+    {
+        private List<Error> errors = new List<Error> ();
 
-		/// <summary>
-		/// Gets the error count.
-		/// </summary>
-		/// <value>The error count.</value>
-		public int ErrorCount { private set; get; }
+        /// <summary>
+        /// Gets the error count.
+        /// </summary>
+        /// <value>The error count.</value>
+        public int ErrorCount { private set; get; }
 
-		/// <summary>
-		/// Gets the warning count.
-		/// </summary>
-		/// <value>The warning count.</value>
-		public int WarningCount { private set; get; }
+        /// <summary>
+        /// Gets the warning count.
+        /// </summary>
+        /// <value>The warning count.</value>
+        public int WarningCount { private set; get; }
 
-		/// <summary>
-		/// Gets the errors.
-		/// </summary>
-		/// <value>The errors.</value>
-		public IList<Error> Errors {
-			get {
-				return errors;
-			}
-		}
+        /// <summary>
+        /// Gets the errors.
+        /// </summary>
+        /// <value>The errors.</value>
+        public IList<Error> Errors {
+            get {
+                return errors;
+            }
+        }
 
-		/// <summary>
-		/// Adds the error.
-		/// </summary>
-		/// <param name="error">Error.</param>
-		/// <param name="location">Location.</param>
-		/// <param name="args">Arguments.</param>
-		public void Add (Errors error, SourceLocation location, params object[] args)
-		{
-			errors.Add (new Error (error, location, args));
-			ErrorCount++;
-		}
+        /// <summary>
+        /// Adds the error.
+        /// </summary>
+        /// <param name="error">Error.</param>
+        /// <param name="location">Location.</param>
+        /// <param name="args">Arguments.</param>
+        public void Add (Errors error, SourceLocation location, params object[] args)
+        {
+            errors.Add (new Error (error, location, args));
+            ErrorCount++;
+        }
 
 
-		/// <summary>
-		/// clears all errors
-		/// </summary>
-		public void Clear ()
-		{
-			ErrorCount = 0;
-			errors.Clear ();
-		}
+        /// <summary>
+        /// clears all errors
+        /// </summary>
+        public void Clear ()
+        {
+            ErrorCount = 0;
+            errors.Clear ();
+        }
 
-		/// <summary>
-		/// Returns an enumerator that iterates through a collection.
-		/// </summary>
-		/// <returns>The enumerator.</returns>
-		public IEnumerator <Error> GetEnumerator ()
-		{
-			return errors.GetEnumerator ();
-		}
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        public IEnumerator <Error> GetEnumerator ()
+        {
+            return errors.GetEnumerator ();
+        }
 
-		/// <summary>
-		/// Gets the enumerator.
-		/// </summary>
-		/// <returns>The enumerator.</returns>
-		IEnumerator IEnumerable.GetEnumerator ()
-		{
-			return GetEnumerator ();
-		}
-	}
+        /// <summary>
+        /// Gets the enumerator.
+        /// </summary>
+        /// <returns>The enumerator.</returns>
+        IEnumerator IEnumerable.GetEnumerator ()
+        {
+            return GetEnumerator ();
+        }
+    }
 }
 

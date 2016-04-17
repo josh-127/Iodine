@@ -31,49 +31,49 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class IfStatement : AstNode
-	{
-		public AstNode Condition { 
-			private set;
-			get;
-		}
+    public class IfStatement : AstNode
+    {
+        public AstNode Condition { 
+            private set;
+            get;
+        }
 
-		public AstNode Body {
-			private set;
-			get;
-		}
+        public AstNode Body {
+            private set;
+            get;
+        }
 
-		public AstNode ElseBody {
-			private set;
-			get;
-		}
+        public AstNode ElseBody {
+            private set;
+            get;
+        }
 
-		public IfStatement (SourceLocation location, AstNode condition, AstNode body, AstNode elseBody = null)
-			: base (location)
-		{
-			Condition = condition;
-			Body = body;
-			ElseBody = elseBody;
+        public IfStatement (SourceLocation location, AstNode condition, AstNode body, AstNode elseBody = null)
+            : base (location)
+        {
+            Condition = condition;
+            Body = body;
+            ElseBody = elseBody;
 
-			if (elseBody == null) {
-				elseBody = new Statement (location);
-			}
-		}
+            if (elseBody == null) {
+                elseBody = new Statement (location);
+            }
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Condition.Visit (visitor);
-			Body.Visit (visitor);
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Condition.Visit (visitor);
+            Body.Visit (visitor);
 
-			if (ElseBody != null) {
-				ElseBody.Visit (visitor);
-			}
-		}
-	}
+            if (ElseBody != null) {
+                ElseBody.Visit (visitor);
+            }
+        }
+    }
 }
 

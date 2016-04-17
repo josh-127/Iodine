@@ -38,142 +38,142 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime.Debug
 {
-	public class DebugSession
-	{
-		class DebugResponse 
-		{
-			public readonly SourceLocation Location;
-			public readonly StackFrame Frame;
+    public class DebugSession
+    {
+        class DebugResponse
+        {
+            public readonly SourceLocation Location;
+            public readonly StackFrame Frame;
 
-			public DebugResponse (SourceLocation location, StackFrame frame)
-			{
-				Location = location;
-				Frame = frame;
-			}
-		}
+            public DebugResponse (SourceLocation location, StackFrame frame)
+            {
+                Location = location;
+                Frame = frame;
+            }
+        }
 
-		private VirtualMachine virtualMachine;
-		private NetworkStream baseStream;
-		private StreamReader requestStream;
-		private StreamWriter responseStream;
+        private VirtualMachine virtualMachine;
+        private NetworkStream baseStream;
+        private StreamReader requestStream;
+        private StreamWriter responseStream;
 
 
-		private Dictionary<string, string[]> fileCache = new Dictionary<string, string[]> ();
+        private Dictionary<string, string[]> fileCache = new Dictionary<string, string[]> ();
 
-		public DebugSession (VirtualMachine vm, Socket socket)
-		{
-			virtualMachine = vm;
-			baseStream = new NetworkStream (socket);
-			requestStream = new StreamReader (baseStream);
-			responseStream = new StreamWriter (baseStream);
-		}
+        public DebugSession (VirtualMachine vm, Socket socket)
+        {
+            virtualMachine = vm;
+            baseStream = new NetworkStream (socket);
+            requestStream = new StreamReader (baseStream);
+            responseStream = new StreamWriter (baseStream);
+        }
 
-		public void Connect ()
-		{
-			while (true) {
-				string command = requestStream.ReadLine ();
-				SendResponse (InterpretCommand (command));
-			}
-		}
+        public void Connect ()
+        {
+            while (true) {
+                string command = requestStream.ReadLine ();
+                SendResponse (InterpretCommand (command));
+            }
+        }
 
-		private void SendResponse (DebugResponse response)
-		{
-			if (!fileCache.ContainsKey (response.Location.File)) {
-				fileCache [response.Location.File] = File.ReadAllLines (response.Location.File);
-			}
+        private void SendResponse (DebugResponse response)
+        {
+            if (!fileCache.ContainsKey (response.Location.File)) {
+                fileCache [response.Location.File] = File.ReadAllLines (response.Location.File);
+            }
 
-			StringBuilder sb = new StringBuilder ();
-			sb.AppendFormat ("Line:{0};", response.Location.Line);
-			sb.AppendFormat ("File:{0}", response.Location.File);
-			sb.AppendFormat ("!{0}", fileCache [response.Location.File] [response.Location.Line - 1]);
-			responseStream.WriteLine (sb.ToString ());
-			responseStream.Flush ();
-		}
+            StringBuilder sb = new StringBuilder ();
+            sb.AppendFormat ("Line:{0};", response.Location.Line);
+            sb.AppendFormat ("File:{0}", response.Location.File);
+            sb.AppendFormat ("!{0}", fileCache [response.Location.File] [response.Location.Line - 1]);
+            responseStream.WriteLine (sb.ToString ());
+            responseStream.Flush ();
+        }
 
-		private DebugResponse InterpretCommand (string command)
-		{
-			string[] args = command.Split (' ');
-			switch (args [0]) {
-			case "s":
-			case "step":
-				return Step ();
-			case "d":
-			case "down":
-				return Down ();
-			case "n":
-			case "next":
-				return Next ();
-			case "c":
-			case "continue":
-				virtualMachine.SetTrace (null);
-				return null;
-			}
-			return null;
-		}
+        private DebugResponse InterpretCommand (string command)
+        {
+            string[] args = command.Split (' ');
+            switch (args [0]) {
+            case "s":
+            case "step":
+                return Step ();
+            case "d":
+            case "down":
+                return Down ();
+            case "n":
+            case "next":
+                return Next ();
+            case "c":
+            case "continue":
+                virtualMachine.SetTrace (null);
+                return null;
+            }
+            return null;
+        }
 
-		private DebugResponse Step ()
-		{
-			ManualResetEvent done = new ManualResetEvent (false);
-			DebugResponse response = null;
-			virtualMachine.SetTrace (((TraceType type,
-				VirtualMachine vm,
-				StackFrame frame,
-				SourceLocation location) =>  {
-				if (type == TraceType.Line) {
-					response = new DebugResponse (location, frame);
-					done.Set ();
-					return true;
-				}
-				return false;
-			}));
-			virtualMachine.ContinueExecution ();
-			done.WaitOne ();
+        private DebugResponse Step ()
+        {
+            ManualResetEvent done = new ManualResetEvent (false);
+            DebugResponse response = null;
+            virtualMachine.SetTrace (((TraceType type,
+                              VirtualMachine vm,
+                              StackFrame frame,
+                              SourceLocation location) => {
+                if (type == TraceType.Line) {
+                    response = new DebugResponse (location, frame);
+                    done.Set ();
+                    return true;
+                }
+                return false;
+            }));
+            virtualMachine.ContinueExecution ();
+            done.WaitOne ();
 
-			return response;
-		}
+            return response;
+        }
 
-		private DebugResponse Next ()
-		{
-			ManualResetEvent done = new ManualResetEvent (false);
-			DebugResponse response = null;
-			StackFrame currentFrame = virtualMachine.Top;
-			virtualMachine.SetTrace (((TraceType type,
-				VirtualMachine vm,
-				StackFrame frame,
-				SourceLocation location) =>  {
-				if (type == TraceType.Line && frame == currentFrame) {
-					response = new DebugResponse (location, frame);
-					done.Set ();
-					return true;
-				}
-				return false;
-			}));
-			virtualMachine.ContinueExecution ();
-			done.WaitOne ();
+        private DebugResponse Next ()
+        {
+            ManualResetEvent done = new ManualResetEvent (false);
+            DebugResponse response = null;
+            StackFrame currentFrame = virtualMachine.Top;
+            virtualMachine.SetTrace (((TraceType type,
+                              VirtualMachine vm,
+                              StackFrame frame,
+                              SourceLocation location) => {
+                if (type == TraceType.Line && frame == currentFrame) {
+                    response = new DebugResponse (location, frame);
+                    done.Set ();
+                    return true;
+                }
+                return false;
+            }));
+            virtualMachine.ContinueExecution ();
+            done.WaitOne ();
 
-			return response;
-		}
+            return response;
+        }
 
-		private DebugResponse Down ()
-		{
-			ManualResetEvent done = new ManualResetEvent (false);
-			DebugResponse response = null;
-			StackFrame currentFrame = virtualMachine.Top;
-			virtualMachine.SetTrace (((TraceType type,
-				VirtualMachine vm,
-				StackFrame frame,
-				SourceLocation location) =>  {
-				if (type == TraceType.Line && frame.Parent == currentFrame) {
-					response = new DebugResponse (location, frame);
-					done.Set ();
-					return true;
-				}
-				return false;
-			}));
-			virtualMachine.ContinueExecution ();
-			done.WaitOne ();
-			return response;
-		}
-	}
+        private DebugResponse Down ()
+        {
+            ManualResetEvent done = new ManualResetEvent (false);
+            DebugResponse response = null;
+            StackFrame currentFrame = virtualMachine.Top;
+            virtualMachine.SetTrace (((TraceType type,
+                              VirtualMachine vm,
+                              StackFrame frame,
+                              SourceLocation location) => {
+                if (type == TraceType.Line && frame.Parent == currentFrame) {
+                    response = new DebugResponse (location, frame);
+                    done.Set ();
+                    return true;
+                }
+                return false;
+            }));
+            virtualMachine.ContinueExecution ();
+            done.WaitOne ();
+            return response;
+        }
+    }
 }
 

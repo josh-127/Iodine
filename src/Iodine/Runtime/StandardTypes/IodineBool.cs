@@ -32,135 +32,135 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class IodineBool : IodineObject
-	{
-		public static readonly IodineTypeDefinition TypeDefinition = new BoolTypeDef ();
+    public class IodineBool : IodineObject
+    {
+        public static readonly IodineTypeDefinition TypeDefinition = new BoolTypeDef ();
 
-		public static readonly IodineBool True = new IodineBool (true);
-		public static readonly IodineBool False = new IodineBool (false);
+        public static readonly IodineBool True = new IodineBool (true);
+        public static readonly IodineBool False = new IodineBool (false);
 
-		class BoolTypeDef : IodineTypeDefinition
-		{
-			public BoolTypeDef ()
-				: base ("Bool")
-			{
-			}
+        class BoolTypeDef : IodineTypeDefinition
+        {
+            public BoolTypeDef ()
+                : base ("Bool")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				if (args.Length <= 0) {
-					vm.RaiseException (new IodineArgumentException (1));
-				}
-				return IodineBool.Create (Boolean.Parse (args [0].ToString ()));
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
+                return IodineBool.Create (Boolean.Parse (args [0].ToString ()));
+            }
+        }
 
-		public bool Value { private set; get; }
+        public bool Value { private set; get; }
 
-		protected IodineBool (bool val)
-			: base (TypeDefinition)
-		{
-			this.Value = val;
-		}
+        protected IodineBool (bool val)
+            : base (TypeDefinition)
+        {
+            this.Value = val;
+        }
 
-		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
-		{
-			IodineBool boolVal = right as IodineBool;
-			if (boolVal == null) {
-				vm.RaiseException ("Right hand side expected to be Bool!");
-				return null;
-			}
-			return IodineBool.Create (boolVal.Value == Value);
-		}
+        public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+        {
+            IodineBool boolVal = right as IodineBool;
+            if (boolVal == null) {
+                vm.RaiseException ("Right hand side expected to be Bool!");
+                return null;
+            }
+            return IodineBool.Create (boolVal.Value == Value);
+        }
 
-		public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
-		{
-			IodineBool boolVal = right as IodineBool;
-			if (boolVal == null) {
-				vm.RaiseException ("Right hand side expected to be Bool!");
-				return null;
-			}
-			return IodineBool.Create (boolVal.Value != Value);
-		}
-			
-		public override IodineObject LogicalAnd (VirtualMachine vm, IodineObject right)
-		{
-			IodineBool boolVal = right as IodineBool;
-			if (boolVal == null) {
-				vm.RaiseException ("Right hand side expected to be Bool!");
-				return null;
-			}
-			return IodineBool.Create (boolVal.Value && Value);
-		}
+        public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
+        {
+            IodineBool boolVal = right as IodineBool;
+            if (boolVal == null) {
+                vm.RaiseException ("Right hand side expected to be Bool!");
+                return null;
+            }
+            return IodineBool.Create (boolVal.Value != Value);
+        }
 
-		public override IodineObject LogicalOr (VirtualMachine vm, IodineObject right)
-		{
-			IodineBool boolVal = right as IodineBool;
-			if (boolVal == null) {
-				vm.RaiseException ("Right hand side expected to be Bool!");
-				return null;
-			}
-			return IodineBool.Create (boolVal.Value || Value);
-		}
+        public override IodineObject LogicalAnd (VirtualMachine vm, IodineObject right)
+        {
+            IodineBool boolVal = right as IodineBool;
+            if (boolVal == null) {
+                vm.RaiseException ("Right hand side expected to be Bool!");
+                return null;
+            }
+            return IodineBool.Create (boolVal.Value && Value);
+        }
 
-		public override IodineObject And (VirtualMachine vm, IodineObject right)
-		{
-			IodineBool boolVal = right as IodineBool;
-			if (boolVal == null) {
-				vm.RaiseException ("Right hand side expected to be Bool!");
-				return null;
-			}
-			return IodineBool.Create (boolVal.Value & Value);
-		}
+        public override IodineObject LogicalOr (VirtualMachine vm, IodineObject right)
+        {
+            IodineBool boolVal = right as IodineBool;
+            if (boolVal == null) {
+                vm.RaiseException ("Right hand side expected to be Bool!");
+                return null;
+            }
+            return IodineBool.Create (boolVal.Value || Value);
+        }
 
-		public override IodineObject Or (VirtualMachine vm, IodineObject right)
-		{
-			IodineBool boolVal = right as IodineBool;
-			if (boolVal == null) {
-				vm.RaiseException ("Right hand side expected to be Bool!");
-				return null;
-			}
-			return IodineBool.Create (boolVal.Value | Value);
-		}
+        public override IodineObject And (VirtualMachine vm, IodineObject right)
+        {
+            IodineBool boolVal = right as IodineBool;
+            if (boolVal == null) {
+                vm.RaiseException ("Right hand side expected to be Bool!");
+                return null;
+            }
+            return IodineBool.Create (boolVal.Value & Value);
+        }
 
-		public override IodineObject Xor (VirtualMachine vm, IodineObject right)
-		{
-			IodineBool boolVal = right as IodineBool;
-			if (boolVal == null) {
-				vm.RaiseException ("Right hand side expected to be Bool!");
-				return null;
-			}
-			return IodineBool.Create (boolVal.Value ^ Value);
-		}
+        public override IodineObject Or (VirtualMachine vm, IodineObject right)
+        {
+            IodineBool boolVal = right as IodineBool;
+            if (boolVal == null) {
+                vm.RaiseException ("Right hand side expected to be Bool!");
+                return null;
+            }
+            return IodineBool.Create (boolVal.Value | Value);
+        }
 
-		public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
-		{
-			switch (op) {
-			case UnaryOperation.BoolNot:
-				return IodineBool.Create (!Value);
-			}
-			return null;
-		}
+        public override IodineObject Xor (VirtualMachine vm, IodineObject right)
+        {
+            IodineBool boolVal = right as IodineBool;
+            if (boolVal == null) {
+                vm.RaiseException ("Right hand side expected to be Bool!");
+                return null;
+            }
+            return IodineBool.Create (boolVal.Value ^ Value);
+        }
 
-		public override bool IsTrue ()
-		{
-			return Value;
-		}
+        public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
+        {
+            switch (op) {
+            case UnaryOperation.BoolNot:
+                return IodineBool.Create (!Value);
+            }
+            return null;
+        }
 
-		public override string ToString ()
-		{
-			return Value.ToString ();
-		}
+        public override bool IsTrue ()
+        {
+            return Value;
+        }
 
-		public override int GetHashCode ()
-		{
-			return Value.GetHashCode ();
-		}
+        public override string ToString ()
+        {
+            return Value.ToString ();
+        }
 
-		public static IodineBool Create (bool val)
-		{
-			return val ? IodineBool.True : IodineBool.False;
-		}
-	}
+        public override int GetHashCode ()
+        {
+            return Value.GetHashCode ();
+        }
+
+        public static IodineBool Create (bool val)
+        {
+            return val ? IodineBool.True : IodineBool.False;
+        }
+    }
 }
 

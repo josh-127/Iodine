@@ -32,17 +32,17 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class FloatTypeMapping : TypeMapping
-	{
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
-		{
-			return (Single)((IodineFloat)obj).Value;
-		}
+    class FloatTypeMapping : TypeMapping
+    {
+        public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
+        {
+            return (Single)((IodineFloat)obj).Value;
+        }
 
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
-		{
-			return new IodineFloat (Convert.ToDouble (obj));
-		}
-	}
+        public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
+        {
+            return new IodineFloat (Convert.ToDouble (obj));
+        }
+    }
 }
 

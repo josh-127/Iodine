@@ -30,18 +30,18 @@ using System;
 
 namespace Iodine.Runtime
 {
-	[AttributeUsage (AttributeTargets.Class)]
-	public class IodineBuiltinModule : System.Attribute
-	{
-		public readonly string Name;
+    [AttributeUsage (AttributeTargets.Class)]
+    public class IodineBuiltinModule : System.Attribute
+    {
+        public readonly string Name;
 
-		public readonly bool Global;
+        public readonly bool Global;
 
-		public IodineBuiltinModule (string moduleName, bool existsInGlobalNamespace = false)
-		{
-			Name = moduleName;
-			Global = existsInGlobalNamespace;
-		}
-	}
+        public IodineBuiltinModule (string moduleName, bool existsInGlobalNamespace = false)
+        {
+            Name = moduleName;
+            Global = existsInGlobalNamespace;
+        }
+    }
 }
 

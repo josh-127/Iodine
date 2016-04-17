@@ -32,37 +32,37 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class PropertyWrapper : IodineObject, IIodineProperty
-	{
-		private object self;
-		private PropertyInfo propertyInfo;
-		private TypeRegistry typeRegistry;
+    class PropertyWrapper : IodineObject, IIodineProperty
+    {
+        private object self;
+        private PropertyInfo propertyInfo;
+        private TypeRegistry typeRegistry;
 
-		private PropertyWrapper (TypeRegistry registry, PropertyInfo property, object self)
-			: base (IodineProperty.TypeDefinition)
-		{
-			typeRegistry = registry;
-			propertyInfo = property;
-			this.self = self;
-		}
+        private PropertyWrapper (TypeRegistry registry, PropertyInfo property, object self)
+            : base (IodineProperty.TypeDefinition)
+        {
+            typeRegistry = registry;
+            propertyInfo = property;
+            this.self = self;
+        }
 
-		public IodineObject Set (VirtualMachine vm, IodineObject value)
-		{
-			propertyInfo.SetValue (self, typeRegistry.ConvertToNativeObject (value,
-				propertyInfo.PropertyType));
-			return null;
-		}
+        public IodineObject Set (VirtualMachine vm, IodineObject value)
+        {
+            propertyInfo.SetValue (self, typeRegistry.ConvertToNativeObject (value,
+                propertyInfo.PropertyType));
+            return null;
+        }
 
-		public IodineObject Get (VirtualMachine vm)
-		{
-			return typeRegistry.ConvertToIodineObject (propertyInfo.GetValue (self));
-		}
+        public IodineObject Get (VirtualMachine vm)
+        {
+            return typeRegistry.ConvertToIodineObject (propertyInfo.GetValue (self));
+        }
 
-		public static PropertyWrapper Create (TypeRegistry registry, PropertyInfo property,
-			object self = null)
-		{
-			return new PropertyWrapper (registry, property, self);
-		}
-	}
+        public static PropertyWrapper Create (TypeRegistry registry, PropertyInfo property,
+                                        object self = null)
+        {
+            return new PropertyWrapper (registry, property, self);
+        }
+    }
 }
 

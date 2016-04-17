@@ -37,66 +37,67 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Runtime
 {
-	/*
+    /*
 	 * This also needs to be rethought out.
 	 * TODO: Redesign this...
 	 */
-	public abstract class IodineModule : IodineObject
-	{
-		private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
+    public abstract class IodineModule : IodineObject
+    {
+        private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
 
-		public readonly string Name;
+        public readonly string Name;
 
-		public bool ExistsInGlobalNamespace {
-			protected set;
-			get;
-		}
+        public bool ExistsInGlobalNamespace {
+            protected set;
+            get;
+        }
 
-		/*
+        /*
 		 * Anonymous modules will use the global dictionary for storage rather than the modules own dictionary
 		 */
-		internal bool IsAnonymous {
-			set;
-			get;
-		}
+        internal bool IsAnonymous {
+            set;
+            get;
+        }
 
-		internal virtual IList<IodineObject> ConstantPool {
-			get {
-				return this.constantPool;
-			}
-		}
-
-
-		private IodineMethod initializer;
-
-		private List<IodineObject> constantPool = new List<IodineObject> ();
-
-		public IodineMethod Initializer {
-			protected set {
-				initializer = value;
-				SetAttribute ("__init__", value);
-			} get {
-				return initializer; 
-			}
-		}
-
-		public IodineModule (string name)
-			: base (ModuleTypeDef)
-		{
-			Name = name;
-
-			Attributes ["__name__"] = new IodineString (name);
-		}
+        internal virtual IList<IodineObject> ConstantPool {
+            get {
+                return this.constantPool;
+            }
+        }
 
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			return Initializer.Invoke (vm, arguments);
-		}
+        private IodineMethod initializer;
 
-		public override string ToString ()
-		{
-			return string.Format ("<Module {0}>", Name);
-		}
-	}
+        private List<IodineObject> constantPool = new List<IodineObject> ();
+
+        public IodineMethod Initializer {
+            protected set {
+                initializer = value;
+                SetAttribute ("__init__", value);
+            }
+            get {
+                return initializer; 
+            }
+        }
+
+        public IodineModule (string name)
+            : base (ModuleTypeDef)
+        {
+            Name = name;
+
+            Attributes ["__name__"] = new IodineString (name);
+        }
+
+
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            return Initializer.Invoke (vm, arguments);
+        }
+
+        public override string ToString ()
+        {
+            return string.Format ("<Module {0}>", Name);
+        }
+    }
 }

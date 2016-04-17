@@ -31,92 +31,92 @@ using System;
 
 namespace Iodine.Compiler
 {
-	/// <summary>
-	/// Token class.
-	/// </summary>
-	public enum TokenClass
-	{
-		Identifier,
-		StringLiteral,
-		BinaryStringLiteral,
-		InterpolatedStringLiteral,
-		IntLiteral,
-		FloatLiteral,
-		Keyword,
-		OpenParan,
-		CloseParan,
-		OpenBrace,
-		CloseBrace,
-		OpenBracket,
-		CloseBracket,
-		SemiColon,
-		Colon,
-		Operator,
-		Comma
-	}
+    /// <summary>
+    /// Token class.
+    /// </summary>
+    public enum TokenClass
+    {
+        Identifier,
+        StringLiteral,
+        BinaryStringLiteral,
+        InterpolatedStringLiteral,
+        IntLiteral,
+        FloatLiteral,
+        Keyword,
+        OpenParan,
+        CloseParan,
+        OpenBrace,
+        CloseBrace,
+        OpenBracket,
+        CloseBracket,
+        SemiColon,
+        Colon,
+        Operator,
+        Comma
+    }
 
-	/// <summary>
-	/// Token.
-	/// </summary>
-	public sealed class Token
-	{
-		public readonly string Value;
-		public readonly TokenClass Class;
-		public readonly SourceLocation Location;
+    /// <summary>
+    /// Token.
+    /// </summary>
+    public sealed class Token
+    {
+        public readonly string Value;
+        public readonly TokenClass Class;
+        public readonly SourceLocation Location;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Iodine.Compiler.Token"/> class.
-		/// </summary>
-		/// <param name="clazz">Token class.</param>
-		/// <param name="value">Value.</param>
-		/// <param name="location">Location.</param>
-		public Token (TokenClass clazz, string value, SourceLocation location)
-		{
-			Class = clazz;
-			Value = value;
-			Location = location;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Iodine.Compiler.Token"/> class.
+        /// </summary>
+        /// <param name="clazz">Token class.</param>
+        /// <param name="value">Value.</param>
+        /// <param name="location">Location.</param>
+        public Token (TokenClass clazz, string value, SourceLocation location)
+        {
+            Class = clazz;
+            Value = value;
+            Location = location;
+        }
 
-		/// <summary>
-		/// Returns a string that represents the current object.
-		/// </summary>
-		/// <returns>A string that represents the current object.</returns>
-		/// <filterpriority>2</filterpriority>
-		public override string ToString ()
-		{
-			return Value.ToString ();
-		}
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        /// <filterpriority>2</filterpriority>
+        public override string ToString ()
+        {
+            return Value.ToString ();
+        }
 
-		/// <summary>
-		/// Converts a TokenClass enum to its string representation
-		/// </summary>
-		/// <returns>The string representation of the TokenClass enum.</returns>
-		/// <param name="clazz">Token class.</param>
-		public static string ClassToString (TokenClass clazz)
-		{
-			switch (clazz) {
-			case TokenClass.CloseBrace:
-				return "}";
-			case TokenClass.OpenBrace:
-				return "{";
-			case TokenClass.CloseParan:
-				return ")";
-			case TokenClass.OpenParan:
-				return "(";
-			case TokenClass.Comma:
-				return ",";
-			case TokenClass.OpenBracket:
-				return "[";
-			case TokenClass.CloseBracket:
-				return "]";
-			case TokenClass.SemiColon:
-				return ";";
-			case TokenClass.Colon:
-				return ":";
-			default:
-				return clazz.ToString ();
-			}
-		}
-	}
+        /// <summary>
+        /// Converts a TokenClass enum to its string representation
+        /// </summary>
+        /// <returns>The string representation of the TokenClass enum.</returns>
+        /// <param name="clazz">Token class.</param>
+        public static string ClassToString (TokenClass clazz)
+        {
+            switch (clazz) {
+            case TokenClass.CloseBrace:
+                return "}";
+            case TokenClass.OpenBrace:
+                return "{";
+            case TokenClass.CloseParan:
+                return ")";
+            case TokenClass.OpenParan:
+                return "(";
+            case TokenClass.Comma:
+                return ",";
+            case TokenClass.OpenBracket:
+                return "[";
+            case TokenClass.CloseBracket:
+                return "]";
+            case TokenClass.SemiColon:
+                return ";";
+            case TokenClass.Colon:
+                return ":";
+            default:
+                return clazz.ToString ();
+            }
+        }
+    }
 }
 

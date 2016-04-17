@@ -35,109 +35,109 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	/// <summary>
-	/// Represents a single frame (Activation record) for an Iodine method
-	/// </summary>
-	public class StackFrame
-	{
-		public readonly IodineMethod Method;
-		public readonly IodineObject Self;
-		public readonly IodineObject[] Arguments;
-		public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
-		public readonly LinkedStack<IodineExceptionHandler> ExceptionHandlers = new LinkedStack<IodineExceptionHandler> ();
+    /// <summary>
+    /// Represents a single frame (Activation record) for an Iodine method
+    /// </summary>
+    public class StackFrame
+    {
+        public readonly IodineMethod Method;
+        public readonly IodineObject Self;
+        public readonly IodineObject[] Arguments;
+        public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
+        public readonly LinkedStack<IodineExceptionHandler> ExceptionHandlers = new LinkedStack<IodineExceptionHandler> ();
 
-		public volatile bool AbortExecution = false;
+        public volatile bool AbortExecution = false;
 
-		public bool Yielded { set; get; }
+        public bool Yielded { set; get; }
 
-		public SourceLocation Location { set; get; }
+        public SourceLocation Location { set; get; }
 
-		public int InstructionPointer { set; get; }
+        public int InstructionPointer { set; get; }
 
-		public StackFrame Parent { private set; get; }
+        public StackFrame Parent { private set; get; }
 
-		public IodineModule Module {
-			get { return Method.Module; }
-		}
+        public IodineModule Module {
+            get { return Method.Module; }
+        }
 
-		private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();
-		private Dictionary<int, IodineObject> locals;
-		private Dictionary<int, IodineObject> parentLocals = null;
+        private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();
+        private Dictionary<int, IodineObject> locals;
+        private Dictionary<int, IodineObject> parentLocals = null;
 
-		public StackFrame (IodineMethod method,
-			IodineObject[] arguments,
-			StackFrame parent,
-			IodineObject self)
-		{
-			locals = new Dictionary<int, IodineObject> ();
-			parentLocals = locals;
-			Method = method;
-			Self = self;
-			Arguments = arguments;
-			Parent = parent;
-		}
+        public StackFrame (IodineMethod method,
+                     IodineObject[] arguments,
+                     StackFrame parent,
+                     IodineObject self)
+        {
+            locals = new Dictionary<int, IodineObject> ();
+            parentLocals = locals;
+            Method = method;
+            Self = self;
+            Arguments = arguments;
+            Parent = parent;
+        }
 
-		public StackFrame (IodineMethod method,
-			IodineObject[] arguments,
-			StackFrame parent,
-			IodineObject self,
-			Dictionary<int, IodineObject> locals) : this (method, arguments, parent, self)
-		{
-			parentLocals = locals;
-			this.locals = new Dictionary<int, IodineObject> ();
+        public StackFrame (IodineMethod method,
+                     IodineObject[] arguments,
+                     StackFrame parent,
+                     IodineObject self,
+                     Dictionary<int, IodineObject> locals) : this (method, arguments, parent, self)
+        {
+            parentLocals = locals;
+            this.locals = new Dictionary<int, IodineObject> ();
 
-			foreach (int key in locals.Keys) {
-				this.locals.Add (key, locals [key]);
-			}
-		}
+            foreach (int key in locals.Keys) {
+                this.locals.Add (key, locals [key]);
+            }
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		internal void StoreLocal (int index, IodineObject obj)
-		{
-			if (parentLocals.ContainsKey (index)) {
-				parentLocals [index] = obj;
-			}
-			locals [index] = obj;
-		}
+        internal void StoreLocal (int index, IodineObject obj)
+        {
+            if (parentLocals.ContainsKey (index)) {
+                parentLocals [index] = obj;
+            }
+            locals [index] = obj;
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		internal IodineObject LoadLocal (int index)
-		{
-			return locals [index];
-		}
+        internal IodineObject LoadLocal (int index)
+        {
+            return locals [index];
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		internal void Push (IodineObject obj)
-		{
-			stack.Push (obj ?? IodineNull.Instance);
-		}
+        internal void Push (IodineObject obj)
+        {
+            stack.Push (obj ?? IodineNull.Instance);
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		internal IodineObject Pop ()
-		{
-			return stack.Pop ();
-		}
+        internal IodineObject Pop ()
+        {
+            return stack.Pop ();
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		internal StackFrame Duplicate (StackFrame top)
-		{
-			Dictionary<int, IodineObject> oldLocals =  new Dictionary<int, IodineObject> ();
+        internal StackFrame Duplicate (StackFrame top)
+        {
+            Dictionary<int, IodineObject> oldLocals = new Dictionary<int, IodineObject> ();
 
-			foreach (int key in locals.Keys) {
-				oldLocals [key] = locals [key];
-			}
+            foreach (int key in locals.Keys) {
+                oldLocals [key] = locals [key];
+            }
 
-			return new StackFrame (Method, Arguments, top, Self, locals);
-		}
-	}
+            return new StackFrame (Method, Arguments, top, Self, locals);
+        }
+    }
 }

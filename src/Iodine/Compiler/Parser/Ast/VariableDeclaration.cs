@@ -31,29 +31,29 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class VariableDeclaration : AstNode
-	{
-		public readonly string Name;
-		public readonly AstNode Value;
+    public class VariableDeclaration : AstNode
+    {
+        public readonly string Name;
+        public readonly AstNode Value;
 
-		public VariableDeclaration (SourceLocation location, string name, AstNode value = null)
-			: base (location)
-		{
-			Name = name;
-			Value = value;
-		}
+        public VariableDeclaration (SourceLocation location, string name, AstNode value = null)
+            : base (location)
+        {
+            Name = name;
+            Value = value;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			if (Value != null) {
-				Value.Visit (visitor);
-			}
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            if (Value != null) {
+                Value.Visit (visitor);
+            }
+        }
+    }
 }
 

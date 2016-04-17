@@ -31,29 +31,29 @@ using System;
 
 namespace Iodine.Runtime
 {
-	public class IodineEnum : IodineTypeDefinition
-	{
-		private int nextVal = 0;
+    public class IodineEnum : IodineTypeDefinition
+    {
+        private int nextVal = 0;
 
-		public IodineEnum (string name)
-			: base (name)
-		{
-		}
+        public IodineEnum (string name)
+            : base (name)
+        {
+        }
 
-		public void AddItem (string name)
-		{
-			SetAttribute (name, new IodineInteger (nextVal++));
-		}
+        public void AddItem (string name)
+        {
+            SetAttribute (name, new IodineInteger (nextVal++));
+        }
 
-		public void AddItem (string name, int val)
-		{
-			SetAttribute (name, new IodineInteger (val));
-		}
+        public void AddItem (string name, int val)
+        {
+            SetAttribute (name, new IodineInteger (val));
+        }
 
-		public override string ToString ()
-		{
-			return string.Format ("<Enum {0}>", Name);
-		}
-	}
+        public override string ToString ()
+        {
+            return string.Format ("<Enum {0}>", Name);
+        }
+    }
 }
 

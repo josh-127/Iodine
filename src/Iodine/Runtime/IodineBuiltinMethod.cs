@@ -30,15 +30,15 @@ using System;
 
 namespace Iodine.Runtime
 {
-	[AttributeUsage (AttributeTargets.Method)]
-	public class IodineBuiltinMethod : System.Attribute
-	{
-		public readonly string Name;
+    [AttributeUsage (AttributeTargets.Method)]
+    public class IodineBuiltinMethod : System.Attribute
+    {
+        public readonly string Name;
 
-		public IodineBuiltinMethod (string typeName)
-		{
-			Name = typeName;
-		}
-	}
+        public IodineBuiltinMethod (string typeName)
+        {
+            Name = typeName;
+        }
+    }
 }
 

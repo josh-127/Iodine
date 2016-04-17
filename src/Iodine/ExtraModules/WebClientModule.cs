@@ -35,98 +35,97 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-	[IodineBuiltinModule ("webclient")]
-	internal class WebClientModule : IodineModule
-	{
-		public class IodineWebClient : IodineObject
-		{
-			private static IodineTypeDefinition WebClientTypeDef =
-				new IodineTypeDefinition ("WebClient");
+    [IodineBuiltinModule ("webclient")]
+    internal class WebClientModule : IodineModule
+    {
+        public class IodineWebClient : IodineObject
+        {
+            private static IodineTypeDefinition WebClientTypeDef = new IodineTypeDefinition ("WebClient");
 
-			private WebClient client;
+            private WebClient client;
 
-			public IodineWebClient ()
-				: base (WebClientTypeDef)
-			{
-				SetAttribute ("downloadString", new BuiltinMethodCallback (downloadString, this));
-				SetAttribute ("downloadRaw", new BuiltinMethodCallback (downloadRaw, this));
-				SetAttribute ("downloadFile", new BuiltinMethodCallback (downloadFile, this));
-				SetAttribute ("uploadFile", new BuiltinMethodCallback (uploadFile, this));
-				WebProxy proxy = new WebProxy ();
-				client = new WebClient ();
-				client.Proxy = proxy;
-			}
+            public IodineWebClient ()
+                : base (WebClientTypeDef)
+            {
+                SetAttribute ("downloadString", new BuiltinMethodCallback (downloadString, this));
+                SetAttribute ("downloadRaw", new BuiltinMethodCallback (downloadRaw, this));
+                SetAttribute ("downloadFile", new BuiltinMethodCallback (downloadFile, this));
+                SetAttribute ("uploadFile", new BuiltinMethodCallback (uploadFile, this));
+                WebProxy proxy = new WebProxy ();
+                client = new WebClient ();
+                client.Proxy = proxy;
+            }
 
-			private IodineObject downloadString (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
-				IodineString uri = args [0] as IodineString;
-				string data;
-				try {
-					data = this.client.DownloadString (uri.ToString ());
-				} catch (Exception e) {
-					vm.RaiseException (e.Message);
-					return null;
-				}
-				return new IodineString (data);
-			}
+            private IodineObject downloadString (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+                IodineString uri = args [0] as IodineString;
+                string data;
+                try {
+                    data = this.client.DownloadString (uri.ToString ());
+                } catch (Exception e) {
+                    vm.RaiseException (e.Message);
+                    return null;
+                }
+                return new IodineString (data);
+            }
 
-			private IodineObject downloadRaw (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
-				IodineString uri = args [0] as IodineString;
-				byte[] data;
-				try {
-					data = client.DownloadData (uri.ToString ());
-				} catch (Exception e) {
-					vm.RaiseException (e.Message);
-					return null;
-				}
-				return new IodineByteArray (data);
-			}
+            private IodineObject downloadRaw (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+                IodineString uri = args [0] as IodineString;
+                byte[] data;
+                try {
+                    data = client.DownloadData (uri.ToString ());
+                } catch (Exception e) {
+                    vm.RaiseException (e.Message);
+                    return null;
+                }
+                return new IodineByteArray (data);
+            }
 
-			private IodineObject downloadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
-				IodineString uri = args [0] as IodineString;
-				IodineString file = args [1] as IodineString;
+            private IodineObject downloadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+                IodineString uri = args [0] as IodineString;
+                IodineString file = args [1] as IodineString;
 
-				try {
-					client.DownloadFile (uri.ToString (), file.ToString ());
-				} catch (Exception e) {
-					vm.RaiseException (e.Message);
-				}
-				return null;
+                try {
+                    client.DownloadFile (uri.ToString (), file.ToString ());
+                } catch (Exception e) {
+                    vm.RaiseException (e.Message);
+                }
+                return null;
 
-			}
+            }
 
-			private IodineObject uploadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
-				IodineString uri = args [0] as IodineString;
-				IodineString file = args [1] as IodineString;
-				client.UploadFile (uri.ToString (), file.ToString ());
-				return null;
-			}
-		}
+            private IodineObject uploadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+                IodineString uri = args [0] as IodineString;
+                IodineString file = args [1] as IodineString;
+                client.UploadFile (uri.ToString (), file.ToString ());
+                return null;
+            }
+        }
 
-		public WebClientModule () : base ("webclient")
-		{
-			SetAttribute ("WebClient", new BuiltinMethodCallback (webclient, this));
-			SetAttribute ("disableCertificateCheck", new BuiltinMethodCallback (disableCertCheck, this));
-		}
+        public WebClientModule () : base ("webclient")
+        {
+            SetAttribute ("WebClient", new BuiltinMethodCallback (webclient, this));
+            SetAttribute ("disableCertificateCheck", new BuiltinMethodCallback (disableCertCheck, this));
+        }
 
-		private IodineObject webclient (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			return new IodineWebClient ();
-		}
+        private IodineObject webclient (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            return new IodineWebClient ();
+        }
 
-		private IodineObject disableCertCheck (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true; 
-			return null;
-		}
-	}
+        private IodineObject disableCertCheck (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true; 
+            return null;
+        }
+    }
 }
 
 #endif

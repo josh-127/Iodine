@@ -32,35 +32,35 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class ArgumentList : AstNode
-	{
-		public bool Packed {
-			internal set;
-			get;
-		}
+    public class ArgumentList : AstNode
+    {
+        public bool Packed {
+            internal set;
+            get;
+        }
 
-		public readonly List<AstNode> Arguments = new List<AstNode> ();
+        public readonly List<AstNode> Arguments = new List<AstNode> ();
 
-		public ArgumentList (SourceLocation location)
-			: base (location)
-		{
+        public ArgumentList (SourceLocation location)
+            : base (location)
+        {
 
-		}
+        }
 
-		public void AddArgument (AstNode node)
-		{
-			Arguments.Add (node);
-		}
+        public void AddArgument (AstNode node)
+        {
+            Arguments.Add (node);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Arguments.ForEach (p => p.Visit (visitor));
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Arguments.ForEach (p => p.Visit (visitor));
+        }
+    }
 }
 

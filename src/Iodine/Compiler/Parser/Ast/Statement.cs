@@ -32,17 +32,17 @@ using Iodine.Compiler;
 
 namespace Iodine.Compiler.Ast
 {
-	public class Statement : AstNode
-	{
-		public Statement (SourceLocation location)
-			: base (location)
-		{
-		}
+    public class Statement : AstNode
+    {
+        public Statement (SourceLocation location)
+            : base (location)
+        {
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+    }
 }
 

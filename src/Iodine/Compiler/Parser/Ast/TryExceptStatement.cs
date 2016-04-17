@@ -31,44 +31,44 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class TryExceptStatement : AstNode
-	{
-		public string ExceptionIdentifier { private set; get; }
+    public class TryExceptStatement : AstNode
+    {
+        public string ExceptionIdentifier { private set; get; }
 
-		public readonly AstNode TryBody;
+        public readonly AstNode TryBody;
 
-		public readonly AstNode ExceptBody;
+        public readonly AstNode ExceptBody;
 
-		public readonly ArgumentList TypeList;
+        public readonly ArgumentList TypeList;
 
-		public TryExceptStatement (SourceLocation location,
-			string ident,
-			AstNode tryBody,
-			AstNode exceptBody,
-			ArgumentList typeList = null)
-			: base (location)
-		{
-			ExceptionIdentifier = ident;
-			TryBody = tryBody;
-			ExceptBody = exceptBody;
-			TypeList = typeList;
-		}
+        public TryExceptStatement (SourceLocation location,
+                                   string ident,
+                                   AstNode tryBody,
+                                   AstNode exceptBody,
+                                   ArgumentList typeList = null)
+            : base (location)
+        {
+            ExceptionIdentifier = ident;
+            TryBody = tryBody;
+            ExceptBody = exceptBody;
+            TypeList = typeList;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			TryBody.Visit (visitor);
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            TryBody.Visit (visitor);
 
-			ExceptBody.Visit (visitor);
+            ExceptBody.Visit (visitor);
 
-			if (TypeList != null) {
-				TypeList.Visit (visitor);
-			}
-		}
-	}
+            if (TypeList != null) {
+                TypeList.Visit (visitor);
+            }
+        }
+    }
 }
 

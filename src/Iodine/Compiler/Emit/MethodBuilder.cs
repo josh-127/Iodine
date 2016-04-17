@@ -32,101 +32,101 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	public class MethodBuilder : IodineMethod
-	{
-		private static int nextLabelID = 0;
-		private int nextTemporary = 2048;
-		private MethodBuilder parent;
-		private Dictionary<int, IodineLabel> labelReferences = new Dictionary<int, IodineLabel> ();
-		protected List<Instruction> instructions = new List<Instruction> ();
+    public class MethodBuilder : IodineMethod
+    {
+        private static int nextLabelID = 0;
+        private int nextTemporary = 2048;
+        private MethodBuilder parent;
+        private Dictionary<int, IodineLabel> labelReferences = new Dictionary<int, IodineLabel> ();
+        protected List<Instruction> instructions = new List<Instruction> ();
 
-		public MethodBuilder (IodineModule module,
-			string name,
-			bool isInstance,
-			int parameterCount,
-			bool isVariadic,
-			bool acceptsKwargs) : base ()
-		{
-			Name = name;
-			ParameterCount = parameterCount;
-			Module = module;
-			InstanceMethod = isInstance;
-			Variadic = isVariadic;
-			AcceptsKeywordArgs = acceptsKwargs;
-			SetAttribute ("__module__", module);
-		}
+        public MethodBuilder (IodineModule module,
+                              string name,
+                              bool isInstance,
+                              int parameterCount,
+                              bool isVariadic,
+                              bool acceptsKwargs) : base ()
+        {
+            Name = name;
+            ParameterCount = parameterCount;
+            Module = module;
+            InstanceMethod = isInstance;
+            Variadic = isVariadic;
+            AcceptsKeywordArgs = acceptsKwargs;
+            SetAttribute ("__module__", module);
+        }
 
-		public MethodBuilder (MethodBuilder parent,
-			IodineModule module,
-			string name,
-			bool isInstance,
-			int parameterCount,
-			bool isVariadic,
-			bool acceptsKwargs) : this (module, name, isInstance, parameterCount, isVariadic, acceptsKwargs)
-		{
-			this.parent = parent;
-		}
+        public MethodBuilder (MethodBuilder parent,
+                              IodineModule module,
+                              string name,
+                              bool isInstance,
+                              int parameterCount,
+                              bool isVariadic,
+                              bool acceptsKwargs) : this (module, name, isInstance, parameterCount, isVariadic, acceptsKwargs)
+        {
+            this.parent = parent;
+        }
 
-		public void EmitInstruction (Opcode opcode)
-		{
-			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode));
-		}
+        public void EmitInstruction (Opcode opcode)
+        {
+            instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode));
+        }
 
-		public void EmitInstruction (Opcode opcode, int arg)
-		{
-			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, arg));
-		}
+        public void EmitInstruction (Opcode opcode, int arg)
+        {
+            instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, arg));
+        }
 
-		public void EmitInstruction (Opcode opcode, IodineLabel label)
-		{
-			labelReferences [instructions.Count] = label;
-			instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, 0));
-		}
+        public void EmitInstruction (Opcode opcode, IodineLabel label)
+        {
+            labelReferences [instructions.Count] = label;
+            instructions.Add (new Instruction (new SourceLocation (0, 0, ""), opcode, 0));
+        }
 
-		public void EmitInstruction (SourceLocation loc, Opcode opcode)
-		{
-			instructions.Add (new Instruction (loc, opcode));
-		}
+        public void EmitInstruction (SourceLocation loc, Opcode opcode)
+        {
+            instructions.Add (new Instruction (loc, opcode));
+        }
 
-		public void EmitInstruction (SourceLocation loc, Opcode opcode, int arg)
-		{
-			instructions.Add (new Instruction (loc, opcode, arg));
-		}
+        public void EmitInstruction (SourceLocation loc, Opcode opcode, int arg)
+        {
+            instructions.Add (new Instruction (loc, opcode, arg));
+        }
 
-		public void EmitInstruction (SourceLocation loc, Opcode opcode, IodineLabel label)
-		{
-			labelReferences [instructions.Count] = label;
-			instructions.Add (new Instruction (loc, opcode, 0));
-		}
+        public void EmitInstruction (SourceLocation loc, Opcode opcode, IodineLabel label)
+        {
+            labelReferences [instructions.Count] = label;
+            instructions.Add (new Instruction (loc, opcode, 0));
+        }
 
-		public int CreateTemporary ()
-		{
-			if (parent != null) {
-				parent.CreateTemporary ();
-			}
-			return nextTemporary++;
-		}
+        public int CreateTemporary ()
+        {
+            if (parent != null) {
+                parent.CreateTemporary ();
+            }
+            return nextTemporary++;
+        }
 
-		public IodineLabel CreateLabel ()
-		{
-			return new IodineLabel (nextLabelID++);
-		}
+        public IodineLabel CreateLabel ()
+        {
+            return new IodineLabel (nextLabelID++);
+        }
 
-		public void MarkLabelPosition (IodineLabel label)
-		{
-			label._Position = instructions.Count;
-		}
+        public void MarkLabelPosition (IodineLabel label)
+        {
+            label._Position = instructions.Count;
+        }
 
-		public void FinalizeLabels ()
-		{
-			foreach (int position in labelReferences.Keys) {
-				instructions [position] = new Instruction (instructions [position].Location,
-					instructions [position].OperationCode,
-					labelReferences [position]._Position
-				);
-			}
-			Body = instructions.ToArray ();
-		}
-	}
+        public void FinalizeLabels ()
+        {
+            foreach (int position in labelReferences.Keys) {
+                instructions [position] = new Instruction (instructions [position].Location,
+                    instructions [position].OperationCode,
+                    labelReferences [position]._Position
+                );
+            }
+            Body = instructions.ToArray ();
+        }
+    }
 }
 

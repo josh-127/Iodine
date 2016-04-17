@@ -31,42 +31,42 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class ForStatement : AstNode
-	{
-		public readonly AstNode Initializer;
-		public readonly AstNode AfterThought;
+    public class ForStatement : AstNode
+    {
+        public readonly AstNode Initializer;
+        public readonly AstNode AfterThought;
 
-		public AstNode Condition {
-			private set;
-			get;
-		}
+        public AstNode Condition {
+            private set;
+            get;
+        }
 
-		public AstNode Body {
-			private set;
-			get;
-		}
+        public AstNode Body {
+            private set;
+            get;
+        }
 
-		public ForStatement (SourceLocation location, AstNode initializer, AstNode condition, AstNode afterThought, AstNode body)
-			: base (location)
-		{
-			Initializer = initializer;
-			Condition = condition;
-			AfterThought = afterThought;
-			Body = body;
-		}
+        public ForStatement (SourceLocation location, AstNode initializer, AstNode condition, AstNode afterThought, AstNode body)
+            : base (location)
+        {
+            Initializer = initializer;
+            Condition = condition;
+            AfterThought = afterThought;
+            Body = body;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Initializer.Visit (visitor);
-			Condition.Visit (visitor);
-			AfterThought.Visit (visitor);
-			Body.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Initializer.Visit (visitor);
+            Condition.Visit (visitor);
+            AfterThought.Visit (visitor);
+            Body.Visit (visitor);
+        }
+    }
 }
 

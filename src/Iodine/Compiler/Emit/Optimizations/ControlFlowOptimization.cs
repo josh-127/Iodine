@@ -33,104 +33,104 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-	class ControlFlowOptimization : IBytecodeOptimization
-	{
-		class ReachableRegion
-		{
-			public int Start { private set; get; }
+    class ControlFlowOptimization : IBytecodeOptimization
+    {
+        class ReachableRegion
+        {
+            public int Start { private set; get; }
 
-			public int End { private set; get; }
+            public int End { private set; get; }
 
-			public int Size {
-				get {
-					return this.End - this.Start;
-				}
-			}
+            public int Size {
+                get {
+                    return this.End - this.Start;
+                }
+            }
 
-			public ReachableRegion (int start, int end)
-			{
-				this.Start = start;
-				this.End = end;
-			}
-		}
+            public ReachableRegion (int start, int end)
+            {
+                this.Start = start;
+                this.End = end;
+            }
+        }
 
-		public void PerformOptimization (MethodBuilder method)
-		{
-			List <ReachableRegion> regions = new List<ReachableRegion> ();
-			int reachableSize = 0;
-			FindRegion (method, regions, 0);
-			foreach (ReachableRegion region in regions) {
-				reachableSize += region.Size + 1;
-			}
-			Instruction[] oldInstructions = method.Body;
-			Instruction[] newInstructions = new Instruction[method.Body.Length];
-			int next = 0;
-			for (int i = 0; i < method.Body.Length; i++) {
-				if (IsReachable (regions, i)) {
-					newInstructions [next++] = oldInstructions [i];
-				} else {
-					ShiftLabels (next, oldInstructions);
-					ShiftLabels (next, newInstructions);
-				}
-			}
+        public void PerformOptimization (MethodBuilder method)
+        {
+            List <ReachableRegion> regions = new List<ReachableRegion> ();
+            int reachableSize = 0;
+            FindRegion (method, regions, 0);
+            foreach (ReachableRegion region in regions) {
+                reachableSize += region.Size + 1;
+            }
+            Instruction[] oldInstructions = method.Body;
+            Instruction[] newInstructions = new Instruction[method.Body.Length];
+            int next = 0;
+            for (int i = 0; i < method.Body.Length; i++) {
+                if (IsReachable (regions, i)) {
+                    newInstructions [next++] = oldInstructions [i];
+                } else {
+                    ShiftLabels (next, oldInstructions);
+                    ShiftLabels (next, newInstructions);
+                }
+            }
 
-			method.Body = newInstructions;
-		}
+            method.Body = newInstructions;
+        }
 
-		private void FindRegion (MethodBuilder method, List<ReachableRegion> regions, int start)
-		{
-			if (IsReachable (regions, start)) {
-				return;
-			}
+        private void FindRegion (MethodBuilder method, List<ReachableRegion> regions, int start)
+        {
+            if (IsReachable (regions, start)) {
+                return;
+            }
 
-			for (int i = start; i < method.Body.Length; i++) {
-				Instruction ins = method.Body [i];
+            for (int i = start; i < method.Body.Length; i++) {
+                Instruction ins = method.Body [i];
 
-				if (ins.OperationCode == Opcode.Jump) {
-					regions.Add (new ReachableRegion (start, i));
-					FindRegion (method, regions, ins.Argument);
-					return;
-				} else if (ins.OperationCode == Opcode.JumpIfTrue ||
-				           ins.OperationCode == Opcode.JumpIfFalse ||
-				           ins.OperationCode == Opcode.PushExceptionHandler) {
-					regions.Add (new ReachableRegion (start, i));
-					FindRegion (method, regions, i + 1);
-					FindRegion (method, regions, ins.Argument);
-					return;
-				} else if (ins.OperationCode == Opcode.Return) {
-					regions.Add (new ReachableRegion (start, i));
-					return;
-				}
-			}
-			regions.Add (new ReachableRegion (start, method.Body.Length));
-		}
+                if (ins.OperationCode == Opcode.Jump) {
+                    regions.Add (new ReachableRegion (start, i));
+                    FindRegion (method, regions, ins.Argument);
+                    return;
+                } else if (ins.OperationCode == Opcode.JumpIfTrue ||
+                           ins.OperationCode == Opcode.JumpIfFalse ||
+                           ins.OperationCode == Opcode.PushExceptionHandler) {
+                    regions.Add (new ReachableRegion (start, i));
+                    FindRegion (method, regions, i + 1);
+                    FindRegion (method, regions, ins.Argument);
+                    return;
+                } else if (ins.OperationCode == Opcode.Return) {
+                    regions.Add (new ReachableRegion (start, i));
+                    return;
+                }
+            }
+            regions.Add (new ReachableRegion (start, method.Body.Length));
+        }
 
-		private void ShiftLabels (int start, Instruction[] instructions)
-		{
-			for (int i = 0; i < instructions.Length; i++) {
-				Instruction ins = instructions [i];
-				if (ins.OperationCode == Opcode.Jump || ins.OperationCode == Opcode.JumpIfFalse ||
-				    ins.OperationCode == Opcode.JumpIfTrue ||
-				    ins.OperationCode == Opcode.PushExceptionHandler) {
+        private void ShiftLabels (int start, Instruction[] instructions)
+        {
+            for (int i = 0; i < instructions.Length; i++) {
+                Instruction ins = instructions [i];
+                if (ins.OperationCode == Opcode.Jump || ins.OperationCode == Opcode.JumpIfFalse ||
+                    ins.OperationCode == Opcode.JumpIfTrue ||
+                    ins.OperationCode == Opcode.PushExceptionHandler) {
 
-					if (ins.Argument > start) {
-						instructions [i] = new Instruction (ins.Location, ins.OperationCode,
-							ins.Argument - 1);
-					}
-				}
+                    if (ins.Argument > start) {
+                        instructions [i] = new Instruction (ins.Location, ins.OperationCode,
+                            ins.Argument - 1);
+                    }
+                }
 
-			}
-		}
+            }
+        }
 
-		private bool IsReachable (List<ReachableRegion> regions, int addr)
-		{
-			foreach (ReachableRegion region in regions) {
-				if (region.Start <= addr && addr <= region.End) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
+        private bool IsReachable (List<ReachableRegion> regions, int addr)
+        {
+            foreach (ReachableRegion region in regions) {
+                if (region.Start <= addr && addr <= region.End) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }
 

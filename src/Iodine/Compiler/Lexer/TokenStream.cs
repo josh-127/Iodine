@@ -32,156 +32,156 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler
 {
-	public sealed class TokenStream
-	{
-		private ErrorSink errorLog;
-		private List<Token> tokens = new List<Token> ();
+    public sealed class TokenStream
+    {
+        private ErrorSink errorLog;
+        private List<Token> tokens = new List<Token> ();
 
-		public bool EndOfStream {
-			get {
-				return tokens.Count <= Position;
-			}
-		}
+        public bool EndOfStream {
+            get {
+                return tokens.Count <= Position;
+            }
+        }
 
-		public int Position { private set; get; }
+        public int Position { private set; get; }
 
-		public Token Current {
-			get {
-				return PeekToken ();
-			}
-		}
+        public Token Current {
+            get {
+                return PeekToken ();
+            }
+        }
 
-		public SourceLocation Location {
-			get {
-				if (PeekToken () != null)
-					return PeekToken ().Location;
-				else if (tokens.Count == 0) {
-					return new SourceLocation (0, 0, "");
-				}
-				return PeekToken (-1).Location;
+        public SourceLocation Location {
+            get {
+                if (PeekToken () != null)
+                    return PeekToken ().Location;
+                else if (tokens.Count == 0) {
+                    return new SourceLocation (0, 0, "");
+                }
+                return PeekToken (-1).Location;
 
-			}
-		}
+            }
+        }
 
-		public ErrorSink ErrorLog {
-			get {
-				return errorLog;
-			}
-		}
+        public ErrorSink ErrorLog {
+            get {
+                return errorLog;
+            }
+        }
 
-		public TokenStream (ErrorSink errorLog)
-		{
-			this.errorLog = errorLog;
-		}
+        public TokenStream (ErrorSink errorLog)
+        {
+            this.errorLog = errorLog;
+        }
 
-		public void AddToken (Token token)
-		{
-			tokens.Add (token);
-		}
+        public void AddToken (Token token)
+        {
+            tokens.Add (token);
+        }
 
-		public bool Match (TokenClass clazz)
-		{
-			return PeekToken () != null && PeekToken ().Class == clazz;
-		}
+        public bool Match (TokenClass clazz)
+        {
+            return PeekToken () != null && PeekToken ().Class == clazz;
+        }
 
-		public bool Match (TokenClass clazz1, TokenClass clazz2)
-		{
-			return PeekToken () != null && PeekToken ().Class == clazz1 &&
-				PeekToken (1) != null &&
-				PeekToken (1).Class == clazz2;
-		}
+        public bool Match (TokenClass clazz1, TokenClass clazz2)
+        {
+            return PeekToken () != null && PeekToken ().Class == clazz1 &&
+            PeekToken (1) != null &&
+            PeekToken (1).Class == clazz2;
+        }
 
-		public bool Match (TokenClass clazz, string val)
-		{
-			return PeekToken () != null &&
-				PeekToken ().Class == clazz &&
-				PeekToken ().Value == val;
-		}
+        public bool Match (TokenClass clazz, string val)
+        {
+            return PeekToken () != null &&
+            PeekToken ().Class == clazz &&
+            PeekToken ().Value == val;
+        }
 
-		public bool Accept (TokenClass clazz)
-		{
-			if (PeekToken () != null && PeekToken ().Class == clazz) {
-				ReadToken ();
-				return true;
-			}
-			return false;
-		}
+        public bool Accept (TokenClass clazz)
+        {
+            if (PeekToken () != null && PeekToken ().Class == clazz) {
+                ReadToken ();
+                return true;
+            }
+            return false;
+        }
 
-		public bool Accept (TokenClass clazz, ref Token token)
-		{
-			if (PeekToken () != null && PeekToken ().Class == clazz) {
-				token = ReadToken ();
-				return true;
-			}
-			return false;
-		}
+        public bool Accept (TokenClass clazz, ref Token token)
+        {
+            if (PeekToken () != null && PeekToken ().Class == clazz) {
+                token = ReadToken ();
+                return true;
+            }
+            return false;
+        }
 
-		public bool Accept (TokenClass clazz, string val)
-		{
-			if (PeekToken () != null && PeekToken ().Class == clazz && PeekToken ().Value == val) {
-				ReadToken ();
-				return true;
-			}
-			return false;
-		}
+        public bool Accept (TokenClass clazz, string val)
+        {
+            if (PeekToken () != null && PeekToken ().Class == clazz && PeekToken ().Value == val) {
+                ReadToken ();
+                return true;
+            }
+            return false;
+        }
 
-		public Token Expect (TokenClass clazz)
-		{
-			Token ret = null;
-			if (Accept (clazz, ref ret)) {
-				return ret;
-			}
-			Token offender = ReadToken ();
-			if (offender != null) {
-				errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
-			} else {
-				errorLog.Add (Errors.UnexpectedEndOfFile, Location);
-				throw new Exception ("");
-			}
-			return new Token (clazz, "", Location);
-		}
+        public Token Expect (TokenClass clazz)
+        {
+            Token ret = null;
+            if (Accept (clazz, ref ret)) {
+                return ret;
+            }
+            Token offender = ReadToken ();
+            if (offender != null) {
+                errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+            } else {
+                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+                throw new Exception ("");
+            }
+            return new Token (clazz, "", Location);
+        }
 
-		public Token Expect (TokenClass clazz, string val)
-		{
-			Token ret = PeekToken ();
-			if (Accept (clazz, val)) {
-				return ret;
-			}
-			Token offender = ReadToken ();
-			if (offender != null) {
-				errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
-			} else {
-				errorLog.Add (Errors.UnexpectedEndOfFile, Location);
-				throw new Exception ("");
-			}
-			return new Token (clazz, "", Location);
-		}
+        public Token Expect (TokenClass clazz, string val)
+        {
+            Token ret = PeekToken ();
+            if (Accept (clazz, val)) {
+                return ret;
+            }
+            Token offender = ReadToken ();
+            if (offender != null) {
+                errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+            } else {
+                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+                throw new Exception ("");
+            }
+            return new Token (clazz, "", Location);
+        }
 
-		public void MakeError ()
-		{
-			errorLog.Add (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
-		}
+        public void MakeError ()
+        {
+            errorLog.Add (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
+        }
 
-		private Token PeekToken ()
-		{
-			return PeekToken (0);
-		}
+        private Token PeekToken ()
+        {
+            return PeekToken (0);
+        }
 
-		private Token PeekToken (int n)
-		{
-			if (Position + n < tokens.Count) {
-				return tokens [Position + n];
-			}
-			return null;
-		}
+        private Token PeekToken (int n)
+        {
+            if (Position + n < tokens.Count) {
+                return tokens [Position + n];
+            }
+            return null;
+        }
 
-		public Token ReadToken ()
-		{
-			if (Position >= tokens.Count) {
-				return null;
-			}
-			return tokens [Position++];
-		}
-	}
+        public Token ReadToken ()
+        {
+            if (Position >= tokens.Count) {
+                return null;
+            }
+            return tokens [Position++];
+        }
+    }
 }
 

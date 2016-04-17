@@ -29,30 +29,31 @@
 
 using System;
 using System.Diagnostics;
+
 namespace Iodine.Compiler.Ast
 {
-	public class Expression : AstNode
-	{
-		public AstNode Child {
-			private set;
-			get;
-		}
+    public class Expression : AstNode
+    {
+        public AstNode Child {
+            private set;
+            get;
+        }
 
-		public Expression (SourceLocation location, AstNode child)
-			: base (location)
-		{
-			Child = child;
-		}
+        public Expression (SourceLocation location, AstNode child)
+            : base (location)
+        {
+            Child = child;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Child.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Child.Visit (visitor);
+        }
+    }
 }
 

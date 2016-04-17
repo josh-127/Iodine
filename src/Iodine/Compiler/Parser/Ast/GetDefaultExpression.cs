@@ -31,31 +31,31 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class GetDefaultExpression : AstNode
-	{
-		public AstNode Target {
-			private set;
-			get;
-		}
+    public class GetDefaultExpression : AstNode
+    {
+        public AstNode Target {
+            private set;
+            get;
+        }
 
-		public readonly string Field;
+        public readonly string Field;
 
-		public GetDefaultExpression (SourceLocation location, AstNode target, string field)
-			: base (location)
-		{
-			Target = target;
-			Field = field;
-		}
+        public GetDefaultExpression (SourceLocation location, AstNode target, string field)
+            : base (location)
+        {
+            Target = target;
+            Field = field;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Target.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Target.Visit (visitor);
+        }
+    }
 }
 

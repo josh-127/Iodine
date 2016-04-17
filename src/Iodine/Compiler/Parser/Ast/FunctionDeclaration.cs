@@ -32,53 +32,53 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class FunctionDeclaration : AstNode
-	{
-		public string Name {
-			internal set;
-			get;
-		}
+    public class FunctionDeclaration : AstNode
+    {
+        public string Name {
+            internal set;
+            get;
+        }
 
-		public IList<string> Parameters { private set; get; }
+        public IList<string> Parameters { private set; get; }
 
-		public bool InstanceMethod { private set; get; }
+        public bool InstanceMethod { private set; get; }
 
-		public bool Variadic { private set; get; }
+        public bool Variadic { private set; get; }
 
-		public bool AcceptsKeywordArgs { private set; get; }
+        public bool AcceptsKeywordArgs { private set; get; }
 
-		public readonly StatementList Body;
+        public readonly StatementList Body;
 
-		public FunctionDeclaration (SourceLocation location,
-		                     string name,
-		                     bool isInstanceMethod,
-		                     bool isVariadic,
-		                     bool hasKeywordArgs,
-		                     IList<string> parameters)
-			: base (location)
-		{
-			Name = name;
-			Parameters = parameters;
-			InstanceMethod = isInstanceMethod;
-			Variadic = isVariadic;
-			AcceptsKeywordArgs = hasKeywordArgs;
-			Body = new StatementList (location);
-		}
+        public FunctionDeclaration (SourceLocation location,
+                                    string name,
+                                    bool isInstanceMethod,
+                                    bool isVariadic,
+                                    bool hasKeywordArgs,
+                                    IList<string> parameters)
+            : base (location)
+        {
+            Name = name;
+            Parameters = parameters;
+            InstanceMethod = isInstanceMethod;
+            Variadic = isVariadic;
+            AcceptsKeywordArgs = hasKeywordArgs;
+            Body = new StatementList (location);
+        }
 
-		public void AddStatement (AstNode statement)
-		{
-			Body.AddStatement (statement);
-		}
+        public void AddStatement (AstNode statement)
+        {
+            Body.AddStatement (statement);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Body.VisitChildren (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Body.VisitChildren (visitor);
+        }
+    }
 }
 

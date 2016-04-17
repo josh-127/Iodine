@@ -34,72 +34,72 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-	/// <summary>
-	/// Represents a unit of Iodine code (Typically a file or a string of code)
-	/// </summary>
-	public sealed class SourceUnit
-	{
-		public readonly string Text;
-		public readonly string Path;
+    /// <summary>
+    /// Represents a unit of Iodine code (Typically a file or a string of code)
+    /// </summary>
+    public sealed class SourceUnit
+    {
+        public readonly string Text;
+        public readonly string Path;
 
-		public bool HasPath {
-			get { 
-				return Path != null;
-			}
-		}
+        public bool HasPath {
+            get { 
+                return Path != null;
+            }
+        }
 
-		private SourceUnit (string source, string path = null)
-		{
-			Text = source;
-			Path = path;
-		}
+        private SourceUnit (string source, string path = null)
+        {
+            Text = source;
+            Path = path;
+        }
 
-		public static SourceUnit CreateFromFile (string path)
-		{
-			return new SourceUnit (File.ReadAllText (path), 
-				System.IO.Path.GetFullPath (path));
-		}
+        public static SourceUnit CreateFromFile (string path)
+        {
+            return new SourceUnit (File.ReadAllText (path), 
+                System.IO.Path.GetFullPath (path));
+        }
 
-		public static SourceUnit CreateFromSource (string source)
-		{
-			return new SourceUnit (source);
-		}
+        public static SourceUnit CreateFromSource (string source)
+        {
+            return new SourceUnit (source);
+        }
 
-		public IodineModule Compile (IodineContext context)
-		{
-			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-			context.ErrorLog.Clear ();
-			string moduleName = Path == null ? "__anonymous__" :
+        public IodineModule Compile (IodineContext context)
+        {
+            System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+            context.ErrorLog.Clear ();
+            string moduleName = Path == null ? "__anonymous__" :
 				System.IO.Path.GetFileNameWithoutExtension (Path);
 			
-			if (HasPath) {
-				string wd = System.IO.Path.GetDirectoryName (Path);
-				string depPath = System.IO.Path.Combine (wd, ".deps");
+            if (HasPath) {
+                string wd = System.IO.Path.GetDirectoryName (Path);
+                string depPath = System.IO.Path.Combine (wd, ".deps");
 
-				if (!context.SearchPath.Contains (wd)) {
-					context.SearchPath.Add (wd);
-				}
+                if (!context.SearchPath.Contains (wd)) {
+                    context.SearchPath.Add (wd);
+                }
 
-				if (!context.SearchPath.Contains (depPath)) {
-					context.SearchPath.Add (depPath);
-				}
-			}
-			Parser parser = Parser.CreateParser (context, this);
-			CompilationUnit root = parser.Parse ();
-			IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);
+                if (!context.SearchPath.Contains (depPath)) {
+                    context.SearchPath.Add (depPath);
+                }
+            }
+            Parser parser = Parser.CreateParser (context, this);
+            CompilationUnit root = parser.Parse ();
+            IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);
 
-			IodineModule module = compiler.Compile (moduleName);
+            IodineModule module = compiler.Compile (moduleName);
 
-			if (Path == null) {
-				module.IsAnonymous = true;
+            if (Path == null) {
+                module.IsAnonymous = true;
 
-				foreach (string key in module.Attributes.Keys) {
-					context.Globals [key] = module.Attributes [key];
-				}
-			}
+                foreach (string key in module.Attributes.Keys) {
+                    context.Globals [key] = module.Attributes [key];
+                }
+            }
 
-			return module;
-		}
-	}
+            return module;
+        }
+    }
 }
 

@@ -31,62 +31,62 @@ using System;
 
 namespace Iodine.Compiler
 {
-	public enum Errors
-	{
-		InternalError = 0x00,
-		IllegalSyntax = 0x01,
-		IllegalPatternExpression = 0x02,
-		UnexpectedCharacter = 0x03,
-		UnexpectedToken = 0x04,
-		UnrecognizedEscapeSequence = 0x05,
-		UnterminatedStringLiteral = 0x06,
-		StatementNotAllowedOutsideFunction = 0x07,
-		VariableAlreadyDefined = 0x08,
-		ArgumentAfterKeywordArgs = 0x09,
-		ArgumentAfterVariadicArgs = 0x0A,
-		SuperCalledAfter = 0x0B,
-		PipeIntoNonFunction = 0x0C,
-		ExpectedIdentifier = 0x0D,
-		IllegalInterfaceDeclaration = 0x0E,
-		UnexpectedEndOfFile = 0x0F,
-		IntegerOverBounds = 0x10
-	}
+    public enum Errors
+    {
+        InternalError = 0x00,
+        IllegalSyntax = 0x01,
+        IllegalPatternExpression = 0x02,
+        UnexpectedCharacter = 0x03,
+        UnexpectedToken = 0x04,
+        UnrecognizedEscapeSequence = 0x05,
+        UnterminatedStringLiteral = 0x06,
+        StatementNotAllowedOutsideFunction = 0x07,
+        VariableAlreadyDefined = 0x08,
+        ArgumentAfterKeywordArgs = 0x09,
+        ArgumentAfterVariadicArgs = 0x0A,
+        SuperCalledAfter = 0x0B,
+        PipeIntoNonFunction = 0x0C,
+        ExpectedIdentifier = 0x0D,
+        IllegalInterfaceDeclaration = 0x0E,
+        UnexpectedEndOfFile = 0x0F,
+        IntegerOverBounds = 0x10
+    }
 
-	public sealed class Error
-	{
+    public sealed class Error
+    {
 
-		static string[] errorStringLookup = new string[] {
-			"Internal error",
-			"Illegal syntax",
-			"Illegal pattern expression",
-			"Unexpected character '{0}'",
-			"Unexpected '{0}'",
-			"Unrecognized escape sequence",
-			"Unterminated string literal",
-			"Statement not allowed outside function body",
-			"Variable '{0}' was already defined",
-			"Parameter after keyworld argument list",
-			"Parameter after variable argument list",
-			"super () must be called first",
-			"Expression must be piped into function",
-			"Illegal identifier",
-			"Interface declaration may only contain function prototypes",
-			"Unexpected end of file",
-			"Integer value exceeds the maximum bounds of a 64 bit integer"
-		};
+        static string[] errorStringLookup = new string[] {
+            "Internal error",
+            "Illegal syntax",
+            "Illegal pattern expression",
+            "Unexpected character '{0}'",
+            "Unexpected '{0}'",
+            "Unrecognized escape sequence",
+            "Unterminated string literal",
+            "Statement not allowed outside function body",
+            "Variable '{0}' was already defined",
+            "Parameter after keyworld argument list",
+            "Parameter after variable argument list",
+            "super () must be called first",
+            "Expression must be piped into function",
+            "Illegal identifier",
+            "Interface declaration may only contain function prototypes",
+            "Unexpected end of file",
+            "Integer value exceeds the maximum bounds of a 64 bit integer"
+        };
 
-		public readonly string Text;
+        public readonly string Text;
 
-		public readonly Errors ErrorID;
+        public readonly Errors ErrorID;
 
-		public readonly SourceLocation Location;
+        public readonly SourceLocation Location;
 
-		public Error (Errors error, SourceLocation location, params object[] args)
-		{
-			Text = String.Format (errorStringLookup [(int)error], args);
-			Location = location;
-			ErrorID = error;
-		}
-	}
+        public Error (Errors error, SourceLocation location, params object[] args)
+        {
+            Text = String.Format (errorStringLookup [(int)error], args);
+            Location = location;
+            ErrorID = error;
+        }
+    }
 }
 

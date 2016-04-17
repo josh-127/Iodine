@@ -32,29 +32,29 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class ListExpression : AstNode
-	{
-		public readonly List<AstNode> Items = new List<AstNode> ();
+    public class ListExpression : AstNode
+    {
+        public readonly List<AstNode> Items = new List<AstNode> ();
 
-		public ListExpression (SourceLocation location)
-			: base (location)
-		{
-		}
+        public ListExpression (SourceLocation location)
+            : base (location)
+        {
+        }
 
-		public void AddItem (AstNode item)
-		{
-			Items.Add (item);
-		}
+        public void AddItem (AstNode item)
+        {
+            Items.Add (item);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Items.ForEach (p => p.Visit (visitor));
-		} 
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Items.ForEach (p => p.Visit (visitor));
+        }
+    }
 }
 

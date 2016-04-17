@@ -31,35 +31,35 @@ using System;
 
 namespace Iodine.Runtime
 {
-	public class IodineClosure : IodineObject
-	{
-		public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Closure");
+    public class IodineClosure : IodineObject
+    {
+        public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Closure");
 
-		public readonly IodineMethod Target;
-		private StackFrame frame;
+        public readonly IodineMethod Target;
+        private StackFrame frame;
 
-		public IodineClosure (StackFrame frame, IodineMethod target)
-			: base (TypeDefinition)
-		{
-			this.frame = frame;
-			Target = target;
-		}
+        public IodineClosure (StackFrame frame, IodineMethod target)
+            : base (TypeDefinition)
+        {
+            this.frame = frame;
+            Target = target;
+        }
 
-		public override bool IsCallable ()
-		{
-			return true;
-		}
+        public override bool IsCallable ()
+        {
+            return true;
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			return vm.InvokeMethod (Target, frame.Duplicate (vm.Top),
-				frame.Self, arguments);
-		}
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            return vm.InvokeMethod (Target, frame.Duplicate (vm.Top),
+                frame.Self, arguments);
+        }
 
-		public override string ToString ()
-		{
-			return string.Format ("<Anonymous Function>");
-		}
-	}
+        public override string ToString ()
+        {
+            return string.Format ("<Anonymous Function>");
+        }
+    }
 }
 

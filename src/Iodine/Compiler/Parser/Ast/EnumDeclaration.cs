@@ -32,23 +32,23 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class EnumDeclaration : AstNode
-	{
-		public readonly string Name;
+    public class EnumDeclaration : AstNode
+    {
+        public readonly string Name;
 
-		public Dictionary<string, int> Items { private set; get; }
+        public Dictionary<string, int> Items { private set; get; }
 
-		public EnumDeclaration (SourceLocation location, string name)
-			: base (location)
-		{
-			Name = name;
-			Items = new Dictionary<string, int> ();
-		}
+        public EnumDeclaration (SourceLocation location, string name)
+            : base (location)
+        {
+            Name = name;
+            Items = new Dictionary<string, int> ();
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+    }
 }
 

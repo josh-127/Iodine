@@ -31,28 +31,28 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class CallExpression : AstNode
-	{
-		public readonly AstNode Target;
-		public readonly ArgumentList Arguments;
+    public class CallExpression : AstNode
+    {
+        public readonly AstNode Target;
+        public readonly ArgumentList Arguments;
 
-		public CallExpression (SourceLocation location, AstNode target, ArgumentList args)
-			: base (location)
-		{
-			Target = target;
-			Arguments = args;
-		}
+        public CallExpression (SourceLocation location, AstNode target, ArgumentList args)
+            : base (location)
+        {
+            Target = target;
+            Arguments = args;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Target.Visit (visitor);
-			Arguments.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Target.Visit (visitor);
+            Arguments.Visit (visitor);
+        }
+    }
 }
 

@@ -34,34 +34,34 @@ using Iodine.Runtime;
 
 namespace Iodine.Runtime.Debug
 {
-	public class DebugServer
-	{
-		private VirtualMachine virtualMachine;
-		private TcpListener debugServer;
+    public class DebugServer
+    {
+        private VirtualMachine virtualMachine;
+        private TcpListener debugServer;
 
-		public DebugServer (VirtualMachine vm)
-		{
-			virtualMachine = vm;
-		}
+        public DebugServer (VirtualMachine vm)
+        {
+            virtualMachine = vm;
+        }
 
-		public void Start (IPEndPoint endpoint)
-		{
-			debugServer = new TcpListener (endpoint);
-			debugServer.Start ();
-			Listen ();
-		}
+        public void Start (IPEndPoint endpoint)
+        {
+            debugServer = new TcpListener (endpoint);
+            debugServer.Start ();
+            Listen ();
+        }
 
-		private void Listen ()
-		{
-			while (true) {
-				Socket socket = debugServer.AcceptSocket ();
-				DebugSession session = new DebugSession (virtualMachine, socket);
-				Thread thread = new Thread (() => {
-					session.Connect ();
-				});
-				thread.Start ();
-			}
-		}
-	}
+        private void Listen ()
+        {
+            while (true) {
+                Socket socket = debugServer.AcceptSocket ();
+                DebugSession session = new DebugSession (virtualMachine, socket);
+                Thread thread = new Thread (() => {
+                    session.Connect ();
+                });
+                thread.Start ();
+            }
+        }
+    }
 }
 

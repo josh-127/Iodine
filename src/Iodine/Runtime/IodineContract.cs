@@ -32,42 +32,42 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class IodineContract : IodineTypeDefinition
-	{
-		public IList<IodineMethod> RequiredMethods { private set; get; }
+    public class IodineContract : IodineTypeDefinition
+    {
+        public IList<IodineMethod> RequiredMethods { private set; get; }
 
-		public IodineContract (string name)
-			: base (name)
-		{
-			RequiredMethods = new List<IodineMethod> ();
-		}
+        public IodineContract (string name)
+            : base (name)
+        {
+            RequiredMethods = new List<IodineMethod> ();
+        }
 
-		public void AddMethod (IodineMethod method)
-		{
-			RequiredMethods.Add (method);
-		}
+        public void AddMethod (IodineMethod method)
+        {
+            RequiredMethods.Add (method);
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			vm.RaiseException (new IodineNotSupportedException ());
-			return null;
-		}
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            vm.RaiseException (new IodineNotSupportedException ());
+            return null;
+        }
 
-		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-		{
-			foreach (IodineMethod method in RequiredMethods) {
-				if (!self.HasAttribute (method.Name)) {
-					vm.RaiseException (new IodineNotSupportedException ());
-					return;
-				}
-			}
-			self.Interfaces.Add (this);
-		}
+        public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+        {
+            foreach (IodineMethod method in RequiredMethods) {
+                if (!self.HasAttribute (method.Name)) {
+                    vm.RaiseException (new IodineNotSupportedException ());
+                    return;
+                }
+            }
+            self.Interfaces.Add (this);
+        }
 
-		public override string ToString ()
-		{
-			return string.Format ("<Interface {0}>", Name);
-		}
-	}
+        public override string ToString ()
+        {
+            return string.Format ("<Interface {0}>", Name);
+        }
+    }
 }
 

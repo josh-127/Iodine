@@ -31,35 +31,35 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class DoStatement : AstNode
-	{
-		public AstNode Condition {
-			private set;
-			get;
-		}
+    public class DoStatement : AstNode
+    {
+        public AstNode Condition {
+            private set;
+            get;
+        }
 
-		public AstNode Body {
-			private set;
-			get;
-		}
+        public AstNode Body {
+            private set;
+            get;
+        }
 
-		public DoStatement (SourceLocation location, AstNode condition, AstNode body)
-			: base (location)
-		{
-			Condition = condition;
-			Body = body;
-		}
+        public DoStatement (SourceLocation location, AstNode condition, AstNode body)
+            : base (location)
+        {
+            Condition = condition;
+            Body = body;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Body.Visit (visitor);
-			Condition.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Body.Visit (visitor);
+            Condition.Visit (visitor);
+        }
+    }
 }
 

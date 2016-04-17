@@ -31,17 +31,17 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class BreakStatement : AstNode
-	{
-		public BreakStatement (SourceLocation location)
-			: base (location)
-		{
-		}
+    public class BreakStatement : AstNode
+    {
+        public BreakStatement (SourceLocation location)
+            : base (location)
+        {
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+    }
 }
 

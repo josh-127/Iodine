@@ -33,26 +33,26 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public abstract class AstNode
-	{
-		public readonly SourceLocation Location;
+    public abstract class AstNode
+    {
+        public readonly SourceLocation Location;
 
-		public abstract void Visit (IodineAstVisitor visitor);
+        public abstract void Visit (IodineAstVisitor visitor);
 
-		public AstNode (SourceLocation location)
-		{
-			Location = location;
-		}
+        public AstNode (SourceLocation location)
+        {
+            Location = location;
+        }
 
 
-		public virtual void VisitChildren (IodineAstVisitor visitor)
-		{
-		}
+        public virtual void VisitChildren (IodineAstVisitor visitor)
+        {
+        }
 
-		public virtual AstNode Reduce ()
-		{
-			return this;
-		}
-	}
+        public virtual AstNode Reduce ()
+        {
+            return this;
+        }
+    }
 }
 

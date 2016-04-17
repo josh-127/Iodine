@@ -32,142 +32,142 @@ using System.Security.Cryptography;
 
 namespace Iodine.Runtime
 {
-	[IodineBuiltinModule ("hash")]
-	public class HashModule : IodineModule
-	{
-		public HashModule ()
-			: base ("hash")
-		{
-			SetAttribute ("sha1", new BuiltinMethodCallback (Sha1, this));
-			SetAttribute ("sha256", new BuiltinMethodCallback (Sha256, this));
-			SetAttribute ("sha512", new BuiltinMethodCallback (Sha512, this));
-			SetAttribute ("md5", new BuiltinMethodCallback (Md5, this));
-		}
+    [IodineBuiltinModule ("hash")]
+    public class HashModule : IodineModule
+    {
+        public HashModule ()
+            : base ("hash")
+        {
+            SetAttribute ("sha1", new BuiltinMethodCallback (Sha1, this));
+            SetAttribute ("sha256", new BuiltinMethodCallback (Sha256, this));
+            SetAttribute ("sha512", new BuiltinMethodCallback (Sha512, this));
+            SetAttribute ("md5", new BuiltinMethodCallback (Md5, this));
+        }
 
-		/**
+        /**
 		 * Iodine Function: sha256 (data)
 		 * Description: Returns the SHA256 digest of data
 		 */
-		private IodineObject Sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			byte[] hash = null;
+            byte[] hash = null;
 
-			SHA256Managed shaAlgol = new SHA256Managed();
+            SHA256Managed shaAlgol = new SHA256Managed ();
 
-			hash = PreformHash (vm, args [0], shaAlgol);
+            hash = PreformHash (vm, args [0], shaAlgol);
 
-			if (hash != null) {
-				return new IodineBytes (hash);
-			}
+            if (hash != null) {
+                return new IodineBytes (hash);
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		/**
+        /**
 		 * Iodine Function: sha1 (data)
 		 * Description: Returns the SHA1 digest of data
 		 */
-		private IodineObject Sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			byte[] hash = null;
+            byte[] hash = null;
 
-			SHA1Managed shaAlgol = new SHA1Managed();
+            SHA1Managed shaAlgol = new SHA1Managed ();
 
-			hash = PreformHash (vm, args [0], shaAlgol);
+            hash = PreformHash (vm, args [0], shaAlgol);
 
-			if (hash != null) {
-				return new IodineBytes (hash);
-			}
+            if (hash != null) {
+                return new IodineBytes (hash);
+            }
 
-			return null;
+            return null;
 
-		}
+        }
 
-		/**
+        /**
 		 * Iodine Function: sha512 (data)
 		 * Description: Returns the SHA512 digest of data
 		 */
-		private IodineObject Sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			byte[] hash = null;
+            byte[] hash = null;
 
-			SHA512Managed shaAlgol = new SHA512Managed();
+            SHA512Managed shaAlgol = new SHA512Managed ();
 
-			hash = PreformHash (vm, args [0], shaAlgol);
+            hash = PreformHash (vm, args [0], shaAlgol);
 
-			if (hash != null) {
-				return new IodineBytes (hash);
-			}
+            if (hash != null) {
+                return new IodineBytes (hash);
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		/**
+        /**
 		 * Iodine Function: md5 (data)
 		 * Description: Returns the MD5 digest of data
 		 */
-		private IodineObject Md5 (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Md5 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			byte[] hash = null;
+            byte[] hash = null;
 
-			MD5 md5Algol = MD5.Create ();
+            MD5 md5Algol = MD5.Create ();
 
-			hash = PreformHash (vm, args [0], md5Algol);
+            hash = PreformHash (vm, args [0], md5Algol);
 
-			if (hash != null) {
-				return new IodineBytes (hash);
-			}
+            if (hash != null) {
+                return new IodineBytes (hash);
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		private static byte[] GetBytes (IodineObject obj)
-		{
-			if (obj is IodineString) {
-				return System.Text.Encoding.UTF8.GetBytes (obj.ToString ());
-			} else if (obj is IodineBytes) {
-				return ((IodineBytes)obj).Value;
-			}
-			return null;
-		}
+        private static byte[] GetBytes (IodineObject obj)
+        {
+            if (obj is IodineString) {
+                return System.Text.Encoding.UTF8.GetBytes (obj.ToString ());
+            } else if (obj is IodineBytes) {
+                return ((IodineBytes)obj).Value;
+            }
+            return null;
+        }
 
-		private static byte[] PreformHash (VirtualMachine vm, IodineObject obj, HashAlgorithm algol)
-		{
-			if (obj is IodineString || obj is IodineBytes) {
-				byte[] data = GetBytes (obj);
+        private static byte[] PreformHash (VirtualMachine vm, IodineObject obj, HashAlgorithm algol)
+        {
+            if (obj is IodineString || obj is IodineBytes) {
+                byte[] data = GetBytes (obj);
 
-				return algol.ComputeHash (data);
-			}
+                return algol.ComputeHash (data);
+            }
 
-			IodineStream stream = obj as IodineStream;
+            IodineStream stream = obj as IodineStream;
 
-			if (obj == null) {
-				vm.RaiseException (new IodineTypeException ("Str"));
-				return null;
-			}
+            if (obj == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
 
-			return algol.ComputeHash (stream.File);
-		}
-	}
+            return algol.ComputeHash (stream.File);
+        }
+    }
 }
 

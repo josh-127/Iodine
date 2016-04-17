@@ -31,72 +31,72 @@ using System;
 
 namespace Iodine.Runtime
 {
-	public class IodineGenerator : IodineObject
-	{
-		private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Generator");
+    public class IodineGenerator : IodineObject
+    {
+        private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Generator");
 
-		private bool initialAccess = false;
-		private IodineMethod baseMethod;
-		private IodineObject self;
-		private IodineObject value;
-		private IodineObject[] arguments;
-		private StackFrame stackFrame;
+        private bool initialAccess = false;
+        private IodineMethod baseMethod;
+        private IodineObject self;
+        private IodineObject value;
+        private IodineObject[] arguments;
+        private StackFrame stackFrame;
 
-		public IodineGenerator (StackFrame frame,
-			IodineMethod baseMethod,
-			IodineObject[] args, 
-			IodineObject initialValue)
-			: base (TypeDefinition)
-		{
-			arguments = args;
-			value = initialValue;
-			stackFrame = frame;
-			this.baseMethod = baseMethod;
-		}
+        public IodineGenerator (StackFrame frame,
+                          IodineMethod baseMethod,
+                          IodineObject[] args, 
+                          IodineObject initialValue)
+            : base (TypeDefinition)
+        {
+            arguments = args;
+            value = initialValue;
+            stackFrame = frame;
+            this.baseMethod = baseMethod;
+        }
 
-		public IodineGenerator (StackFrame frame,
-			IodineBoundMethod baseMethod,
-			IodineObject[] args,
-			IodineObject initialValue)
-			: base (TypeDefinition)
-		{
-			arguments = args;
-			self = baseMethod.Self;
-			value = initialValue;
-			stackFrame = frame;
-			this.baseMethod = baseMethod.Method;
-		}
+        public IodineGenerator (StackFrame frame,
+                          IodineBoundMethod baseMethod,
+                          IodineObject[] args,
+                          IodineObject initialValue)
+            : base (TypeDefinition)
+        {
+            arguments = args;
+            self = baseMethod.Self;
+            value = initialValue;
+            stackFrame = frame;
+            this.baseMethod = baseMethod.Method;
+        }
 
-		public override IodineObject GetIterator (VirtualMachine vm)
-		{
-			return this;
-		}
+        public override IodineObject GetIterator (VirtualMachine vm)
+        {
+            return this;
+        }
 
-		public override bool IterMoveNext (VirtualMachine vm)
-		{
-			if (stackFrame.AbortExecution) {
-				return false;
-			}
+        public override bool IterMoveNext (VirtualMachine vm)
+        {
+            if (stackFrame.AbortExecution) {
+                return false;
+            }
 
-			if (initialAccess) {
-				value = vm.InvokeMethod (baseMethod, stackFrame, self, arguments);
+            if (initialAccess) {
+                value = vm.InvokeMethod (baseMethod, stackFrame, self, arguments);
 
-				return stackFrame.Yielded;
-			} else {
-				initialAccess = true;
-				return true;
-			}
-		}
+                return stackFrame.Yielded;
+            } else {
+                initialAccess = true;
+                return true;
+            }
+        }
 
-		public override IodineObject IterGetCurrent (VirtualMachine vm)
-		{
-			stackFrame.Yielded = false;
-			return value;
-		}
+        public override IodineObject IterGetCurrent (VirtualMachine vm)
+        {
+            stackFrame.Yielded = false;
+            return value;
+        }
 
-		public override void IterReset (VirtualMachine vm)
-		{
-		}
-	}
+        public override void IterReset (VirtualMachine vm)
+        {
+        }
+    }
 }
 

@@ -31,47 +31,47 @@ using System;
 
 namespace Iodine.Compiler
 {
-	/// <summary>
-	/// Represents a location inside an Iodine source file
-	/// </summary>
-	public class SourceLocation
-	{
-		public readonly int Line;
+    /// <summary>
+    /// Represents a location inside an Iodine source file
+    /// </summary>
+    public class SourceLocation
+    {
+        public readonly int Line;
 
-		public readonly int Column;
+        public readonly int Column;
 
-		public readonly string File;
+        public readonly string File;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Iodine.Location"/> struct.
-		/// </summary>
-		/// <param name="line">Line.</param>
-		/// <param name="column">Column.</param>
-		/// <param name="file">File.</param>
-		public SourceLocation (int line, int column, string file)
-		{
-			Line = line;
-			Column = column;
-			File = file;
-		}
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Iodine.Location"/> struct.
+        /// </summary>
+        /// <param name="line">Line.</param>
+        /// <param name="column">Column.</param>
+        /// <param name="file">File.</param>
+        public SourceLocation (int line, int column, string file)
+        {
+            Line = line;
+            Column = column;
+            File = file;
+        }
 
-		/// <summary>
-		/// Increments the line.
-		/// </summary>
-		/// <returns>The line.</returns>
-		public SourceLocation IncrementLine ()
-		{
-			return new SourceLocation (Line + 1, Column, File);
-		}
+        /// <summary>
+        /// Increments the line.
+        /// </summary>
+        /// <returns>The line.</returns>
+        public SourceLocation IncrementLine ()
+        {
+            return new SourceLocation (Line + 1, Column, File);
+        }
 
-		/// <summary>
-		/// Increments the column.
-		/// </summary>
-		/// <returns>The column.</returns>
-		public SourceLocation IncrementColumn ()
-		{
-			return new SourceLocation (Line, Column + 1, File);
-		}
-	}
+        /// <summary>
+        /// Increments the column.
+        /// </summary>
+        /// <returns>The column.</returns>
+        public SourceLocation IncrementColumn ()
+        {
+            return new SourceLocation (Line, Column + 1, File);
+        }
+    }
 }
 

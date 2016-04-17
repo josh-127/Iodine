@@ -33,263 +33,265 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public sealed class IodineInteger : IodineObject
-	{
-		public static readonly IodineTypeDefinition TypeDefinition = new IntTypeDef ();
+    public sealed class IodineInteger : IodineObject
+    {
+        public static readonly IodineTypeDefinition TypeDefinition = new IntTypeDef ();
 
-		class IntTypeDef : IodineTypeDefinition
-		{
-			public IntTypeDef ()
-				: base ("Int")
-			{
-			}
+        class IntTypeDef : IodineTypeDefinition
+        {
+            public IntTypeDef ()
+                : base ("Int")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				if (args.Length <= 0) {
-					vm.RaiseException (new IodineArgumentException (1));
-				}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
 
-				if (args [0] is IodineFloat) {
-					IodineFloat fp = args [0] as IodineFloat;
-					return new IodineInteger ((long)fp.Value);
-				}
+                if (args [0] is IodineFloat) {
+                    IodineFloat fp = args [0] as IodineFloat;
+                    return new IodineInteger ((long)fp.Value);
+                }
 
-				long value;
-				NumberStyles style = NumberStyles.AllowLeadingSign;
+                long value;
+                NumberStyles style = NumberStyles.AllowLeadingSign;
 
-				if (args.Length > 1) {
-					IodineInteger basen = args [1] as IodineInteger;
-					switch (basen.Value) {
-					case 16:
-						style = NumberStyles.HexNumber;
-						break;
-					}
-				}
+                if (args.Length > 1) {
+                    IodineInteger basen = args [1] as IodineInteger;
+                    switch (basen.Value) {
+                    case 16:
+                        style = NumberStyles.HexNumber;
+                        break;
+                    }
+                }
 
-				if (!Int64.TryParse (args [0].ToString (), style, null, out value)) {
-					vm.RaiseException (new IodineTypeCastException ("Int"));
-					return null;
-				} else {
-					return new IodineInteger (value);
-				}
-			}
-		}
+                if (!Int64.TryParse (args [0].ToString (), style, null, out value)) {
+                    vm.RaiseException (new IodineTypeCastException ("Int"));
+                    return null;
+                } else {
+                    return new IodineInteger (value);
+                }
+            }
+        }
 
-		public readonly long Value;
+        public readonly long Value;
 
-		public IodineInteger (long val)
-			: base (TypeDefinition)
-		{
-			Value = val;
-		}
+        public IodineInteger (long val)
+            : base (TypeDefinition)
+        {
+            Value = val;
+        }
 
-		#region Operator implementations
-		public override IodineObject Add (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value + intVal.Value);
-		}
+        #region Operator implementations
 
-		public override IodineObject Sub (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value - intVal.Value);
-		}
+        public override IodineObject Add (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value + intVal.Value);
+        }
 
-		public override IodineObject Mul (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value * intVal.Value);
-		}
+        public override IodineObject Sub (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value - intVal.Value);
+        }
 
-		public override IodineObject Div (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value / intVal.Value);
-		}
+        public override IodineObject Mul (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value * intVal.Value);
+        }
 
-		public override IodineObject Mod (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value % intVal.Value);
-		}
+        public override IodineObject Div (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value / intVal.Value);
+        }
 
-		public override IodineObject And (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value & intVal.Value);
-		}
+        public override IodineObject Mod (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value % intVal.Value);
+        }
 
-		public override IodineObject Or (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value | intVal.Value);
-		}
+        public override IodineObject And (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value & intVal.Value);
+        }
 
-		public override IodineObject Xor (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value ^ intVal.Value);
-		}
+        public override IodineObject Or (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value | intVal.Value);
+        }
 
-		public override IodineObject LeftShift (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value << (int)intVal.Value);
-		}
+        public override IodineObject Xor (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value ^ intVal.Value);
+        }
 
-		public override IodineObject RightShift (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineInteger (Value >> (int)intVal.Value);
-		}
+        public override IodineObject LeftShift (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value << (int)intVal.Value);
+        }
 
-		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return IodineBool.Create (Value == intVal.Value);
-		}
+        public override IodineObject RightShift (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineInteger (Value >> (int)intVal.Value);
+        }
 
-		public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return IodineBool.Create (Value != intVal.Value);
-		}
+        public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return IodineBool.Create (Value == intVal.Value);
+        }
 
-		public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return IodineBool.Create (Value > intVal.Value);
-		}
+        public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return IodineBool.Create (Value != intVal.Value);
+        }
 
-		public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-			}
-			return IodineBool.Create (Value >= intVal.Value);
-		}
+        public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return IodineBool.Create (Value > intVal.Value);
+        }
 
-		public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return IodineBool.Create (Value < intVal.Value);
-		}
+        public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+            }
+            return IodineBool.Create (Value >= intVal.Value);
+        }
 
-		public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return IodineBool.Create (Value <= intVal.Value);
-		}
+        public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return IodineBool.Create (Value < intVal.Value);
+        }
 
-		public override IodineObject HalfRange (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineRange (Value, intVal.Value, 1);
-		}
+        public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return IodineBool.Create (Value <= intVal.Value);
+        }
 
-		public override IodineObject ClosedRange (VirtualMachine vm, IodineObject right)
-		{
-			IodineInteger intVal = right as IodineInteger;
-			if (intVal == null) {
-				vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-				return null;
-			}
-			return new IodineRange (Value, intVal.Value + 1, 1);
-		}
-		#endregion
+        public override IodineObject HalfRange (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineRange (Value, intVal.Value, 1);
+        }
 
-		public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
-		{
-			switch (op) {
-			case UnaryOperation.Not:
-				return new IodineInteger (~Value);
-			case UnaryOperation.Negate:
-				return new IodineInteger (-Value);
-			}
-			return null;
-		}
+        public override IodineObject ClosedRange (VirtualMachine vm, IodineObject right)
+        {
+            IodineInteger intVal = right as IodineInteger;
+            if (intVal == null) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineRange (Value, intVal.Value + 1, 1);
+        }
 
-		public override bool IsTrue ()
-		{
-			return Value != 0;
-		}
+        #endregion
 
-		public override string ToString ()
-		{
-			return Value.ToString ();
-		}
+        public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
+        {
+            switch (op) {
+            case UnaryOperation.Not:
+                return new IodineInteger (~Value);
+            case UnaryOperation.Negate:
+                return new IodineInteger (-Value);
+            }
+            return null;
+        }
 
-		public override int GetHashCode ()
-		{
-			return Value.GetHashCode ();
-		}
-	}
+        public override bool IsTrue ()
+        {
+            return Value != 0;
+        }
+
+        public override string ToString ()
+        {
+            return Value.ToString ();
+        }
+
+        public override int GetHashCode ()
+        {
+            return Value.GetHashCode ();
+        }
+    }
 }
 

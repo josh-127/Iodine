@@ -32,53 +32,53 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class IodineRange : IodineObject
-	{
-		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
-		private long iterIndex = 0;
-		private long min;
-		private long end;
-		private long step;
+    public class IodineRange : IodineObject
+    {
+        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
+        private long iterIndex = 0;
+        private long min;
+        private long end;
+        private long step;
 
-		public IodineRange (long min, long max, long step)
-			: base (TypeDefinition)
-		{
-			this.end = max;
-			this.step = step;
-			this.min = min;
-		}
+        public IodineRange (long min, long max, long step)
+            : base (TypeDefinition)
+        {
+            this.end = max;
+            this.step = step;
+            this.min = min;
+        }
 
-		public override IodineObject GetIterator (VirtualMachine vm)
-		{
-			return this;
-		}
+        public override IodineObject GetIterator (VirtualMachine vm)
+        {
+            return this;
+        }
 
-		public override IodineObject IterGetCurrent (VirtualMachine vm)
-		{
-			return new IodineInteger (iterIndex - 1);
-		}
+        public override IodineObject IterGetCurrent (VirtualMachine vm)
+        {
+            return new IodineInteger (iterIndex - 1);
+        }
 
-		public override bool IterMoveNext (VirtualMachine vm)
-		{
-			if (iterIndex >= this.end) {
-				return false;
-			}
-			iterIndex += this.step;
-			return true;
-		}
+        public override bool IterMoveNext (VirtualMachine vm)
+        {
+            if (iterIndex >= this.end) {
+                return false;
+            }
+            iterIndex += this.step;
+            return true;
+        }
 
-		public override void IterReset (VirtualMachine vm)
-		{
-			this.iterIndex = min;
-		}
+        public override void IterReset (VirtualMachine vm)
+        {
+            this.iterIndex = min;
+        }
 
-		public override string ToString ()
-		{
-			if (step == 1) {
-				return string.Format ("{0} .. {1}", min, end);
-			}
-			return string.Format ("range ({0}, {1}, {2})", min, end, step);
-		}
-	}
+        public override string ToString ()
+        {
+            if (step == 1) {
+                return string.Format ("{0} .. {1}", min, end);
+            }
+            return string.Format ("range ({0}, {1}, {2})", min, end, step);
+        }
+    }
 }
 

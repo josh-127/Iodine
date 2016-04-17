@@ -30,15 +30,15 @@ using System;
 
 namespace Iodine.Runtime
 {
-	/// <summary>
-	/// Base class for Iodine runtime exceptions, these cannot be caught by Iodine programs
-	/// and will be rethrown at the caller
-	/// </summary>
-	public class RuntimeException : Exception
-	{
-		public RuntimeException ()
-		{
-		}
-	}
+    /// <summary>
+    /// Base class for Iodine runtime exceptions, these cannot be caught by Iodine programs
+    /// and will be rethrown at the caller
+    /// </summary>
+    public class RuntimeException : Exception
+    {
+        public RuntimeException ()
+        {
+        }
+    }
 }
 

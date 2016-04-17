@@ -32,32 +32,32 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	/// <summary>
-	/// The structure of an Iodine bytecode instruction
-	/// </summary>
-	public struct Instruction
-	{
-		public readonly SourceLocation Location;
+    /// <summary>
+    /// The structure of an Iodine bytecode instruction
+    /// </summary>
+    public struct Instruction
+    {
+        public readonly SourceLocation Location;
 
-		public readonly Opcode OperationCode;
+        public readonly Opcode OperationCode;
 
-		public readonly int Argument;
+        public readonly int Argument;
 
-		public Instruction (SourceLocation location, Opcode opcode)
-			: this ()
-		{
-			OperationCode = opcode;
-			Argument = 0;
-			Location = location;
-		}
+        public Instruction (SourceLocation location, Opcode opcode)
+            : this ()
+        {
+            OperationCode = opcode;
+            Argument = 0;
+            Location = location;
+        }
 
-		public Instruction (SourceLocation location, Opcode opcode, int arg)
-			: this ()
-		{
-			OperationCode = opcode;
-			Argument = arg;
-			Location = location;
-		}
-	}
+        public Instruction (SourceLocation location, Opcode opcode, int arg)
+            : this ()
+        {
+            OperationCode = opcode;
+            Argument = arg;
+            Location = location;
+        }
+    }
 }
 

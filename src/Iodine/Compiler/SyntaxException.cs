@@ -30,15 +30,15 @@ using System;
 
 namespace Iodine.Compiler
 {
-	public class SyntaxException : Exception
-	{
-		public readonly ErrorSink ErrorLog;
+    public class SyntaxException : Exception
+    {
+        public readonly ErrorSink ErrorLog;
 
-		public SyntaxException (ErrorSink errLog)
-			: base ("Syntax Error")
-		{
-			ErrorLog = errLog;
-		}
-	}
+        public SyntaxException (ErrorSink errLog)
+            : base ("Syntax Error")
+        {
+            ErrorLog = errLog;
+        }
+    }
 }
 

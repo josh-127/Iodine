@@ -32,44 +32,44 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class GivenStatement : AstNode
-	{
-		public AstNode GivenValue {
-			private set;
-			get;
-		}
+    public class GivenStatement : AstNode
+    {
+        public AstNode GivenValue {
+            private set;
+            get;
+        }
 
-		public AstNode DefaultStatement {
-			private set;
-			get;
-		}
+        public AstNode DefaultStatement {
+            private set;
+            get;
+        }
 
-		public readonly List<WhenStatement> WhenStatements = new List<WhenStatement> ();
+        public readonly List<WhenStatement> WhenStatements = new List<WhenStatement> ();
 
-		public GivenStatement (SourceLocation location, AstNode givenValue, IEnumerable<WhenStatement> whenStatements, AstNode defaultStatement)
-			: base (location)
-		{
-			GivenValue = givenValue;
-			DefaultStatement = defaultStatement;
-			WhenStatements.AddRange (whenStatements);
-		}
+        public GivenStatement (SourceLocation location, AstNode givenValue, IEnumerable<WhenStatement> whenStatements, AstNode defaultStatement)
+            : base (location)
+        {
+            GivenValue = givenValue;
+            DefaultStatement = defaultStatement;
+            WhenStatements.AddRange (whenStatements);
+        }
 
-		public void AddCase (WhenStatement statement)
-		{
-			WhenStatements.Add (statement);
-		}
+        public void AddCase (WhenStatement statement)
+        {
+            WhenStatements.Add (statement);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			GivenValue.Visit (visitor);
-			WhenStatements.ForEach (p => p.Visit (visitor));
-			DefaultStatement.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            GivenValue.Visit (visitor);
+            WhenStatements.ForEach (p => p.Visit (visitor));
+            DefaultStatement.Visit (visitor);
+        }
+    }
 }
 

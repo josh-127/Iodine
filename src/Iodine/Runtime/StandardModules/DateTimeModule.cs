@@ -32,97 +32,97 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	[IodineBuiltinModule ("datetime")]
-	public class DateTimeModule : IodineModule
-	{
-		public class IodineTimeStamp : IodineObject
-		{
-			public readonly static IodineTypeDefinition TimeStampTypeDef = new IodineTypeDefinition ("TimeStamp");
+    [IodineBuiltinModule ("datetime")]
+    public class DateTimeModule : IodineModule
+    {
+        public class IodineTimeStamp : IodineObject
+        {
+            public readonly static IodineTypeDefinition TimeStampTypeDef = new IodineTypeDefinition ("TimeStamp");
 
-			public DateTime Value { private set; get; }
+            public DateTime Value { private set; get; }
 
-			public IodineTimeStamp (DateTime val)
-				: base (TimeStampTypeDef)
-			{
-				Value = val;
-				long unixEsposh = (long)(val.Subtract (new DateTime(1970, 1, 1))).TotalSeconds;
-				SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
-				SetAttribute ("second", new IodineInteger (val.Second));
-				SetAttribute ("minute", new IodineInteger (val.Minute));
-				SetAttribute ("hour", new IodineInteger (val.Hour));
-				SetAttribute ("day", new IodineInteger (val.Day));
-				SetAttribute ("month", new IodineInteger (val.Month));
-				SetAttribute ("year", new IodineInteger (val.Year));
-				SetAttribute ("unixTime", new IodineInteger (unixEsposh));
-			}
+            public IodineTimeStamp (DateTime val)
+                : base (TimeStampTypeDef)
+            {
+                Value = val;
+                long unixEsposh = (long)(val.Subtract (new DateTime (1970, 1, 1))).TotalSeconds;
+                SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
+                SetAttribute ("second", new IodineInteger (val.Second));
+                SetAttribute ("minute", new IodineInteger (val.Minute));
+                SetAttribute ("hour", new IodineInteger (val.Hour));
+                SetAttribute ("day", new IodineInteger (val.Day));
+                SetAttribute ("month", new IodineInteger (val.Month));
+                SetAttribute ("year", new IodineInteger (val.Year));
+                SetAttribute ("unixTime", new IodineInteger (unixEsposh));
+            }
 
-			public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
-			{
-				IodineTimeStamp op = right as IodineTimeStamp;
-				if (op == null) {
-					vm.RaiseException (new IodineTypeException (
-						"Right hand value expected to be of type TimeStamp"));
-					return null;
-				}
-				return IodineBool.Create (Value.CompareTo (op.Value) > 0);
-			}
+            public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
+            {
+                IodineTimeStamp op = right as IodineTimeStamp;
+                if (op == null) {
+                    vm.RaiseException (new IodineTypeException (
+                        "Right hand value expected to be of type TimeStamp"));
+                    return null;
+                }
+                return IodineBool.Create (Value.CompareTo (op.Value) > 0);
+            }
 
-			public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
-			{
-				IodineTimeStamp op = right as IodineTimeStamp;
-				if (op == null) {
-					vm.RaiseException (new IodineTypeException (
-						"Right hand value expected to be of type TimeStamp"));
-					return null;
-				}
-				return IodineBool.Create (Value.CompareTo (op.Value) < 0);
-			}
+            public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
+            {
+                IodineTimeStamp op = right as IodineTimeStamp;
+                if (op == null) {
+                    vm.RaiseException (new IodineTypeException (
+                        "Right hand value expected to be of type TimeStamp"));
+                    return null;
+                }
+                return IodineBool.Create (Value.CompareTo (op.Value) < 0);
+            }
 
-			public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
-			{
-				IodineTimeStamp op = right as IodineTimeStamp;
-				if (op == null) {
-					vm.RaiseException (new IodineTypeException (
-						"Right hand value expected to be of type TimeStamp"));
-					return null;
-				}
-				return IodineBool.Create (Value.CompareTo (op.Value) >= 0);
-			}
+            public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
+            {
+                IodineTimeStamp op = right as IodineTimeStamp;
+                if (op == null) {
+                    vm.RaiseException (new IodineTypeException (
+                        "Right hand value expected to be of type TimeStamp"));
+                    return null;
+                }
+                return IodineBool.Create (Value.CompareTo (op.Value) >= 0);
+            }
 
-			public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
-			{
-				IodineTimeStamp op = right as IodineTimeStamp;
-				if (op == null) {
-					vm.RaiseException (new IodineTypeException (
-						"Right hand value expected to be of type TimeStamp"));
-					return null;
-				}
-				return IodineBool.Create (Value.CompareTo (op.Value) <= 0);
-			}
+            public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
+            {
+                IodineTimeStamp op = right as IodineTimeStamp;
+                if (op == null) {
+                    vm.RaiseException (new IodineTypeException (
+                        "Right hand value expected to be of type TimeStamp"));
+                    return null;
+                }
+                return IodineBool.Create (Value.CompareTo (op.Value) <= 0);
+            }
 
-			public override IodineObject Equals (VirtualMachine vm, IodineObject right)
-			{
-				IodineTimeStamp op = right as IodineTimeStamp;
-				if (op == null) {
-					vm.RaiseException (new IodineTypeException (
-						"Right hand value expected to be of type TimeStamp"));
-					return null;
-				}
-				return IodineBool.Create (Value.CompareTo (op.Value) == 0);
-			}
-		}
+            public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+            {
+                IodineTimeStamp op = right as IodineTimeStamp;
+                if (op == null) {
+                    vm.RaiseException (new IodineTypeException (
+                        "Right hand value expected to be of type TimeStamp"));
+                    return null;
+                }
+                return IodineBool.Create (Value.CompareTo (op.Value) == 0);
+            }
+        }
 
-		public DateTimeModule ()
-			: base ("datetime")
-		{
-			SetAttribute ("now", new BuiltinMethodCallback (Now, this));
-		}
+        public DateTimeModule ()
+            : base ("datetime")
+        {
+            SetAttribute ("now", new BuiltinMethodCallback (Now, this));
+        }
 
-		private static IodineObject Now (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			return new IodineTimeStamp (DateTime.Now);
-		}
-	}
+        private static IodineObject Now (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            return new IodineTimeStamp (DateTime.Now);
+        }
+    }
 
 }
 

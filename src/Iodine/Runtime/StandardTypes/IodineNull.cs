@@ -31,20 +31,21 @@ using System;
 
 namespace Iodine.Runtime
 {
-	public class IodineNull : IodineObject
-	{
-		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Null");
-		public static readonly IodineNull Instance = new IodineNull ();
+    public class IodineNull : IodineObject
+    {
+        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Null");
+        public static readonly IodineNull Instance = new IodineNull ();
 
-		protected IodineNull ()
-			: base (TypeDefinition) {
+        protected IodineNull ()
+            : base (TypeDefinition)
+        {
 
-		}
+        }
 
-		public override string ToString ()
-		{
-			return "null";
-		}
-	}
+        public override string ToString ()
+        {
+            return "null";
+        }
+    }
 }
 

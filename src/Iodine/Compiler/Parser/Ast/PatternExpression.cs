@@ -30,38 +30,38 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class PatternExpression : AstNode
-	{
-		public readonly BinaryOperation Operation;
+    public class PatternExpression : AstNode
+    {
+        public readonly BinaryOperation Operation;
 
-		public AstNode Left {
-			private set;
-			get;
-		}
+        public AstNode Left {
+            private set;
+            get;
+        }
 
-		public AstNode Right {
-			private set;
-			get;
-		}
+        public AstNode Right {
+            private set;
+            get;
+        }
 
-		public PatternExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
-			: base (location)
-		{
-			Operation = op;
-			Left = left;
-			Right = right;
-		}
+        public PatternExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
+            : base (location)
+        {
+            Operation = op;
+            Left = left;
+            Right = right;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Left.Visit (visitor);
-			Right.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Left.Visit (visitor);
+            Right.Visit (visitor);
+        }
+    }
 }
 

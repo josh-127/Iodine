@@ -40,36 +40,36 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-	[IodineBuiltinModule ("ssl")]
-	internal class SslModule : IodineModule
-	{
-		public SslModule ()
-			: base ("ssl")
-		{
-			SetAttribute ("wrapStream", new BuiltinMethodCallback (wrapSsl, null));
-		}
+    [IodineBuiltinModule ("ssl")]
+    internal class SslModule : IodineModule
+    {
+        public SslModule ()
+            : base ("ssl")
+        {
+            SetAttribute ("wrapStream", new BuiltinMethodCallback (wrapSsl, null));
+        }
 
-		private IodineObject wrapSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
-			IodineStream rawStream = args [0] as IodineStream;
-			if (rawStream == null) {
-				vm.RaiseException (new IodineTypeException ("Stream"));
-				return null;
-			}
-			SslStream stream = new SslStream (rawStream.File, false, ValidateServerCertificate);
-			stream.AuthenticateAsClient ("int0x10.com");
-			return new IodineStream (stream, true, true);
-		}
+        private IodineObject wrapSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+            IodineStream rawStream = args [0] as IodineStream;
+            if (rawStream == null) {
+                vm.RaiseException (new IodineTypeException ("Stream"));
+                return null;
+            }
+            SslStream stream = new SslStream (rawStream.File, false, ValidateServerCertificate);
+            stream.AuthenticateAsClient ("int0x10.com");
+            return new IodineStream (stream, true, true);
+        }
 
-		private static bool ValidateServerCertificate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-		{
-			return true;
-		}
-	}
+        private static bool ValidateServerCertificate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            return true;
+        }
+    }
 }
 
 

@@ -31,158 +31,158 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class BinaryExpression : AstNode
-	{
-		public readonly BinaryOperation Operation;
+    public class BinaryExpression : AstNode
+    {
+        public readonly BinaryOperation Operation;
 
-		public AstNode Left {
-			private set;
-			get;
-		}
+        public AstNode Left {
+            private set;
+            get;
+        }
 
-		public AstNode Right {
-			private set;
-			get;
-		}
+        public AstNode Right {
+            private set;
+            get;
+        }
 
-		public BinaryExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
-			: base (location)
-		{
-			Operation = op;
-			Left = left;
-			Right = right;
-		}
+        public BinaryExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
+            : base (location)
+        {
+            Operation = op;
+            Left = left;
+            Right = right;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			AstNode reduced = Reduce ();
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            AstNode reduced = Reduce ();
 
-			if (reduced != this) {
-				reduced.Visit (visitor);
-			} else {
-				visitor.Accept (this);
-			}
-		}
+            if (reduced != this) {
+                reduced.Visit (visitor);
+            } else {
+                visitor.Accept (this);
+            }
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			if (Reduce () == this) {
-				Left.Visit (visitor);
-				Right.Visit (visitor);
-			}
-		}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            if (Reduce () == this) {
+                Left.Visit (visitor);
+                Right.Visit (visitor);
+            }
+        }
 
-		public override AstNode Reduce ()
-		{
-			AstNode left = Left.Reduce ();
-			AstNode right = Right.Reduce ();
-			switch (Operation) {
-			case BinaryOperation.Add:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						return new IntegerExpression (right.Location,
-							((IntegerExpression)left).Value + ((IntegerExpression)right).Value
-						);
-					}
-					break;
-				}
-			case BinaryOperation.Sub:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						return new IntegerExpression (right.Location,
-							((IntegerExpression)left).Value - ((IntegerExpression)right).Value
-						);
-					}
-					break;
-				}
-			case BinaryOperation.Mul:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						return new IntegerExpression (right.Location,
-							((IntegerExpression)left).Value * ((IntegerExpression)right).Value
-						);
-					}
-					break;
-				}
-			case BinaryOperation.Div:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						return new IntegerExpression (right.Location,
-							((IntegerExpression)left).Value / ((IntegerExpression)right).Value
-						);
-					}
-					break;
-				}
+        public override AstNode Reduce ()
+        {
+            AstNode left = Left.Reduce ();
+            AstNode right = Right.Reduce ();
+            switch (Operation) {
+            case BinaryOperation.Add:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        return new IntegerExpression (right.Location,
+                            ((IntegerExpression)left).Value + ((IntegerExpression)right).Value
+                        );
+                    }
+                    break;
+                }
+            case BinaryOperation.Sub:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        return new IntegerExpression (right.Location,
+                            ((IntegerExpression)left).Value - ((IntegerExpression)right).Value
+                        );
+                    }
+                    break;
+                }
+            case BinaryOperation.Mul:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        return new IntegerExpression (right.Location,
+                            ((IntegerExpression)left).Value * ((IntegerExpression)right).Value
+                        );
+                    }
+                    break;
+                }
+            case BinaryOperation.Div:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        return new IntegerExpression (right.Location,
+                            ((IntegerExpression)left).Value / ((IntegerExpression)right).Value
+                        );
+                    }
+                    break;
+                }
 			
-			case BinaryOperation.LeftShift:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						return new IntegerExpression (right.Location,
-							((IntegerExpression)left).Value << (int)((IntegerExpression)right).Value
-						);
-					}
-					break;
-				}
-			case BinaryOperation.RightShift:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						return new IntegerExpression (right.Location, 
-							((IntegerExpression)left).Value >> (int)((IntegerExpression)right).Value
-						);
-					}
-					break;
-				}
-			case BinaryOperation.Equals:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						bool res = ((IntegerExpression)left).Value == ((IntegerExpression)right).Value;
-						return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
-					}
-					break;
-				}
-			case BinaryOperation.NotEquals:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						bool res = ((IntegerExpression)left).Value != ((IntegerExpression)right).Value;
-						return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
-					}
-					break;
-				}
-			case BinaryOperation.GreaterThan:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						bool res = ((IntegerExpression)left).Value > ((IntegerExpression)right).Value;
-						return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
-					}
-					break;
-				}
-			case BinaryOperation.GreaterThanOrEqu:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						bool res = ((IntegerExpression)left).Value > ((IntegerExpression)right).Value;
-						return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
-					}
-					break;
-				}
-			case BinaryOperation.LessThan:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						bool res = ((IntegerExpression)left).Value < ((IntegerExpression)right).Value;
-						return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);  
-					}
-					break;
-				}
-			case BinaryOperation.LessThanOrEqu:
-				{
-					if (left is IntegerExpression && right is IntegerExpression) {
-						bool res = ((IntegerExpression)left).Value <= ((IntegerExpression)right).Value;
-						return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
-					}
-					break;
-				}
-			}
-			return this;
-		}
-	}
+            case BinaryOperation.LeftShift:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        return new IntegerExpression (right.Location,
+                            ((IntegerExpression)left).Value << (int)((IntegerExpression)right).Value
+                        );
+                    }
+                    break;
+                }
+            case BinaryOperation.RightShift:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        return new IntegerExpression (right.Location, 
+                            ((IntegerExpression)left).Value >> (int)((IntegerExpression)right).Value
+                        );
+                    }
+                    break;
+                }
+            case BinaryOperation.Equals:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        bool res = ((IntegerExpression)left).Value == ((IntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    break;
+                }
+            case BinaryOperation.NotEquals:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        bool res = ((IntegerExpression)left).Value != ((IntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    break;
+                }
+            case BinaryOperation.GreaterThan:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        bool res = ((IntegerExpression)left).Value > ((IntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    break;
+                }
+            case BinaryOperation.GreaterThanOrEqu:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        bool res = ((IntegerExpression)left).Value > ((IntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    break;
+                }
+            case BinaryOperation.LessThan:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        bool res = ((IntegerExpression)left).Value < ((IntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);  
+                    }
+                    break;
+                }
+            case BinaryOperation.LessThanOrEqu:
+                {
+                    if (left is IntegerExpression && right is IntegerExpression) {
+                        bool res = ((IntegerExpression)left).Value <= ((IntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    break;
+                }
+            }
+            return this;
+        }
+    }
 }
 

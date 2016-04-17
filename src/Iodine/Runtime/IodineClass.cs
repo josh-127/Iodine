@@ -32,96 +32,96 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class IodineClass : IodineTypeDefinition
-	{
-		public readonly IodineClass ParentClass;
+    public class IodineClass : IodineTypeDefinition
+    {
+        public readonly IodineClass ParentClass;
 
-		private bool initializerInvoked = false;
+        private bool initializerInvoked = false;
 
-		public IodineMethod Initializer { internal set; get; }
+        public IodineMethod Initializer { internal set; get; }
 
-		public IodineMethod Constructor { private set; get; }
+        public IodineMethod Constructor { private set; get; }
 
-		public IodineClass (string name, IodineMethod initializer, IodineMethod constructor, IodineClass parent = null)
-			: base (name)
-		{
-			Constructor = constructor;
-			Initializer = initializer;
-			ParentClass = parent;
-		}
-			
-		public void AddInstanceMethod (IodineMethod method)
-		{
-			SetAttribute (method.Name, method);
-		}
+        public IodineClass (string name, IodineMethod initializer, IodineMethod constructor, IodineClass parent = null)
+            : base (name)
+        {
+            Constructor = constructor;
+            Initializer = initializer;
+            ParentClass = parent;
+        }
 
-		public override IodineObject GetAttribute (VirtualMachine vm, string name)
-		{
-			if (!initializerInvoked) {
-				initializerInvoked = true;
-				Initializer.Invoke (vm, new IodineObject[] { });
-			}
-			return base.GetAttribute (vm, name);
-		}
+        public void AddInstanceMethod (IodineMethod method)
+        {
+            SetAttribute (method.Name, method);
+        }
 
-		public override void SetAttribute (VirtualMachine vm, string name, IodineObject value)
-		{
-			if (!initializerInvoked) {
-				initializerInvoked = true;
-				Initializer.Invoke (vm, new IodineObject[] { });
-			}
-			base.SetAttribute (vm, name, value);
-		}
+        public override IodineObject GetAttribute (VirtualMachine vm, string name)
+        {
+            if (!initializerInvoked) {
+                initializerInvoked = true;
+                Initializer.Invoke (vm, new IodineObject[] { });
+            }
+            return base.GetAttribute (vm, name);
+        }
 
-		public override bool IsCallable ()
-		{
-			return true;
-		}
+        public override void SetAttribute (VirtualMachine vm, string name, IodineObject value)
+        {
+            if (!initializerInvoked) {
+                initializerInvoked = true;
+                Initializer.Invoke (vm, new IodineObject[] { });
+            }
+            base.SetAttribute (vm, name, value);
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			if (!initializerInvoked) {
-				initializerInvoked = true;
-				Initializer.Invoke (vm, new IodineObject[] { });
-			}
-			IodineObject obj = new IodineObject (this);
-			BindAttributes (obj);
-			vm.InvokeMethod (Constructor, obj, arguments);
-			return obj;
-		}
+        public override bool IsCallable ()
+        {
+            return true;
+        }
 
-		public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-		{
-			IodineObject obj = Invoke (vm, arguments);
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            if (!initializerInvoked) {
+                initializerInvoked = true;
+                Initializer.Invoke (vm, new IodineObject[] { });
+            }
+            IodineObject obj = new IodineObject (this);
+            BindAttributes (obj);
+            vm.InvokeMethod (Constructor, obj, arguments);
+            return obj;
+        }
 
-			foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
-				if (!self.HasAttribute (kv.Key))
-					self.SetAttribute (kv.Key, kv.Value);
-				if (!obj.HasAttribute (kv.Key)) {
-					obj.SetAttribute (kv.Key, kv.Value);
-				}
-			}
-			Dictionary<string, IodineObject> childAttributes = obj.Attributes;
+        public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+        {
+            IodineObject obj = Invoke (vm, arguments);
 
-			foreach (KeyValuePair<string, IodineObject> kv in childAttributes) {
-				if (kv.Value is IodineBoundMethod) {
-					IodineBoundMethod wrapper = (IodineBoundMethod)kv.Value;
-					wrapper.Bind (self);
-				}
-			}
-			self.SetAttribute ("__super__", obj);
-			self.Base = obj;
-		}
+            foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
+                if (!self.HasAttribute (kv.Key))
+                    self.SetAttribute (kv.Key, kv.Value);
+                if (!obj.HasAttribute (kv.Key)) {
+                    obj.SetAttribute (kv.Key, kv.Value);
+                }
+            }
+            Dictionary<string, IodineObject> childAttributes = obj.Attributes;
 
-		public override IodineObject Represent (VirtualMachine vm)
-		{
-			return new IodineString (string.Format ("<Class {0}>", Name));
-		}
+            foreach (KeyValuePair<string, IodineObject> kv in childAttributes) {
+                if (kv.Value is IodineBoundMethod) {
+                    IodineBoundMethod wrapper = (IodineBoundMethod)kv.Value;
+                    wrapper.Bind (self);
+                }
+            }
+            self.SetAttribute ("__super__", obj);
+            self.Base = obj;
+        }
 
-		public override string ToString ()
-		{
-			return Name;
-		}
-	}
+        public override IodineObject Represent (VirtualMachine vm)
+        {
+            return new IodineString (string.Format ("<Class {0}>", Name));
+        }
+
+        public override string ToString ()
+        {
+            return Name;
+        }
+    }
 }
 

@@ -37,236 +37,238 @@ using Iodine.Interop;
 
 namespace Iodine.Compiler
 {
-	public delegate IodineModule ModuleResolveHandler (string name);
+    public delegate IodineModule ModuleResolveHandler (string name);
 
-	/// <summary>
-	/// Global state for an Iodine interpreter instance
-	/// </summary>
-	public sealed class IodineContext
-	{
-		public readonly ErrorSink ErrorLog;
-		public readonly VirtualMachine VirtualMachine;
-		public readonly IodineConfiguration Configuration; // Virtual machine configuration 
-		public readonly TypeRegistry TypeRegistry = new TypeRegistry (); // Type registry for .NET interops
-		/*
+    /// <summary>
+    /// Global state for an Iodine interpreter instance
+    /// </summary>
+    public sealed class IodineContext
+    {
+        public readonly ErrorSink ErrorLog;
+        public readonly VirtualMachine VirtualMachine;
+        public readonly IodineConfiguration Configuration;
+        // Virtual machine configuration
+        public readonly TypeRegistry TypeRegistry = new TypeRegistry ();
+        // Type registry for .NET interops
+        /*
 		 * Where we can search for modules
 		 */
-		public readonly List<string> SearchPath = new List<string> ();
+        public readonly List<string> SearchPath = new List<string> ();
 
-		// Globals
-		public readonly Dictionary<string, IodineObject> Globals = new Dictionary<string, IodineObject> ();
+        // Globals
+        public readonly Dictionary<string, IodineObject> Globals = new Dictionary<string, IodineObject> ();
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> can use the 
-		/// built in Iodine standard library.
-		/// </summary>
-		/// <value><c>true</c> if allow builtins; otherwise, <c>false</c>.</value>
-		public bool AllowBuiltins { 
-			set;
-			get;
-		}
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> can use the 
+        /// built in Iodine standard library.
+        /// </summary>
+        /// <value><c>true</c> if allow builtins; otherwise, <c>false</c>.</value>
+        public bool AllowBuiltins { 
+            set;
+            get;
+        }
 
-		/// <summary>
-		/// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> should optimize bytecode 
-		/// after compilation.
-		/// </summary>
-		/// <value><c>true</c> if should optimize; otherwise, <c>false</c>.</value>
-		public bool ShouldOptimize {
-			set;
-			get;
-		}
-
-
-		/// <summary>
-		/// Gets or sets the warning filter.
-		/// </summary>
-		/// <value>The warning filter.</value>
-		public WarningType WarningFilter {
-			get;
-			set;
-		}
-
-		private Dictionary<string, IodineModule> moduleCache = new Dictionary<string, IodineModule> ();
-
-		private ModuleResolveHandler _resolveModule;
-
-		/// <summary>
-		/// Occurs before a module is resolved
-		/// </summary>
-		public event ModuleResolveHandler ResolveModule {
-			add {
-				_resolveModule += value;
-			}
-			remove {
-				_resolveModule -= value;
-			}
-		}
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> should optimize bytecode 
+        /// after compilation.
+        /// </summary>
+        /// <value><c>true</c> if should optimize; otherwise, <c>false</c>.</value>
+        public bool ShouldOptimize {
+            set;
+            get;
+        }
 
 
-		public IodineContext ()
-			: this (new IodineConfiguration ())
-		{
-			string exeDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
-			string iodinePath = Environment.GetEnvironmentVariable ("IODINE_PATH");
-			SearchPath.Add (Environment.CurrentDirectory);
-			SearchPath.Add (Path.Combine (exeDir, "modules"));
-			SearchPath.Add (Path.Combine (exeDir, "extensions"));
-			if (iodinePath != null) {
-				SearchPath.AddRange (iodinePath.Split (':'));
-			}
-			// Defaults
-			WarningFilter = WarningType.DeprecationWarning | WarningType.SyntaxWarning;
-			ShouldOptimize = true;
-			AllowBuiltins = true;
+        /// <summary>
+        /// Gets or sets the warning filter.
+        /// </summary>
+        /// <value>The warning filter.</value>
+        public WarningType WarningFilter {
+            get;
+            set;
+        }
 
-		}
+        private Dictionary<string, IodineModule> moduleCache = new Dictionary<string, IodineModule> ();
 
-		public IodineContext (IodineConfiguration config)
-		{
-			Configuration = config;
-			ErrorLog = new ErrorSink ();
-			VirtualMachine = new VirtualMachine (this, Globals);
+        private ModuleResolveHandler _resolveModule;
 
-			var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
-			foreach (IodineModule module in modules) {
-				foreach (KeyValuePair<string, IodineObject> value in module.Attributes) {
-					Globals [value.Key] = value.Value;
-				}
-			}
+        /// <summary>
+        /// Occurs before a module is resolved
+        /// </summary>
+        public event ModuleResolveHandler ResolveModule {
+            add {
+                _resolveModule += value;
+            }
+            remove {
+                _resolveModule -= value;
+            }
+        }
 
-		}
 
-		/// <summary>
-		/// Displays a warning 
-		/// </summary>
-		/// <param name="type">Type.</param>
-		/// <param name="message">Message.</param>
-		public void Warn (WarningType type, string message)
-		{
-			WarningType filter = type & WarningFilter;
+        public IodineContext ()
+            : this (new IodineConfiguration ())
+        {
+            string exeDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
+            string iodinePath = Environment.GetEnvironmentVariable ("IODINE_PATH");
+            SearchPath.Add (Environment.CurrentDirectory);
+            SearchPath.Add (Path.Combine (exeDir, "modules"));
+            SearchPath.Add (Path.Combine (exeDir, "extensions"));
+            if (iodinePath != null) {
+                SearchPath.AddRange (iodinePath.Split (':'));
+            }
+            // Defaults
+            WarningFilter = WarningType.DeprecationWarning | WarningType.SyntaxWarning;
+            ShouldOptimize = true;
+            AllowBuiltins = true;
 
-			if (filter != WarningType.None) {
-				Console.Error.WriteLine ("*** WARN {0}: {1}", type.ToString (), message);
-			}
-		}
+        }
 
-		/// <summary>
-		/// Invokes an IodineObject (Calling its __invoke__ method) under this
-		/// context 
-		/// </summary>
-		/// <param name="obj">The object to invoke.</param>
-		/// <param name="args">Arguments.</param>
-		public IodineObject Invoke (IodineObject obj, IodineObject[] args)
-		{
-			return obj.Invoke (VirtualMachine, args);
-		}
+        public IodineContext (IodineConfiguration config)
+        {
+            Configuration = config;
+            ErrorLog = new ErrorSink ();
+            VirtualMachine = new VirtualMachine (this, Globals);
 
-		/// <summary>
-		/// Loads an Iodine module.
-		/// </summary>
-		/// <returns>A compiled Iodine module.</returns>
-		/// <param name="name">The module's name.</param>
-		public IodineModule LoadModule (string name)
-		{
-			if (moduleCache.ContainsKey (name)) {
-				return moduleCache [name];
-			}
+            var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
+            foreach (IodineModule module in modules) {
+                foreach (KeyValuePair<string, IodineObject> value in module.Attributes) {
+                    Globals [value.Key] = value.Value;
+                }
+            }
 
-			if (_resolveModule != null) {
-				foreach (Delegate del in _resolveModule.GetInvocationList ()) {
-					ModuleResolveHandler handler = del as ModuleResolveHandler;
-					IodineModule result = handler (name);
-					if (result != null) {
-						return result;
-					}
-				}
-			}
+        }
 
-			IodineModule module = LoadIodineModule (name);
+        /// <summary>
+        /// Displays a warning 
+        /// </summary>
+        /// <param name="type">Type.</param>
+        /// <param name="message">Message.</param>
+        public void Warn (WarningType type, string message)
+        {
+            WarningType filter = type & WarningFilter;
 
-			if (module == null) {
-				module = LoadExtensionModule (name);
-			}
+            if (filter != WarningType.None) {
+                Console.Error.WriteLine ("*** WARN {0}: {1}", type.ToString (), message);
+            }
+        }
 
-			if (module != null) {
-				moduleCache [name] = module;
-			}
+        /// <summary>
+        /// Invokes an IodineObject (Calling its __invoke__ method) under this
+        /// context 
+        /// </summary>
+        /// <param name="obj">The object to invoke.</param>
+        /// <param name="args">Arguments.</param>
+        public IodineObject Invoke (IodineObject obj, IodineObject[] args)
+        {
+            return obj.Invoke (VirtualMachine, args);
+        }
 
-			return module;
-		}
+        /// <summary>
+        /// Loads an Iodine module.
+        /// </summary>
+        /// <returns>A compiled Iodine module.</returns>
+        /// <param name="name">The module's name.</param>
+        public IodineModule LoadModule (string name)
+        {
+            if (moduleCache.ContainsKey (name)) {
+                return moduleCache [name];
+            }
 
-		/// <summary>
-		/// Creates a new Iodine context
-		/// </summary>
-		public static IodineContext Create ()
-		{
-			return new IodineContext ();
-		}
+            if (_resolveModule != null) {
+                foreach (Delegate del in _resolveModule.GetInvocationList ()) {
+                    ModuleResolveHandler handler = del as ModuleResolveHandler;
+                    IodineModule result = handler (name);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
 
-		private IodineModule LoadIodineModule (string name) 
-		{
-			string modulePath = FindModuleSource (name);
-			if (modulePath != null) {
-				SourceUnit source = SourceUnit.CreateFromFile (modulePath);
-				return source.Compile (this);
-			}
+            IodineModule module = LoadIodineModule (name);
 
-			return null;
-		}
+            if (module == null) {
+                module = LoadExtensionModule (name);
+            }
 
-		private IodineModule LoadExtensionModule (string name)
-		{
-			string extPath = FindExtension (name);
-			if (extPath != null) {
-				return LoadLibrary (name, extPath);
-			}
-			return null;
-		}
+            if (module != null) {
+                moduleCache [name] = module;
+            }
 
-		private static IodineModule LoadLibrary (string module, string dll)
-		{
-			Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
+            return module;
+        }
 
-			foreach (Type type in extension.GetTypes ()) {
-				if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
-					IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
-						typeof(IodineBuiltinModule), false).First ();
-					if (attr.Name == module) {
-						return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
-					}
-				}
-			}
-			return null;
-		}
+        /// <summary>
+        /// Creates a new Iodine context
+        /// </summary>
+        public static IodineContext Create ()
+        {
+            return new IodineContext ();
+        }
 
-		private string FindModuleSource (string moduleName)
-		{
-			foreach (string path in SearchPath) {
-				string expectedName = Path.Combine (path, moduleName + ".id");
-				if (File.Exists (expectedName)) {
-					return expectedName;
-				}
-			}
+        private IodineModule LoadIodineModule (string name)
+        {
+            string modulePath = FindModuleSource (name);
+            if (modulePath != null) {
+                SourceUnit source = SourceUnit.CreateFromFile (modulePath);
+                return source.Compile (this);
+            }
 
-			if (File.Exists (moduleName)) {
-				return moduleName;
-			}
+            return null;
+        }
 
-			// Module not found!
-			return null;
-		}
+        private IodineModule LoadExtensionModule (string name)
+        {
+            string extPath = FindExtension (name);
+            if (extPath != null) {
+                return LoadLibrary (name, extPath);
+            }
+            return null;
+        }
 
-		private string FindExtension (string extensionName)
-		{
-			foreach (string path in SearchPath) {
-				string expectedName = Path.Combine (path, extensionName + ".dll");
-				if (File.Exists (expectedName)) {
-					return expectedName;
-				}
-			}
-			// Extension not found!
-			return null;
-		}
-	}
+        private static IodineModule LoadLibrary (string module, string dll)
+        {
+            Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
+
+            foreach (Type type in extension.GetTypes ()) {
+                if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
+                    IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
+                                                   typeof(IodineBuiltinModule), false).First ();
+                    if (attr.Name == module) {
+                        return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
+                    }
+                }
+            }
+            return null;
+        }
+
+        private string FindModuleSource (string moduleName)
+        {
+            foreach (string path in SearchPath) {
+                string expectedName = Path.Combine (path, moduleName + ".id");
+                if (File.Exists (expectedName)) {
+                    return expectedName;
+                }
+            }
+
+            if (File.Exists (moduleName)) {
+                return moduleName;
+            }
+
+            // Module not found!
+            return null;
+        }
+
+        private string FindExtension (string extensionName)
+        {
+            foreach (string path in SearchPath) {
+                string expectedName = Path.Combine (path, extensionName + ".dll");
+                if (File.Exists (expectedName)) {
+                    return expectedName;
+                }
+            }
+            // Extension not found!
+            return null;
+        }
+    }
 }
 

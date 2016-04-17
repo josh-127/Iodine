@@ -34,127 +34,127 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	public class TypeRegistry
-	{
-		class TypeRegistryEntry
-		{
-			public readonly TypeMapping Mapping;
-			public readonly IodineTypeDefinition IodineType;
-			public readonly Type NativeType;
+    public class TypeRegistry
+    {
+        class TypeRegistryEntry
+        {
+            public readonly TypeMapping Mapping;
+            public readonly IodineTypeDefinition IodineType;
+            public readonly Type NativeType;
 
-			public TypeRegistryEntry (TypeMapping mapping, IodineTypeDefinition iodineType, Type type)
-			{
-				Mapping = mapping;
-				IodineType = iodineType;
-				NativeType = type;
-			}
-		}
+            public TypeRegistryEntry (TypeMapping mapping, IodineTypeDefinition iodineType, Type type)
+            {
+                Mapping = mapping;
+                IodineType = iodineType;
+                NativeType = type;
+            }
+        }
 
-		private List<TypeRegistryEntry> typeMappings = new List<TypeRegistryEntry> ();
+        private List<TypeRegistryEntry> typeMappings = new List<TypeRegistryEntry> ();
 
-		public TypeRegistry ()
-		{
-			AddTypeMapping (typeof(byte), IodineInteger.TypeDefinition, new Int64TypeMapping ());
-			AddTypeMapping (typeof(short), IodineInteger.TypeDefinition, new Int16TypeMapping ());
-			AddTypeMapping (typeof(int), IodineInteger.TypeDefinition, new Int32TypeMapping ());
-			AddTypeMapping (typeof(long), IodineInteger.TypeDefinition, new Int64TypeMapping ());
-			AddTypeMapping (typeof(bool), IodineBool.TypeDefinition, new BoolTypeMapping ());
-			AddTypeMapping (typeof(string), IodineString.TypeDefinition, new StringTypeMapping ());
-			AddTypeMapping (typeof(float), IodineFloat.TypeDefinition, new FloatTypeMapping ());
-			AddTypeMapping (typeof(double), IodineFloat.TypeDefinition, new DoubleTypeMapping ());
-			//AddTypeMapping (null, IodineList.TypeDefinition, new ArrayTypeMapping ());
-			//AddTypeMapping (null, IodineTuple.TypeDefinition, new ArrayTypeMapping ());
-		}
+        public TypeRegistry ()
+        {
+            AddTypeMapping (typeof(byte), IodineInteger.TypeDefinition, new Int64TypeMapping ());
+            AddTypeMapping (typeof(short), IodineInteger.TypeDefinition, new Int16TypeMapping ());
+            AddTypeMapping (typeof(int), IodineInteger.TypeDefinition, new Int32TypeMapping ());
+            AddTypeMapping (typeof(long), IodineInteger.TypeDefinition, new Int64TypeMapping ());
+            AddTypeMapping (typeof(bool), IodineBool.TypeDefinition, new BoolTypeMapping ());
+            AddTypeMapping (typeof(string), IodineString.TypeDefinition, new StringTypeMapping ());
+            AddTypeMapping (typeof(float), IodineFloat.TypeDefinition, new FloatTypeMapping ());
+            AddTypeMapping (typeof(double), IodineFloat.TypeDefinition, new DoubleTypeMapping ());
+            //AddTypeMapping (null, IodineList.TypeDefinition, new ArrayTypeMapping ());
+            //AddTypeMapping (null, IodineTuple.TypeDefinition, new ArrayTypeMapping ());
+        }
 
-		public void AddTypeMapping (Type type, IodineTypeDefinition iodineType, TypeMapping mapping)
-		{
-			typeMappings.Add (new TypeRegistryEntry (mapping, iodineType, type));
-		}
+        public void AddTypeMapping (Type type, IodineTypeDefinition iodineType, TypeMapping mapping)
+        {
+            typeMappings.Add (new TypeRegistryEntry (mapping, iodineType, type));
+        }
 
-		public IodineObject ConvertToIodineObject (object obj)
-		{
-			if (obj == null) {
-				return IodineNull.Instance;
-			}
+        public IodineObject ConvertToIodineObject (object obj)
+        {
+            if (obj == null) {
+                return IodineNull.Instance;
+            }
 
-			Type key = obj.GetType ();
+            Type key = obj.GetType ();
 
-			if (key.IsArray) {
-				return ConvertFromArray ((object[])obj);
-			}
+            if (key.IsArray) {
+                return ConvertFromArray ((object[])obj);
+            }
 
-			TypeRegistryEntry entry = typeMappings.Where (p => p.NativeType.IsAssignableFrom (key))
+            TypeRegistryEntry entry = typeMappings.Where (p => p.NativeType.IsAssignableFrom (key))
 				.FirstOrDefault ();
 
-			if (entry != null) {
-				return entry.Mapping.ConvertFrom (this, obj);
-			}
-			return null;
-		}
+            if (entry != null) {
+                return entry.Mapping.ConvertFrom (this, obj);
+            }
+            return null;
+        }
 
-		private IodineList ConvertFromArray (object[] array)
-		{
-			IodineObject[] iodineObjects = new IodineObject[array.Length];
-			for (int i = 0; i < array.Length; i++) {
-				iodineObjects [i] = ConvertToIodineObject (array [i]);
-			}
-			return new IodineList (iodineObjects);
-		}
+        private IodineList ConvertFromArray (object[] array)
+        {
+            IodineObject[] iodineObjects = new IodineObject[array.Length];
+            for (int i = 0; i < array.Length; i++) {
+                iodineObjects [i] = ConvertToIodineObject (array [i]);
+            }
+            return new IodineList (iodineObjects);
+        }
 
-		public object ConvertToNativeObject (IodineObject obj)
-		{
-			if (obj == IodineNull.Instance || obj == null) {
-				return null;
-			}
+        public object ConvertToNativeObject (IodineObject obj)
+        {
+            if (obj == IodineNull.Instance || obj == null) {
+                return null;
+            }
 
-			IodineTypeDefinition key = obj.TypeDef;
+            IodineTypeDefinition key = obj.TypeDef;
 
-			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == key).FirstOrDefault ();
+            TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == key).FirstOrDefault ();
 
-			if (entry != null) {
-				return entry.Mapping.ConvertFrom (this, obj);
-			}
-			return null;
-		}
+            if (entry != null) {
+                return entry.Mapping.ConvertFrom (this, obj);
+            }
+            return null;
+        }
 
-		public bool TypeMappingExists (IodineTypeDefinition from, Type to)
-		{
-			if (to.IsArray) {
-				return TypeMappingExists (from, to.GetElementType ());
-			}
-			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == from &&
-				p.NativeType != null &&
-				p.NativeType.IsAssignableFrom (to)).FirstOrDefault ();
-			return entry != null;
-		}
+        public bool TypeMappingExists (IodineTypeDefinition from, Type to)
+        {
+            if (to.IsArray) {
+                return TypeMappingExists (from, to.GetElementType ());
+            }
+            TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == from &&
+                             p.NativeType != null &&
+                             p.NativeType.IsAssignableFrom (to)).FirstOrDefault ();
+            return entry != null;
+        }
 
-		public object ConvertToNativeObject (IodineObject obj, Type expectedType)
-		{
-			if (obj == IodineNull.Instance || obj == null) {
-				return null;
-			}
+        public object ConvertToNativeObject (IodineObject obj, Type expectedType)
+        {
+            if (obj == IodineNull.Instance || obj == null) {
+                return null;
+            }
 
-			if (expectedType.IsArray) {
+            if (expectedType.IsArray) {
 
-			}
+            }
 
-			IodineTypeDefinition key = obj.TypeDef;
+            IodineTypeDefinition key = obj.TypeDef;
 
-			TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == key && 
-				p.NativeType != null &&
-				p.NativeType.IsAssignableFrom (expectedType)).FirstOrDefault ();
+            TypeRegistryEntry entry = typeMappings.Where (p => p.IodineType == key &&
+                             p.NativeType != null &&
+                             p.NativeType.IsAssignableFrom (expectedType)).FirstOrDefault ();
 
-			if (entry != null) {
-				return entry.Mapping.ConvertFrom (this, obj);
-			}
-			return null;
-		}
+            if (entry != null) {
+                return entry.Mapping.ConvertFrom (this, obj);
+            }
+            return null;
+        }
 
-		private object[] ConvertToArray (IodineObject obj)
-		{
-			// #TODO Implement this
-			return null;
-		}
-	}
+        private object[] ConvertToArray (IodineObject obj)
+        {
+            // #TODO Implement this
+            return null;
+        }
+    }
 }
 

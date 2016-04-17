@@ -34,302 +34,302 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public class IodineBytes : IodineObject
-	{
-		public static readonly IodineTypeDefinition TypeDefinition = new BytesTypeDef ();
+    public class IodineBytes : IodineObject
+    {
+        public static readonly IodineTypeDefinition TypeDefinition = new BytesTypeDef ();
 
-		class BytesTypeDef : IodineTypeDefinition
-		{
-			public BytesTypeDef ()
-				: base ("Bytes")
-			{
-			}
+        class BytesTypeDef : IodineTypeDefinition
+        {
+            public BytesTypeDef ()
+                : base ("Bytes")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				if (args.Length <= 0) {
-					vm.RaiseException (new IodineArgumentException (1));
-				}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
 
-				if (args [0] is IodineByteArray) {
-					return new IodineBytes (((IodineByteArray)args [0]).Array);
-				}
+                if (args [0] is IodineByteArray) {
+                    return new IodineBytes (((IodineByteArray)args [0]).Array);
+                }
 
-				return new IodineBytes (args [0].ToString ());
-			}
-		}
+                return new IodineBytes (args [0].ToString ());
+            }
+        }
 
-		private int iterIndex = 0;
+        private int iterIndex = 0;
 
-		public byte[] Value { private set; get; }
+        public byte[] Value { private set; get; }
 
-		public IodineBytes ()
-			: base (TypeDefinition)
-		{
-			SetAttribute ("indexOf", new BuiltinMethodCallback (IndexOf, this));
-			SetAttribute ("lastIndexOf", new BuiltinMethodCallback (IndexOf, this));
-			SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
-			SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
-		}
+        public IodineBytes ()
+            : base (TypeDefinition)
+        {
+            SetAttribute ("indexOf", new BuiltinMethodCallback (IndexOf, this));
+            SetAttribute ("lastIndexOf", new BuiltinMethodCallback (IndexOf, this));
+            SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
+            SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
+        }
 
-		public IodineBytes (byte[] val)
-			: this ()
-		{
-			Value = val;
-		}
+        public IodineBytes (byte[] val)
+            : this ()
+        {
+            Value = val;
+        }
 
-		public IodineBytes (string val)
-			: this ()
-		{
-			Value = Encoding.ASCII.GetBytes (val);
-		}
+        public IodineBytes (string val)
+            : this ()
+        {
+            Value = Encoding.ASCII.GetBytes (val);
+        }
 
-		public override IodineObject Len (VirtualMachine vm)
-		{
-			return new IodineInteger (Value.Length);
-		}
+        public override IodineObject Len (VirtualMachine vm)
+        {
+            return new IodineInteger (Value.Length);
+        }
 
-		public override IodineObject Add (VirtualMachine vm, IodineObject right)
-		{
-			IodineBytes str = right as IodineBytes;
-			if (str == null) {
-				vm.RaiseException ("Right hand value must be of type Bytes!");
-				return null;
-			}
-			byte[] newArr = new byte[str.Value.Length + Value.Length];
-			Array.Copy (Value, newArr, Value.Length);
-			Array.Copy (str.Value, 0, newArr, Value.Length, str.Value.Length);
-			return new IodineBytes (newArr);
-		}
+        public override IodineObject Add (VirtualMachine vm, IodineObject right)
+        {
+            IodineBytes str = right as IodineBytes;
+            if (str == null) {
+                vm.RaiseException ("Right hand value must be of type Bytes!");
+                return null;
+            }
+            byte[] newArr = new byte[str.Value.Length + Value.Length];
+            Array.Copy (Value, newArr, Value.Length);
+            Array.Copy (str.Value, 0, newArr, Value.Length, str.Value.Length);
+            return new IodineBytes (newArr);
+        }
 
-		public override IodineObject Equals (VirtualMachine vm, IodineObject right)
-		{
-			IodineBytes str = right as IodineBytes;
-			if (str == null) {
-				return base.Equals (vm, right);
-			}
-			return IodineBool.Create (Enumerable.SequenceEqual<byte> (str.Value, Value));
-		}
+        public override IodineObject Equals (VirtualMachine vm, IodineObject right)
+        {
+            IodineBytes str = right as IodineBytes;
+            if (str == null) {
+                return base.Equals (vm, right);
+            }
+            return IodineBool.Create (Enumerable.SequenceEqual<byte> (str.Value, Value));
+        }
 
-		public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
-		{
-			IodineBytes str = right as IodineBytes;
-			if (str == null) {
-				return base.NotEquals (vm, right);
-			}
-			return IodineBool.Create (!Enumerable.SequenceEqual<byte> (str.Value, Value));
-		}
+        public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
+        {
+            IodineBytes str = right as IodineBytes;
+            if (str == null) {
+                return base.NotEquals (vm, right);
+            }
+            return IodineBool.Create (!Enumerable.SequenceEqual<byte> (str.Value, Value));
+        }
 
-		public override string ToString ()
-		{
-			return Encoding.ASCII.GetString (Value);
-		}
+        public override string ToString ()
+        {
+            return Encoding.ASCII.GetString (Value);
+        }
 
-		public override int GetHashCode ()
-		{
-			return Value.GetHashCode ();
-		}
+        public override int GetHashCode ()
+        {
+            return Value.GetHashCode ();
+        }
 
-		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
-		{
-			IodineInteger index = key as IodineInteger;
-			if (index == null) {
-				vm.RaiseException (new IodineTypeException ("Int"));
-				return null;
-			}
-			if (index.Value >= this.Value.Length) {
-				vm.RaiseException (new IodineIndexException ());
-				return null;
-			}
-			return new IodineInteger ((long)Value [(int)index.Value]);
-		}
+        public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
+        {
+            IodineInteger index = key as IodineInteger;
+            if (index == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
+            if (index.Value >= this.Value.Length) {
+                vm.RaiseException (new IodineIndexException ());
+                return null;
+            }
+            return new IodineInteger ((long)Value [(int)index.Value]);
+        }
 
-		public override IodineObject GetIterator (VirtualMachine vm)
-		{
-			return this;
-		}
+        public override IodineObject GetIterator (VirtualMachine vm)
+        {
+            return this;
+        }
 
-		public override IodineObject IterGetCurrent (VirtualMachine vm)
-		{
-			return new IodineInteger ((long)Value [iterIndex - 1]);
-		}
+        public override IodineObject IterGetCurrent (VirtualMachine vm)
+        {
+            return new IodineInteger ((long)Value [iterIndex - 1]);
+        }
 
-		public override bool IterMoveNext (VirtualMachine vm)
-		{
-			if (iterIndex >= Value.Length) {
-				return false;
-			}
-			iterIndex++;
-			return true;
-		}
+        public override bool IterMoveNext (VirtualMachine vm)
+        {
+            if (iterIndex >= Value.Length) {
+                return false;
+            }
+            iterIndex++;
+            return true;
+        }
 
-		public override void IterReset (VirtualMachine vm)
-		{
-			iterIndex = 0;
-		}
+        public override void IterReset (VirtualMachine vm)
+        {
+            iterIndex = 0;
+        }
 
-		/**
+        /**
 		 * Iodine Function: Bytes.indexOf (self, value)
 		 * Description: Returns the first position of value
 		 */
-		private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length == 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
-			int val = ConvertToByte (args [0]);
+        private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+            int val = ConvertToByte (args [0]);
 
-			if (val < 0) {
-				vm.RaiseException (new IodineTypeException ("Int"));
-				return null;
-			}
+            if (val < 0) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
 
-			for (int i = 0; i < Value.Length; i++) {
-				if (Value [i] == val) {
-					return new IodineInteger (i);
-				}
-			}
+            for (int i = 0; i < Value.Length; i++) {
+                if (Value [i] == val) {
+                    return new IodineInteger (i);
+                }
+            }
 
-			return new IodineInteger (-1);
-		}
+            return new IodineInteger (-1);
+        }
 
-		/**
+        /**
 		 * Iodine Function: Bytes.lastIndexOf (self, value)
 		 * Description: Returns the last position of value
 		 */
-		private IodineObject LastIndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length == 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
-			int val = ConvertToByte (args [0]);
+        private IodineObject LastIndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+            int val = ConvertToByte (args [0]);
 
-			if (val < 0) {
-				vm.RaiseException (new IodineTypeException ("Int"));
-				return null;
-			}
+            if (val < 0) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
 
-			int lastI = -1;
+            int lastI = -1;
 
-			for (int i = 0; i < Value.Length; i++) {
-				if (Value [i] == val) {
-					lastI = i;
-				}
-			}
+            for (int i = 0; i < Value.Length; i++) {
+                if (Value [i] == val) {
+                    lastI = i;
+                }
+            }
 
-			return new IodineInteger (lastI);
-		}
+            return new IodineInteger (lastI);
+        }
 
-		/**
+        /**
 		 * Iodine Function: Bytes.substr (self, start, [length])
 		 * Description: Returns the substring of this value starting at start
 		 */
-		private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length == 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			if (args.Length == 1) {
-				IodineInteger i1 = args [0] as IodineInteger;
-				if (i1 == null) {
-					vm.RaiseException (new IodineTypeException ("Int"));
-					return null;
-				}
-				return Substring (vm, i1);
-			} else {
-				IodineInteger i1 = args [0] as IodineInteger;
-				IodineInteger i2 = args [1] as IodineInteger;
+            if (args.Length == 1) {
+                IodineInteger i1 = args [0] as IodineInteger;
+                if (i1 == null) {
+                    vm.RaiseException (new IodineTypeException ("Int"));
+                    return null;
+                }
+                return Substring (vm, i1);
+            } else {
+                IodineInteger i1 = args [0] as IodineInteger;
+                IodineInteger i2 = args [1] as IodineInteger;
 
-				if (i1 == null || i2 == null) {
-					vm.RaiseException (new IodineTypeException ("Int"));
-					return null;
-				}
+                if (i1 == null || i2 == null) {
+                    vm.RaiseException (new IodineTypeException ("Int"));
+                    return null;
+                }
 
-				return Substring (vm, i1, i2);
-			}
-		}
+                return Substring (vm, i1, i2);
+            }
+        }
 
-		private IodineObject Substring (VirtualMachine vm, IodineInteger i1)
-		{
-			byte[] newBytes = new byte[Value.Length - (int)i1.Value];
-			int nI = 0;
+        private IodineObject Substring (VirtualMachine vm, IodineInteger i1)
+        {
+            byte[] newBytes = new byte[Value.Length - (int)i1.Value];
+            int nI = 0;
 
-			for (int i = (int)i1.Value; i < newBytes.Length; i++) {
-				newBytes [nI++] = Value [i];
-			}
+            for (int i = (int)i1.Value; i < newBytes.Length; i++) {
+                newBytes [nI++] = Value [i];
+            }
 
-			return new IodineBytes (newBytes);
-		}
+            return new IodineBytes (newBytes);
+        }
 
-		private IodineObject Substring (VirtualMachine vm, IodineInteger i1, IodineInteger i2)
-		{
-			byte[] newBytes = new byte[(int)i2.Value];
+        private IodineObject Substring (VirtualMachine vm, IodineInteger i1, IodineInteger i2)
+        {
+            byte[] newBytes = new byte[(int)i2.Value];
 
-			int nI = 0;
+            int nI = 0;
 
-			for (int i = (int)i1.Value; nI < (int)i2.Value; i++) {
-				newBytes [nI++] = Value [i];
-			}
+            for (int i = (int)i1.Value; nI < (int)i2.Value; i++) {
+                newBytes [nI++] = Value [i];
+            }
 
-			return new IodineBytes (newBytes);
+            return new IodineBytes (newBytes);
 
-		}
+        }
 
-		/**
+        /**
 		 * Iodine Function: Bytes.contains (self, value)
 		 * Description: Returns true if this byte string contains value
 		 */
-		private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length == 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			IodineBytes needle = args [0] as IodineBytes;
+            IodineBytes needle = args [0] as IodineBytes;
 
-			if (needle == null) {
-				vm.RaiseException (new IodineTypeException ("Bytes"));
-				return null;
-			}
+            if (needle == null) {
+                vm.RaiseException (new IodineTypeException ("Bytes"));
+                return null;
+            }
 
-			for (int i = 0; i < Value.Length; i++) {
-				bool found = true;
+            for (int i = 0; i < Value.Length; i++) {
+                bool found = true;
 
-				for (int sI = 0; sI < needle.Value.Length; sI++) {
-					if (needle.Value [sI] != Value [i]) {
-						found = false;
-						break;
-					}
-				}
+                for (int sI = 0; sI < needle.Value.Length; sI++) {
+                    if (needle.Value [sI] != Value [i]) {
+                        found = false;
+                        break;
+                    }
+                }
 
-				if (found) {
-					return IodineBool.True;
-				}
-			}
+                if (found) {
+                    return IodineBool.True;
+                }
+            }
 
-			return IodineBool.False;
-		}
+            return IodineBool.False;
+        }
 
-		private static int ConvertToByte (IodineObject obj)
-		{
-			if (obj is IodineInteger) {
-				return (byte)((IodineInteger)obj).Value;
-			} 
+        private static int ConvertToByte (IodineObject obj)
+        {
+            if (obj is IodineInteger) {
+                return (byte)((IodineInteger)obj).Value;
+            } 
 
-			if (obj is IodineString) {
-				string val = obj.ToString ();
-				if (val.Length == 1) {
-					return (byte)val [0];
-				}
-			}
+            if (obj is IodineString) {
+                string val = obj.ToString ();
+                if (val.Length == 1) {
+                    return (byte)val [0];
+                }
+            }
 
-			return -1;
-		}
-	}
+            return -1;
+        }
+    }
 }
 

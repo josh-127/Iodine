@@ -36,59 +36,60 @@ using Iodine.Interop;
 
 namespace Iodine
 {
-	public sealed class ReplShell
-	{
+    public sealed class ReplShell
+    {
 
-		public ReplShell (IodineContext context)
-		{
-		}
+        public ReplShell (IodineContext context)
+        {
+        }
 
-		public void Run () {
-			var version = typeof(IodineContext).Assembly.GetName ().Version;
-			Console.WriteLine ("Iodine v{0}-alpha", version.ToString (3));
-			Console.WriteLine ("Enter expressions to have them be evaluated");
+        public void Run ()
+        {
+            var version = typeof(IodineContext).Assembly.GetName ().Version;
+            Console.WriteLine ("Iodine v{0}-alpha", version.ToString (3));
+            Console.WriteLine ("Enter expressions to have them be evaluated");
 
-			IodineContext context = new IodineContext ();
-			context.ShouldOptimize = false;
-			while (true) {
-				Console.Write (">>> ");
-				var source = Console.ReadLine ();
-				try {
-					if (source.Length > 0) {
-						SourceUnit unit = SourceUnit.CreateFromSource (source);
-						var result = unit.Compile (context);
-						IodineObject ret = context.Invoke (result, new IodineObject[] { });
-						if (!(ret is IodineNull)) {
-							Console.WriteLine (ret);
-						}
-					}
-				} catch (UnhandledIodineExceptionException ex) {
-					Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));
-					ex.PrintStack ();
-					Console.Error.WriteLine ();
-				} catch (ModuleNotFoundException ex) {
-					Console.Error.WriteLine (ex.ToString ());
-				} catch (SyntaxException syntaxException) {
-					DisplayErrors (syntaxException.ErrorLog);
-				} catch (Exception ex) {
-					Console.Error.WriteLine ("Fatal exception has occured!");
-					Console.Error.WriteLine (ex.Message);
-					Console.Error.WriteLine ("Stack trace: \n{0}", ex.StackTrace);
-					//Console.Error.WriteLine ("\nIodine stack trace \n{0}", engine.VirtualMachine.GetStackTrace ());
-				}
-			}
-		}
+            IodineContext context = new IodineContext ();
+            context.ShouldOptimize = false;
+            while (true) {
+                Console.Write (">>> ");
+                var source = Console.ReadLine ();
+                try {
+                    if (source.Length > 0) {
+                        SourceUnit unit = SourceUnit.CreateFromSource (source);
+                        var result = unit.Compile (context);
+                        IodineObject ret = context.Invoke (result, new IodineObject[] { });
+                        if (!(ret is IodineNull)) {
+                            Console.WriteLine (ret);
+                        }
+                    }
+                } catch (UnhandledIodineExceptionException ex) {
+                    Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));
+                    ex.PrintStack ();
+                    Console.Error.WriteLine ();
+                } catch (ModuleNotFoundException ex) {
+                    Console.Error.WriteLine (ex.ToString ());
+                } catch (SyntaxException syntaxException) {
+                    DisplayErrors (syntaxException.ErrorLog);
+                } catch (Exception ex) {
+                    Console.Error.WriteLine ("Fatal exception has occured!");
+                    Console.Error.WriteLine (ex.Message);
+                    Console.Error.WriteLine ("Stack trace: \n{0}", ex.StackTrace);
+                    //Console.Error.WriteLine ("\nIodine stack trace \n{0}", engine.VirtualMachine.GetStackTrace ());
+                }
+            }
+        }
 
-		public static void DisplayErrors (ErrorSink errorLog)
-		{
-			foreach (Error err in errorLog) {
-				SourceLocation loc = err.Location;
-				Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}",
-					Path.GetFileName (loc.File),
-					loc.Line, loc.Column, err.Text
-				);
-			}
-		}
-	}
+        public static void DisplayErrors (ErrorSink errorLog)
+        {
+            foreach (Error err in errorLog) {
+                SourceLocation loc = err.Location;
+                Console.Error.WriteLine ("{0} ({1}:{2}) error: {3}",
+                    Path.GetFileName (loc.File),
+                    loc.Line, loc.Column, err.Text
+                );
+            }
+        }
+    }
 }
 

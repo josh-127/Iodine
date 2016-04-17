@@ -31,36 +31,36 @@ using System;
 
 namespace Iodine.Runtime
 {
-	public delegate IodineObject IodineGetter (VirtualMachine vm);
-	public delegate void IodineSetter (VirtualMachine vm, IodineObject value);
+    public delegate IodineObject IodineGetter (VirtualMachine vm);
+    public delegate void IodineSetter (VirtualMachine vm,IodineObject value);
 
-	/// <summary>
-	/// Class allowing the creation of Iodine properities in C#
-	/// </summary>
-	public class InternalIodineProperty : IodineObject, IIodineProperty
-	{
-		private IodineGetter getter;
-		private IodineSetter setter;
+    /// <summary>
+    /// Class allowing the creation of Iodine properities in C#
+    /// </summary>
+    public class InternalIodineProperty : IodineObject, IIodineProperty
+    {
+        private IodineGetter getter;
+        private IodineSetter setter;
 
-		public InternalIodineProperty (IodineGetter getter, IodineSetter setter)
-			: base (IodineProperty.TypeDefinition)
-		{
-			this.getter = getter;
-			this.setter = setter;
-		}
+        public InternalIodineProperty (IodineGetter getter, IodineSetter setter)
+            : base (IodineProperty.TypeDefinition)
+        {
+            this.getter = getter;
+            this.setter = setter;
+        }
 
 
-		public IodineObject Set (VirtualMachine vm, IodineObject value)
-		{
-			setter (vm, value);
-			return null;
-		}
+        public IodineObject Set (VirtualMachine vm, IodineObject value)
+        {
+            setter (vm, value);
+            return null;
+        }
 
-		public IodineObject Get (VirtualMachine vm)
-		{
-			return getter (vm);
-		}
+        public IodineObject Get (VirtualMachine vm)
+        {
+            return getter (vm);
+        }
 	
-	}
+    }
 }
 

@@ -32,31 +32,31 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class TraitDeclaration : AstNode
-	{
-		public readonly string Name;
-		public readonly List<AstNode> Members = new List<AstNode> ();
+    public class TraitDeclaration : AstNode
+    {
+        public readonly string Name;
+        public readonly List<AstNode> Members = new List<AstNode> ();
 
-		public TraitDeclaration (SourceLocation location, string name)
-			: base (location)
-		{
-			Name = name;
-		}
+        public TraitDeclaration (SourceLocation location, string name)
+            : base (location)
+        {
+            Name = name;
+        }
 
-		public void AddMember (AstNode member)
-		{
-			Members.Add (member);
-		}
+        public void AddMember (AstNode member)
+        {
+            Members.Add (member);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Members.ForEach (p => p.Visit (visitor));
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Members.ForEach (p => p.Visit (visitor));
+        }
+    }
 }
 

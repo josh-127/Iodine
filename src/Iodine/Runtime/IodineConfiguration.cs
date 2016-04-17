@@ -32,66 +32,66 @@ using System.Linq;
 
 namespace Iodine.Runtime
 {
-	/// <summary>
-	/// Contains settings that restrict what the virtual machine is capable of doing
-	/// </summary>
-	public sealed class IodineConfiguration
-	{
-		public int StackLimit {
-			set;
-			get;
-		}
+    /// <summary>
+    /// Contains settings that restrict what the virtual machine is capable of doing
+    /// </summary>
+    public sealed class IodineConfiguration
+    {
+        public int StackLimit {
+            set;
+            get;
+        }
 
-		public bool RestrictExtensions {
-			set;
-			get;
-		}
+        public bool RestrictExtensions {
+            set;
+            get;
+        }
 
-		public int ThreadLimit {
-			get;
-			set;
-		}
+        public int ThreadLimit {
+            get;
+            set;
+        }
 
-		public IodineConfiguration ()
-		{
-			// Defaults
-			ThreadLimit = 1024;
-			StackLimit = 8192;
-			RestrictExtensions = false;
-		}
+        public IodineConfiguration ()
+        {
+            // Defaults
+            ThreadLimit = 1024;
+            StackLimit = 8192;
+            RestrictExtensions = false;
+        }
 
 
-		public void SetField (string name, string value)
-		{
-			switch (name) {
-			case "stacklimit":
-				StackLimit = Int32.Parse (value);
-				break;
-			case "threadlimit":
-				ThreadLimit = Int32.Parse (value);
-				break;
-			case "restrictextensions":
-				RestrictExtensions = value.ToLower () == "true";
-				break;
-			}
-		}
+        public void SetField (string name, string value)
+        {
+            switch (name) {
+            case "stacklimit":
+                StackLimit = Int32.Parse (value);
+                break;
+            case "threadlimit":
+                ThreadLimit = Int32.Parse (value);
+                break;
+            case "restrictextensions":
+                RestrictExtensions = value.ToLower () == "true";
+                break;
+            }
+        }
 
-		public static IodineConfiguration Load (string path)
-		{
-			IodineConfiguration config = new IodineConfiguration ();
+        public static IodineConfiguration Load (string path)
+        {
+            IodineConfiguration config = new IodineConfiguration ();
 
-			string[] lines = File.ReadAllLines (path);
-			var configLines = lines.Where (p => p.Trim () != "" && !p.StartsWith ("#"));
-			foreach (string configLine in configLines) {
-				string line = configLine.Trim ();
-				if (line.Contains (" ")) {
-					string key = line.Substring (0, line.IndexOf (" "));
-					string value = line.Substring (line.IndexOf (" ")).Trim ();
-					config.SetField (key, value);
-				}
-			}
-			return config;
-		}
-	}
+            string[] lines = File.ReadAllLines (path);
+            var configLines = lines.Where (p => p.Trim () != "" && !p.StartsWith ("#"));
+            foreach (string configLine in configLines) {
+                string line = configLine.Trim ();
+                if (line.Contains (" ")) {
+                    string key = line.Substring (0, line.IndexOf (" "));
+                    string value = line.Substring (line.IndexOf (" ")).Trim ();
+                    config.SetField (key, value);
+                }
+            }
+            return config;
+        }
+    }
 }
 

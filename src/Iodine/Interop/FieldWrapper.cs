@@ -32,35 +32,35 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class FieldWrapper : IodineObject, IIodineProperty
-	{
-		private object self;
-		private FieldInfo fieldInfo;
-		private TypeRegistry typeRegistry;
+    class FieldWrapper : IodineObject, IIodineProperty
+    {
+        private object self;
+        private FieldInfo fieldInfo;
+        private TypeRegistry typeRegistry;
 
-		private FieldWrapper (TypeRegistry registry, FieldInfo field, object self)
-			: base (IodineProperty.TypeDefinition)
-		{
-			typeRegistry = registry;
-			fieldInfo = field;
-			this.self = self;
-		}
+        private FieldWrapper (TypeRegistry registry, FieldInfo field, object self)
+            : base (IodineProperty.TypeDefinition)
+        {
+            typeRegistry = registry;
+            fieldInfo = field;
+            this.self = self;
+        }
 
-		public IodineObject Set (VirtualMachine vm, IodineObject value)
-		{
-			fieldInfo.SetValue (self, typeRegistry.ConvertToNativeObject (value, fieldInfo.FieldType));
-			return null;
-		}
+        public IodineObject Set (VirtualMachine vm, IodineObject value)
+        {
+            fieldInfo.SetValue (self, typeRegistry.ConvertToNativeObject (value, fieldInfo.FieldType));
+            return null;
+        }
 
-		public IodineObject Get (VirtualMachine vm)
-		{
-			return typeRegistry.ConvertToIodineObject (fieldInfo.GetValue (self));
-		}
+        public IodineObject Get (VirtualMachine vm)
+        {
+            return typeRegistry.ConvertToIodineObject (fieldInfo.GetValue (self));
+        }
 
-		public static FieldWrapper Create (TypeRegistry registry, FieldInfo field, object self = null)
-		{
-			return new FieldWrapper (registry, field, self);
-		}
-	}
+        public static FieldWrapper Create (TypeRegistry registry, FieldInfo field, object self = null)
+        {
+            return new FieldWrapper (registry, field, self);
+        }
+    }
 }
 

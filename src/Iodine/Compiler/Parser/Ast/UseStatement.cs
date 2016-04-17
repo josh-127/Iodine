@@ -34,38 +34,38 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class UseStatement : AstNode
-	{
-		public string Module { private set; get; }
+    public class UseStatement : AstNode
+    {
+        public string Module { private set; get; }
 
-		public List<string> Imports { private set; get; }
+        public List<string> Imports { private set; get; }
 
-		public bool Wildcard { private set; get; }
+        public bool Wildcard { private set; get; }
 
-		public bool Relative { private set; get; }
+        public bool Relative { private set; get; }
 
-		public UseStatement (SourceLocation location, string module, bool relative = false)
-			: base (location)
-		{
-			Module = module;
-			Relative = relative;
-			Imports = new List<string> ();
-		}
+        public UseStatement (SourceLocation location, string module, bool relative = false)
+            : base (location)
+        {
+            Module = module;
+            Relative = relative;
+            Imports = new List<string> ();
+        }
 
-		public UseStatement (SourceLocation location,string module, List<string> imports, bool wildcard,
-		                         bool relative = false)
-			: base (location)
-		{
-			Module = module;
-			Imports = imports;
-			Wildcard = wildcard;
-			Relative = relative;
-		}
+        public UseStatement (SourceLocation location, string module, List<string> imports, bool wildcard,
+                             bool relative = false)
+            : base (location)
+        {
+            Module = module;
+            Imports = imports;
+            Wildcard = wildcard;
+            Relative = relative;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+    }
 }
 

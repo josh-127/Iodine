@@ -31,27 +31,27 @@ using System;
 
 namespace Iodine.Runtime
 {
-	public class IodineName : IodineObject
-	{
-		private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Name"); 
+    public class IodineName : IodineObject
+    {
+        private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Name");
 
-		public readonly string Value;
+        public readonly string Value;
 
-		public IodineName (string val)
-			: base (TypeDefinition)
-		{
-			Value = val;
-		}
+        public IodineName (string val)
+            : base (TypeDefinition)
+        {
+            Value = val;
+        }
 
-		public override string ToString ()
-		{
-			return Value;
-		}
+        public override string ToString ()
+        {
+            return Value;
+        }
 
-		public override int GetHashCode ()
-		{
-			return Value.GetHashCode ();
-		}
-	}
+        public override int GetHashCode ()
+        {
+            return Value.GetHashCode ();
+        }
+    }
 }
 

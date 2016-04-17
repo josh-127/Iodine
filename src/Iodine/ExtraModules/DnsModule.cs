@@ -36,56 +36,56 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-	[IodineBuiltinModule ("dns")]
-	internal class DNSModule : IodineModule
-	{
-		public class IodineHostEntry : IodineObject
-		{
-			private static readonly IodineTypeDefinition HostEntryTypeDef = new IodineTypeDefinition ("HostEntry");
+    [IodineBuiltinModule ("dns")]
+    internal class DNSModule : IodineModule
+    {
+        public class IodineHostEntry : IodineObject
+        {
+            private static readonly IodineTypeDefinition HostEntryTypeDef = new IodineTypeDefinition ("HostEntry");
 
-			public IPHostEntry Entry { private set; get; }
+            public IPHostEntry Entry { private set; get; }
 
-			public IodineHostEntry (IPHostEntry host)
-				: base (HostEntryTypeDef)
-			{
-				this.Entry = host;
-				IodineObject[] addresses = new IodineObject[Entry.AddressList.Length];
-				int i = 0;
-				foreach (IPAddress ip in Entry.AddressList) {
-					addresses [i++] = new IodineString (ip.ToString ());
-				}
-				SetAttribute ("addressList", new IodineTuple (addresses));
-			}
+            public IodineHostEntry (IPHostEntry host)
+                : base (HostEntryTypeDef)
+            {
+                this.Entry = host;
+                IodineObject[] addresses = new IodineObject[Entry.AddressList.Length];
+                int i = 0;
+                foreach (IPAddress ip in Entry.AddressList) {
+                    addresses [i++] = new IodineString (ip.ToString ());
+                }
+                SetAttribute ("addressList", new IodineTuple (addresses));
+            }
 
-		}
+        }
 
-		public DNSModule ()
-			: base ("dns")
-		{
-			SetAttribute ("getHostEntry", new BuiltinMethodCallback (getHostEntry, this));
-		}
+        public DNSModule ()
+            : base ("dns")
+        {
+            SetAttribute ("getHostEntry", new BuiltinMethodCallback (getHostEntry, this));
+        }
 
-		private IodineObject getHostEntry (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
-			IodineString domain = args [0] as IodineString;
+        private IodineObject getHostEntry (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+            IodineString domain = args [0] as IodineString;
 
-			if (domain == null) {
-				vm.RaiseException (new IodineTypeException ("Str"));
-				return null;
-			}
-			try {
-				return new IodineHostEntry (Dns.GetHostEntry (domain.Value));
-			} catch (Exception ex) {
-				vm.RaiseException (new IodineException (ex.Message));
-				return null;
-			}
-		}
+            if (domain == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+            try {
+                return new IodineHostEntry (Dns.GetHostEntry (domain.Value));
+            } catch (Exception ex) {
+                vm.RaiseException (new IodineException (ex.Message));
+                return null;
+            }
+        }
 
-	}
+    }
 }
 
 

@@ -34,74 +34,74 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	/// <summary>
-	/// Base class for all custom Iodine types, the equivalent of C#'s Type class or
-	/// Java's Class class. 
-	/// </summary>
-	public class IodineTypeDefinition : IodineObject
-	{
-		private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("TypeDef");
+    /// <summary>
+    /// Base class for all custom Iodine types, the equivalent of C#'s Type class or
+    /// Java's Class class. 
+    /// </summary>
+    public class IodineTypeDefinition : IodineObject
+    {
+        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("TypeDef");
 
-		public readonly string Name;
+        public readonly string Name;
 
-		public IodineTypeDefinition (string name)
-			: base (TypeDefinition)
-		{
-			Name = name;
-			Attributes ["__name__"] = new IodineString (name);
-			BindMethods ();
-		}
+        public IodineTypeDefinition (string name)
+            : base (TypeDefinition)
+        {
+            Name = name;
+            Attributes ["__name__"] = new IodineString (name);
+            BindMethods ();
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			return base.Invoke (vm, arguments);
-		}
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            return base.Invoke (vm, arguments);
+        }
 
-		public override bool IsCallable ()
-		{
-			return true;
-		}
+        public override bool IsCallable ()
+        {
+            return true;
+        }
 
-		public override string ToString ()
-		{
-			return Name;
-		}
-			
-		public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-		{
-			IodineObject obj = Invoke (vm, arguments);
-			foreach (string attr in Attributes.Keys) {
-				if (!self.HasAttribute (attr))
-					self.SetAttribute (attr, Attributes [attr]);
-				obj.SetAttribute (attr, Attributes [attr]);
-			}
-			self.SetAttribute ("__super__", obj);
-			self.Base = obj;
-		}
+        public override string ToString ()
+        {
+            return Name;
+        }
 
-		public IodineObject BindAttributes (IodineObject obj)
-		{
-			foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
-				if (!obj.HasAttribute (kv.Key)) {
-					obj.SetAttribute (kv.Key, kv.Value);
-				}
-			}
-			return obj;
-		}
+        public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+        {
+            IodineObject obj = Invoke (vm, arguments);
+            foreach (string attr in Attributes.Keys) {
+                if (!self.HasAttribute (attr))
+                    self.SetAttribute (attr, Attributes [attr]);
+                obj.SetAttribute (attr, Attributes [attr]);
+            }
+            self.SetAttribute ("__super__", obj);
+            self.Base = obj;
+        }
 
-		private void BindMethods ()
-		{
-			Type type = GetType ();
-			var methods = type.GetMethods ().
+        public IodineObject BindAttributes (IodineObject obj)
+        {
+            foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
+                if (!obj.HasAttribute (kv.Key)) {
+                    obj.SetAttribute (kv.Key, kv.Value);
+                }
+            }
+            return obj;
+        }
+
+        private void BindMethods ()
+        {
+            Type type = GetType ();
+            var methods = type.GetMethods ().
 				Where (p => p.IsStatic && p.IsDefined (typeof(IodineBuiltinMethod)));
-			foreach (MethodInfo info in methods) {
-				IodineBuiltinMethod attr = (IodineBuiltinMethod)info.GetCustomAttributes (
-					typeof(IodineBuiltinMethod), false).First ();
-				SetAttribute (attr.Name, new BuiltinMethodCallback (
-					(IodineMethodDelegate)Delegate.CreateDelegate (typeof(IodineMethodDelegate), info), null)
-				);
-			}
-		}
-	}
+            foreach (MethodInfo info in methods) {
+                IodineBuiltinMethod attr = (IodineBuiltinMethod)info.GetCustomAttributes (
+                                   typeof(IodineBuiltinMethod), false).First ();
+                SetAttribute (attr.Name, new BuiltinMethodCallback (
+                    (IodineMethodDelegate)Delegate.CreateDelegate (typeof(IodineMethodDelegate), info), null)
+                );
+            }
+        }
+    }
 }
 

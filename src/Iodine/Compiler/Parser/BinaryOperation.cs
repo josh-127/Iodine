@@ -31,33 +31,33 @@ using System;
 
 namespace Iodine.Compiler
 {
-	public enum BinaryOperation
-	{
-		Assign = 0,
-		BoolOr = 1,
-		BoolAnd = 2,
-		Or = 3,
-		Xor = 4,
-		And = 5,
-		Equals = 6,
-		NotEquals = 7,
-		LeftShift = 8,
-		RightShift = 9,
-		GreaterThan = 0x0A,
-		LessThan = 0x0B,
-		GreaterThanOrEqu = 0x0C,
-		LessThanOrEqu = 0x0D,
-		Add = 0x0E,
-		Sub = 0x0F,
-		Mul = 0x10,
-		Div = 0x11,
-		Mod = 0x12,
-		InstanceOf = 0x13,
-		NotInstanceOf,
-		DynamicCast,
-		NullCoalescing,
-		ClosedRange,
-		HalfRange
-	}
+    public enum BinaryOperation
+    {
+        Assign = 0,
+        BoolOr = 1,
+        BoolAnd = 2,
+        Or = 3,
+        Xor = 4,
+        And = 5,
+        Equals = 6,
+        NotEquals = 7,
+        LeftShift = 8,
+        RightShift = 9,
+        GreaterThan = 0x0A,
+        LessThan = 0x0B,
+        GreaterThanOrEqu = 0x0C,
+        LessThanOrEqu = 0x0D,
+        Add = 0x0E,
+        Sub = 0x0F,
+        Mul = 0x10,
+        Div = 0x11,
+        Mod = 0x12,
+        InstanceOf = 0x13,
+        NotInstanceOf,
+        DynamicCast,
+        NullCoalescing,
+        ClosedRange,
+        HalfRange
+    }
 }
 

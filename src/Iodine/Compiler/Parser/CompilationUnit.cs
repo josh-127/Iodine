@@ -32,30 +32,30 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-	public class CompilationUnit : AstNode
-	{
-		private List<AstNode> children = new List<AstNode> ();
+    public class CompilationUnit : AstNode
+    {
+        private List<AstNode> children = new List<AstNode> ();
 
-		public CompilationUnit (SourceLocation location)
-			: base (location)
-		{
-		}
+        public CompilationUnit (SourceLocation location)
+            : base (location)
+        {
+        }
 
-		public void Add (AstNode child)
-		{
-			children.Add (child);
-		}
+        public void Add (AstNode child)
+        {
+            children.Add (child);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			children.ForEach (p => p.Visit (visitor));
-		}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            children.ForEach (p => p.Visit (visitor));
+        }
 
-	}
+    }
 }
 

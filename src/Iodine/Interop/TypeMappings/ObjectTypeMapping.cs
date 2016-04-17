@@ -32,27 +32,27 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class ObjectTypeMapping : TypeMapping
-	{
-		private ClassWrapper classWrapper;
-		private TypeRegistry typeRegistry;
+    class ObjectTypeMapping : TypeMapping
+    {
+        private ClassWrapper classWrapper;
+        private TypeRegistry typeRegistry;
 
-		public ObjectTypeMapping (ClassWrapper wrapper, TypeRegistry registry)
-		{
-			classWrapper = wrapper;
-			typeRegistry = registry;
-		}
+        public ObjectTypeMapping (ClassWrapper wrapper, TypeRegistry registry)
+        {
+            classWrapper = wrapper;
+            typeRegistry = registry;
+        }
 
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
-		{
-			ObjectWrapper wrapper = obj as ObjectWrapper;
-			return wrapper.Object;
-		}
+        public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
+        {
+            ObjectWrapper wrapper = obj as ObjectWrapper;
+            return wrapper.Object;
+        }
 
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
-		{
-			return ObjectWrapper.CreateFromObject (typeRegistry, classWrapper, obj);
-		}
-	}
+        public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
+        {
+            return ObjectWrapper.CreateFromObject (typeRegistry, classWrapper, obj);
+        }
+    }
 }
 

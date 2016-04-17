@@ -35,22 +35,22 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-	[IodineBuiltinModule ("ziplib")]
-	internal class ZipModule : IodineModule
-	{
-		public ZipModule () : base ("ziplib")
-		{
-			SetAttribute ("unzipToDirectory", new BuiltinMethodCallback (unzip, this));
-		}
+    [IodineBuiltinModule ("ziplib")]
+    internal class ZipModule : IodineModule
+    {
+        public ZipModule () : base ("ziplib")
+        {
+            SetAttribute ("unzipToDirectory", new BuiltinMethodCallback (unzip, this));
+        }
 
-		private IodineObject unzip (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			var archiveName = args [0] as IodineString;
-			var targetDir = args [1] as IodineString;
-			ZipFile.ExtractToDirectory (archiveName.Value, targetDir.Value);
-			return null;
-		}
-	}
+        private IodineObject unzip (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            var archiveName = args [0] as IodineString;
+            var targetDir = args [1] as IodineString;
+            ZipFile.ExtractToDirectory (archiveName.Value, targetDir.Value);
+            return null;
+        }
+    }
 }
 
 #endif

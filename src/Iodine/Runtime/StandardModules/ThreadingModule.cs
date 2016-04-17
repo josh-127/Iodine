@@ -33,232 +33,233 @@ using System.Security.Cryptography;
 
 namespace Iodine.Runtime
 {
-	[IodineBuiltinModule ("threading")]
-	public class ThreadingModule : IodineModule
-	{
-		class IodineThread : IodineObject
-		{
-			class ThreadTypeDefinition : IodineTypeDefinition
-			{
-				public ThreadTypeDefinition ()
-					: base ("Thread")
-				{
-				}
+    [IodineBuiltinModule ("threading")]
+    public class ThreadingModule : IodineModule
+    {
+        class IodineThread : IodineObject
+        {
+            class ThreadTypeDefinition : IodineTypeDefinition
+            {
+                public ThreadTypeDefinition ()
+                    : base ("Thread")
+                {
+                }
 
-				/**
+                /**
 				 * Iodine Class: Thread (func)
 				 * Description: Represents a thread, upon starting the thread, func () will be executed
 				 */
-				public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-				{
-					if (args.Length <= 0) {
-						vm.RaiseException (new IodineArgumentException (1));
-						return null;
-					}
-					IodineObject func = args [0];
-					VirtualMachine newVm = new VirtualMachine (vm.Context, vm.Globals);
+                public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+                {
+                    if (args.Length <= 0) {
+                        vm.RaiseException (new IodineArgumentException (1));
+                        return null;
+                    }
+                    IodineObject func = args [0];
+                    VirtualMachine newVm = new VirtualMachine (vm.Context, vm.Globals);
 
-					Thread t = new Thread (() => {
-						try {
-							func.Invoke (newVm, new IodineObject[] { }); 
-						} catch (UnhandledIodineExceptionException ex) {
-							vm.RaiseException (ex.OriginalException);
-						}
-					});
-					return new IodineThread (t);
-				}
-			}
+                    Thread t = new Thread (() => {
+                        try {
+                            func.Invoke (newVm, new IodineObject[] { }); 
+                        } catch (UnhandledIodineExceptionException ex) {
+                            vm.RaiseException (ex.OriginalException);
+                        }
+                    });
+                    return new IodineThread (t);
+                }
+            }
 
-			public static readonly IodineTypeDefinition TypeDefinition = new ThreadTypeDefinition ();
+            public static readonly IodineTypeDefinition TypeDefinition = new ThreadTypeDefinition ();
 
-			public Thread Value { private set; get; }
+            public Thread Value { private set; get; }
 
-			public IodineThread (Thread t)
-				: base (TypeDefinition)
-			{
-				Value = t;
-				SetAttribute ("start", new BuiltinMethodCallback (Start, this));
-				SetAttribute ("abort", new BuiltinMethodCallback (Abort, this));
-				SetAttribute ("isAlive", new BuiltinMethodCallback (IsAlive, this));
-			}
+            public IodineThread (Thread t)
+                : base (TypeDefinition)
+            {
+                Value = t;
+                SetAttribute ("start", new BuiltinMethodCallback (Start, this));
+                SetAttribute ("abort", new BuiltinMethodCallback (Abort, this));
+                SetAttribute ("isAlive", new BuiltinMethodCallback (IsAlive, this));
+            }
 
-			/**
+            /**
 			 * Iodine Method: Thread.start (self)
 			 * Description: Starts the thread
 			 */
-			private IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				Value.Start ();
-				return null;
-			}
+            private IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                Value.Start ();
+                return null;
+            }
 
-			/**
+            /**
 			 * Iodine Method: Thread.abort (self)
 			 * Description: Aborts the thread
 			 */
-			private IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				Value.Abort ();
-				return null;
-			}
+            private IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                Value.Abort ();
+                return null;
+            }
 
-			/**
+            /**
 			 * Iodine Method: Thread.isAlive (self)
 			 * Description: Returns true if the thread is alive
 			 */
-			private IodineObject IsAlive (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				return IodineBool.Create (Value.IsAlive);
-			}
-		}
+            private IodineObject IsAlive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                return IodineBool.Create (Value.IsAlive);
+            }
+        }
 
-		class IodineLock : IodineObject
-		{
-			public static readonly IodineTypeDefinition TypeDefinition = new LockTypeDefinition ();
+        class IodineLock : IodineObject
+        {
+            public static readonly IodineTypeDefinition TypeDefinition = new LockTypeDefinition ();
 
-			class LockTypeDefinition : IodineTypeDefinition
-			{
-				public LockTypeDefinition ()
-					: base ("Lock")
-				{
-				}
+            class LockTypeDefinition : IodineTypeDefinition
+            {
+                public LockTypeDefinition ()
+                    : base ("Lock")
+                {
+                }
 
-				public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-				{
-					return new IodineLock ();
-				}
-			}
+                public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+                {
+                    return new IodineLock ();
+                }
+            }
 
-			private volatile bool _lock = false;
+            private volatile bool _lock = false;
 
-			public IodineLock ()
-				: base (TypeDefinition)
-			{
-				SetAttribute ("acquire", new BuiltinMethodCallback (Acquire, this));
-				SetAttribute ("release", new BuiltinMethodCallback (Release, this));
-				SetAttribute ("locked", new BuiltinMethodCallback (IsLocked, this));
-			}
+            public IodineLock ()
+                : base (TypeDefinition)
+            {
+                SetAttribute ("acquire", new BuiltinMethodCallback (Acquire, this));
+                SetAttribute ("release", new BuiltinMethodCallback (Release, this));
+                SetAttribute ("locked", new BuiltinMethodCallback (IsLocked, this));
+            }
 
-			/**
+            /**
 			 * Iodine Method: Lock.aquire (self)
 			 * Description: Aquires the log
 			 */
-			private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				while (_lock)
-					;
-				_lock = true;
-				return null;
-			}
+            private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                while (_lock)
+                    ;
+                _lock = true;
+                return null;
+            }
 
-			/*
+            /*
 			 * Iodine Method: Lock.release (self)
 			 * Description: Releases the lock
 			 */
-			private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				_lock = false;
-				return null;
-			}
+            private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                _lock = false;
+                return null;
+            }
 
-			/**
+            /**
 			 * Iodine Method: Lock.isLocked (self)
 			 * Description: Returns true if the lock has been aquired
 			 */
-			private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				return IodineBool.Create (_lock);
-			}
-		}
+            private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                return IodineBool.Create (_lock);
+            }
+        }
 
-		class IodineSemaphore : IodineObject
-		{
-			public static readonly IodineTypeDefinition TypeDefinition = new SemaphoreTypeDefinition ();
+        class IodineSemaphore : IodineObject
+        {
+            public static readonly IodineTypeDefinition TypeDefinition = new SemaphoreTypeDefinition ();
 
-			class SemaphoreTypeDefinition : IodineTypeDefinition
-			{
-				public SemaphoreTypeDefinition ()
-					: base ("Semaphore")
-				{
-				}
+            class SemaphoreTypeDefinition : IodineTypeDefinition
+            {
+                public SemaphoreTypeDefinition ()
+                    : base ("Semaphore")
+                {
+                }
 
-				public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-				{
-					if (args.Length == 0) {
-						return new IodineSemaphore (1);
-					}
-					IodineInteger semaphore = args [0] as IodineInteger;
-					if (semaphore == null) {
-						vm.RaiseException (new IodineTypeException ("Integer"));
-						return null;
-					}
-					return new IodineSemaphore ((int)semaphore.Value);
-				}
-			}
+                public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+                {
+                    if (args.Length == 0) {
+                        return new IodineSemaphore (1);
+                    }
+                    IodineInteger semaphore = args [0] as IodineInteger;
+                    if (semaphore == null) {
+                        vm.RaiseException (new IodineTypeException ("Integer"));
+                        return null;
+                    }
+                    return new IodineSemaphore ((int)semaphore.Value);
+                }
+            }
 
-			private volatile int semaphore = 1;
+            private volatile int semaphore = 1;
 
-			public IodineSemaphore (int semaphore)
-				: base (TypeDefinition)
-			{
-				this.semaphore = semaphore;
-				SetAttribute ("aquire", new BuiltinMethodCallback (Acquire, this));
-				SetAttribute ("release", new BuiltinMethodCallback (Release, this));
-				SetAttribute ("isLocked", new BuiltinMethodCallback (IsLocked, this));
-			}
+            public IodineSemaphore (int semaphore)
+                : base (TypeDefinition)
+            {
+                this.semaphore = semaphore;
+                SetAttribute ("aquire", new BuiltinMethodCallback (Acquire, this));
+                SetAttribute ("release", new BuiltinMethodCallback (Release, this));
+                SetAttribute ("isLocked", new BuiltinMethodCallback (IsLocked, this));
+            }
 
-			/**
+            /**
 			 * Iodine Method: Semaphore.acquire (self)
 			 * Description: Decrements the semaphore
 			 */
-			private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				semaphore--;
-				while (semaphore < 0)
-					; // Spin
-				return null;
-			}
-			/**
+            private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                semaphore--;
+                while (semaphore < 0)
+                    ; // Spin
+                return null;
+            }
+
+            /**
 			 * Iodine Method: Semaphore.release (self)
 			 * Description: Increments the semaphore
 			 */
-			private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				semaphore++;
-				return null;
-			}
+            private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                semaphore++;
+                return null;
+            }
 
-			/**
+            /**
 			 * Returns true if the semaphore is less than 0
 			 */
-			private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
-			{
-				return IodineBool.Create (semaphore < 0);
-			}
-		}
+            private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                return IodineBool.Create (semaphore < 0);
+            }
+        }
 
-		public ThreadingModule ()
-			: base ("threading")
-		{
-			SetAttribute ("Thread", IodineThread.TypeDefinition);
-			SetAttribute ("Lock", IodineLock.TypeDefinition);
-			SetAttribute ("Semaphore", IodineSemaphore.TypeDefinition);
-			SetAttribute ("sleep", new BuiltinMethodCallback (Sleep, this));
-		}
+        public ThreadingModule ()
+            : base ("threading")
+        {
+            SetAttribute ("Thread", IodineThread.TypeDefinition);
+            SetAttribute ("Lock", IodineLock.TypeDefinition);
+            SetAttribute ("Semaphore", IodineSemaphore.TypeDefinition);
+            SetAttribute ("sleep", new BuiltinMethodCallback (Sleep, this));
+        }
 
-		/**
+        /**
 		 * Iodine Function: sleep (t)
 		 * Description: Suspends the current thread for t milliseconds 
 		 */
-		private IodineObject Sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-			}
-			IodineInteger time = args [0] as IodineInteger;
-			System.Threading.Thread.Sleep ((int)time.Value);
-			return null;
-		}
-	}
+        private IodineObject Sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+            }
+            IodineInteger time = args [0] as IodineInteger;
+            System.Threading.Thread.Sleep ((int)time.Value);
+            return null;
+        }
+    }
 }
 

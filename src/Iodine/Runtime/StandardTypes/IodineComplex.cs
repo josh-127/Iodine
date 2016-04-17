@@ -31,147 +31,147 @@ using System.Numerics;
 
 namespace Iodine.Runtime
 {
-	public class IodineComplex : IodineObject
-	{
-		public static readonly IodineTypeDefinition TypeDefinition = new IodineComplexTypeDef ();
+    public class IodineComplex : IodineObject
+    {
+        public static readonly IodineTypeDefinition TypeDefinition = new IodineComplexTypeDef ();
 
-		class IodineComplexTypeDef : IodineTypeDefinition
-		{
-			public IodineComplexTypeDef ()
-				: base ("Complex")
-			{
-			}
+        class IodineComplexTypeDef : IodineTypeDefinition
+        {
+            public IodineComplexTypeDef ()
+                : base ("Complex")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				switch (args.Length) {
-				case 0:
-					{
-						return new IodineComplex (0d, 0d);
-					}
-				case 1:
-					{
-						double real;
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                switch (args.Length) {
+                case 0:
+                    {
+                        return new IodineComplex (0d, 0d);
+                    }
+                case 1:
+                    {
+                        double real;
 
-						if (!ConvertToDouble (args [0], out real)) {
-							vm.RaiseException (new IodineTypeException ("Float"));
-							return null;
-						}
+                        if (!ConvertToDouble (args [0], out real)) {
+                            vm.RaiseException (new IodineTypeException ("Float"));
+                            return null;
+                        }
 
-						return new IodineComplex (real, 0d);
-					}
-				default:
-					{
-						double real;
-						double imaginary;
+                        return new IodineComplex (real, 0d);
+                    }
+                default:
+                    {
+                        double real;
+                        double imaginary;
 
-						if (!ConvertToDouble (args [0], out real) || !ConvertToDouble (args [1], out imaginary)) {
-							vm.RaiseException (new IodineTypeException ("Float"));
-							return null;
-						}
+                        if (!ConvertToDouble (args [0], out real) || !ConvertToDouble (args [1], out imaginary)) {
+                            vm.RaiseException (new IodineTypeException ("Float"));
+                            return null;
+                        }
 
 
-						return new IodineComplex (real, imaginary);
-					}
-				}
-			}
-		}
+                        return new IodineComplex (real, imaginary);
+                    }
+                }
+            }
+        }
 
-		public readonly Complex Value;
+        public readonly Complex Value;
 
-		public IodineComplex (double real, double imaginary)
-			: base (TypeDefinition)
-		{
-			Value = new Complex (real, imaginary);
-		}
+        public IodineComplex (double real, double imaginary)
+            : base (TypeDefinition)
+        {
+            Value = new Complex (real, imaginary);
+        }
 
-		public IodineComplex (Complex complex)
-			: base (TypeDefinition)
-		{
-			Value = complex;
-		}
+        public IodineComplex (Complex complex)
+            : base (TypeDefinition)
+        {
+            Value = complex;
+        }
 
-		public override IodineObject Add (VirtualMachine vm, IodineObject left)
-		{
-			Complex leftComplex;
-			if (left is IodineInteger) {
-				leftComplex = new Complex (((IodineInteger)left).Value, 0);
-			} else if (left is IodineFloat) {
-				leftComplex = new Complex (((IodineFloat)left).Value, 0);
-			} else if (left is IodineComplex) {
-				leftComplex = ((IodineComplex)left).Value;
-			} else {
-				vm.RaiseException (new IodineTypeException ("Complex"));
-				return null;
-			}
-			return new IodineComplex (Value + leftComplex);
-		}
+        public override IodineObject Add (VirtualMachine vm, IodineObject left)
+        {
+            Complex leftComplex;
+            if (left is IodineInteger) {
+                leftComplex = new Complex (((IodineInteger)left).Value, 0);
+            } else if (left is IodineFloat) {
+                leftComplex = new Complex (((IodineFloat)left).Value, 0);
+            } else if (left is IodineComplex) {
+                leftComplex = ((IodineComplex)left).Value;
+            } else {
+                vm.RaiseException (new IodineTypeException ("Complex"));
+                return null;
+            }
+            return new IodineComplex (Value + leftComplex);
+        }
 
-		public override IodineObject Sub (VirtualMachine vm, IodineObject left)
-		{
-			Complex leftComplex;
-			if (left is IodineInteger) {
-				leftComplex = new Complex (((IodineInteger)left).Value, 0);
-			} else if (left is IodineFloat) {
-				leftComplex = new Complex (((IodineFloat)left).Value, 0);
-			} else if (left is IodineComplex) {
-				leftComplex = ((IodineComplex)left).Value;
-			} else {
-				vm.RaiseException (new IodineTypeException ("Complex"));
-				return null;
-			}
-			return new IodineComplex (Value - leftComplex);
-		}
+        public override IodineObject Sub (VirtualMachine vm, IodineObject left)
+        {
+            Complex leftComplex;
+            if (left is IodineInteger) {
+                leftComplex = new Complex (((IodineInteger)left).Value, 0);
+            } else if (left is IodineFloat) {
+                leftComplex = new Complex (((IodineFloat)left).Value, 0);
+            } else if (left is IodineComplex) {
+                leftComplex = ((IodineComplex)left).Value;
+            } else {
+                vm.RaiseException (new IodineTypeException ("Complex"));
+                return null;
+            }
+            return new IodineComplex (Value - leftComplex);
+        }
 
-		public override IodineObject Mul (VirtualMachine vm, IodineObject left)
-		{
-			Complex leftComplex;
-			if (left is IodineInteger) {
-				leftComplex = new Complex (((IodineInteger)left).Value, 0);
-			} else if (left is IodineFloat) {
-				leftComplex = new Complex (((IodineFloat)left).Value, 0);
-			} else if (left is IodineComplex) {
-				leftComplex = ((IodineComplex)left).Value;
-			} else {
-				vm.RaiseException (new IodineTypeException ("Complex"));
-				return null;
-			}
-			return new IodineComplex (Value * leftComplex);
-		}
+        public override IodineObject Mul (VirtualMachine vm, IodineObject left)
+        {
+            Complex leftComplex;
+            if (left is IodineInteger) {
+                leftComplex = new Complex (((IodineInteger)left).Value, 0);
+            } else if (left is IodineFloat) {
+                leftComplex = new Complex (((IodineFloat)left).Value, 0);
+            } else if (left is IodineComplex) {
+                leftComplex = ((IodineComplex)left).Value;
+            } else {
+                vm.RaiseException (new IodineTypeException ("Complex"));
+                return null;
+            }
+            return new IodineComplex (Value * leftComplex);
+        }
 
-		public override IodineObject Div (VirtualMachine vm, IodineObject left)
-		{
-			Complex leftComplex;
-			if (left is IodineInteger) {
-				leftComplex = new Complex (((IodineInteger)left).Value, 0);
-			} else if (left is IodineFloat) {
-				leftComplex = new Complex (((IodineFloat)left).Value, 0);
-			} else if (left is IodineComplex) {
-				leftComplex = ((IodineComplex)left).Value;
-			} else {
-				vm.RaiseException (new IodineTypeException ("Complex"));
-				return null;
-			}
-			return new IodineComplex (Value / leftComplex);
-		}
+        public override IodineObject Div (VirtualMachine vm, IodineObject left)
+        {
+            Complex leftComplex;
+            if (left is IodineInteger) {
+                leftComplex = new Complex (((IodineInteger)left).Value, 0);
+            } else if (left is IodineFloat) {
+                leftComplex = new Complex (((IodineFloat)left).Value, 0);
+            } else if (left is IodineComplex) {
+                leftComplex = ((IodineComplex)left).Value;
+            } else {
+                vm.RaiseException (new IodineTypeException ("Complex"));
+                return null;
+            }
+            return new IodineComplex (Value / leftComplex);
+        }
 
-		public override string ToString ()
-		{
-			return Value.ToString ();
-		}
+        public override string ToString ()
+        {
+            return Value.ToString ();
+        }
 
-		private static bool ConvertToDouble (IodineObject obj, out double value)
-		{
-			if (obj is IodineInteger) {
-				value = (double)((IodineInteger)obj).Value;
-				return true;
-			} else if (obj is IodineFloat) {
-				value = ((IodineFloat)obj).Value;
-				return true;
-			}
-			value = 0;
-			return false;
-		}
-	}
+        private static bool ConvertToDouble (IodineObject obj, out double value)
+        {
+            if (obj is IodineInteger) {
+                value = (double)((IodineInteger)obj).Value;
+                return true;
+            } else if (obj is IodineFloat) {
+                value = ((IodineFloat)obj).Value;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+    }
 }
 

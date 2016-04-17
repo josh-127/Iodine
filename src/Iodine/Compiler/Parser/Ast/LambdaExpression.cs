@@ -32,45 +32,45 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class LambdaExpression : AstNode
-	{
-		public IList<string> Parameters { private set; get; }
+    public class LambdaExpression : AstNode
+    {
+        public IList<string> Parameters { private set; get; }
 
-		public bool InstanceMethod { private set; get; }
+        public bool InstanceMethod { private set; get; }
 
-		public bool Variadic { private set; get; }
+        public bool Variadic { private set; get; }
 
-		public bool AcceptsKeywordArguments { private set; get; }
+        public bool AcceptsKeywordArguments { private set; get; }
 
-		private List<AstNode> body = new List<AstNode> ();
+        private List<AstNode> body = new List<AstNode> ();
 
-		public LambdaExpression (SourceLocation location,
-			bool isInstanceMethod,
-			bool variadic,
-			bool acceptsKeywordArguments,
-			IList<string> parameters)
-			: base (location)
-		{
-			Parameters = parameters;
-			InstanceMethod = isInstanceMethod;
-			Variadic = variadic;
-			AcceptsKeywordArguments = acceptsKeywordArguments;
-		}
+        public LambdaExpression (SourceLocation location,
+                                 bool isInstanceMethod,
+                                 bool variadic,
+                                 bool acceptsKeywordArguments,
+                                 IList<string> parameters)
+            : base (location)
+        {
+            Parameters = parameters;
+            InstanceMethod = isInstanceMethod;
+            Variadic = variadic;
+            AcceptsKeywordArguments = acceptsKeywordArguments;
+        }
 
-		public void AddStatement (AstNode statement)
-		{
-			body.Add (statement);
-		}
+        public void AddStatement (AstNode statement)
+        {
+            body.Add (statement);
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			body.ForEach (p => p.Visit (visitor));
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            body.ForEach (p => p.Visit (visitor));
+        }
+    }
 }
 

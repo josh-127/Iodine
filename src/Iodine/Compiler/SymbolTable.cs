@@ -32,96 +32,96 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler
 {
-	/// <summary>
-	/// Symbol table.
-	/// </summary>
-	public class SymbolTable
-	{
-		class Scope 
-		{
-			private Dictionary<string, int> symbols = new Dictionary<string, int> ();
+    /// <summary>
+    /// Symbol table.
+    /// </summary>
+    public class SymbolTable
+    {
+        class Scope
+        {
+            private Dictionary<string, int> symbols = new Dictionary<string, int> ();
 
-			public int GetSymbol (string name)
-			{
-				return symbols [name];
-			}
+            public int GetSymbol (string name)
+            {
+                return symbols [name];
+            }
 
-			public bool FindSymbol (string name)
-			{
-				return symbols.ContainsKey (name);
-			}
+            public bool FindSymbol (string name)
+            {
+                return symbols.ContainsKey (name);
+            }
 
-			public void AddSymbol (string name, int index)
-			{
-				symbols [name] = index;
-			}
-		}
+            public void AddSymbol (string name, int index)
+            {
+                symbols [name] = index;
+            }
+        }
 
-		private Scope globalScope = new Scope ();
-		private Stack<Scope> scopes = new Stack<Scope> ();
-		private int nextIndex = 0;
+        private Scope globalScope = new Scope ();
+        private Stack<Scope> scopes = new Stack<Scope> ();
+        private int nextIndex = 0;
 
-		public bool IsInGlobalScope {
-			get {
-				return scopes.Peek () == globalScope;
-			}
-		}
+        public bool IsInGlobalScope {
+            get {
+                return scopes.Peek () == globalScope;
+            }
+        }
 
-		public SymbolTable ()
-		{
-			scopes.Push (globalScope);
-		}
+        public SymbolTable ()
+        {
+            scopes.Push (globalScope);
+        }
 
-		public void EnterScope () 
-		{
-			scopes.Push (new Scope ());
-		}
+        public void EnterScope ()
+        {
+            scopes.Push (new Scope ());
+        }
 
-		public void ExitScope () 
-		{
-			scopes.Pop ();
+        public void ExitScope ()
+        {
+            scopes.Pop ();
 
-			if (scopes.Count == 1) {
-				nextIndex = 0;
-			}
-		}
+            if (scopes.Count == 1) {
+                nextIndex = 0;
+            }
+        }
 
-		public bool IsGlobal (string name)
-		{
-			foreach (Scope scope in scopes) {
-				if (scope.FindSymbol (name) && scope != globalScope) {
-					return false;
-				}
-			}
-			return true;
-		}
+        public bool IsGlobal (string name)
+        {
+            foreach (Scope scope in scopes) {
+                if (scope.FindSymbol (name) && scope != globalScope) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-		public int GetSymbolIndex (string name)
-		{
-			foreach (Scope scope in scopes) {
-				if (scope.FindSymbol (name)) {
-					return scope.GetSymbol (name);
-				}
-			}
-			return -1;
-		}
+        public int GetSymbolIndex (string name)
+        {
+            foreach (Scope scope in scopes) {
+                if (scope.FindSymbol (name)) {
+                    return scope.GetSymbol (name);
+                }
+            }
+            return -1;
+        }
 
-		public bool IsSymbolDefined (string name)
-		{
-			foreach (Scope scope in scopes) {
-				if (scope.FindSymbol (name)) {
-					return true;
-				}
-			}
-			return false;
-		}
+        public bool IsSymbolDefined (string name)
+        {
+            foreach (Scope scope in scopes) {
+                if (scope.FindSymbol (name)) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-		public int AddSymbol (string name)
-		{
-			scopes.Peek ().AddSymbol (name, nextIndex);
-			nextIndex++;
-			return nextIndex - 1;
-		}
-	}
+        public int AddSymbol (string name)
+        {
+            scopes.Peek ().AddSymbol (name, nextIndex);
+            nextIndex++;
+            return nextIndex - 1;
+        }
+    }
 }
 

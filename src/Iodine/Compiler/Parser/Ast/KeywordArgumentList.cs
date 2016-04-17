@@ -32,31 +32,31 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-	public class KeywordArgumentList : AstNode
-	{
-		public readonly Dictionary<string, AstNode> Keywords = new Dictionary<string, AstNode> ();
+    public class KeywordArgumentList : AstNode
+    {
+        public readonly Dictionary<string, AstNode> Keywords = new Dictionary<string, AstNode> ();
 
-		public KeywordArgumentList (SourceLocation location)
-			: base (location)
-		{
-		}
+        public KeywordArgumentList (SourceLocation location)
+            : base (location)
+        {
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public void Add (string kw, AstNode child)
-		{
-			Keywords [kw] = child;
-		}
+        public void Add (string kw, AstNode child)
+        {
+            Keywords [kw] = child;
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			foreach (AstNode node in Keywords.Values) {
-				node.Visit (visitor);
-			}
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            foreach (AstNode node in Keywords.Values) {
+                node.Visit (visitor);
+            }
+        }
+    }
 }
 

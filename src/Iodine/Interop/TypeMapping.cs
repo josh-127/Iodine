@@ -31,10 +31,11 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	public abstract class TypeMapping
-	{
-		public abstract IodineObject ConvertFrom (TypeRegistry registry, object obj);
-		public abstract object ConvertFrom (TypeRegistry registry, IodineObject obj);
-	}
+    public abstract class TypeMapping
+    {
+        public abstract IodineObject ConvertFrom (TypeRegistry registry, object obj);
+
+        public abstract object ConvertFrom (TypeRegistry registry, IodineObject obj);
+    }
 }
 

@@ -33,58 +33,58 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	public delegate IodineObject IodineMethodDelegate (VirtualMachine vm, IodineObject self,
+    public delegate IodineObject IodineMethodDelegate (VirtualMachine vm,IodineObject self,
 		IodineObject[] arguments);
 
-	/// <summary>
-	/// Represents a C# method that can be called in Iodine
-	/// </summary>
-	public class BuiltinMethodCallback : IodineObject
-	{
-		private static readonly IodineTypeDefinition InternalMethodTypeDef = new IodineTypeDefinition ("Builtin");
-		
-		public IodineObject Self {
-			get;
-			internal set;
-		}
+    /// <summary>
+    /// Represents a C# method that can be called in Iodine
+    /// </summary>
+    public class BuiltinMethodCallback : IodineObject
+    {
+        private static readonly IodineTypeDefinition InternalMethodTypeDef = new IodineTypeDefinition ("Builtin");
 
-		public IodineMethodDelegate Callback {
-			private set;
-			get;
-		}
+        public IodineObject Self {
+            get;
+            internal set;
+        }
 
-		public BuiltinMethodCallback (IodineMethodDelegate callback, IodineObject self)
-			: base (InternalMethodTypeDef)
-		{
-			Self = self;
-			Callback = callback;
-		}
+        public IodineMethodDelegate Callback {
+            private set;
+            get;
+        }
 
-		public override bool IsCallable ()
-		{
-			return true;
-		}
+        public BuiltinMethodCallback (IodineMethodDelegate callback, IodineObject self)
+            : base (InternalMethodTypeDef)
+        {
+            Self = self;
+            Callback = callback;
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			//vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
-			try {
-				//vm.Stack.EndFrame ();
-				IodineObject obj = Callback.Invoke (vm, Self, arguments);
-				return obj;
-			} catch (RuntimeException ex) {
-				throw ex;
-			} catch (SyntaxException ex) {
-				throw ex;
-			} catch (UnhandledIodineExceptionException e) {
-				throw e;
-			} catch (ThreadAbortException) {
-			} catch (Exception ex) {
-				vm.RaiseException (new IodineInternalErrorException (ex));
-			}
-			return null;
+        public override bool IsCallable ()
+        {
+            return true;
+        }
+
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            //vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
+            try {
+                //vm.Stack.EndFrame ();
+                IodineObject obj = Callback.Invoke (vm, Self, arguments);
+                return obj;
+            } catch (RuntimeException ex) {
+                throw ex;
+            } catch (SyntaxException ex) {
+                throw ex;
+            } catch (UnhandledIodineExceptionException e) {
+                throw e;
+            } catch (ThreadAbortException) {
+            } catch (Exception ex) {
+                vm.RaiseException (new IodineInternalErrorException (ex));
+            }
+            return null;
 			
-		}
-	}
+        }
+    }
 }
 

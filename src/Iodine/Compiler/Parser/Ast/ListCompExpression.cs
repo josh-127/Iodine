@@ -31,41 +31,41 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class ListCompExpression : AstNode
-	{
-		public string Identifier {private set; get; }
+    public class ListCompExpression : AstNode
+    {
+        public string Identifier { private set; get; }
 
-		public readonly AstNode Expression;
+        public readonly AstNode Expression;
 
-		public AstNode Iterator;
+        public AstNode Iterator;
 
-		public AstNode Predicate;
+        public AstNode Predicate;
 
-		public ListCompExpression (SourceLocation location, AstNode expression,
-			string ident,
-			AstNode iterator,
-			AstNode predicate = null)
-			: base (location)
-		{
-			Expression = expression;
-			Iterator = iterator;
-			Identifier = ident;
-			Predicate = predicate; 
-		}
+        public ListCompExpression (SourceLocation location, AstNode expression,
+                                   string ident,
+                                   AstNode iterator,
+                                   AstNode predicate = null)
+            : base (location)
+        {
+            Expression = expression;
+            Iterator = iterator;
+            Identifier = ident;
+            Predicate = predicate; 
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Expression.Visit (visitor);
-			Iterator.Visit (visitor);
-			if (Predicate != null) {
-				Predicate.Visit (visitor);
-			}
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Expression.Visit (visitor);
+            Iterator.Visit (visitor);
+            if (Predicate != null) {
+                Predicate.Visit (visitor);
+            }
+        }
+    }
 }
 

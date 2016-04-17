@@ -33,69 +33,69 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class ClassWrapper : IodineTypeDefinition
-	{
-		private Type type;
-		private TypeRegistry typeRegistry;
+    class ClassWrapper : IodineTypeDefinition
+    {
+        private Type type;
+        private TypeRegistry typeRegistry;
 
-		private ClassWrapper (TypeRegistry registry, Type type, string name)
-			: base (name)
-		{
-			typeRegistry = registry;
-			this.type = type;
-		}
+        private ClassWrapper (TypeRegistry registry, Type type, string name)
+            : base (name)
+        {
+            typeRegistry = registry;
+            this.type = type;
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			int i = 0;
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            int i = 0;
 
-			var suitableOverload = type.GetConstructors ().Where (p => p.GetParameters ().Length ==
-				arguments.Length).
+            var suitableOverload = type.GetConstructors ().Where (p => p.GetParameters ().Length ==
+                          arguments.Length).
 				FirstOrDefault ();
 			
-			Type[] types = suitableOverload.GetParameters ().Select (p => p.ParameterType).ToArray ();
+            Type[] types = suitableOverload.GetParameters ().Select (p => p.ParameterType).ToArray ();
 
-			object[] objects = arguments.Select (p => typeRegistry.ConvertToNativeObject (p,
-				types [i++])).ToArray ();
+            object[] objects = arguments.Select (p => typeRegistry.ConvertToNativeObject (p,
+                          types [i++])).ToArray ();
 			
-			return ObjectWrapper.CreateFromObject (typeRegistry, this, suitableOverload.Invoke (objects));
-		}
+            return ObjectWrapper.CreateFromObject (typeRegistry, this, suitableOverload.Invoke (objects));
+        }
 
-		public static ClassWrapper CreateFromType (TypeRegistry registry, Type type, string name)
-		{
-			ClassWrapper wrapper = new ClassWrapper (registry, type, name);
+        public static ClassWrapper CreateFromType (TypeRegistry registry, Type type, string name)
+        {
+            ClassWrapper wrapper = new ClassWrapper (registry, type, name);
 
-			foreach (MemberInfo info in type.GetMembers (BindingFlags.Public | BindingFlags.Static)) {
-				switch (info.MemberType) {
-				case MemberTypes.Method:
-					if (!wrapper.HasAttribute (info.Name)) {
+            foreach (MemberInfo info in type.GetMembers (BindingFlags.Public | BindingFlags.Static)) {
+                switch (info.MemberType) {
+                case MemberTypes.Method:
+                    if (!wrapper.HasAttribute (info.Name)) {
 						
-						wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, info.Name));
-					}
-					break;
-				case MemberTypes.Field:
-					wrapper.SetAttribute (info.Name, FieldWrapper.Create (registry, (FieldInfo)info));
-					break;
-				case MemberTypes.Property:
-					wrapper.SetAttribute (info.Name, PropertyWrapper.Create (registry, (PropertyInfo)info));
-					break;
-				}
-			}
+                        wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, info.Name));
+                    }
+                    break;
+                case MemberTypes.Field:
+                    wrapper.SetAttribute (info.Name, FieldWrapper.Create (registry, (FieldInfo)info));
+                    break;
+                case MemberTypes.Property:
+                    wrapper.SetAttribute (info.Name, PropertyWrapper.Create (registry, (PropertyInfo)info));
+                    break;
+                }
+            }
 
-			registry.AddTypeMapping (type, wrapper, new ObjectTypeMapping (wrapper, registry));
+            registry.AddTypeMapping (type, wrapper, new ObjectTypeMapping (wrapper, registry));
 
-			return wrapper;
-		}
+            return wrapper;
+        }
 
-		private static BuiltinMethodCallback CreateMultiMethod (TypeRegistry registry,
-			Type type,
-			string name)
-		{
-			var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Static)
+        private static BuiltinMethodCallback CreateMultiMethod (TypeRegistry registry,
+                                                          Type type,
+                                                          string name)
+        {
+            var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Static)
 				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
 				.Select (p => (MethodInfo)p);
-			return MethodWrapper.Create (registry, methods, null); 
-		}
-	}
+            return MethodWrapper.Create (registry, methods, null); 
+        }
+    }
 }
 

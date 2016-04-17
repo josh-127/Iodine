@@ -34,39 +34,39 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public static class BuiltInModules
-	{
-		public static readonly Dictionary<string, IodineModule> Modules = new Dictionary<string, IodineModule> ();
+    public static class BuiltInModules
+    {
+        public static readonly Dictionary<string, IodineModule> Modules = new Dictionary<string, IodineModule> ();
 
-		static BuiltInModules ()
-		{
-			var modules = Assembly.GetExecutingAssembly ().GetTypes ()
+        static BuiltInModules ()
+        {
+            var modules = Assembly.GetExecutingAssembly ().GetTypes ()
 				.Where (p => p.IsSubclassOf (typeof(IodineModule)));
 			
-			foreach (Type type in modules) {
-				if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
-					IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
-						typeof(IodineBuiltinModule), false).First ();
-					IodineModule module = (IodineModule)Activator.CreateInstance (type);
-					LoadBuiltinTypes (module, type);
-					Modules.Add (attr.Name, module);
-				}
-			}
-		}
+            foreach (Type type in modules) {
+                if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
+                    IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
+                                    typeof(IodineBuiltinModule), false).First ();
+                    IodineModule module = (IodineModule)Activator.CreateInstance (type);
+                    LoadBuiltinTypes (module, type);
+                    Modules.Add (attr.Name, module);
+                }
+            }
+        }
 
-		static void LoadBuiltinTypes (IodineModule module, Type moduleType)
-		{
-			var types = moduleType.GetNestedTypes ()
+        static void LoadBuiltinTypes (IodineModule module, Type moduleType)
+        {
+            var types = moduleType.GetNestedTypes ()
 				.Where (p => p.IsSubclassOf (typeof(IodineTypeDefinition)));
-			foreach (Type type in types) {
-				if (type.IsDefined (typeof(IodineBuiltinType), false)) {
-					IodineBuiltinType attr = (IodineBuiltinType)type.GetCustomAttributes (
-						typeof(IodineBuiltinType), false).First ();
-					IodineTypeDefinition typeDef = (IodineTypeDefinition)Activator.CreateInstance (type);
-					module.SetAttribute (attr.Name, typeDef);
-				}
-			}
-		}
-	}
+            foreach (Type type in types) {
+                if (type.IsDefined (typeof(IodineBuiltinType), false)) {
+                    IodineBuiltinType attr = (IodineBuiltinType)type.GetCustomAttributes (
+                                  typeof(IodineBuiltinType), false).First ();
+                    IodineTypeDefinition typeDef = (IodineTypeDefinition)Activator.CreateInstance (type);
+                    module.SetAttribute (attr.Name, typeDef);
+                }
+            }
+        }
+    }
 }
 

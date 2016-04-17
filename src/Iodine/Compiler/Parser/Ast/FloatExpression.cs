@@ -31,20 +31,20 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class FloatExpression : AstNode
-	{
-		public double Value { private set; get; }
+    public class FloatExpression : AstNode
+    {
+        public double Value { private set; get; }
 
-		public FloatExpression (SourceLocation location, double value)
-			: base (location)
-		{
-			Value = value;
-		}
+        public FloatExpression (SourceLocation location, double value)
+            : base (location)
+        {
+            Value = value;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+    }
 }
 

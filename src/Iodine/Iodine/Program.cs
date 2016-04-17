@@ -39,185 +39,186 @@ using Iodine.Runtime.Debug;
 
 namespace Iodine
 {
-	public class IodineEntry
-	{
-		class IodineOptions
-		{
-			public readonly List<string> Options = new List<string> ();
+    public class IodineEntry
+    {
+        class IodineOptions
+        {
+            public readonly List<string> Options = new List<string> ();
 
-			public string FileName { get; set; }
+            public string FileName { get; set; }
 
-			public IodineList IodineArguments { private set; get; }
+            public IodineList IodineArguments { private set; get; }
 
-			public static IodineOptions Parse (string[] args)
-			{
-				IodineOptions ret = new IodineOptions ();
-				int i;
-				for (i = 0; i < args.Length; i++) {
-					if (args [i].StartsWith ("-")) {
-						ret.Options.Add (args [i].Substring (1));
-					} else {
-						ret.FileName = args [i++];
-						if (!File.Exists (ret.FileName)) {
-							Panic ("Could not find file {0}!", ret.FileName);
-						}
-						break;
-					}
-				}
-				IodineObject[] arguments = new IodineObject [args.Length - i];
-				int start = i;
-				for (; i < args.Length; i++) {
-					arguments [i - start] = new IodineString (args [i]);
-				}
-				ret.IodineArguments = new IodineList (arguments);
-				return ret;
-			}
-		}
+            public static IodineOptions Parse (string[] args)
+            {
+                IodineOptions ret = new IodineOptions ();
+                int i;
+                for (i = 0; i < args.Length; i++) {
+                    if (args [i].StartsWith ("-")) {
+                        ret.Options.Add (args [i].Substring (1));
+                    } else {
+                        ret.FileName = args [i++];
+                        if (!File.Exists (ret.FileName)) {
+                            Panic ("Could not find file {0}!", ret.FileName);
+                        }
+                        break;
+                    }
+                }
+                IodineObject[] arguments = new IodineObject [args.Length - i];
+                int start = i;
+                for (; i < args.Length; i++) {
+                    arguments [i - start] = new IodineString (args [i]);
+                }
+                ret.IodineArguments = new IodineList (arguments);
+                return ret;
+            }
+        }
 
-		private static IodineContext context;
+        private static IodineContext context;
 
-		public static void Main (string[] args)
-		{
-			context = IodineContext.Create ();
+        public static void Main (string[] args)
+        {
+            context = IodineContext.Create ();
 
-			if (args.Length == 0) {
-				ReplShell shell = new ReplShell (context);
-				shell.Run ();
-				DisplayUsage ();
-				Environment.Exit (0);
-			}
+            if (args.Length == 0) {
+                ReplShell shell = new ReplShell (context);
+                shell.Run ();
+                DisplayUsage ();
+                Environment.Exit (0);
+            }
 
-			IodineOptions options = IodineOptions.Parse (args);
+            IodineOptions options = IodineOptions.Parse (args);
 
-			options.Options.ForEach (p => ParseOption (context, p));
+            options.Options.ForEach (p => ParseOption (context, p));
 
-			SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
+            SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
 
-			try {
-				IodineModule module = code.Compile (context);
-				context.Invoke (module, new IodineObject[] { });
-				if (module.HasAttribute ("main")) {
-					context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
-						options.IodineArguments });
-				}
-			} catch (UnhandledIodineExceptionException ex) {
-				Console.Error.WriteLine ("An unhandled {0} has occured!",
-					ex.OriginalException.TypeDef.Name);
-				Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.GetAttribute (
-					"message").ToString ());
-				Console.WriteLine ();
-				ex.PrintStack ();
-				Console.Error.WriteLine ();
-				Panic ("Program terminated.");
-			} catch (SyntaxException ex) {
-				DisplayErrors (ex.ErrorLog);
-				Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
-			} catch (Exception e) {
-				Console.Error.WriteLine ("Fatal exception has occured!");
-				Console.Error.WriteLine (e.Message);
-				Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
-				Console.Error.WriteLine ("\nIodine stack trace \n{0}",
-					context.VirtualMachine.GetStackTrace ());
-				Panic ("Program terminated.");
-			}
+            try {
+                IodineModule module = code.Compile (context);
+                context.Invoke (module, new IodineObject[] { });
+                if (module.HasAttribute ("main")) {
+                    context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
+                        options.IodineArguments
+                    });
+                }
+            } catch (UnhandledIodineExceptionException ex) {
+                Console.Error.WriteLine ("An unhandled {0} has occured!",
+                    ex.OriginalException.TypeDef.Name);
+                Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.GetAttribute (
+                    "message").ToString ());
+                Console.WriteLine ();
+                ex.PrintStack ();
+                Console.Error.WriteLine ();
+                Panic ("Program terminated.");
+            } catch (SyntaxException ex) {
+                DisplayErrors (ex.ErrorLog);
+                Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
+            } catch (Exception e) {
+                Console.Error.WriteLine ("Fatal exception has occured!");
+                Console.Error.WriteLine (e.Message);
+                Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
+                Console.Error.WriteLine ("\nIodine stack trace \n{0}",
+                    context.VirtualMachine.GetStackTrace ());
+                Panic ("Program terminated.");
+            }
 
-		}
+        }
 
-		private static void ParseOption (IodineContext context, string option)
-		{
-			switch (option) {
-			case "version":
-				DisplayInfo ();
-				break;
-			case "help":
-				DisplayUsage ();
-				break;
-			case "debug":
-				RunDebugServer ();
-				break;
-			default:
-				Panic ("Unknown command line option: '{0}'", option);
-				break;
-			}
-		}
+        private static void ParseOption (IodineContext context, string option)
+        {
+            switch (option) {
+            case "version":
+                DisplayInfo ();
+                break;
+            case "help":
+                DisplayUsage ();
+                break;
+            case "debug":
+                RunDebugServer ();
+                break;
+            default:
+                Panic ("Unknown command line option: '{0}'", option);
+                break;
+            }
+        }
 
-		private static void RunDebugServer ()
-		{
-			DebugServer server = new DebugServer (context.VirtualMachine);
-			Thread debugThread = new Thread (() => {
-				server.Start (new IPEndPoint (IPAddress.Loopback, 6569));
-			});
-			debugThread.Start ();
-			Console.WriteLine ("Debug server listening on 127.0.0.1:6569");
-		}
+        private static void RunDebugServer ()
+        {
+            DebugServer server = new DebugServer (context.VirtualMachine);
+            Thread debugThread = new Thread (() => {
+                server.Start (new IPEndPoint (IPAddress.Loopback, 6569));
+            });
+            debugThread.Start ();
+            Console.WriteLine ("Debug server listening on 127.0.0.1:6569");
+        }
 
-		private static IodineConfiguration LoadConfiguration ()
-		{
-			if (IsUnix ()) {
-				if (File.Exists ("/etc/iodine.conf")) {
-					return IodineConfiguration.Load ("/etc/iodine.conf");
-				}
-			}
-			string exePath = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
-			string commonAppData = Environment.GetFolderPath (
-				Environment.SpecialFolder.CommonApplicationData
-			);
-			string appData = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+        private static IodineConfiguration LoadConfiguration ()
+        {
+            if (IsUnix ()) {
+                if (File.Exists ("/etc/iodine.conf")) {
+                    return IodineConfiguration.Load ("/etc/iodine.conf");
+                }
+            }
+            string exePath = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
+            string commonAppData = Environment.GetFolderPath (
+                              Environment.SpecialFolder.CommonApplicationData
+                          );
+            string appData = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 
-			if (File.Exists (Path.Combine (exePath, "iodine.conf"))) {
-				return IodineConfiguration.Load (Path.Combine (exePath, "iodine.conf"));
-			}
+            if (File.Exists (Path.Combine (exePath, "iodine.conf"))) {
+                return IodineConfiguration.Load (Path.Combine (exePath, "iodine.conf"));
+            }
 
-			if (File.Exists (Path.Combine (commonAppData, "iodine.conf"))) {
-				return IodineConfiguration.Load (Path.Combine (commonAppData, "iodine.conf"));
-			}
+            if (File.Exists (Path.Combine (commonAppData, "iodine.conf"))) {
+                return IodineConfiguration.Load (Path.Combine (commonAppData, "iodine.conf"));
+            }
 
-			if (File.Exists (Path.Combine (appData, "iodine.conf"))) {
-				return IodineConfiguration.Load (Path.Combine (appData, "iodine.conf"));
-			}
+            if (File.Exists (Path.Combine (appData, "iodine.conf"))) {
+                return IodineConfiguration.Load (Path.Combine (appData, "iodine.conf"));
+            }
 
-			return new IodineConfiguration (); // If we can't find a configuration file, load the default
-		}
+            return new IodineConfiguration (); // If we can't find a configuration file, load the default
+        }
 
-		private static void DisplayInfo ()
-		{
-			int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
-			int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
-			int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
-			Console.WriteLine ("Iodine v{0}.{1}.{2}-alpha", major, minor, patch);
-			Environment.Exit (0);
-		}
+        private static void DisplayInfo ()
+        {
+            int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
+            int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
+            int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
+            Console.WriteLine ("Iodine v{0}.{1}.{2}-alpha", major, minor, patch);
+            Environment.Exit (0);
+        }
 
-		private static void DisplayErrors (ErrorSink errorLog)
-		{
-			foreach (Error err in errorLog) {
-				SourceLocation loc = err.Location;
-				Console.Error.WriteLine ("{0} ({1}:{2}) error ID{3:d4}: {4}",
-					Path.GetFileName (loc.File),
-					loc.Line,
-					loc.Column,
-					(int)err.ErrorID,
-					err.Text
-				);
-			}
-		}
+        private static void DisplayErrors (ErrorSink errorLog)
+        {
+            foreach (Error err in errorLog) {
+                SourceLocation loc = err.Location;
+                Console.Error.WriteLine ("{0} ({1}:{2}) error ID{3:d4}: {4}",
+                    Path.GetFileName (loc.File),
+                    loc.Line,
+                    loc.Column,
+                    (int)err.ErrorID,
+                    err.Text
+                );
+            }
+        }
 
-		private static void DisplayUsage ()
-		{
-			Console.WriteLine ("usage: iodine [option] ... [file] [arg] ...");
-			Environment.Exit (0);
-		}
+        private static void DisplayUsage ()
+        {
+            Console.WriteLine ("usage: iodine [option] ... [file] [arg] ...");
+            Environment.Exit (0);
+        }
 
-		private static void Panic (string format, params object[] args)
-		{
-			Console.Error.WriteLine (format, args);
-			Environment.Exit (-1);
-		}
+        private static void Panic (string format, params object[] args)
+        {
+            Console.Error.WriteLine (format, args);
+            Environment.Exit (-1);
+        }
 
-		public static bool IsUnix ()
-		{
-			int p = (int)Environment.OSVersion.Platform;
-			return (p == 4) || (p == 6) || (p == 128);
-		}
-	}
+        public static bool IsUnix ()
+        {
+            int p = (int)Environment.OSVersion.Platform;
+            return (p == 4) || (p == 6) || (p == 128);
+        }
+    }
 }

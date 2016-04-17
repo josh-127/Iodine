@@ -31,35 +31,35 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class IndexerExpression : AstNode
-	{
-		public AstNode Target {
-			private set;
-			get;
-		}
+    public class IndexerExpression : AstNode
+    {
+        public AstNode Target {
+            private set;
+            get;
+        }
 
-		public AstNode Index {
-			private set;
-			get;
-		}
+        public AstNode Index {
+            private set;
+            get;
+        }
 
-		public IndexerExpression (SourceLocation location, AstNode lvalue, AstNode index)
-			: base (location)
-		{
-			Target = lvalue;
-			Index = index;
-		}
+        public IndexerExpression (SourceLocation location, AstNode lvalue, AstNode index)
+            : base (location)
+        {
+            Target = lvalue;
+            Index = index;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Target.Visit (visitor);
-			Index.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Target.Visit (visitor);
+            Index.Visit (visitor);
+        }
+    }
 }
 

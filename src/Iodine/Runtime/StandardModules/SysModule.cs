@@ -34,117 +34,117 @@ using System.Reflection;
 
 namespace Iodine.Runtime
 {
-	[IodineBuiltinModule ("sys")]
-	public class SysModule : IodineModule
-	{
-		public SysModule ()
-			: base ("sys")
-		{
-			int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
-			int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
-			int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
-			SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
-			// TODO: Make path accessible
-			//SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
-			SetAttribute ("exit", new BuiltinMethodCallback (Exit, this));
-			SetAttribute ("_warn", new BuiltinMethodCallback (Warn, this));
-			SetAttribute ("_getWarnMask", new BuiltinMethodCallback (GetWarnMask, this));
-			SetAttribute ("_setWarnMask", new BuiltinMethodCallback (SetWarnMask, this));
-			SetAttribute ("path", new InternalIodineProperty (GetPath, null));
-			SetAttribute ("VERSION_MAJOR", new IodineInteger (major));
-			SetAttribute ("VERSION_MINOR", new IodineInteger (minor));
-			SetAttribute ("VERSION_PATCH", new IodineInteger (patch));
-			SetAttribute ("VERSION_STR", new IodineString (String.Format ("v{0}.{1}.{2}", major, minor, patch)));
-		}
+    [IodineBuiltinModule ("sys")]
+    public class SysModule : IodineModule
+    {
+        public SysModule ()
+            : base ("sys")
+        {
+            int major = Assembly.GetExecutingAssembly ().GetName ().Version.Major;
+            int minor = Assembly.GetExecutingAssembly ().GetName ().Version.Minor;
+            int patch = Assembly.GetExecutingAssembly ().GetName ().Version.Build;
+            SetAttribute ("executable", new IodineString (Assembly.GetExecutingAssembly ().Location));
+            // TODO: Make path accessible
+            //SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
+            SetAttribute ("exit", new BuiltinMethodCallback (Exit, this));
+            SetAttribute ("_warn", new BuiltinMethodCallback (Warn, this));
+            SetAttribute ("_getWarnMask", new BuiltinMethodCallback (GetWarnMask, this));
+            SetAttribute ("_setWarnMask", new BuiltinMethodCallback (SetWarnMask, this));
+            SetAttribute ("path", new InternalIodineProperty (GetPath, null));
+            SetAttribute ("VERSION_MAJOR", new IodineInteger (major));
+            SetAttribute ("VERSION_MINOR", new IodineInteger (minor));
+            SetAttribute ("VERSION_PATCH", new IodineInteger (patch));
+            SetAttribute ("VERSION_STR", new IodineString (String.Format ("v{0}.{1}.{2}", major, minor, patch)));
+        }
 
-		private IodineObject GetPath (VirtualMachine vm)
-		{
-			return new IodineTuple (vm.Context.SearchPath.Select (p => new IodineString (p)).ToArray ());
-		}
+        private IodineObject GetPath (VirtualMachine vm)
+        {
+            return new IodineTuple (vm.Context.SearchPath.Select (p => new IodineString (p)).ToArray ());
+        }
 
-		/**
+        /**
 		 * Iodine Function: exit (code)
 		 * Description: Forcefully terminates the current process (Including the Iodine host)
 		 */
-		private IodineObject Exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			IodineInteger exitCode = args [0] as IodineInteger;
+            IodineInteger exitCode = args [0] as IodineInteger;
 
-			if (exitCode == null) {
-				vm.RaiseException (new IodineTypeException ("Int"));
-				return null;
-			}
+            if (exitCode == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
 
-			Environment.Exit ((int)exitCode.Value);
-			return null;
-		}
+            Environment.Exit ((int)exitCode.Value);
+            return null;
+        }
 
-		/**
+        /**
 		 * Iodine Function: _warn (type, msg)
 		 * Description: Internal low level function for issuing warnings
 		 * See modules/warnings.id
 		 */
-		private IodineObject Warn (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 1) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Warn (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			IodineInteger warnType = args [0] as IodineInteger;
-			IodineString warnMsg = args [1] as IodineString;
+            IodineInteger warnType = args [0] as IodineInteger;
+            IodineString warnMsg = args [1] as IodineString;
 
-			if (warnType == null) {
-				vm.RaiseException (new IodineTypeException ("Int"));
-				return null;
-			}
+            if (warnType == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
 
-			if (warnMsg == null) {
-				vm.RaiseException (new IodineTypeException ("Str"));
-				return null;
-			}
+            if (warnMsg == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
 
-			vm.Context.Warn ((WarningType)warnType.Value, warnMsg.ToString ());
-			return null;
-		}
+            vm.Context.Warn ((WarningType)warnType.Value, warnMsg.ToString ());
+            return null;
+        }
 
-		/**
+        /**
 		 * Iodine Function: _getWarnMask ()
 		 * Description: Internal low level function for obtaining the current warning mask
 		 * See modules/warnings.id
 		 */
-		private IodineObject GetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			return new IodineInteger ((long)vm.Context.WarningFilter);
-		}
+        private IodineObject GetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            return new IodineInteger ((long)vm.Context.WarningFilter);
+        }
 
-		/**
+        /**
 		 * Iodine Function: _setWarnMask (val)
 		 * Description: Internal low level function for settings the current warning mask
 		 * See modules/warnings.id
 		 */
-		private IodineObject SetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length == 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject SetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			IodineInteger value = args [0] as IodineInteger;
+            IodineInteger value = args [0] as IodineInteger;
 
-			if (value == null) {
-				vm.RaiseException (new IodineTypeException ("Int"));
-				return null;
-			}
+            if (value == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
 
-			vm.Context.WarningFilter = (WarningType)value.Value;
-			return null;
-		}
-	}
+            vm.Context.WarningFilter = (WarningType)value.Value;
+            return null;
+        }
+    }
 }
 

@@ -31,33 +31,34 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class TernaryExpression : AstNode
-	{
-		public readonly AstNode Condition;
-		public readonly AstNode Expression;
-		public readonly AstNode ElseExpression;
+    public class TernaryExpression : AstNode
+    {
+        public readonly AstNode Condition;
+        public readonly AstNode Expression;
+        public readonly AstNode ElseExpression;
 
-		public TernaryExpression (SourceLocation location, AstNode condition,
-			AstNode expression,
-			AstNode elseExpression)
-			: base (location)
-		{
-			Condition = condition;
-			Expression = expression;
-			ElseExpression = expression; 
-		}
+        public TernaryExpression (SourceLocation location,
+            AstNode condition,
+            AstNode expression,
+            AstNode elseExpression)
+            : base (location)
+        {
+            Condition = condition;
+            Expression = expression;
+            ElseExpression = expression; 
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Condition.Visit (visitor);
-			Expression.Visit (visitor);
-			ElseExpression.Visit (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Condition.Visit (visitor);
+            Expression.Visit (visitor);
+            ElseExpression.Visit (visitor);
+        }
+    }
 }
 

@@ -33,328 +33,328 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	/*
+    /*
 	 * Should I move all these classes into seperate files? Make a subdirectory for them?
 	 * TODO: Decide
 	 */
-	public class IodineException : IodineObject
-	{
-		public static readonly IodineTypeDefinition TypeDefinition = new ExceptionTypeDef ();
+    public class IodineException : IodineObject
+    {
+        public static readonly IodineTypeDefinition TypeDefinition = new ExceptionTypeDef ();
 
-		class ExceptionTypeDef : IodineTypeDefinition
-		{
-			public ExceptionTypeDef ()
-				: base ("Exception")
-			{
-			}
+        class ExceptionTypeDef : IodineTypeDefinition
+        {
+            public ExceptionTypeDef ()
+                : base ("Exception")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				if (args.Length <= 0) {
-					vm.RaiseException (new IodineArgumentException (1));
-				}
-				return new IodineException ("{0}", args [0].ToString ());
-			}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
+                return new IodineException ("{0}", args [0].ToString ());
+            }
 
-		}
+        }
 
-		public readonly string Message;
+        public readonly string Message;
 
-		public SourceLocation Location { set; get; }
+        public SourceLocation Location { set; get; }
 
-		public IodineException ()
-			: base (TypeDefinition)
-		{
-		}
+        public IodineException ()
+            : base (TypeDefinition)
+        {
+        }
 
-		public IodineException (string format, params object[] args)
-			: base (TypeDefinition)
-		{
-			Message = String.Format (format, args);
-			SetAttribute ("message", new IodineString (this.Message));
-		}
+        public IodineException (string format, params object[] args)
+            : base (TypeDefinition)
+        {
+            Message = String.Format (format, args);
+            SetAttribute ("message", new IodineString (this.Message));
+        }
 
-		public IodineException (IodineTypeDefinition typeDef, string format, params object[] args)
-			: base (typeDef)
-		{
-			Message = String.Format (format, args);
-			SetAttribute ("message", new IodineString (this.Message));
-		}
+        public IodineException (IodineTypeDefinition typeDef, string format, params object[] args)
+            : base (typeDef)
+        {
+            Message = String.Format (format, args);
+            SetAttribute ("message", new IodineString (this.Message));
+        }
 			
-	}
+    }
 
-	public class IodineStackOverflow : IodineException 
-	{
-		public IodineStackOverflow ()
-			: base ("StackOverflow")
-		{
-			SetAttribute ("message", new IodineString ("Stack overflow"));
-		}
-	}
+    public class IodineStackOverflow : IodineException
+    {
+        public IodineStackOverflow ()
+            : base ("StackOverflow")
+        {
+            SetAttribute ("message", new IodineString ("Stack overflow"));
+        }
+    }
 
-	public class IodineTypeException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new TypeExceptionTypeDef ();
+    public class IodineTypeException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new TypeExceptionTypeDef ();
 
-		class TypeExceptionTypeDef : IodineTypeDefinition
-		{
-			public TypeExceptionTypeDef ()
-				: base ("TypeException")
-			{
-			}
+        class TypeExceptionTypeDef : IodineTypeDefinition
+        {
+            public TypeExceptionTypeDef ()
+                : base ("TypeException")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				if (args.Length <= 0) {
-					vm.RaiseException (new IodineArgumentException (1));
-				}
-				return new IodineTypeException (args [0].ToString ());
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
+                return new IodineTypeException (args [0].ToString ());
+            }
+        }
 
-		public IodineTypeException (string expectedType)
-			: base (TypeDefinition, "Expected type '{0}'", expectedType)
-		{
-			Base = new IodineException ();
-		}
-	}
+        public IodineTypeException (string expectedType)
+            : base (TypeDefinition, "Expected type '{0}'", expectedType)
+        {
+            Base = new IodineException ();
+        }
+    }
 
-	public class IodineTypeCastException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new TypeCastExceptionTypeDef ();
+    public class IodineTypeCastException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new TypeCastExceptionTypeDef ();
 
-		class TypeCastExceptionTypeDef : IodineTypeDefinition
-		{
-			public TypeCastExceptionTypeDef ()
-				: base ("TypeCastException")
-			{
-			}
+        class TypeCastExceptionTypeDef : IodineTypeDefinition
+        {
+            public TypeCastExceptionTypeDef ()
+                : base ("TypeCastException")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				if (args.Length <= 0) {
-					vm.RaiseException (new IodineArgumentException (1));
-				}
-				return new IodineTypeCastException (args [0].ToString ());
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
+                return new IodineTypeCastException (args [0].ToString ());
+            }
+        }
 
-		public IodineTypeCastException (string expectedType)
-			: base (TypeDefinition, "Could not convert to type '{0}'!", expectedType)
-		{
-			this.Base = new IodineException ();
-		}
-	}
+        public IodineTypeCastException (string expectedType)
+            : base (TypeDefinition, "Could not convert to type '{0}'!", expectedType)
+        {
+            this.Base = new IodineException ();
+        }
+    }
 
-	public class IodineIndexException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new IndexExceptionTypeDef ();
+    public class IodineIndexException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new IndexExceptionTypeDef ();
 
-		class IndexExceptionTypeDef : IodineTypeDefinition
-		{
-			public IndexExceptionTypeDef ()
-				: base ("IndexException")
-			{
-			}
+        class IndexExceptionTypeDef : IodineTypeDefinition
+        {
+            public IndexExceptionTypeDef ()
+                : base ("IndexException")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				return new IodineIndexException ();
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                return new IodineIndexException ();
+            }
+        }
 
-		public IodineIndexException ()
-			: base (TypeDefinition, "Index out of range!")
-		{
-			Base = new IodineException ();
-		}
-	}
+        public IodineIndexException ()
+            : base (TypeDefinition, "Index out of range!")
+        {
+            Base = new IodineException ();
+        }
+    }
 
-	public class IodineKeyNotFound : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new KeyNotFoundTypeDef ();
+    public class IodineKeyNotFound : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new KeyNotFoundTypeDef ();
 
-		class KeyNotFoundTypeDef : IodineTypeDefinition
-		{
-			public KeyNotFoundTypeDef ()
-				: base ("KeyNotFoundException")
-			{
-			}
+        class KeyNotFoundTypeDef : IodineTypeDefinition
+        {
+            public KeyNotFoundTypeDef ()
+                : base ("KeyNotFoundException")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				return new IodineKeyNotFound ();
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                return new IodineKeyNotFound ();
+            }
+        }
 
-		public IodineKeyNotFound ()
-			: base (TypeDefinition, "Key not found!")
-		{
-			this.Base = new IodineException ();
-		}
-	}
+        public IodineKeyNotFound ()
+            : base (TypeDefinition, "Key not found!")
+        {
+            this.Base = new IodineException ();
+        }
+    }
 
-	public class IodineAttributeNotFoundException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new AttributeNotFoundExceptionTypeDef ();
+    public class IodineAttributeNotFoundException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new AttributeNotFoundExceptionTypeDef ();
 
-		class AttributeNotFoundExceptionTypeDef : IodineTypeDefinition
-		{
-			public AttributeNotFoundExceptionTypeDef ()
-				: base ("AttributeNotFoundException")
-			{
-			}
-		}
+        class AttributeNotFoundExceptionTypeDef : IodineTypeDefinition
+        {
+            public AttributeNotFoundExceptionTypeDef ()
+                : base ("AttributeNotFoundException")
+            {
+            }
+        }
 
-		public IodineAttributeNotFoundException (string name)
-			: base (TypeDefinition, "Attribute '{0}' not found!", name)
-		{
-			Base = new IodineException ();
-		}
-	}
+        public IodineAttributeNotFoundException (string name)
+            : base (TypeDefinition, "Attribute '{0}' not found!", name)
+        {
+            Base = new IodineException ();
+        }
+    }
 
-	public class IodineInternalErrorException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new InternalErrorExceptionTypeDef ();
+    public class IodineInternalErrorException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new InternalErrorExceptionTypeDef ();
 
-		class InternalErrorExceptionTypeDef : IodineTypeDefinition
-		{
-			public InternalErrorExceptionTypeDef ()
-				: base ("InternalException")
-			{
-			}
-		}
+        class InternalErrorExceptionTypeDef : IodineTypeDefinition
+        {
+            public InternalErrorExceptionTypeDef ()
+                : base ("InternalException")
+            {
+            }
+        }
 
-		public IodineInternalErrorException (Exception ex)
-			: base (TypeDefinition, "Internal exception: {0}\n Inner Exception: ",
-			        ex.Message, ex.InnerException == null ? "" : ex.InnerException.Message)
-		{
-			Base = new IodineException ();
-		}
-	}
+        public IodineInternalErrorException (Exception ex)
+            : base (TypeDefinition, "Internal exception: {0}\n Inner Exception: ",
+            ex.Message, ex.InnerException == null ? "" : ex.InnerException.Message)
+        {
+            Base = new IodineException ();
+        }
+    }
 
-	public class IodineArgumentException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new ArgumentExceptionTypeDef ();
+    public class IodineArgumentException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new ArgumentExceptionTypeDef ();
 
-		class ArgumentExceptionTypeDef : IodineTypeDefinition
-		{
-			public ArgumentExceptionTypeDef ()
-				: base ("ArgumentException")
-			{
-			}
-		}
+        class ArgumentExceptionTypeDef : IodineTypeDefinition
+        {
+            public ArgumentExceptionTypeDef ()
+                : base ("ArgumentException")
+            {
+            }
+        }
 
-		public IodineArgumentException (int argCount)
-			: base (TypeDefinition, "Expected {0} or more arguments!", argCount)
-		{
-			Base = new IodineException ();
-		}
-	}
+        public IodineArgumentException (int argCount)
+            : base (TypeDefinition, "Expected {0} or more arguments!", argCount)
+        {
+            Base = new IodineException ();
+        }
+    }
 
-	public class IodineIOException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new IOExceptionTypeDef ();
+    public class IodineIOException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new IOExceptionTypeDef ();
 
-		class IOExceptionTypeDef : IodineTypeDefinition
-		{
-			public IOExceptionTypeDef ()
-				: base ("IOException")
-			{
-			}
-		}
+        class IOExceptionTypeDef : IodineTypeDefinition
+        {
+            public IOExceptionTypeDef ()
+                : base ("IOException")
+            {
+            }
+        }
 
-		public IodineIOException (string msg)
-			: base (TypeDefinition, msg)
-		{
-			Base = new IodineException ();
-		}
-	}
+        public IodineIOException (string msg)
+            : base (TypeDefinition, msg)
+        {
+            Base = new IodineException ();
+        }
+    }
 
-	public class IodineSyntaxException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new SyntaxExceptionTypeDef ();
+    public class IodineSyntaxException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new SyntaxExceptionTypeDef ();
 
-		class SyntaxExceptionTypeDef : IodineTypeDefinition
-		{
-			public SyntaxExceptionTypeDef ()
-				: base ("SynaxErrorException")
-			{
-			}
-		}
+        class SyntaxExceptionTypeDef : IodineTypeDefinition
+        {
+            public SyntaxExceptionTypeDef ()
+                : base ("SynaxErrorException")
+            {
+            }
+        }
 
-		public IodineSyntaxException (ErrorSink errorLog)
-			: base (TypeDefinition, "Syntax error")
-		{
-			Base = new IodineException ();
-			IodineObject[] errors = new IodineObject[errorLog.ErrorCount];
-			int i = 0;
-			foreach (Error error in errorLog.Errors) {
-				SourceLocation loc = error.Location;
-				string text = String.Format ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
-					              loc.Line, loc.Column, error.Text);
-				errors [i++] = new IodineString (text);
-			}
-			SetAttribute ("errors", new IodineTuple (errors));
-		}
-	}
+        public IodineSyntaxException (ErrorSink errorLog)
+            : base (TypeDefinition, "Syntax error")
+        {
+            Base = new IodineException ();
+            IodineObject[] errors = new IodineObject[errorLog.ErrorCount];
+            int i = 0;
+            foreach (Error error in errorLog.Errors) {
+                SourceLocation loc = error.Location;
+                string text = String.Format ("{0} ({1}:{2}) error: {3}", Path.GetFileName (loc.File),
+                      loc.Line, loc.Column, error.Text);
+                errors [i++] = new IodineString (text);
+            }
+            SetAttribute ("errors", new IodineTuple (errors));
+        }
+    }
 
-	public class IodineNotSupportedException : IodineException
-	{
-		public static new readonly IodineTypeDefinition TypeDefinition = new NotSupportedExceptionTypeDef ();
+    public class IodineNotSupportedException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new NotSupportedExceptionTypeDef ();
 
-		class NotSupportedExceptionTypeDef : IodineTypeDefinition
-		{
-			public NotSupportedExceptionTypeDef ()
-				: base ("NotSupportedException")
-			{
-			}
+        class NotSupportedExceptionTypeDef : IodineTypeDefinition
+        {
+            public NotSupportedExceptionTypeDef ()
+                : base ("NotSupportedException")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				return new IodineIndexException ();
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                return new IodineIndexException ();
+            }
+        }
 
-		public IodineNotSupportedException ()
-			: base (TypeDefinition, "The requested feature is not supported!")
-		{
-			Base = new IodineException ();
-		}
+        public IodineNotSupportedException ()
+            : base (TypeDefinition, "The requested feature is not supported!")
+        {
+            Base = new IodineException ();
+        }
 
-		public IodineNotSupportedException (string message)
-			: base (TypeDefinition, message)
-		{
-			Base = new IodineException ();
-		}
-	}
+        public IodineNotSupportedException (string message)
+            : base (TypeDefinition, message)
+        {
+            Base = new IodineException ();
+        }
+    }
 
-	public class UnhandledIodineExceptionException : Exception
-	{
-		public IodineObject OriginalException { private set; get; }
+    public class UnhandledIodineExceptionException : Exception
+    {
+        public IodineObject OriginalException { private set; get; }
 
-		public StackFrame Frame { private set; get; }
+        public StackFrame Frame { private set; get; }
 
-		public UnhandledIodineExceptionException (StackFrame frame, IodineObject original)
-		{
-			OriginalException = original;
-			Frame = frame;
-		}
+        public UnhandledIodineExceptionException (StackFrame frame, IodineObject original)
+        {
+            OriginalException = original;
+            Frame = frame;
+        }
 
-		public void PrintStack ()
-		{
-			StackFrame top = Frame;
-			Console.WriteLine ("Stack trace:");
-			Console.WriteLine ("------------");
-			while (top != null) {
-				Console.WriteLine (" at {0} (Module: {1}, Line: {2})", top.Method.Name, top.Module.Name,
-					top.Location != null ?
+        public void PrintStack ()
+        {
+            StackFrame top = Frame;
+            Console.WriteLine ("Stack trace:");
+            Console.WriteLine ("------------");
+            while (top != null) {
+                Console.WriteLine (" at {0} (Module: {1}, Line: {2})", top.Method.Name, top.Module.Name,
+                    top.Location != null ?
 					top.Location.Line + 1 : 
 					0);
 				
-				top = top.Parent;
-			}
-		}
-	}
+                top = top.Parent;
+            }
+        }
+    }
 }
 

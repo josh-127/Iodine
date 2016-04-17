@@ -31,21 +31,21 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class ModuleNotFoundException : RuntimeException
-	{
-		public readonly string Name;
-		public readonly IEnumerable<string> SearchPath;
+    public class ModuleNotFoundException : RuntimeException
+    {
+        public readonly string Name;
+        public readonly IEnumerable<string> SearchPath;
 
-		public ModuleNotFoundException (string name, IEnumerable<string> path)
-		{
-			SearchPath = path;
-			Name = name;
-		}
+        public ModuleNotFoundException (string name, IEnumerable<string> path)
+        {
+            SearchPath = path;
+            Name = name;
+        }
 
-		public override string ToString ()
-		{
-			return string.Format ("Could not find module '{0}'\n\nSearched in: {1}\n\t", Name, String.Join ("\n\t", SearchPath));
-		}
-	}
+        public override string ToString ()
+        {
+            return string.Format ("Could not find module '{0}'\n\nSearched in: {1}\n\t", Name, String.Join ("\n\t", SearchPath));
+        }
+    }
 }
 

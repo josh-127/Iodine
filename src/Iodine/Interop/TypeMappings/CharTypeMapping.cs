@@ -32,17 +32,17 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class CharTypeMapping : TypeMapping
-	{
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
-		{
-			return Convert.ToChar (obj.ToString ());
-		}
+    class CharTypeMapping : TypeMapping
+    {
+        public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
+        {
+            return Convert.ToChar (obj.ToString ());
+        }
 
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
-		{
-			return new IodineString (Convert.ToChar (obj).ToString ());
-		}
-	}
+        public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
+        {
+            return new IodineString (Convert.ToChar (obj).ToString ());
+        }
+    }
 }
 

@@ -34,139 +34,139 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-	// TODO: This file needs to be reorganized, its a mess. 
+    // TODO: This file needs to be reorganized, its a mess.
 
-	public class IodineLabel
-	{
-		public int _Position;
-		public int _LabelID;
+    public class IodineLabel
+    {
+        public int _Position;
+        public int _LabelID;
 
-		public IodineLabel (int labelID)
-		{
-			_LabelID = labelID;
-			_Position = 0;
-		}
-	}
+        public IodineLabel (int labelID)
+        {
+            _LabelID = labelID;
+            _Position = 0;
+        }
+    }
 
-	public class IodineBoundMethod : IodineObject
-	{
-		private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("BoundMethod");
+    public class IodineBoundMethod : IodineObject
+    {
+        private static readonly IodineTypeDefinition InstanceTypeDef = new IodineTypeDefinition ("BoundMethod");
 
-		public IodineMethod Method { private set; get; }
+        public IodineMethod Method { private set; get; }
 
-		public IodineObject Self { private set; get; }
+        public IodineObject Self { private set; get; }
 
-		public IodineBoundMethod (IodineObject self, IodineMethod method)
-			: base (InstanceTypeDef)
-		{
-			Method = method;
-			Self = self;
-		}
+        public IodineBoundMethod (IodineObject self, IodineMethod method)
+            : base (InstanceTypeDef)
+        {
+            Method = method;
+            Self = self;
+        }
 
-		public void Bind (IodineObject newSelf)
-		{
-			Self = newSelf;
-		}
+        public void Bind (IodineObject newSelf)
+        {
+            Self = newSelf;
+        }
 
-		public override bool IsCallable ()
-		{
-			return true;
-		}
+        public override bool IsCallable ()
+        {
+            return true;
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			if (Method.Generator) {
-				StackFrame frame = new StackFrame (Method, vm.Top.Arguments, vm.Top, Self);
-				IodineObject initialValue = vm.InvokeMethod (Method, frame, Self, arguments);
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            if (Method.Generator) {
+                StackFrame frame = new StackFrame (Method, vm.Top.Arguments, vm.Top, Self);
+                IodineObject initialValue = vm.InvokeMethod (Method, frame, Self, arguments);
 
-				if (frame.Yielded) {
-					return new IodineGenerator (frame, this, arguments, initialValue);
-				}
-				return initialValue;
-			}
-			return vm.InvokeMethod (Method, Self, arguments);
-		}
+                if (frame.Yielded) {
+                    return new IodineGenerator (frame, this, arguments, initialValue);
+                }
+                return initialValue;
+            }
+            return vm.InvokeMethod (Method, Self, arguments);
+        }
 
-		public override string ToString ()
-		{
-			return string.Format ("<Bound {0}>", Method.Name);
-		}
-	}
+        public override string ToString ()
+        {
+            return string.Format ("<Bound {0}>", Method.Name);
+        }
+    }
 
-	// TODO: Abtract bytecode implementation away from IodineMethod
-	public abstract class IodineMethod : IodineObject
-	{
-		private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
+    // TODO: Abtract bytecode implementation away from IodineMethod
+    public abstract class IodineMethod : IodineObject
+    {
+        private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
 
-		public Instruction[] Body {
-			get;
-			internal set;
-		}
+        public Instruction[] Body {
+            get;
+            internal set;
+        }
 
-		public string Name {
-			get;
-			protected set;
-		}
+        public string Name {
+            get;
+            protected set;
+        }
 
-		public int ParameterCount {
-			get;
-			protected set;
-		}
+        public int ParameterCount {
+            get;
+            protected set;
+        }
 
-		public bool Variadic {
-			get;
-			protected set;
-		}
+        public bool Variadic {
+            get;
+            protected set;
+        }
 
-		public bool AcceptsKeywordArgs {
-			get;
-			protected set;
-		}
+        public bool AcceptsKeywordArgs {
+            get;
+            protected set;
+        }
 
-		public bool Generator {
-			get;
-			set;
-		}
+        public bool Generator {
+            get;
+            set;
+        }
 
-		public IodineModule Module {
-			get;
-			protected set;
-		}
+        public IodineModule Module {
+            get;
+            protected set;
+        }
 
-		public bool InstanceMethod {
-			get;
-			protected set;
-		}
+        public bool InstanceMethod {
+            get;
+            protected set;
+        }
 
-		public readonly Dictionary<string, int> Parameters = new Dictionary<string, int> ();
+        public readonly Dictionary<string, int> Parameters = new Dictionary<string, int> ();
 
-		public IodineMethod ()
-			: base (MethodTypeDef)
-		{
-		}
+        public IodineMethod ()
+            : base (MethodTypeDef)
+        {
+        }
 
-		public override bool IsCallable ()
-		{
-			return true;
-		}
+        public override bool IsCallable ()
+        {
+            return true;
+        }
 
-		public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
-		{
-			if (Generator) {
-				StackFrame frame = new StackFrame (this, vm.Top.Arguments, vm.Top, null);
-				IodineObject initialValue = vm.InvokeMethod (this, frame, null, arguments);
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        {
+            if (Generator) {
+                StackFrame frame = new StackFrame (this, vm.Top.Arguments, vm.Top, null);
+                IodineObject initialValue = vm.InvokeMethod (this, frame, null, arguments);
 
-				if (frame.Yielded) {
-					return new IodineGenerator (frame, this, arguments, initialValue);
-				}
-				return initialValue;
-			}
-			return vm.InvokeMethod (this, null, arguments);
-		}
+                if (frame.Yielded) {
+                    return new IodineGenerator (frame, this, arguments, initialValue);
+                }
+                return initialValue;
+            }
+            return vm.InvokeMethod (this, null, arguments);
+        }
 
-		public override string ToString ()
-		{
-			return string.Format ("<Function {0}>", Name);
-		}
-	}
+        public override string ToString ()
+        {
+            return string.Format ("<Function {0}>", Name);
+        }
+    }
 }

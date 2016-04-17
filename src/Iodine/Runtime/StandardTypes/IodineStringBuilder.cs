@@ -32,67 +32,68 @@ using System.Text;
 
 namespace Iodine.Runtime
 {
-	public class IodineStringBuilder : IodineObject
-	{
-		public readonly static IodineTypeDefinition TypeDefinition = new StringBuilderTypeDef ();
+    public class IodineStringBuilder : IodineObject
+    {
+        public readonly static IodineTypeDefinition TypeDefinition = new StringBuilderTypeDef ();
 
-		class StringBuilderTypeDef : IodineTypeDefinition
-		{
-			public StringBuilderTypeDef ()
-				: base ("StringBuffer")
-			{
-			}
+        class StringBuilderTypeDef : IodineTypeDefinition
+        {
+            public StringBuilderTypeDef ()
+                : base ("StringBuffer")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				return new IodineStringBuilder ();
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                return new IodineStringBuilder ();
+            }
+        }
 
-		private StringBuilder buffer = new StringBuilder ();
+        private StringBuilder buffer = new StringBuilder ();
 
-		public IodineStringBuilder ()
-			: base (TypeDefinition) {
-			SetAttribute ("clear", new BuiltinMethodCallback (Clear, null));
-			SetAttribute ("append", new BuiltinMethodCallback (Append, null));
-		}
+        public IodineStringBuilder ()
+            : base (TypeDefinition)
+        {
+            SetAttribute ("clear", new BuiltinMethodCallback (Clear, null));
+            SetAttribute ("append", new BuiltinMethodCallback (Append, null));
+        }
 
-		public override string ToString ()
-		{
-			return buffer.ToString ();
-		}
+        public override string ToString ()
+        {
+            return buffer.ToString ();
+        }
 
-		public override IodineObject Len (VirtualMachine vm)
-		{
-			return new IodineInteger (buffer.Length);
-		}
+        public override IodineObject Len (VirtualMachine vm)
+        {
+            return new IodineInteger (buffer.Length);
+        }
 
-		public override IodineObject ToString (VirtualMachine vm)
-		{
-			return new IodineString (buffer.ToString ());
-		}
+        public override IodineObject ToString (VirtualMachine vm)
+        {
+            return new IodineString (buffer.ToString ());
+        }
 
-		/**
+        /**
 		 * Iodine Method: StringBuffer.append (self, *args);
 		 * Description: Appends each item in *args to the string buffer
 		 */
-		private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			foreach (IodineObject obj in args) {
-				buffer.Append (obj.ToString (vm));
-			}
-			return null;
-		}
+        private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            foreach (IodineObject obj in args) {
+                buffer.Append (obj.ToString (vm));
+            }
+            return null;
+        }
 
-		/**
+        /**
 		 * Iodine Method: StringBuffer.clear (self)
 		 * Description: Clears the string buffer
 		 */
-		private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			buffer.Clear ();
-			return null;
-		}
-	}
+        private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            buffer.Clear ();
+            return null;
+        }
+    }
 }
 

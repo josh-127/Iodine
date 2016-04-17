@@ -33,84 +33,84 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class IodineTuple : IodineObject
-	{
-		public static readonly IodineTypeDefinition TypeDefinition = new TupleTypeDef ();
+    public class IodineTuple : IodineObject
+    {
+        public static readonly IodineTypeDefinition TypeDefinition = new TupleTypeDef ();
 
-		class TupleTypeDef : IodineTypeDefinition
-		{
-			public TupleTypeDef ()
-				: base ("Tuple")
-			{
-			}
+        class TupleTypeDef : IodineTypeDefinition
+        {
+            public TupleTypeDef ()
+                : base ("Tuple")
+            {
+            }
 
-			public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
-			{
-				if (args.Length >= 1) {
-					IodineList inputList = args [0] as IodineList;
-					return new IodineTuple (inputList.Objects.ToArray ());
-				}
-				return null;
-			}
-		}
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length >= 1) {
+                    IodineList inputList = args [0] as IodineList;
+                    return new IodineTuple (inputList.Objects.ToArray ());
+                }
+                return null;
+            }
+        }
 
-		private int iterIndex = 0;
+        private int iterIndex = 0;
 
-		public IodineObject[] Objects { private set; get; }
+        public IodineObject[] Objects { private set; get; }
 
-		public IodineTuple (IodineObject[] items)
-			: base (TypeDefinition)
-		{
-			Objects = items;
-		}
+        public IodineTuple (IodineObject[] items)
+            : base (TypeDefinition)
+        {
+            Objects = items;
+        }
 
-		public override IodineObject Len (VirtualMachine vm)
-		{
-			return new IodineInteger (Objects.Length);
-		}
+        public override IodineObject Len (VirtualMachine vm)
+        {
+            return new IodineInteger (Objects.Length);
+        }
 
-		public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
-		{
-			IodineInteger index = key as IodineInteger;
-			if (index.Value < Objects.Length)
-				return Objects [(int)index.Value];
-			vm.RaiseException (new IodineIndexException ());
-			return null;
-		}
+        public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
+        {
+            IodineInteger index = key as IodineInteger;
+            if (index.Value < Objects.Length)
+                return Objects [(int)index.Value];
+            vm.RaiseException (new IodineIndexException ());
+            return null;
+        }
 
-		public override IodineObject GetIterator (VirtualMachine vm)
-		{
-			return this;
-		}
+        public override IodineObject GetIterator (VirtualMachine vm)
+        {
+            return this;
+        }
 
-		public override IodineObject IterGetCurrent (VirtualMachine vm)
-		{
-			return Objects [iterIndex - 1];
-		}
+        public override IodineObject IterGetCurrent (VirtualMachine vm)
+        {
+            return Objects [iterIndex - 1];
+        }
 
-		public override bool IterMoveNext (VirtualMachine vm)
-		{
-			if (iterIndex >= Objects.Length)
-				return false;
-			iterIndex++;
-			return true;
-		}
+        public override bool IterMoveNext (VirtualMachine vm)
+        {
+            if (iterIndex >= Objects.Length)
+                return false;
+            iterIndex++;
+            return true;
+        }
 
-		public override void IterReset (VirtualMachine vm)
-		{
-			iterIndex = 0;
-		}
+        public override void IterReset (VirtualMachine vm)
+        {
+            iterIndex = 0;
+        }
 
-		public override IodineObject Represent (VirtualMachine vm)
-		{
-			string repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
-			return new IodineString (String.Format ("({0})", repr));
-		}
+        public override IodineObject Represent (VirtualMachine vm)
+        {
+            string repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
+            return new IodineString (String.Format ("({0})", repr));
+        }
 
-		public override int GetHashCode ()
-		{
-			return Objects.GetHashCode ();
-		}
-	}
+        public override int GetHashCode ()
+        {
+            return Objects.GetHashCode ();
+        }
+    }
 }
 

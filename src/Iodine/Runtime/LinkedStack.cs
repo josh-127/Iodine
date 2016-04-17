@@ -31,68 +31,68 @@ using System.Runtime.CompilerServices;
 
 namespace Iodine.Runtime
 {
-	/// <summary>
-	/// My own stack implementation, I don't know how well this will perform however I wrote this
-	/// as I am currently convinced that System.Collections.Generic.Stack doesn't cut it for Iodine
-	/// </summary>
-	public class LinkedStack<T>
-	{
-		class StackItem<E>
-		{
-			public readonly E Item;
-			public readonly StackItem<E> Next;
+    /// <summary>
+    /// My own stack implementation, I don't know how well this will perform however I wrote this
+    /// as I am currently convinced that System.Collections.Generic.Stack doesn't cut it for Iodine
+    /// </summary>
+    public class LinkedStack<T>
+    {
+        class StackItem<E>
+        {
+            public readonly E Item;
+            public readonly StackItem<E> Next;
 
-			public StackItem (E item)
-			{
-				Item = item;
-			}
+            public StackItem (E item)
+            {
+                Item = item;
+            }
 
-			public StackItem (E item, StackItem<E> parent)
-			{
-				Item = item;
-				Next = parent;
-			}
-		}
+            public StackItem (E item, StackItem<E> parent)
+            {
+                Item = item;
+                Next = parent;
+            }
+        }
 
-		private StackItem<T> top;
+        private StackItem<T> top;
 
-		public int Count { private set; get; }
+        public int Count { private set; get; }
 
-		public LinkedStack ()
-		{
-		}
+        public LinkedStack ()
+        {
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		public void Push (T obj) 
-		{
-			if (top == null) {
-				top = new StackItem <T> (obj);
-			} else {
-				top = new StackItem<T> (obj, top);
-			}
-			Count++;
-		}
+        public void Push (T obj)
+        {
+            if (top == null) {
+                top = new StackItem <T> (obj);
+            } else {
+                top = new StackItem<T> (obj, top);
+            }
+            Count++;
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		public T Pop ()
-		{
-			Count--;
-			T ret = top.Item;
-			top = top.Next;
-			return ret;
-		}
+        public T Pop ()
+        {
+            Count--;
+            T ret = top.Item;
+            top = top.Next;
+            return ret;
+        }
 
-		#if DOTNET_45
+        #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
-		public T Peek ()
-		{
-			return top.Item;
-		}
-	}
+        public T Peek ()
+        {
+            return top.Item;
+        }
+    }
 }
 

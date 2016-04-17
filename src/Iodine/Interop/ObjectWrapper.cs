@@ -33,56 +33,56 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class ObjectWrapper : IodineObject
-	{
-		public readonly object Object;
+    class ObjectWrapper : IodineObject
+    {
+        public readonly object Object;
 
-		public ObjectWrapper (ClassWrapper clazz, object self)
-			: base (clazz)
-		{
-			Object = self;
-		}
+        public ObjectWrapper (ClassWrapper clazz, object self)
+            : base (clazz)
+        {
+            Object = self;
+        }
 
-		public static ObjectWrapper CreateFromObject (TypeRegistry registry, ClassWrapper clazz, object obj)
-		{
-			Type type = obj.GetType ();
-			ObjectWrapper wrapper = new ObjectWrapper (clazz, obj);
-			foreach (MemberInfo info in type.GetMembers (BindingFlags.Instance | BindingFlags.Public)) {
-				switch (info.MemberType) {
-				case MemberTypes.Method:
-					if (!wrapper.HasAttribute (info.Name)) {
-						wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, obj,
-							info.Name));
-					}
-					break;
-				case MemberTypes.Field:
-					wrapper.SetAttribute (info.Name, FieldWrapper.Create (registry, (FieldInfo)info,
-						obj));
-					break;
-				case MemberTypes.Property:
-					wrapper.SetAttribute (info.Name, PropertyWrapper.Create (registry, (PropertyInfo)info,
-						obj));
-					break;
-				}
-			}
-			return wrapper;
-		}
+        public static ObjectWrapper CreateFromObject (TypeRegistry registry, ClassWrapper clazz, object obj)
+        {
+            Type type = obj.GetType ();
+            ObjectWrapper wrapper = new ObjectWrapper (clazz, obj);
+            foreach (MemberInfo info in type.GetMembers (BindingFlags.Instance | BindingFlags.Public)) {
+                switch (info.MemberType) {
+                case MemberTypes.Method:
+                    if (!wrapper.HasAttribute (info.Name)) {
+                        wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, obj,
+                            info.Name));
+                    }
+                    break;
+                case MemberTypes.Field:
+                    wrapper.SetAttribute (info.Name, FieldWrapper.Create (registry, (FieldInfo)info,
+                        obj));
+                    break;
+                case MemberTypes.Property:
+                    wrapper.SetAttribute (info.Name, PropertyWrapper.Create (registry, (PropertyInfo)info,
+                        obj));
+                    break;
+                }
+            }
+            return wrapper;
+        }
 
-		private static BuiltinMethodCallback CreateMultiMethod (TypeRegistry registry,
-			Type type,
-			object self, 
-			string name)
-		{
-			var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Instance)
+        private static BuiltinMethodCallback CreateMultiMethod (TypeRegistry registry,
+                                                          Type type,
+                                                          object self, 
+                                                          string name)
+        {
+            var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Instance)
 				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
 				.Select (p => (MethodInfo)p);
 			
-			if (methods.Count () > 1) {
-				return MethodWrapper.Create (registry, methods, self); 
-			} else {
-				return MethodWrapper.Create (registry, methods.First (), self); 
-			}
-		}
-	}
+            if (methods.Count () > 1) {
+                return MethodWrapper.Create (registry, methods, self); 
+            } else {
+                return MethodWrapper.Create (registry, methods.First (), self); 
+            }
+        }
+    }
 }
 

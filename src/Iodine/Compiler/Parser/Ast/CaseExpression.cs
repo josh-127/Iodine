@@ -31,50 +31,50 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class CaseExpression : AstNode
-	{
-		public AstNode Pattern {
-			private set;
-			get;
-		}
+    public class CaseExpression : AstNode
+    {
+        public AstNode Pattern {
+            private set;
+            get;
+        }
 
-		public AstNode Condition {
-			private set;
-			get;
-		}
+        public AstNode Condition {
+            private set;
+            get;
+        }
 
-		public AstNode Value {
-			private set;
-			get;
-		}
+        public AstNode Value {
+            private set;
+            get;
+        }
 
-		public CaseExpression (SourceLocation location, AstNode pattern, AstNode condition, AstNode value)
-			: base (location)
-		{
-			Pattern = pattern;
-			Condition = condition;
-			Value = value;
-		}
+        public CaseExpression (SourceLocation location, AstNode pattern, AstNode condition, AstNode value)
+            : base (location)
+        {
+            Pattern = pattern;
+            Condition = condition;
+            Value = value;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			if (Pattern != null) {
-				Pattern.Visit (visitor);
-			}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            if (Pattern != null) {
+                Pattern.Visit (visitor);
+            }
 
-			if (Condition != null) {
-				Condition.Visit (visitor);
-			}
+            if (Condition != null) {
+                Condition.Visit (visitor);
+            }
 
-			if (Value != null) {
-				Value.Visit (visitor);
-			}
-		}
-	}
+            if (Value != null) {
+                Value.Visit (visitor);
+            }
+        }
+    }
 }
 

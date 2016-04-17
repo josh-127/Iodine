@@ -35,52 +35,52 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	static class MethodWrapper
-	{
-		public static BuiltinMethodCallback Create (TypeRegistry registry, 
-			MethodInfo info,
-			object self = null)
-		{
-			return new BuiltinMethodCallback (((VirtualMachine vm,
-				IodineObject @this, IodineObject[] arguments) => {
-				Type[] types = info.GetParameters ().Select (p => p.ParameterType).ToArray ();
-				int i = 0;
-				object[] objects = arguments.Select (p => registry.ConvertToNativeObject (p,
-					types [i++])).ToArray ();
-				return registry.ConvertToIodineObject (info.Invoke (self, objects));
-			}), null);
-		}
+    static class MethodWrapper
+    {
+        public static BuiltinMethodCallback Create (TypeRegistry registry, 
+                                              MethodInfo info,
+                                              object self = null)
+        {
+            return new BuiltinMethodCallback (((VirtualMachine vm,
+                                       IodineObject @this, IodineObject[] arguments) => {
+                Type[] types = info.GetParameters ().Select (p => p.ParameterType).ToArray ();
+                int i = 0;
+                object[] objects = arguments.Select (p => registry.ConvertToNativeObject (p,
+                           types [i++])).ToArray ();
+                return registry.ConvertToIodineObject (info.Invoke (self, objects));
+            }), null);
+        }
 
-		public static BuiltinMethodCallback Create (TypeRegistry registry,
-			IEnumerable<MethodInfo> info,
-			object self = null)
-		{
-			return new BuiltinMethodCallback (((VirtualMachine vm,
-				IodineObject @this, IodineObject[] arguments) => {
-				var suitableOverloads = info.Where (p => p.GetParameters ().Length == arguments.Length);
+        public static BuiltinMethodCallback Create (TypeRegistry registry,
+                                              IEnumerable<MethodInfo> info,
+                                              object self = null)
+        {
+            return new BuiltinMethodCallback (((VirtualMachine vm,
+                                       IodineObject @this, IodineObject[] arguments) => {
+                var suitableOverloads = info.Where (p => p.GetParameters ().Length == arguments.Length);
 
-				foreach (MethodInfo overload in suitableOverloads) {
-					var types = overload.GetParameters ().Select (p => p.ParameterType).ToArray ();
-					object[] objects = new object[arguments.Length];
-					bool mappingExists = true;
-					for (int i = 0; i < arguments.Length; i++) {
-						if (!registry.TypeMappingExists (arguments [i].TypeDef, types [i])) {
-							mappingExists = false;
-							break;
-						}
-						objects [i] = registry.ConvertToNativeObject (arguments [i], types [i]);
-					}
+                foreach (MethodInfo overload in suitableOverloads) {
+                    var types = overload.GetParameters ().Select (p => p.ParameterType).ToArray ();
+                    object[] objects = new object[arguments.Length];
+                    bool mappingExists = true;
+                    for (int i = 0; i < arguments.Length; i++) {
+                        if (!registry.TypeMappingExists (arguments [i].TypeDef, types [i])) {
+                            mappingExists = false;
+                            break;
+                        }
+                        objects [i] = registry.ConvertToNativeObject (arguments [i], types [i]);
+                    }
 
-					if (mappingExists) {
-						return registry.ConvertToIodineObject (overload.Invoke (self, objects));
-					}
-				}
-				// No suitable overload found
-				Console.WriteLine ("No suitable overload found!");
-				return null;
-			}), null);
-		}
+                    if (mappingExists) {
+                        return registry.ConvertToIodineObject (overload.Invoke (self, objects));
+                    }
+                }
+                // No suitable overload found
+                Console.WriteLine ("No suitable overload found!");
+                return null;
+            }), null);
+        }
 	
-	}
+    }
 }
 

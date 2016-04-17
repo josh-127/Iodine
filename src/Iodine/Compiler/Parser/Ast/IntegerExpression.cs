@@ -31,20 +31,20 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class IntegerExpression : AstNode
-	{
-		public long Value { private set; get; }
+    public class IntegerExpression : AstNode
+    {
+        public long Value { private set; get; }
 
-		public IntegerExpression (SourceLocation location, long value)
-			: base (location)
-		{
-			Value = value;
-		}
+        public IntegerExpression (SourceLocation location, long value)
+            : base (location)
+        {
+            Value = value;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+    }
 }
 

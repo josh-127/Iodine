@@ -31,28 +31,28 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class SuperCallStatement : AstNode
-	{
-		public readonly ArgumentList Arguments;
+    public class SuperCallStatement : AstNode
+    {
+        public readonly ArgumentList Arguments;
 
-		public readonly ClassDeclaration Parent;
+        public readonly ClassDeclaration Parent;
 
-		public SuperCallStatement (SourceLocation location, ClassDeclaration parent, ArgumentList argumentList)
-			: base (location)
-		{
-			Parent = parent;
-			Arguments = argumentList;
-		}
+        public SuperCallStatement (SourceLocation location, ClassDeclaration parent, ArgumentList argumentList)
+            : base (location)
+        {
+            Parent = parent;
+            Arguments = argumentList;
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
 
-		public override void VisitChildren (IodineAstVisitor visitor)
-		{
-			Arguments.VisitChildren (visitor);
-		}
-	}
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Arguments.VisitChildren (visitor);
+        }
+    }
 }
 

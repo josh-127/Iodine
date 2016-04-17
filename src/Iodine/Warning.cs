@@ -30,25 +30,25 @@ using System;
 
 namespace Iodine
 {
-	[Flags]
-	public enum WarningType 
-	{
-		None = 0x00,
-		UserWarning = 0x01,
-		SyntaxWarning = 0x02,
-		DeprecationWarning = 0x04,
-	}
+    [Flags]
+    public enum WarningType
+    {
+        None = 0x00,
+        UserWarning = 0x01,
+        SyntaxWarning = 0x02,
+        DeprecationWarning = 0x04,
+    }
 
-	public class Warning
-	{
-		public readonly string Message;
-		public readonly WarningType WarningType;
+    public class Warning
+    {
+        public readonly string Message;
+        public readonly WarningType WarningType;
 
-		public Warning (WarningType type, string message)
-		{
-			WarningType = type;
-			Message = message;
-		}
-	}
+        public Warning (WarningType type, string message)
+        {
+            WarningType = type;
+            Message = message;
+        }
+    }
 }
 

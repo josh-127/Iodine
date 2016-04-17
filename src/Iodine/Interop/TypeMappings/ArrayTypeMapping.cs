@@ -32,23 +32,23 @@ using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-	class ArrayTypeMapping : TypeMapping
-	{
-		public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
-		{
-			IodineBool boolean = obj as IodineBool;
-			return boolean.Value;
-		}
+    class ArrayTypeMapping : TypeMapping
+    {
+        public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
+        {
+            IodineBool boolean = obj as IodineBool;
+            return boolean.Value;
+        }
 
-		public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
-		{
-			object[] arr = (object[])obj;
-			IodineObject[] iodineObjects = new IodineObject[arr.Length];
-			for (int i = 0; i < arr.Length; i++) {
-				iodineObjects [i] = registry.ConvertToIodineObject (arr [i]);
-			}
-			return new IodineList (iodineObjects);
-		}
-	}
+        public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
+        {
+            object[] arr = (object[])obj;
+            IodineObject[] iodineObjects = new IodineObject[arr.Length];
+            for (int i = 0; i < arr.Length; i++) {
+                iodineObjects [i] = registry.ConvertToIodineObject (arr [i]);
+            }
+            return new IodineList (iodineObjects);
+        }
+    }
 }
 

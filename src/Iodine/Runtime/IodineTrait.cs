@@ -32,55 +32,55 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
-	public class IodineTrait : IodineTypeDefinition
-	{
-		public IList<IodineMethod> RequiredMethods { private set; get; }
+    public class IodineTrait : IodineTypeDefinition
+    {
+        public IList<IodineMethod> RequiredMethods { private set; get; }
 
-		public IodineTrait (string name)
-			: base (name)
-		{
-			RequiredMethods = new List<IodineMethod> ();
-		}
+        public IodineTrait (string name)
+            : base (name)
+        {
+            RequiredMethods = new List<IodineMethod> ();
+        }
 
-		public void AddMethod (IodineMethod method)
-		{
-			RequiredMethods.Add (method);
-		}
+        public void AddMethod (IodineMethod method)
+        {
+            RequiredMethods.Add (method);
+        }
 
-		public bool HasTrait (IodineObject obj)
-		{
-			foreach (IodineMethod method in RequiredMethods) {
-				if (obj.HasAttribute (method.Name)) {
-					IodineObject attr = obj.GetAttribute (method.Name);
+        public bool HasTrait (IodineObject obj)
+        {
+            foreach (IodineMethod method in RequiredMethods) {
+                if (obj.HasAttribute (method.Name)) {
+                    IodineObject attr = obj.GetAttribute (method.Name);
 
-					IodineMethod objMethod = attr as IodineMethod;
+                    IodineMethod objMethod = attr as IodineMethod;
 
-					if (objMethod == null) {
-						if (attr is IodineBoundMethod) {
-							objMethod = ((IodineBoundMethod)attr).Method;
-						} else {
-							return false;
-						}
-					}
+                    if (objMethod == null) {
+                        if (attr is IodineBoundMethod) {
+                            objMethod = ((IodineBoundMethod)attr).Method;
+                        } else {
+                            return false;
+                        }
+                    }
 
-					bool match = method.AcceptsKeywordArgs == objMethod.AcceptsKeywordArgs
-						&& method.Variadic == objMethod.Variadic
-						&& method.ParameterCount == objMethod.ParameterCount
-						&& method.InstanceMethod == objMethod.InstanceMethod;
+                    bool match = method.AcceptsKeywordArgs == objMethod.AcceptsKeywordArgs
+                    && method.Variadic == objMethod.Variadic
+                    && method.ParameterCount == objMethod.ParameterCount
+                    && method.InstanceMethod == objMethod.InstanceMethod;
 
-					if (!match) {
-						return false;
-					}
-				}
-			}
+                    if (!match) {
+                        return false;
+                    }
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		public override string ToString ()
-		{
-			return string.Format ("<Trait {0}>", Name);
-		}
-	}
+        public override string ToString ()
+        {
+            return string.Format ("<Trait {0}>", Name);
+        }
+    }
 }
 

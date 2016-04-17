@@ -33,259 +33,259 @@ using System.Reflection;
 
 namespace Iodine.Runtime
 {
-	[IodineBuiltinModule ("math")]
-	public class MathModule : IodineModule
-	{
-		public MathModule ()
-			: base ("math")
-		{
-			SetAttribute ("PI", new IodineFloat (Math.PI));
-			SetAttribute ("E", new IodineFloat (Math.E));
-			SetAttribute ("pow", new BuiltinMethodCallback (Pow, this));
-			SetAttribute ("sin", new BuiltinMethodCallback (Sin, this));
-			SetAttribute ("cos", new BuiltinMethodCallback (Cos, this));
-			SetAttribute ("tan", new BuiltinMethodCallback (Tan, this));
-			SetAttribute ("asin", new BuiltinMethodCallback (ASin, this));
-			SetAttribute ("acos", new BuiltinMethodCallback (ACos, this));
-			SetAttribute ("atan", new BuiltinMethodCallback (ATan, this));
-			SetAttribute ("abs", new BuiltinMethodCallback (Abs, this));
-			SetAttribute ("sqrt", new BuiltinMethodCallback (Sqrt, this));
-			SetAttribute ("floor", new BuiltinMethodCallback (Floor, this));
-			SetAttribute ("ceiling", new BuiltinMethodCallback (Ceiling, this));
-			SetAttribute ("log", new BuiltinMethodCallback (Log, this));
-		}
+    [IodineBuiltinModule ("math")]
+    public class MathModule : IodineModule
+    {
+        public MathModule ()
+            : base ("math")
+        {
+            SetAttribute ("PI", new IodineFloat (Math.PI));
+            SetAttribute ("E", new IodineFloat (Math.E));
+            SetAttribute ("pow", new BuiltinMethodCallback (Pow, this));
+            SetAttribute ("sin", new BuiltinMethodCallback (Sin, this));
+            SetAttribute ("cos", new BuiltinMethodCallback (Cos, this));
+            SetAttribute ("tan", new BuiltinMethodCallback (Tan, this));
+            SetAttribute ("asin", new BuiltinMethodCallback (ASin, this));
+            SetAttribute ("acos", new BuiltinMethodCallback (ACos, this));
+            SetAttribute ("atan", new BuiltinMethodCallback (ATan, this));
+            SetAttribute ("abs", new BuiltinMethodCallback (Abs, this));
+            SetAttribute ("sqrt", new BuiltinMethodCallback (Sqrt, this));
+            SetAttribute ("floor", new BuiltinMethodCallback (Floor, this));
+            SetAttribute ("ceiling", new BuiltinMethodCallback (Ceiling, this));
+            SetAttribute ("log", new BuiltinMethodCallback (Log, this));
+        }
 
-		/**
+        /**
 		 * Iodine Function: pow (val, power)
 		 * Description: raises val to power
 		 */
-		private IodineObject Pow (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 1) {
-				vm.RaiseException (new IodineArgumentException (2));
-				return null;
-			}
+        private IodineObject Pow (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 1) {
+                vm.RaiseException (new IodineArgumentException (2));
+                return null;
+            }
 
-			double a1 = 0;
-			double a2 = 0;
+            double a1 = 0;
+            double a2 = 0;
 
-			if (!ConvertToDouble (args [0], out a1)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out a1)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			if (!ConvertToDouble (args [1], out a2)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [1], out a2)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Pow (a1, a2));
-		}
+            return new IodineFloat (Math.Pow (a1, a2));
+        }
 
-		private IodineObject Sin (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Sin (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Sin (input));
-		}
+            return new IodineFloat (Math.Sin (input));
+        }
 
-		private IodineObject Cos (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Cos (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
-			return new IodineFloat (Math.Cos (input));
-		}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
+            return new IodineFloat (Math.Cos (input));
+        }
 
-		private IodineObject Tan (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Tan (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Tan (input));
-		}
+            return new IodineFloat (Math.Tan (input));
+        }
 
-		private IodineObject ASin (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject ASin (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Asin (input));
-		}
+            return new IodineFloat (Math.Asin (input));
+        }
 
-		private IodineObject ACos (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject ACos (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Acos (input));
-		}
+            return new IodineFloat (Math.Acos (input));
+        }
 
-		private IodineObject ATan (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject ATan (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Atan (input));
-		}
+            return new IodineFloat (Math.Atan (input));
+        }
 
-		private IodineObject Abs (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Abs (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Abs (input));
-		}
+            return new IodineFloat (Math.Abs (input));
+        }
 
-		private IodineObject Sqrt (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Sqrt (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Sqrt (input));
-		}
+            return new IodineFloat (Math.Sqrt (input));
+        }
 
-		private IodineObject Floor (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Floor (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Floor (input));
-		}
+            return new IodineFloat (Math.Floor (input));
+        }
 
-		private IodineObject Ceiling (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Ceiling (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double input = 0;
+            double input = 0;
 
-			if (!ConvertToDouble (args [0], out input)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out input)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Ceiling (input));
-		}
+            return new IodineFloat (Math.Ceiling (input));
+        }
 
-		private IodineObject Log (VirtualMachine vm, IodineObject self, IodineObject[] args)
-		{
-			if (args.Length <= 0) {
-				vm.RaiseException (new IodineArgumentException (1));
-				return null;
-			}
+        private IodineObject Log (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
 
-			double value = 0;
-			double numericBase = 10;
+            double value = 0;
+            double numericBase = 10;
 
-			if (!ConvertToDouble (args [0], out value)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (!ConvertToDouble (args [0], out value)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			if (args.Length > 1 && !ConvertToDouble (args [1], out numericBase)) {
-				vm.RaiseException (new IodineTypeException ("Float"));
-				return null;
-			}
+            if (args.Length > 1 && !ConvertToDouble (args [1], out numericBase)) {
+                vm.RaiseException (new IodineTypeException ("Float"));
+                return null;
+            }
 
-			return new IodineFloat (Math.Log (value, numericBase));
-		}
+            return new IodineFloat (Math.Log (value, numericBase));
+        }
 
-		private static bool ConvertToDouble (IodineObject obj, out double value)
-		{
-			if (obj is IodineInteger) {
-				value = (double)((IodineInteger)obj).Value;
-				return true;
-			} else if (obj is IodineFloat) {
-				value = ((IodineFloat)obj).Value;
-				return true;
-			}
-			value = 0;
-			return false;
-		}
-	}
+        private static bool ConvertToDouble (IodineObject obj, out double value)
+        {
+            if (obj is IodineInteger) {
+                value = (double)((IodineInteger)obj).Value;
+                return true;
+            } else if (obj is IodineFloat) {
+                value = ((IodineFloat)obj).Value;
+                return true;
+            }
+            value = 0;
+            return false;
+        }
+    }
 }
 

@@ -31,17 +31,17 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-	public class FalseExpression : AstNode
-	{
-		public FalseExpression (SourceLocation location)
-			: base (location)
-		{
-		}
+    public class FalseExpression : AstNode
+    {
+        public FalseExpression (SourceLocation location)
+            : base (location)
+        {
+        }
 
-		public override void Visit (IodineAstVisitor visitor)
-		{
-			visitor.Accept (this);
-		}
-	}
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+    }
 }
 
