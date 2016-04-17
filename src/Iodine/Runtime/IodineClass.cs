@@ -34,17 +34,20 @@ namespace Iodine.Runtime
 {
 	public class IodineClass : IodineTypeDefinition
 	{
+		public readonly IodineClass ParentClass;
+
 		private bool initializerInvoked = false;
 
 		public IodineMethod Initializer { internal set; get; }
 
 		public IodineMethod Constructor { private set; get; }
 
-		public IodineClass (string name, IodineMethod initializer, IodineMethod constructor)
+		public IodineClass (string name, IodineMethod initializer, IodineMethod constructor, IodineClass parent = null)
 			: base (name)
 		{
 			Constructor = constructor;
 			Initializer = initializer;
+			ParentClass = parent;
 		}
 			
 		public void AddInstanceMethod (IodineMethod method)

@@ -49,6 +49,11 @@ namespace Iodine.Compiler
 			get;
 		}
 
+		public IodineClass CurrentClass {
+			private set;
+			get;
+		}
+
 		public bool ShouldOptimize {
 			set;
 			get;
@@ -59,16 +64,21 @@ namespace Iodine.Compiler
 		public readonly int PatternTemporary = 0;
 
 		public readonly bool IsPatternExpression = false;
+		public readonly bool IsInClass = false;
 
 		public EmitContext (SymbolTable symbolTable,
 			ModuleBuilder module,
 			MethodBuilder method,
+			bool isInClass = false,
+			IodineClass clazz = null,
 			bool isPatternExpression = false,
 			int patternTempory = 0)
 		{
 			SymbolTable = symbolTable;
 			CurrentMethod = method;
 			CurrentModule = module;
+			CurrentClass = clazz;
+			IsInClass = isInClass;
 			IsPatternExpression = isPatternExpression;
 			PatternTemporary = patternTempory;
 		}

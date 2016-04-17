@@ -109,7 +109,19 @@ namespace Iodine.Compiler
 		{
 			emitContexts.Push (new EmitContext (Context.SymbolTable,
 				Context.CurrentModule,
-				Context.CurrentMethod
+				Context.CurrentMethod,
+				Context.IsInClass,
+				Context.CurrentClass
+			));
+		}
+
+		private void CreateContext (IodineClass clazz)
+		{
+			emitContexts.Push (new EmitContext (Context.SymbolTable,
+				Context.CurrentModule,
+				Context.CurrentMethod,
+				true,
+				clazz
 			));
 		}
 
@@ -117,7 +129,9 @@ namespace Iodine.Compiler
 		{
 			emitContexts.Push (new EmitContext (Context.SymbolTable,
 				Context.CurrentModule,
-				methodBuilder
+				methodBuilder,
+				Context.IsInClass,
+				Context.CurrentClass
 			));
 		}
 
@@ -126,6 +140,8 @@ namespace Iodine.Compiler
 			emitContexts.Push (new EmitContext (Context.SymbolTable,
 				Context.CurrentModule,
 				Context.CurrentMethod,
+				Context.IsInClass,
+				Context.CurrentClass,
 				true,
 				temporary
 			));
@@ -173,7 +189,9 @@ namespace Iodine.Compiler
 				false
 			);
 
-			IodineClass clazz = new IodineClass (classDecl.Name, initializer, constructor);
+			IodineClass clazz = new IodineClass (classDecl.Name, initializer, constructor, Context.CurrentClass);
+
+			CreateContext (clazz);
 
 			foreach (AstNode member in classDecl.Members) {
 				if (member is FunctionDeclaration) {
@@ -203,10 +221,8 @@ namespace Iodine.Compiler
 					CreateContext (initializer);
 
 					expr.Right.Visit (this);
-					initializer.EmitInstruction (classDecl.Location,
-						Opcode.LoadGlobal,
-						Context.CurrentModule.DefineConstant (new IodineName (classDecl.Name))
-					);
+
+					LoadAssociatedClass ();
 
 					initializer.EmitInstruction (classDecl.Location,
 						Opcode.StoreAttribute,
@@ -218,6 +234,8 @@ namespace Iodine.Compiler
 					member.Visit (this);
 				}
 			}
+
+			DestroyContext ();
 
 			initializer.FinalizeLabels ();
 			constructor.FinalizeLabels ();
@@ -1326,6 +1344,12 @@ namespace Iodine.Compiler
 						Context.CurrentModule.DefineConstant (new IodineName (ident.Value))
 					);
 				}
+			} else if (Context.IsInClass && ExistsInOuterClass (ident.Value)) {
+				LoadAssociatedClass (ident.Value);
+				Context.CurrentMethod.EmitInstruction (ident.Location,
+					Opcode.LoadAttribute,
+					Context.CurrentModule.DefineConstant (new IodineName (ident.Value))
+				);
 			} else {
 				Context.CurrentMethod.EmitInstruction (ident.Location,
 					Opcode.LoadGlobal,
@@ -1333,6 +1357,54 @@ namespace Iodine.Compiler
 				);
 			}
 
+		}
+
+		private bool ExistsInOuterClass (string name) {
+			IodineClass current = Context.CurrentClass;
+
+			while (current != null) {
+				if (current.HasAttribute (name)) {
+					return true;
+				}
+				current = current.ParentClass;
+			}
+
+			return false;
+		}
+
+		/*
+		 * Emits the instructions required for loading the class that contains
+		 * the attribute 'item'
+		 */
+		private void LoadAssociatedClass (string item = null)
+		{
+			IodineClass current = Context.CurrentClass;
+			List<string> names = new List<string> ();
+			bool reachedClass = (item == null);
+
+			while (current != null) {
+				if (!reachedClass && current.HasAttribute (item)) {
+					reachedClass = true;
+				}
+
+				if (reachedClass) {
+					names.Add (current.Name);
+				}
+
+				current = current.ParentClass;
+			}
+
+			names.Reverse ();
+
+			Context.CurrentMethod.EmitInstruction (Opcode.LoadGlobal,
+				Context.CurrentModule.DefineConstant (new IodineName (names [0]))
+			);
+
+			for (int i = 1; i < names.Count; i++) {
+				Context.CurrentMethod.EmitInstruction (Opcode.LoadAttribute,
+					Context.CurrentModule.DefineConstant (new IodineName (names [i]))
+				);
+			}
 		}
 
 		public override void Accept (IntegerExpression integer)

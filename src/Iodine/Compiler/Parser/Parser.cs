@@ -58,9 +58,9 @@ namespace Iodine.Compiler
 					root.Add (ParseStatement (tokenStream));
 				}
 
-				AstNode irrelevent = null;
 				return root;
-			} catch (Exception) {
+			} catch (Exception ex) {
+				Console.WriteLine (ex.ToString ());
 				return new CompilationUnit (tokenStream.Location);
 			} finally {
 				if (tokenStream.ErrorLog.ErrorCount > 0) {
@@ -95,12 +95,20 @@ namespace Iodine.Compiler
 			while (!stream.Match (TokenClass.CloseBrace)) {
 				if (stream.Match (TokenClass.Keyword, "func") || stream.Match (TokenClass.Operator,
 					    "@")) {
-
-					FunctionDeclaration func = ParseFunction (stream, false, clazz) as FunctionDeclaration;
-					if (func.Name == name) {
-						clazz.Constructor = func;
+					AstNode node = ParseFunction (stream, false, clazz);
+					if (node is FunctionDeclaration) {
+						FunctionDeclaration func = node as FunctionDeclaration;
+						if (func == null) {
+							clazz.Add (node);
+						} else if (func.Name == name) {
+							clazz.Constructor = func;
+						} else {
+							clazz.Add (func);
+						}
 					} else {
-						clazz.Add (func);
+						StatementList list = node as StatementList;
+						clazz.Add (list.Statements [0]);
+						clazz.Add (list.Statements [1]);
 					}
 				} else {
 					clazz.Add (ParseStatement (stream));

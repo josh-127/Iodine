@@ -189,15 +189,12 @@
     <Compile Include="Runtime\StandardTypes\IodineByteArray.cs" />
     <Compile Include="Runtime\StandardTypes\IodineFormatter.cs" />
     <Compile Include="Runtime\StandardTypes\IodineStream.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineGenerator.cs" />
     <Compile Include="Runtime\StandardTypes\IodineHashMap.cs" />
     <Compile Include="Runtime\StandardTypes\IodineProperty.cs" />
     <Compile Include="Runtime\StandardTypes\IodineRange.cs" />
     <Compile Include="Runtime\StandardTypes\IodineStringBuilder.cs" />
     <Compile Include="Runtime\StandardTypes\IodineBytes.cs" />
     <Compile Include="Runtime\StandardTypes\IodineComplex.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineClass.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineClosure.cs" />
     <Compile Include="Runtime\StandardTypes\IodineEnum.cs" />
     <Compile Include="Runtime\StandardTypes\IodineException.cs" />
     <Compile Include="Runtime\IodineBuiltinType.cs" />
@@ -221,6 +218,9 @@
     <Compile Include="Compiler\Emit\IodineCompiler.cs" />
     <Compile Include="Compiler\Parser\Ast\SuperCallStatement.cs" />
     <Compile Include="Compiler\Parser\Ast\SelfExpression.cs" />
+    <Compile Include="Runtime\IodineClass.cs" />
+    <Compile Include="Runtime\IodineClosure.cs" />
+    <Compile Include="Runtime\IodineGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
