@@ -87,6 +87,7 @@ namespace Iodine.Runtime
             SetAttribute ("SyntaxException", IodineSyntaxException.TypeDefinition);
             SetAttribute ("NotSupportedException", IodineNotSupportedException.TypeDefinition);
             SetAttribute ("StringBuffer", IodineStringBuilder.TypeDefinition);
+            SetAttribute ("Null", IodineNull.Instance);
             ExistsInGlobalNamespace = true;
         }
 
