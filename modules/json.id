@@ -1,8 +1,8 @@
 /**
-  * Provides classes and methods for parsing JSON
-  * @module json
-  * @author GruntTheDivine
-  */
+ * Provides classes and methods for parsing JSON
+ * @module json
+ * @author GruntTheDivine
+ */
 
 /**
  * Raised when ever malformed JSON is parsed

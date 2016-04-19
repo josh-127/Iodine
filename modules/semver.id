@@ -1,6 +1,14 @@
-## semver v0.2.0 (available at https://github.com/iodinelang/semver)
-## Licensed under the MIT License.
+/**
+ * For parsing semantic versioning
+ * Licensed under the MIT license
+ * @module semver
+ * @author Aurora01
+ * @version v0.2.0
+ */
 
+/**
+ * Class representing a semantic version (MAJOR, MINOR, PATCH)
+ */
 class SemanticVersion {
     func SemanticVersion (self, *args) {
         if (len (args) == 1) {
@@ -19,7 +27,11 @@ class SemanticVersion {
             raise ArgumentException ("Argument exception!");
         }
     }
-    
+   
+    /**
+     * Returns true if the version is an alpha version
+     * @returns True if the major is 0
+     */ 
     func isAlpha (self) {
         return self.versionMajor == 0;
     }
@@ -63,6 +75,11 @@ class SemanticVersion {
         self._parseVersionString ();
     }
     
+    /**
+     * Tests if this version is greater than the supplied argument
+     * @param version The version to compare with
+     * @returns True if this version is greater than the supplied argument
+     */
     func isGreaterThan (self, version) {
         ver = SemanticVersion (version);
         
@@ -86,7 +103,13 @@ class SemanticVersion {
         
         return false;    
     }
-    
+ 
+    /**
+     * Tests whether or not this version is greater than or equal the supplied
+     * argument
+     * @param version The version to compare with
+     * @returns True if this version is greater than or equal to version
+     */   
     func isGTE (self, version) {
         ver = SemanticVersion (version);
         if (ver.versionMajor == self.versionMajor && ver.versionMinor == 
@@ -96,6 +119,11 @@ class SemanticVersion {
         return self.isGreaterThan (version);
     }
     
+    /**
+     * Tests if this version is less than or equal to the supplied argument
+     * @param version The version to compare to
+     * @returns True if this version is less than or equal to version
+     */
     func isLTE (self, version) {
         ver = SemanticVersion (version);
         if (ver.versionMajor == self.versionMajor && ver.versionMinor == 
@@ -105,6 +133,11 @@ class SemanticVersion {
         return self.isLessThan (version);
     }
     
+    /**
+     * Tests if this version is less than the supplied argument
+     * @param version The version to compare to
+     * @returns Truee if this version is less than the supplied argument
+     */
     func isLessThan (self, version) {
         ver = SemanticVersion (version);
         
@@ -129,6 +162,11 @@ class SemanticVersion {
         return false;
     }
     
+    /**
+     * Tests if this version is equal to the supplied argument
+     * @param ver The version to compare to
+     * @returns True if this is equal to ver
+     */
     func isEqual (self, ver) {
         v = SemanticVersion (ver);
         if (v.versionMajor == self.versionMajor && 
@@ -138,7 +176,12 @@ class SemanticVersion {
         }
         return false;
     }
-    
+ 
+    /**
+     * Tests to see if this version matches a semantic version string
+     * @param requestedVersion The version string to match
+     * @returns True if match
+     */   
     func isMatch (self, requestedVersion) {
         if (requestedVersion == "*") {
             return true;
