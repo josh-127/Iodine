@@ -32,7 +32,7 @@ using System;
 namespace Iodine.Runtime
 {
     /// <summary>
-    /// Internal class that represents an exception handler. When ever a try block is
+    /// Internal class that represents an exception handler. Whenever a try block is
     /// encountered by the virtual machine, a new instance of IodineExceptionHandler 
     /// is pushed on a special stack. This class contains all the information needed
     /// to recover from an exception

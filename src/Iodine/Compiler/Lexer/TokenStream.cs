@@ -74,6 +74,18 @@ namespace Iodine.Compiler
             this.errorLog = errorLog;
         }
 
+        public void Synchronize ()
+        {
+            while (Current != null) {
+                Token tok = ReadToken ();
+                switch (tok.Class) {
+                case TokenClass.CloseBracket:
+                case TokenClass.SemiColon:
+                    return;
+                }
+            }
+        }
+
         public void AddToken (Token token)
         {
             tokens.Add (token);
@@ -134,9 +146,10 @@ namespace Iodine.Compiler
             Token offender = ReadToken ();
             if (offender != null) {
                 errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+                throw new SyntaxException (errorLog);
             } else {
                 errorLog.Add (Errors.UnexpectedEndOfFile, Location);
-                throw new Exception ("");
+                throw new EndOfFileException ();
             }
             return new Token (clazz, "", Location);
         }
@@ -150,16 +163,22 @@ namespace Iodine.Compiler
             Token offender = ReadToken ();
             if (offender != null) {
                 errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+                throw new SyntaxException (errorLog);
             } else {
                 errorLog.Add (Errors.UnexpectedEndOfFile, Location);
-                throw new Exception ("");
+                throw new EndOfFileException ();
             }
             return new Token (clazz, "", Location);
         }
 
         public void MakeError ()
         {
+            if (PeekToken () == null) {
+                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+                throw new EndOfFileException ();
+            }
             errorLog.Add (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
+            throw new SyntaxException (errorLog);
         }
 
         private Token PeekToken ()

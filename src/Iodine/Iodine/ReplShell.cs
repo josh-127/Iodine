@@ -38,7 +38,6 @@ namespace Iodine
 {
     public sealed class ReplShell
     {
-
         public ReplShell (IodineContext context)
         {
         }

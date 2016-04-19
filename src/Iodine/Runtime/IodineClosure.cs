@@ -31,6 +31,10 @@ using System;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// IodineClosure wraps a method around an existing method's stack frame. This 
+    /// enables the child method to access the parents methods local variables
+    /// </summary>
     public class IodineClosure : IodineObject
     {
         public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Closure");
@@ -52,13 +56,15 @@ namespace Iodine.Runtime
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            return vm.InvokeMethod (Target, frame.Duplicate (vm.Top),
-                frame.Self, arguments);
+            return vm.InvokeMethod (Target,
+                frame.Duplicate (vm.Top),
+                frame.Self, arguments
+            );
         }
 
         public override string ToString ()
         {
-            return string.Format ("<Anonymous Function>");
+            return string.Format ("<Closure>");
         }
     }
 }

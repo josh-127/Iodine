@@ -31,15 +31,42 @@ using System;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// A generator function which can be iterated
+    /// </summary>
     public class IodineGenerator : IodineObject
     {
         private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Generator");
 
+        /*
+         * Initial access is set after the first attempt to iterate over this generator
+         */
         private bool initialAccess = false;
+
+        /*
+         * The method that created this generator
+         */
         private IodineMethod baseMethod;
+
+        /*
+         * self pointer if baseMethod is an instance method
+         */
         private IodineObject self;
+
+        /*
+         * Initial value created by the first yield statement, we return this on the
+         * first iteration
+         */
         private IodineObject value;
+
+        /*
+         * Arguments originally passed to the method
+         */
         private IodineObject[] arguments;
+
+        /*
+         * The stack frame we are operating from
+         */
         private StackFrame stackFrame;
 
         public IodineGenerator (StackFrame frame,

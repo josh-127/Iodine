@@ -119,12 +119,15 @@ namespace Iodine.Compiler
         {
             string exeDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
             string iodinePath = Environment.GetEnvironmentVariable ("IODINE_PATH");
+
             SearchPath.Add (Environment.CurrentDirectory);
             SearchPath.Add (Path.Combine (exeDir, "modules"));
             SearchPath.Add (Path.Combine (exeDir, "extensions"));
+
             if (iodinePath != null) {
                 SearchPath.AddRange (iodinePath.Split (':'));
             }
+
             // Defaults
             WarningFilter = WarningType.DeprecationWarning | WarningType.SyntaxWarning;
             ShouldOptimize = true;
@@ -241,7 +244,7 @@ namespace Iodine.Compiler
             foreach (Type type in extension.GetTypes ()) {
                 if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
                     IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
-                                                   typeof(IodineBuiltinModule), false).First ();
+                        typeof(IodineBuiltinModule), false).First ();
                     if (attr.Name == module) {
                         return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
                     }

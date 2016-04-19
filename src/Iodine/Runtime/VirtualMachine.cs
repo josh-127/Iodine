@@ -151,7 +151,18 @@ namespace Iodine.Runtime
             return Invoke (method, arguments);
         }
 
-        public IodineObject InvokeMethod (IodineMethod method, StackFrame frame, IodineObject self,
+        /// <summary>
+        /// Executes an Iodine method using a preallocated stack frame. this is used for 
+        /// closures 
+        /// </summary>
+        /// <returns>The method.</returns>
+        /// <param name="method">Method.</param>
+        /// <param name="frame">Frame.</param>
+        /// <param name="self">Self.</param>
+        /// <param name="arguments">Arguments.</param>
+        public IodineObject InvokeMethod (IodineMethod method,
+            StackFrame frame,
+            IodineObject self,
             IodineObject[] arguments)
         {
             int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 :
@@ -193,6 +204,9 @@ namespace Iodine.Runtime
                     Top.StoreLocal (method.Parameters [param], new IodineTuple (tupleItems));
 
                 } else if (i == method.Parameters.Keys.Count - 1 && method.AcceptsKeywordArgs) {
+                    /*
+                     * At the moment, keyword arguments are passed to the function as an IodineHashMap,
+                     */
                     if (i < arguments.Length && arguments [i] is IodineHashMap) {
                         Top.StoreLocal (method.Parameters [param], arguments [i]);
                     } else {
@@ -207,6 +221,7 @@ namespace Iodine.Runtime
             if (traceCallback != null) {
                 Trace (TraceType.Function, top, currentLocation);
             }
+
             top.Location = currentLocation;
             while (top.InstructionPointer < insCount && !top.AbortExecution && !Top.Yielded) {
                 instruction = method.Body [Top.InstructionPointer++];
@@ -222,6 +237,9 @@ namespace Iodine.Runtime
 
             IodineObject retVal = lastObject ?? IodineNull.Instance;
 
+            /*
+             * Calls __exit__ on any object used in a with statment
+             */
             while (top.DisposableObjects.Count > 0) {
                 top.DisposableObjects.Pop ().Exit (this);
             }
@@ -229,6 +247,11 @@ namespace Iodine.Runtime
             stackSize = prevStackSize;
 
             if (top.AbortExecution) {
+                /*
+                 * If AbortExecution was set, something went wrong and we most likely just
+                 * raised an exception. We'll return right here and let what ever catches 
+                 * the exception clean up the stack
+                 */
                 return retVal;
             }
 
@@ -708,6 +731,10 @@ namespace Iodine.Runtime
         #if DOTNET_45
 		[MethodImpl (MethodImplOptions.AggressiveInlining)]
 		#endif
+        /// <summary>
+        /// Pushes an item onto the evaluation stack
+        /// </summary>
+        /// <param name="obj">Object.</param>
         private void Push (IodineObject obj)
         {
             if (stackSize >= Context.Configuration.StackLimit) {

@@ -1268,6 +1268,10 @@ namespace Iodine.Compiler
 
                 clause.Value.Visit (this);
 
+                if (clause.IsStatement) {
+                    Context.CurrentMethod.EmitInstruction (match.Location, Opcode.LoadNull);
+                }
+
                 Context.SymbolTable.ExitScope ();
 
                 Context.CurrentMethod.EmitInstruction (match.Location, Opcode.Jump, endLabel);

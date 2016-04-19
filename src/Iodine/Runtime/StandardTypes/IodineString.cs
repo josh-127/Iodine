@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.IO;
 using System.Text;
 using Iodine.Compiler;
 
@@ -62,8 +63,8 @@ namespace Iodine.Runtime
             : base (TypeDefinition)
         {
             Value = val;
-            SetAttribute ("toLower", new BuiltinMethodCallback (ToLower, this));
-            SetAttribute ("toUpper", new BuiltinMethodCallback (toUpper, this));
+            SetAttribute ("lower", new BuiltinMethodCallback (ToLower, this));
+            SetAttribute ("upper", new BuiltinMethodCallback (toUpper, this));
             SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
             SetAttribute ("indexOf", new BuiltinMethodCallback (IndexOf, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
@@ -79,8 +80,8 @@ namespace Iodine.Runtime
             SetAttribute ("isLetterOrDigit", new BuiltinMethodCallback (IsLetterOrDigit, this));
             SetAttribute ("isWhiteSpace", new BuiltinMethodCallback (IsWhiteSpace, this));
             SetAttribute ("isSymbol", new BuiltinMethodCallback (IsSymbol, this));
-            SetAttribute ("padRight", new BuiltinMethodCallback (PadRight, this));
-            SetAttribute ("padLeft", new BuiltinMethodCallback (PadLeft, this));
+            SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, this));
+            SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, this));
         }
 
         public override IodineObject Len (VirtualMachine vm)

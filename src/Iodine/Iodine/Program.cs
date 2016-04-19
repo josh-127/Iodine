@@ -113,6 +113,9 @@ namespace Iodine
             } catch (SyntaxException ex) {
                 DisplayErrors (ex.ErrorLog);
                 Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
+            } catch (ModuleNotFoundException ex) {
+                Console.Error.WriteLine (ex.ToString ());
+                Panic ("Program terminated.");
             } catch (Exception e) {
                 Console.Error.WriteLine ("Fatal exception has occured!");
                 Console.Error.WriteLine (e.Message);
@@ -161,8 +164,8 @@ namespace Iodine
             }
             string exePath = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
             string commonAppData = Environment.GetFolderPath (
-                                       Environment.SpecialFolder.CommonApplicationData
-                                   );
+                Environment.SpecialFolder.CommonApplicationData
+            );
             string appData = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
 
             if (File.Exists (Path.Combine (exePath, "iodine.conf"))) {

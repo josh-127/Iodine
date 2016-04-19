@@ -40,25 +40,67 @@ namespace Iodine.Runtime
     /// </summary>
     public class StackFrame
     {
+        /// <summary>
+        /// Iodine Method which this stack frame is for
+        /// </summary>
         public readonly IodineMethod Method;
+
+        /// <summary>
+        /// Self reference ('this' pointer)
+        /// </summary>
         public readonly IodineObject Self;
+
+        /// <summary>
+        /// The arguments passed to the function
+        /// </summary>
         public readonly IodineObject[] Arguments;
+
+        /// <summary>
+        /// These are objects which were used with the 'with' statement
+        /// </summary>
         public readonly LinkedStack<IodineObject> DisposableObjects = new LinkedStack<IodineObject> ();
+
+        /// <summary>
+        /// Exception handlers
+        /// </summary>
         public readonly LinkedStack<IodineExceptionHandler> ExceptionHandlers = new LinkedStack<IodineExceptionHandler> ();
 
+        /// <summary>
+        /// The stack frame of the parent function
+        /// </summary>
+        public readonly StackFrame Parent;
+
+        /// <summary>
+        /// This flag controls whether or not the VM should break from execution
+        /// </summary>
         public volatile bool AbortExecution = false;
 
+        /// <summary>
+        /// Gets or sets a bool that indicates whether this function is to yield to the caller
+        /// </summary>
+        /// <value><c>true</c> if yielded; otherwise, <c>false</c>.</value>
         public bool Yielded { set; get; }
 
+        /// <summary>
+        /// Gets or sets the source for this stack frame location.
+        /// </summary>
+        /// <value>The location.</value>
         public SourceLocation Location { set; get; }
-        public SourceLocation CurrentLocation { set; get; }
 
+        /// <summary>
+        /// Gets or sets the instruction pointer.
+        /// </summary>
+        /// <value>The instruction pointer.</value>
         public int InstructionPointer { set; get; }
 
-        public StackFrame Parent { private set; get; }
-
+        /// <summary>
+        /// Gets the module.
+        /// </summary>
+        /// <value>The module.</value>
         public IodineModule Module {
-            get { return Method.Module; }
+            get {
+                return Method.Module;
+            }
         }
 
         private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();

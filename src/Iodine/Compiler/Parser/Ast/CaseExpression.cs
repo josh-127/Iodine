@@ -33,6 +33,8 @@ namespace Iodine.Compiler.Ast
 {
     public class CaseExpression : AstNode
     {
+        public readonly bool IsStatement;
+
         public AstNode Pattern {
             private set;
             get;
@@ -48,12 +50,18 @@ namespace Iodine.Compiler.Ast
             get;
         }
 
-        public CaseExpression (SourceLocation location, AstNode pattern, AstNode condition, AstNode value)
+        public CaseExpression (SourceLocation location,
+            AstNode pattern,
+            AstNode condition,
+            AstNode value,
+            bool isStatement
+        )
             : base (location)
         {
             Pattern = pattern;
             Condition = condition;
             Value = value;
+            IsStatement = isStatement;
         }
 
         public override void Visit (IodineAstVisitor visitor)

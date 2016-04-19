@@ -21,7 +21,6 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>../tests/test.id</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -53,7 +52,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy NoTabsAfterNonTabs="True" EolMarker="Unix" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
-          <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy AlignToFirstMethodDeclarationParameter="False" AlignToFirstIndexerDeclarationParameter="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <NameConventionPolicy>
             <Rules>
               <NamingRule Name="Namespaces" AffectedEntity="Namespace" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />

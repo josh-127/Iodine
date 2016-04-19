@@ -37,6 +37,10 @@ namespace Iodine.Runtime
     /// </summary>
     public struct Instruction
     {
+        /// <summary>
+        /// Source location where this instruction was emitted from, used for printing
+        /// useful stack traces and debugging
+        /// </summary>
         public readonly SourceLocation Location;
 
         public readonly Opcode OperationCode;

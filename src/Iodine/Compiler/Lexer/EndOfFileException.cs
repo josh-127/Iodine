@@ -27,27 +27,13 @@
 //   * DAMAGE.
 // /**
 using System;
-using System.Collections.Generic;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler
 {
-    /// <summary>
-    /// Module not found exception, rasied when a module cannot be found
-    /// </summary>
-    public class ModuleNotFoundException : RuntimeException
+    public class EndOfFileException : System.Exception
     {
-        public readonly string Name;
-        public readonly IEnumerable<string> SearchPath;
-
-        public ModuleNotFoundException (string name, IEnumerable<string> path)
+        public EndOfFileException ()
         {
-            SearchPath = path;
-            Name = name;
-        }
-
-        public override string ToString ()
-        {
-            return string.Format ("Could not find module '{0}'\n\nSearched in: \n    {1}", Name, String.Join ("\n    ", SearchPath));
         }
     }
 }

@@ -40,7 +40,55 @@ namespace Iodine.Runtime
     /// </summary>
     public class IodineTypeDefinition : IodineObject
     {
-        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("TypeDef");
+        public class TypeDefinitionTypeDefinition : IodineTypeDefinition
+        {
+            public TypeDefinitionTypeDefinition ()
+                : base ("TypeDef")
+            {
+            }
+
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineString name = args [0] as IodineString;
+
+                if (name == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+                }
+
+                IodineTypeDefinition baseType = IodineObject.ObjectTypeDef;
+
+                if (args.Length > 1) {
+                    baseType = args [1] as IodineTypeDefinition;
+
+                    if (baseType == null) {
+                        vm.RaiseException (new IodineTypeException ("TypeDef"));
+                        return null;
+                    }
+                }
+
+                IodineTypeDefinition clazz = new IodineTypeDefinition (name.Value);
+
+                clazz.Base = baseType;
+
+                if (args.Length > 2) {
+                    IodineHashMap map = args [2] as IodineHashMap;
+
+                    foreach (IodineObject key in map.Keys) {
+                        clazz.SetAttribute (key.ToString (), map.Get (key));
+                    }
+                }
+
+                return clazz;
+            }
+        }
+
+        public static IodineTypeDefinition TypeDefinition = new TypeDefinitionTypeDefinition ();
 
         public readonly string Name;
 
@@ -48,18 +96,18 @@ namespace Iodine.Runtime
             : base (TypeDefinition)
         {
             Name = name;
+
             Attributes ["__name__"] = new IodineString (name);
-            BindMethods ();
+        }
+            
+        public override bool IsCallable ()
+        {
+            return true;
         }
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            return base.Invoke (vm, arguments);
-        }
-
-        public override bool IsCallable ()
-        {
-            return true;
+            return new IodineObject (this);
         }
 
         public override string ToString ()
@@ -71,8 +119,9 @@ namespace Iodine.Runtime
         {
             IodineObject obj = Invoke (vm, arguments);
             foreach (string attr in Attributes.Keys) {
-                if (!self.HasAttribute (attr))
+                if (!self.HasAttribute (attr)) {
                     self.SetAttribute (attr, Attributes [attr]);
+                }
                 obj.SetAttribute (attr, Attributes [attr]);
             }
             self.SetAttribute ("__super__", obj);
@@ -87,20 +136,6 @@ namespace Iodine.Runtime
                 }
             }
             return obj;
-        }
-
-        private void BindMethods ()
-        {
-            Type type = GetType ();
-            var methods = type.GetMethods ().
-				Where (p => p.IsStatic && p.IsDefined (typeof(IodineBuiltinMethod)));
-            foreach (MethodInfo info in methods) {
-                IodineBuiltinMethod attr = (IodineBuiltinMethod)info.GetCustomAttributes (
-                                               typeof(IodineBuiltinMethod), false).First ();
-                SetAttribute (attr.Name, new BuiltinMethodCallback (
-                    (IodineMethodDelegate)Delegate.CreateDelegate (typeof(IodineMethodDelegate), info), null)
-                );
-            }
         }
     }
 }

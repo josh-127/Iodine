@@ -59,9 +59,8 @@ namespace Iodine.Compiler
                 }
 
                 return root;
-            } catch (Exception ex) {
-                Console.WriteLine (ex.ToString ());
-                return new CompilationUnit (tokenStream.Location);
+            } catch (EndOfFileException) {
+                throw new SyntaxException (tokenStream.ErrorLog);
             } finally {
                 if (tokenStream.ErrorLog.ErrorCount > 0) {
                     throw new SyntaxException (tokenStream.ErrorLog);
@@ -274,17 +273,21 @@ namespace Iodine.Compiler
             bool hasKeywordArgs;
 
             Token ident = stream.Expect (TokenClass.Identifier);
-            List<string> parameters = ParseFuncParameters (stream,
-                                          out isInstanceMethod,
-                                          out isVariadic,
-                                          out hasKeywordArgs);
+
+            List<string> parameters = ParseFuncParameters (
+              stream,
+              out isInstanceMethod,
+              out isVariadic,
+              out hasKeywordArgs
+            );
 
             FunctionDeclaration decl = new FunctionDeclaration (stream.Location, ident != null ?
 				ident.Value : "",
-                                           isInstanceMethod,
-                                           isVariadic,
-                                           hasKeywordArgs,
-                                           parameters);
+                isInstanceMethod,
+                isVariadic,
+                hasKeywordArgs,
+                parameters
+            );
 
             if (!prototype) {
 
@@ -425,6 +428,16 @@ namespace Iodine.Compiler
 
         private static AstNode ParseStatement (TokenStream stream)
         {
+            try {
+                return DoParseStatement (stream);
+            } catch  (SyntaxException) {
+                stream.Synchronize ();
+                return null;
+            }
+        }
+
+        private static AstNode DoParseStatement (TokenStream stream)
+        {
             if (stream.Match (TokenClass.Keyword)) {
                 switch (stream.Current.Value) {
                 case "class":
@@ -546,9 +559,11 @@ namespace Iodine.Compiler
             Token ident = stream.Expect (TokenClass.Identifier);
             AstNode value = null;
             if (stream.Accept (TokenClass.Operator, "=")) {
-                value = new BinaryExpression (stream.Location, BinaryOperation.Assign,
+                value = new BinaryExpression (stream.Location,
+                    BinaryOperation.Assign,
                     new NameExpression (ident.Location, ident.Value),
-                    ParseExpression (stream));
+                    ParseExpression (stream)
+                );
             }
             return new VariableDeclaration (stream.Location, ident.Value, value);
         }
@@ -851,8 +866,12 @@ namespace Iodine.Compiler
                 switch (stream.Current.Value) {
                 case "...":
                     stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.ClosedRange, expr,
-                        ParseBoolOr (stream));
+                    expr = new BinaryExpression (
+                        stream.Location,
+                        BinaryOperation.ClosedRange,
+                        expr,
+                        ParseBoolOr (stream)
+                    );
                     continue;
                 case "..":
                     stream.Accept (TokenClass.Operator);
@@ -1116,6 +1135,9 @@ namespace Iodine.Compiler
 
         public static AstNode ParseTerm (TokenStream stream)
         {
+            if (stream.Current == null) {
+                return null;
+            }
             switch (stream.Current.Class) {
             case TokenClass.Identifier:
                 return new NameExpression (stream.Location, stream.ReadToken ().Value);
@@ -1189,9 +1211,27 @@ namespace Iodine.Compiler
                 if (stream.Accept (TokenClass.Keyword, "when")) {
                     condition = ParseExpression (stream);
                 }
-                stream.Expect (TokenClass.Operator, "=>");
-                AstNode value = ParseExpression (stream);
-                expr.AddCase (new CaseExpression (pattern.Location, pattern, condition, value));
+                AstNode value = null;
+
+                if (stream.Accept (TokenClass.Operator, "=>")) {
+                    value = ParseExpression (stream);
+                    expr.AddCase (new CaseExpression (
+                        pattern.Location,
+                        pattern,
+                        condition,
+                        value,
+                        false
+                    ));
+                } else {
+                    value = ParseStatement (stream);
+                    expr.AddCase (new CaseExpression (
+                        pattern.Location,
+                        pattern, 
+                        condition,
+                        value,
+                        true
+                    ));
+                }
             }
             stream.Expect (TokenClass.CloseBrace);
             return expr;
@@ -1242,18 +1282,26 @@ namespace Iodine.Compiler
             bool isVariadic;
             bool acceptsKwargs;
 
-            List<string> parameters = ParseFuncParameters (stream,
-                                          out isInstanceMethod,
-                                          out isVariadic,
-                                          out acceptsKwargs
-                                      );
+            List<string> parameters = ParseFuncParameters (
+                stream,
+                out isInstanceMethod,
+                out isVariadic,
+                out acceptsKwargs
+            );
 
-            LambdaExpression decl = new LambdaExpression (stream.Location, isInstanceMethod, isVariadic, acceptsKwargs, parameters);
+            LambdaExpression decl = new LambdaExpression (
+                stream.Location, 
+                isInstanceMethod, 
+                isVariadic, 
+                acceptsKwargs, 
+                parameters
+            );
 
-            if (stream.Accept (TokenClass.Operator, "=>"))
+            if (stream.Accept (TokenClass.Operator, "=>")) {
                 decl.AddStatement (new ReturnStatement (stream.Location, ParseExpression (stream)));
-            else
+            } else {
                 decl.AddStatement (ParseStatement (stream));
+            }
 			
             return decl;
         }

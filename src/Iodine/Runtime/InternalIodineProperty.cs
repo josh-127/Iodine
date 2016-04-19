@@ -48,8 +48,7 @@ namespace Iodine.Runtime
             this.getter = getter;
             this.setter = setter;
         }
-
-
+         
         public IodineObject Set (VirtualMachine vm, IodineObject value)
         {
             setter (vm, value);

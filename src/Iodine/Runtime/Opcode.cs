@@ -31,6 +31,9 @@ using System;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// Operation codes used by the Virtual Machine
+    /// </summary>
     public enum Opcode
     {
         Nop = 0,

@@ -32,6 +32,9 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// Metaclass for userdefined Iodine classes
+    /// </summary>
     public class IodineClass : IodineTypeDefinition
     {
         public readonly IodineClass ParentClass;

@@ -32,6 +32,10 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// Represents an IodineTrait. An IodineTrait describes which members a class may
+    /// have
+    /// </summary>
     public class IodineTrait : IodineTypeDefinition
     {
         public IList<IodineMethod> RequiredMethods { private set; get; }
@@ -64,9 +68,9 @@ namespace Iodine.Runtime
                     }
 
                     bool match = method.AcceptsKeywordArgs == objMethod.AcceptsKeywordArgs
-                                 && method.Variadic == objMethod.Variadic
-                                 && method.ParameterCount == objMethod.ParameterCount
-                                 && method.InstanceMethod == objMethod.InstanceMethod;
+                        && method.Variadic == objMethod.Variadic
+                        && method.ParameterCount == objMethod.ParameterCount
+                        && method.InstanceMethod == objMethod.InstanceMethod;
 
                     if (!match) {
                         return false;
