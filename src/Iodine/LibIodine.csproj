@@ -195,8 +195,6 @@
     <Compile Include="Runtime\StandardTypes\IodineBytes.cs" />
     <Compile Include="Runtime\StandardTypes\IodineComplex.cs" />
     <Compile Include="Runtime\StandardTypes\IodineException.cs" />
-    <Compile Include="Runtime\IodineBuiltinType.cs" />
-    <Compile Include="Runtime\IodineBuiltinMethod.cs" />
     <Compile Include="Compiler\SyntaxAnalysis\UnaryOperation.cs" />
     <Compile Include="Compiler\ErrorSink.cs" />
     <Compile Include="Runtime\BuiltinMethodCallback.cs" />
@@ -223,6 +221,8 @@
     <Compile Include="Runtime\IodineEnum.cs" />
     <Compile Include="Compiler\Emit\IodineLabel.cs" />
     <Compile Include="Runtime\IodineBoundMethod.cs" />
+    <Compile Include="Compiler\Emit\ClassBuilder.cs" />
+    <Compile Include="Runtime\StandardTypes\IodineStackFrameWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

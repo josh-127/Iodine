@@ -28,38 +28,28 @@
 **/
 
 using System;
+using System.Collections.Generic;
+using Iodine.Runtime;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler
 {
-    public delegate IodineObject IodineGetter (VirtualMachine vm);
-    public delegate void IodineSetter (VirtualMachine vm, IodineObject value);
-
     /// <summary>
-    /// Class allowing the creation of Iodine properities in C#
+    /// Utility for creating Iodine Classes
     /// </summary>
-    public class InternalIodineProperty : IodineObject, IIodineProperty
+    public class ClassBuilder : IodineClass
     {
-        private IodineGetter getter;
-        private IodineSetter setter;
+        public readonly ClassBuilder ParentClass;
 
-        public InternalIodineProperty (IodineGetter getter, IodineSetter setter)
-            : base (IodineProperty.TypeDefinition)
+        public ClassBuilder (string name, IodineMethod initializer, IodineMethod constructor, ClassBuilder parent = null)
+            : base (name, initializer, constructor)
         {
-            this.getter = getter;
-            this.setter = setter;
-        }
-         
-        public IodineObject Set (VirtualMachine vm, IodineObject value)
-        {
-            setter (vm, value);
-            return null;
+            ParentClass = parent;
         }
 
-        public IodineObject Get (VirtualMachine vm)
+        public void AddInstanceMethod (IodineMethod method)
         {
-            return getter (vm);
+            SetAttribute (method.Name, method);
         }
-	
     }
 }
 

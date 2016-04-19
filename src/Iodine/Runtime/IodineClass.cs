@@ -37,25 +37,17 @@ namespace Iodine.Runtime
     /// </summary>
     public class IodineClass : IodineTypeDefinition
     {
-        public readonly IodineClass ParentClass;
-
         private bool initializerInvoked = false;
 
         public IodineMethod Initializer { internal set; get; }
 
         public IodineMethod Constructor { private set; get; }
 
-        public IodineClass (string name, IodineMethod initializer, IodineMethod constructor, IodineClass parent = null)
+        public IodineClass (string name, IodineMethod initializer, IodineMethod constructor)
             : base (name)
         {
             Constructor = constructor;
             Initializer = initializer;
-            ParentClass = parent;
-        }
-
-        public void AddInstanceMethod (IodineMethod method)
-        {
-            SetAttribute (method.Name, method);
         }
 
         public override IodineObject GetAttribute (VirtualMachine vm, string name)

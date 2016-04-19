@@ -47,6 +47,7 @@ namespace Iodine.Runtime
             // TODO: Make path accessible
             //SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
             SetAttribute ("exit", new BuiltinMethodCallback (Exit, this));
+            SetAttribute ("getFrame", new BuiltinMethodCallback (GetFrame, this));
             SetAttribute ("_warn", new BuiltinMethodCallback (Warn, this));
             SetAttribute ("_getWarnMask", new BuiltinMethodCallback (GetWarnMask, this));
             SetAttribute ("_setWarnMask", new BuiltinMethodCallback (SetWarnMask, this));
@@ -82,6 +83,38 @@ namespace Iodine.Runtime
 
             Environment.Exit ((int)exitCode.Value);
             return null;
+        }
+
+        /**
+         * Iodine Function: getFrame (n)
+         * Description: Gets the nth frame 
+         */
+        private IodineObject GetFrame (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineInteger index = args [0] as IodineInteger;
+
+            if (index == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
+
+            StackFrame top = vm.Top;
+            int i = 0;
+            while (top != null && i != index.Value) {
+                top = top.Parent;
+                i++;
+            }
+
+            if (top == null) {
+                return IodineNull.Instance;
+            }
+
+            return new IodineStackFrameWrapper (top);
         }
 
         /**

@@ -118,7 +118,7 @@ namespace Iodine.Compiler
             ));
         }
 
-        private void CreateContext (IodineClass clazz)
+        private void CreateContext (ClassBuilder clazz)
         {
             emitContexts.Push (new EmitContext (Context.SymbolTable,
                 Context.CurrentModule,
@@ -162,7 +162,7 @@ namespace Iodine.Compiler
 
         #region Declarations
 
-        public IodineClass CompileClass (ClassDeclaration classDecl)
+        public ClassBuilder CompileClass (ClassDeclaration classDecl)
         {
             MethodBuilder constructor = CompileGlobalMethod (classDecl.Constructor);
             if (classDecl.Constructor.Body.Statements.Count == 0) {
@@ -192,7 +192,7 @@ namespace Iodine.Compiler
                 false
             );
 
-            IodineClass clazz = new IodineClass (classDecl.Name, initializer, constructor, Context.CurrentClass);
+            ClassBuilder clazz = new ClassBuilder (classDecl.Name, initializer, constructor, Context.CurrentClass);
 
             CreateContext (clazz);
 
@@ -364,7 +364,7 @@ namespace Iodine.Compiler
 
         public override void Accept (ClassDeclaration classDecl)
         {
-            IodineClass clazz = CompileClass (classDecl);
+            ClassBuilder clazz = CompileClass (classDecl);
 		
             if (Context.SymbolTable.IsInGlobalScope) {
                 Context.CurrentModule.SetAttribute (classDecl.Name, clazz);
@@ -1369,7 +1369,7 @@ namespace Iodine.Compiler
 
         private bool ExistsInOuterClass (string name)
         {
-            IodineClass current = Context.CurrentClass;
+            ClassBuilder current = Context.CurrentClass;
 
             while (current != null) {
                 if (current.HasAttribute (name)) {
@@ -1387,7 +1387,7 @@ namespace Iodine.Compiler
 		 */
         private void LoadAssociatedClass (string item = null)
         {
-            IodineClass current = Context.CurrentClass;
+            ClassBuilder current = Context.CurrentClass;
             List<string> names = new List<string> ();
             bool reachedClass = (item == null);
 

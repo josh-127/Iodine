@@ -65,8 +65,7 @@ namespace Iodine.Runtime
                 return this.constantPool;
             }
         }
-
-
+            
         private IodineMethod initializer;
 
         private List<IodineObject> constantPool = new List<IodineObject> ();

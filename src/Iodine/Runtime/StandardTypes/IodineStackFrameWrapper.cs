@@ -27,70 +27,52 @@
 //   * DAMAGE.
 // /**
 using System;
-using System.Collections.Generic;
-using Iodine.Runtime;
 
-namespace Iodine.Compiler
+namespace Iodine.Runtime
 {
-    public class EmitContext
+    /// <summary>
+    /// Iodine stack frame wrapper.
+    /// </summary>
+    public class IodineStackFrameWrapper : IodineObject
     {
-        public SymbolTable SymbolTable {
-            private set;
-            get;
-        }
+        public readonly static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("StackFrame"); 
 
-        public MethodBuilder CurrentMethod {
-            private set;
-            get;
-        }
+        public readonly StackFrame StackFrame;
 
-        public ModuleBuilder CurrentModule {
-            private set;
-            get;
-        }
-
-        public ClassBuilder CurrentClass {
-            private set;
-            get;
-        }
-
-        public bool ShouldOptimize {
-            set;
-            get;
-        }
-
-        public readonly Stack<IodineLabel> BreakLabels = new Stack<IodineLabel> ();
-        public readonly Stack<IodineLabel> ContinueLabels = new Stack<IodineLabel> ();
-        public readonly int PatternTemporary = 0;
-
-        public readonly bool IsPatternExpression = false;
-        public readonly bool IsInClass = false;
-
-        public EmitContext (SymbolTable symbolTable,
-            ModuleBuilder module,
-            MethodBuilder method,
-            bool isInClass = false,
-            ClassBuilder clazz = null,
-            bool isPatternExpression = false,
-            int patternTempory = 0)
+        public IodineStackFrameWrapper (StackFrame frame)
+            : base (TypeDefinition)
         {
-            SymbolTable = symbolTable;
-            CurrentMethod = method;
-            CurrentModule = module;
-            CurrentClass = clazz;
-            IsInClass = isInClass;
-            IsPatternExpression = isPatternExpression;
-            PatternTemporary = patternTempory;
+            StackFrame = frame;
+            SetAttribute ("parent", new InternalIodineProperty (GetParentFrame, null));
+            SetAttribute ("printTrace", new BuiltinMethodCallback (PrintTrace, this));
         }
 
-        public void SetCurrentMethod (MethodBuilder method)
+        private IodineObject GetParentFrame (VirtualMachine vm)
         {
-            CurrentMethod = method;
+            StackFrame frame = StackFrame.Parent;
+
+            if (frame == null) {
+                return IodineNull.Instance;
+            }
+
+            return new IodineStackFrameWrapper (frame);
         }
 
-        public void SetCurrentModule (ModuleBuilder builder)
+        private IodineObject PrintTrace (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
-            CurrentModule = builder;
+            StackFrame top = StackFrame;
+            Console.WriteLine ("Stack trace:");
+            Console.WriteLine ("------------");
+            while (top != null) {
+                Console.WriteLine (" at {0} (Module: {1}, Line: {2})", top.Method.Name, top.Module.Name,
+                    top.Location != null ?
+                    top.Location.Line + 1 : 
+                    0
+                );
+
+                top = top.Parent;
+            }
+            return null;
         }
     }
 }
