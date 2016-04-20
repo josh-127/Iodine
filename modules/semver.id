@@ -202,7 +202,7 @@ class SemanticVersion {
         
         conds = List ();
         
-        foreach (v in reqVer) {
+        for (v in reqVer) {
             if (v.startsWith (">=")) {
                 conds.add (self.isGTE (v.substr (2)));
             }

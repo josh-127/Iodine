@@ -104,8 +104,7 @@ func disassemble (obj) {
 
     lastLine = -1;
     
-
-    foreach (ins in bytecode) {
+    for (ins in bytecode) {
 
         buffer = StringBuffer ();
         if (ins.line != lastLine) {

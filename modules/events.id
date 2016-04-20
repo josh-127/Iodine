@@ -68,7 +68,7 @@ class Event {
      * @param *args Arguments to pass on to each handler
      */
     func __invoke__ (self, *args) {
-        foreach (handler in self._handlers) {
+        for (handler in self._handlers) {
             handler (*args);
         }   
     }

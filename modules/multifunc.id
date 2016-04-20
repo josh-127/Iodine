@@ -73,7 +73,7 @@ class TypedMultiFunc {
                 return false;
             }
 
-            foreach (i in 0 .. len (args)) {
+            for (i in 0 .. len (args)) {
                 if (args [i] isnot self._types [i]) {
                     return false;
                 }
