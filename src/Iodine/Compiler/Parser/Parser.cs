@@ -37,33 +37,61 @@ namespace Iodine.Compiler
 {
     public sealed class Parser
     {
-        private TokenStream tokenStream;
+        private ErrorSink errorLog;
+        private List<Token> tokens = new List<Token> ();
 
-        public Parser (TokenStream tokenStream)
+        private int position = 0;
+
+        private Token Current {
+            get {
+                return PeekToken ();
+            }
+        }
+
+        private bool EndOfStream {
+            get {
+                return tokens.Count <= position;
+            }
+        }
+
+        private SourceLocation Location {
+            get {
+                if (PeekToken () != null)
+                    return PeekToken ().Location;
+                else if (tokens.Count == 0) {
+                    return new SourceLocation (0, 0, "");
+                }
+                return PeekToken (-1).Location;
+
+            }
+        }
+            
+        private Parser (ErrorSink log, IEnumerable<Token> tokens)
         {
-            this.tokenStream = tokenStream;
+            errorLog = log;
+            this.tokens.AddRange (tokens);
         }
 
         public static Parser CreateParser (IodineContext context, SourceUnit source)
         {
             Tokenizer tokenizer = new Tokenizer (context.ErrorLog, source.Text, source.Path ?? "");
-            return new Parser (tokenizer.Scan ());
+            return new Parser (context.ErrorLog, tokenizer.Scan ());
         }
 
         public CompilationUnit Parse ()
         {
             try {
-                CompilationUnit root = new CompilationUnit (tokenStream.Location);
-                while (!tokenStream.EndOfStream) {
-                    root.Add (ParseStatement (tokenStream));
+                CompilationUnit root = new CompilationUnit (Location);
+                while (!EndOfStream) {
+                    root.Add (ParseStatement ());
                 }
 
                 return root;
             } catch (EndOfFileException) {
-                throw new SyntaxException (tokenStream.ErrorLog);
+                throw new SyntaxException (errorLog);
             } finally {
-                if (tokenStream.ErrorLog.ErrorCount > 0) {
-                    throw new SyntaxException (tokenStream.ErrorLog);
+                if (errorLog.ErrorCount > 0) {
+                    throw new SyntaxException (errorLog);
                 }
             }
         }
@@ -71,30 +99,30 @@ namespace Iodine.Compiler
         #region Declarations
 
         /*
-		 * class <name> [: <baseclass> [, <interfaces>, ...]] {
-		 * 
-		 * }
-		 */
-        private static AstNode ParseClass (TokenStream stream)
+         * class <name> [: <baseclass> [, <interfaces>, ...]] {
+         * 
+         * }
+         */
+        private AstNode ParseClass ()
         {
-            stream.Expect (TokenClass.Keyword, "class");
-            string name = stream.Expect (TokenClass.Identifier).Value;
+            Expect (TokenClass.Keyword, "class");
+            string name = Expect (TokenClass.Identifier).Value;
 
             List<string> baseClass = new List<string> ();
-            if (stream.Accept (TokenClass.Colon)) {
+            if (Accept (TokenClass.Colon)) {
                 do {
-                    baseClass.Add (ParseClassName (stream));
-                } while (stream.Accept (TokenClass.Comma));
+                    baseClass.Add (ParseClassName ());
+                } while (Accept (TokenClass.Comma));
             }
 
-            ClassDeclaration clazz = new ClassDeclaration (stream.Location, name, baseClass);
+            ClassDeclaration clazz = new ClassDeclaration (Location, name, baseClass);
 
-            stream.Expect (TokenClass.OpenBrace);
+            Expect (TokenClass.OpenBrace);
 
-            while (!stream.Match (TokenClass.CloseBrace)) {
-                if (stream.Match (TokenClass.Keyword, "func") || stream.Match (TokenClass.Operator,
+            while (!Match (TokenClass.CloseBrace)) {
+                if (Match (TokenClass.Keyword, "func") || Match (TokenClass.Operator,
                         "@")) {
-                    AstNode node = ParseFunction (stream, false, clazz);
+                    AstNode node = ParseFunction (false, clazz);
                     if (node is FunctionDeclaration) {
                         FunctionDeclaration func = node as FunctionDeclaration;
                         if (func == null) {
@@ -110,36 +138,36 @@ namespace Iodine.Compiler
                         clazz.Add (list.Statements [1]);
                     }
                 } else {
-                    clazz.Add (ParseStatement (stream));
+                    clazz.Add (ParseStatement ());
                 }
             }
 
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
 
             return clazz;
         }
 
         /*
-		 * enum <name> {
-		 *	<item> [= <constant>],
-		 *	...
-		 * }
-		 * 
-		 */
-        private static AstNode ParseEnum (TokenStream stream)
+         * enum <name> {
+         *  <item> [= <constant>],
+         *  ...
+         * }
+         * 
+         */
+        private AstNode ParseEnum ()
         {
-            stream.Expect (TokenClass.Keyword, "enum");
-            string name = stream.Expect (TokenClass.Identifier).Value;
-            EnumDeclaration decl = new EnumDeclaration (stream.Location, name);
+            Expect (TokenClass.Keyword, "enum");
+            string name = Expect (TokenClass.Identifier).Value;
+            EnumDeclaration decl = new EnumDeclaration (Location, name);
 
-            stream.Expect (TokenClass.OpenBrace);
+            Expect (TokenClass.OpenBrace);
 
             int defaultVal = -1;
 
-            while (!stream.Match (TokenClass.CloseBrace)) {
-                string ident = stream.Expect (TokenClass.Identifier).Value;
-                if (stream.Accept (TokenClass.Operator, "=")) {
-                    string val = stream.Expect (TokenClass.IntLiteral).Value;
+            while (!Match (TokenClass.CloseBrace)) {
+                string ident = Expect (TokenClass.Identifier).Value;
+                if (Accept (TokenClass.Operator, "=")) {
+                    string val = Expect (TokenClass.IntLiteral).Value;
                     int numVal = 0;
                     if (val != "") {
                         numVal = Int32.Parse (val);
@@ -149,140 +177,138 @@ namespace Iodine.Compiler
                     decl.Items [ident] = defaultVal--;
                 }
 
-                if (!stream.Accept (TokenClass.Comma)) {
+                if (!Accept (TokenClass.Comma)) {
                     break;
                 }
             }
 
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
 
             return decl;
         }
 
         /*
-		 * interface <name> {
-		 *     ...
-		 * }
-		 */
-        private static AstNode ParseContract (TokenStream stream)
+         * interface <name> {
+         *     ...
+         * }
+         */
+        private AstNode ParseContract ()
         {
-            stream.Expect (TokenClass.Keyword, "contract");
-            string name = stream.Expect (TokenClass.Identifier).Value;
+            Expect (TokenClass.Keyword, "contract");
+            string name = Expect (TokenClass.Identifier).Value;
 
-            ContractDeclaration contract = new ContractDeclaration (stream.Location, name);
+            ContractDeclaration contract = new ContractDeclaration (Location, name);
 
-            stream.Expect (TokenClass.OpenBrace);
+            Expect (TokenClass.OpenBrace);
 
-            while (!stream.Match (TokenClass.CloseBrace)) {
-                if (stream.Match (TokenClass.Keyword, "func")) {
-                    FunctionDeclaration func = ParseFunction (stream, true) as FunctionDeclaration;
+            while (!Match (TokenClass.CloseBrace)) {
+                if (Match (TokenClass.Keyword, "func")) {
+                    FunctionDeclaration func = ParseFunction (true) as FunctionDeclaration;
                     contract.AddMember (func);
                 } else {
-                    stream.ErrorLog.Add (Errors.IllegalInterfaceDeclaration, stream.Location);
+                    errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
                 }
-                while (stream.Accept (TokenClass.SemiColon))
+                while (Accept (TokenClass.SemiColon))
                     ;
             }
 
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
 
             return contract;
         }
 
         /*
-		 * trait <name> {
-		 *     ...
-		 * }
-		 */
-        private static AstNode ParseTrait (TokenStream stream)
+         * trait <name> {
+         *     ...
+         * }
+         */
+        private AstNode ParseTrait ()
         {
-            stream.Expect (TokenClass.Keyword, "trait");
-            string name = stream.Expect (TokenClass.Identifier).Value;
+            Expect (TokenClass.Keyword, "trait");
+            string name = Expect (TokenClass.Identifier).Value;
 
-            TraitDeclaration trait = new TraitDeclaration (stream.Location, name);
+            TraitDeclaration trait = new TraitDeclaration (Location, name);
 
-            stream.Expect (TokenClass.OpenBrace);
+            Expect (TokenClass.OpenBrace);
 
-            while (!stream.Match (TokenClass.CloseBrace)) {
-                if (stream.Match (TokenClass.Keyword, "func")) {
-                    FunctionDeclaration func = ParseFunction (stream, true) as FunctionDeclaration;
+            while (!Match (TokenClass.CloseBrace)) {
+                if (Match (TokenClass.Keyword, "func")) {
+                    FunctionDeclaration func = ParseFunction (true) as FunctionDeclaration;
                     trait.AddMember (func);
                 } else {
-                    stream.ErrorLog.Add (Errors.IllegalInterfaceDeclaration, stream.Location);
+                    errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
                 }
-                while (stream.Accept (TokenClass.SemiColon))
+                while (Accept (TokenClass.SemiColon))
                     ;
             }
 
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
 
             return trait;
         }
 
-        private static string ParseClassName (TokenStream stream)
+        private string ParseClassName ()
         {
             StringBuilder ret = new StringBuilder ();
             do {
-                string attr = stream.Expect (TokenClass.Identifier).Value;
+                string attr = Expect (TokenClass.Identifier).Value;
                 ret.Append (attr);
-                if (stream.Match (TokenClass.Operator, ".")) {
+                if (Match (TokenClass.Operator, ".")) {
                     ret.Append ('.');
                 }
-            } while (stream.Accept (TokenClass.Operator, "."));
+            } while (Accept (TokenClass.Operator, "."));
             return ret.ToString ();
         }
 
 
-        private static AstNode ParseFunction (TokenStream stream, bool prototype = false,
-            ClassDeclaration cdecl = null)
+        private AstNode ParseFunction (bool prototype = false, ClassDeclaration cdecl = null)
         {
-            if (stream.Accept (TokenClass.Operator, "@")) {
+            if (Accept (TokenClass.Operator, "@")) {
                 /*
-				 * Function decorators in the form of 
-				 * @myDecorator
-				 * func foo () {
-				 * }
-				 * are merely syntatic sugar for
-				 * func foo () {
-				 * }
-				 * foo = myDecorator (foo)
-				 */
-                AstNode expr = ParseExpression (stream); // Decorator expression 
+                 * Function decorators in the form of 
+                 * @myDecorator
+                 * func foo () {
+                 * }
+                 * are merely syntatic sugar for
+                 * func foo () {
+                 * }
+                 * foo = myDecorator (foo)
+                 */
+                AstNode expr = ParseExpression (); // Decorator expression 
                 /* This is the original function which is to be decorated */
-                FunctionDeclaration idecl = ParseFunction (stream, prototype, cdecl) as FunctionDeclaration;
+                FunctionDeclaration idecl = ParseFunction (prototype, cdecl) as FunctionDeclaration;
                 /* We must construct an arglist which will be passed to the decorator */
-                ArgumentList args = new ArgumentList (stream.Location);
-                args.AddArgument (new NameExpression (stream.Location, idecl.Name));
+                ArgumentList args = new ArgumentList (Location);
+                args.AddArgument (new NameExpression (Location, idecl.Name));
                 /*
-				 * Since two values can not be returned, we must return a single node containing both
-				 * the function declaration and call to the decorator 
-				 */
-                StatementList nodes = new StatementList (stream.Location);
+                 * Since two values can not be returned, we must return a single node containing both
+                 * the function declaration and call to the decorator 
+                 */
+                StatementList nodes = new StatementList (Location);
                 nodes.AddStatement (idecl);
-                nodes.AddStatement (new Expression (stream.Location, new BinaryExpression (stream.Location,
+                nodes.AddStatement (new Expression (Location, new BinaryExpression (Location,
                     BinaryOperation.Assign,
-                    new NameExpression (stream.Location, idecl.Name),
-                    new CallExpression (stream.Location, expr, args)))
+                    new NameExpression (Location, idecl.Name),
+                    new CallExpression (Location, expr, args)))
                 );
                 return nodes;
             }
-            stream.Expect (TokenClass.Keyword, "func");
+            Expect (TokenClass.Keyword, "func");
 
             bool isInstanceMethod;
             bool isVariadic;
             bool hasKeywordArgs;
 
-            Token ident = stream.Expect (TokenClass.Identifier);
+            Token ident = Expect (TokenClass.Identifier);
 
             List<string> parameters = ParseFuncParameters (
-              stream,
               out isInstanceMethod,
               out isVariadic,
               out hasKeywordArgs
             );
 
-            FunctionDeclaration decl = new FunctionDeclaration (stream.Location, ident != null ?
-				ident.Value : "",
+            FunctionDeclaration decl = new FunctionDeclaration (Location, ident != null ?
+                ident.Value : "",
                 isInstanceMethod,
                 isVariadic,
                 hasKeywordArgs,
@@ -291,33 +317,33 @@ namespace Iodine.Compiler
 
             if (!prototype) {
 
-                if (stream.Accept (TokenClass.Operator, "=>")) {
-                    decl.AddStatement (new ReturnStatement (stream.Location, ParseExpression (stream)));
+                if (Accept (TokenClass.Operator, "=>")) {
+                    decl.AddStatement (new ReturnStatement (Location, ParseExpression ()));
                 } else {
-                    stream.Expect (TokenClass.OpenBrace);
-                    CodeBlock scope = new CodeBlock (stream.Location);
+                    Expect (TokenClass.OpenBrace);
+                    CodeBlock scope = new CodeBlock (Location);
 
-                    if (stream.Match (TokenClass.Keyword, "super")) {
-                        scope.Add (ParseSuperCall (stream, cdecl));
+                    if (Match (TokenClass.Keyword, "super")) {
+                        scope.Add (ParseSuperCall (cdecl));
                     } else if (cdecl != null && cdecl.Name == decl.Name && cdecl.Base.Count > 0) {
                         /*
-						 * If this is infact a constructor and no super call is provided, we must implicitly call super ()
-						 */
+                         * If this is infact a constructor and no super call is provided, we must implicitly call super ()
+                         */
                         scope.Add (new SuperCallStatement (decl.Location, cdecl, new ArgumentList (decl.Location)));
                     }
 
-                    while (!stream.Match (TokenClass.CloseBrace)) {
-                        scope.Add (ParseStatement (stream));
+                    while (!Match (TokenClass.CloseBrace)) {
+                        scope.Add (ParseStatement ());
                     }
 
                     decl.AddStatement (scope);
-                    stream.Expect (TokenClass.CloseBrace);
+                    Expect (TokenClass.CloseBrace);
                 }
             }
             return decl;
         }
 
-        private static List<string> ParseFuncParameters (TokenStream stream,
+        private List<string> ParseFuncParameters (
             out bool isInstanceMethod,
             out bool isVariadic,
             out bool hasKeywordArgs)
@@ -326,41 +352,41 @@ namespace Iodine.Compiler
             hasKeywordArgs = false;
             isInstanceMethod = false;
             List<string> ret = new List<string> ();
-            stream.Expect (TokenClass.OpenParan);
-            if (stream.Accept (TokenClass.Keyword, "self")) {
+            Expect (TokenClass.OpenParan);
+            if (Accept (TokenClass.Keyword, "self")) {
                 isInstanceMethod = true;
-                if (!stream.Accept (TokenClass.Comma)) {
-                    stream.Expect (TokenClass.CloseParan);
+                if (!Accept (TokenClass.Comma)) {
+                    Expect (TokenClass.CloseParan);
                     return ret;
                 }
             }
 
-            while (!stream.Match (TokenClass.CloseParan)) {
-                if (!hasKeywordArgs && stream.Accept (TokenClass.Operator, "*")) {
-                    if (stream.Accept (TokenClass.Operator, "*")) {
+            while (!Match (TokenClass.CloseParan)) {
+                if (!hasKeywordArgs && Accept (TokenClass.Operator, "*")) {
+                    if (Accept (TokenClass.Operator, "*")) {
                         hasKeywordArgs = true;
-                        Token ident = stream.Expect (TokenClass.Identifier);
+                        Token ident = Expect (TokenClass.Identifier);
                         ret.Add (ident.Value);
                     } else {
                         isVariadic = true;
-                        Token ident = stream.Expect (TokenClass.Identifier);
+                        Token ident = Expect (TokenClass.Identifier);
                         ret.Add (ident.Value);
                     }
                 } else {
                     if (hasKeywordArgs) {
-                        stream.ErrorLog.Add (Errors.ArgumentAfterKeywordArgs, stream.Location);
+                        errorLog.Add (Errors.ArgumentAfterKeywordArgs, Location);
                     }
                     if (isVariadic) {
-                        stream.ErrorLog.Add (Errors.ArgumentAfterVariadicArgs, stream.Location);
+                        errorLog.Add (Errors.ArgumentAfterVariadicArgs, Location);
                     }
-                    Token param = stream.Expect (TokenClass.Identifier);
+                    Token param = Expect (TokenClass.Identifier);
                     ret.Add (param.Value);
                 }
-                if (!stream.Accept (TokenClass.Comma)) {
+                if (!Accept (TokenClass.Comma)) {
                     break;
                 }
             }
-            stream.Expect (TokenClass.CloseParan);
+            Expect (TokenClass.CloseParan);
             return ret;
         }
 
@@ -369,54 +395,54 @@ namespace Iodine.Compiler
         #region Statements
 
         /*
-		 * use <module> |
-		 * use <class> from <module>
-		 */
-        private static UseStatement ParseUse (TokenStream stream)
+         * use <module> |
+         * use <class> from <module>
+         */
+        private UseStatement ParseUse ()
         {
-            stream.Expect (TokenClass.Keyword, "use");
-            bool relative = stream.Accept (TokenClass.Operator, ".");
+            Expect (TokenClass.Keyword, "use");
+            bool relative = Accept (TokenClass.Operator, ".");
             string ident = "";
 
-            if (!stream.Match (TokenClass.Operator, "*")) {
-                ident = ParseModuleName (stream);
+            if (!Match (TokenClass.Operator, "*")) {
+                ident = ParseModuleName ();
             }
 
-            if (stream.Match (TokenClass.Keyword, "from") || stream.Match (TokenClass.Comma) ||
-                stream.Match (TokenClass.Operator, "*")) {
+            if (Match (TokenClass.Keyword, "from") || Match (TokenClass.Comma) ||
+                Match (TokenClass.Operator, "*")) {
                 List<string> items = new List<string> ();
                 bool wildcard = false;
-                if (!stream.Accept (TokenClass.Operator, "*")) {
+                if (!Accept (TokenClass.Operator, "*")) {
                     items.Add (ident);
-                    stream.Accept (TokenClass.Comma);
-                    while (!stream.Match (TokenClass.Keyword, "from")) {
-                        Token item = stream.Expect (TokenClass.Identifier);
+                    Accept (TokenClass.Comma);
+                    while (!Match (TokenClass.Keyword, "from")) {
+                        Token item = Expect (TokenClass.Identifier);
                         items.Add (item.Value);
-                        if (!stream.Accept (TokenClass.Comma)) {
+                        if (!Accept (TokenClass.Comma)) {
                             break;
                         }
                     }
                 } else {
                     wildcard = true;
                 }
-                stream.Expect (TokenClass.Keyword, "from");
+                Expect (TokenClass.Keyword, "from");
 
-                relative = stream.Accept (TokenClass.Operator, ".");
-                string module = ParseModuleName (stream);
-                return new UseStatement (stream.Location, module, items, wildcard, relative);
+                relative = Accept (TokenClass.Operator, ".");
+                string module = ParseModuleName ();
+                return new UseStatement (Location, module, items, wildcard, relative);
             }
-            return new UseStatement (stream.Location, ident, relative);
+            return new UseStatement (Location, ident, relative);
         }
 
-        private static string ParseModuleName (TokenStream stream)
+        private string ParseModuleName ()
         {
-            Token initIdent = stream.Expect (TokenClass.Identifier);
+            Token initIdent = Expect (TokenClass.Identifier);
 
-            if (stream.Match (TokenClass.Operator, ".")) {
+            if (Match (TokenClass.Operator, ".")) {
                 StringBuilder accum = new StringBuilder ();
                 accum.Append (initIdent.Value);
-                while (stream.Accept (TokenClass.Operator, ".")) {
-                    Token ident = stream.Expect (TokenClass.Identifier);
+                while (Accept (TokenClass.Operator, ".")) {
+                    Token ident = Expect (TokenClass.Identifier);
                     accum.Append (Path.DirectorySeparatorChar);
                     accum.Append (ident.Value);
                 }
@@ -426,239 +452,239 @@ namespace Iodine.Compiler
             return initIdent.Value;
         }
 
-        private static AstNode ParseStatement (TokenStream stream)
+        private AstNode ParseStatement ()
         {
             try {
-                return DoParseStatement (stream);
+                return DoParseStatement ();
             } catch  (SyntaxException) {
-                stream.Synchronize ();
+                Synchronize ();
                 return null;
             }
         }
 
-        private static AstNode DoParseStatement (TokenStream stream)
+        private AstNode DoParseStatement ()
         {
-            if (stream.Match (TokenClass.Keyword)) {
-                switch (stream.Current.Value) {
+            if (Match (TokenClass.Keyword)) {
+                switch (Current.Value) {
                 case "class":
-                    return ParseClass (stream);
+                    return ParseClass ();
                 case "enum":
-                    return ParseEnum (stream);
+                    return ParseEnum ();
                 case "contract":
-                    return ParseContract (stream);
+                    return ParseContract ();
                 case "trait":
-                    return ParseTrait (stream);
+                    return ParseTrait ();
                 case "func":
-                    return ParseFunction (stream);
+                    return ParseFunction ();
                 case "if":
-                    return ParseIf (stream);
+                    return ParseIf ();
                 case "given":
-                    return ParseGiven (stream);
+                    return ParseGiven ();
                 case "for":
-                    return ParseFor (stream);
+                    return ParseFor ();
                 case "foreach":
-                    return ParseForeach (stream);
+                    return ParseForeach ();
                 case "with":
-                    return ParseWith (stream);
+                    return ParseWith ();
                 case "while":
-                    return ParseWhile (stream);
+                    return ParseWhile ();
                 case "do":
-                    return ParseDoWhile (stream);
+                    return ParseDoWhile ();
                 case "use":
-                    return ParseUse (stream);
+                    return ParseUse ();
                 case "return":
-                    return ParseReturn (stream);
+                    return ParseReturn ();
                 case "raise":
-                    return ParseRaise (stream);
+                    return ParseRaise ();
                 case "yield":
-                    return ParseYield (stream);
+                    return ParseYield ();
                 case "try":
-                    return ParseTryExcept (stream);
+                    return ParseTryExcept ();
                 case "var":
-                    return ParseVariableDeclaration (stream);
+                    return ParseVariableDeclaration ();
                 case "break":
-                    stream.Accept (TokenClass.Keyword);
-                    return new BreakStatement (stream.Location);
+                    Accept (TokenClass.Keyword);
+                    return new BreakStatement (Location);
                 case "continue":
-                    stream.Accept (TokenClass.Keyword);
-                    return new ContinueStatement (stream.Location);
+                    Accept (TokenClass.Keyword);
+                    return new ContinueStatement (Location);
                 case "super":
-                    stream.ErrorLog.Add (Errors.SuperCalledAfter, stream.Location);
-                    return ParseSuperCall (stream, new ClassDeclaration (stream.Location, "", null));
+                    errorLog.Add (Errors.SuperCalledAfter, Location);
+                    return ParseSuperCall (new ClassDeclaration (Location, "", null));
                 }
             }
-            if (stream.Match (TokenClass.OpenBrace)) {
-                return ParseBlock (stream);
-            } else if (stream.Accept (TokenClass.SemiColon)) {
-                return new Statement (stream.Location);
-            } else if (stream.Match (TokenClass.Operator, "@")) {
-                return ParseFunction (stream);
+            if (Match (TokenClass.OpenBrace)) {
+                return ParseBlock ();
+            } else if (Accept (TokenClass.SemiColon)) {
+                return new Statement (Location);
+            } else if (Match (TokenClass.Operator, "@")) {
+                return ParseFunction ();
             } else {
-                AstNode node = ParseExpression (stream);
+                AstNode node = ParseExpression ();
                 if (node == null) {
-                    stream.MakeError ();
+                    MakeError ();
                 }
-                return new Expression (stream.Location, node);
+                return new Expression (Location, node);
             }
         }
 
-        private static AstNode ParseBlock (TokenStream stream)
+        private AstNode ParseBlock ()
         {
-            CodeBlock ret = new CodeBlock (stream.Location);
-            stream.Expect (TokenClass.OpenBrace);
+            CodeBlock ret = new CodeBlock (Location);
+            Expect (TokenClass.OpenBrace);
 
-            while (!stream.Match (TokenClass.CloseBrace)) {
-                ret.Add (ParseStatement (stream));
+            while (!Match (TokenClass.CloseBrace)) {
+                ret.Add (ParseStatement ());
             }
 
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
             return ret;
         }
 
         /*
-		 * try {
-		 * 
-		 * } except [(<identifier> as <type>)] {
-		 * 
-		 * }
-		 */
-        private static AstNode ParseTryExcept (TokenStream stream)
+         * try {
+         * 
+         * } except [(<identifier> as <type>)] {
+         * 
+         * }
+         */
+        private AstNode ParseTryExcept ()
         {
             string exceptionVariable = null;
-            stream.Expect (TokenClass.Keyword, "try");
-            AstNode tryBody = ParseStatement (stream);
-            ArgumentList typeList = new ArgumentList (stream.Location);
-            stream.Expect (TokenClass.Keyword, "except");
-            if (stream.Accept (TokenClass.OpenParan)) {
-                Token ident = stream.Expect (TokenClass.Identifier);
-                if (stream.Accept (TokenClass.Operator, "as")) {
-                    typeList = ParseTypeList (stream);
+            Expect (TokenClass.Keyword, "try");
+            AstNode tryBody = ParseStatement ();
+            ArgumentList typeList = new ArgumentList (Location);
+            Expect (TokenClass.Keyword, "except");
+            if (Accept (TokenClass.OpenParan)) {
+                Token ident = Expect (TokenClass.Identifier);
+                if (Accept (TokenClass.Operator, "as")) {
+                    typeList = ParseTypeList ();
                 }
-                stream.Expect (TokenClass.CloseParan);
+                Expect (TokenClass.CloseParan);
                 exceptionVariable = ident.Value;
             }
-            AstNode exceptBody = ParseStatement (stream);
-            return new TryExceptStatement (stream.Location, exceptionVariable, tryBody, exceptBody, typeList);
+            AstNode exceptBody = ParseStatement ();
+            return new TryExceptStatement (Location, exceptionVariable, tryBody, exceptBody, typeList);
         }
 
-        private static ArgumentList ParseTypeList (TokenStream stream)
+        private ArgumentList ParseTypeList ()
         {
-            ArgumentList argList = new ArgumentList (stream.Location);
-            while (!stream.Match (TokenClass.CloseParan)) {
-                argList.AddArgument (ParseExpression (stream));
-                if (!stream.Accept (TokenClass.Comma)) {
+            ArgumentList argList = new ArgumentList (Location);
+            while (!Match (TokenClass.CloseParan)) {
+                argList.AddArgument (ParseExpression ());
+                if (!Accept (TokenClass.Comma)) {
                     break;
                 }
             }
             return argList;
         }
 
-        private static VariableDeclaration ParseVariableDeclaration (TokenStream stream)
+        private VariableDeclaration ParseVariableDeclaration ()
         {
-            stream.Expect (TokenClass.Keyword, "var");
-            Token ident = stream.Expect (TokenClass.Identifier);
+            Expect (TokenClass.Keyword, "var");
+            Token ident = Expect (TokenClass.Identifier);
             AstNode value = null;
-            if (stream.Accept (TokenClass.Operator, "=")) {
-                value = new BinaryExpression (stream.Location,
+            if (Accept (TokenClass.Operator, "=")) {
+                value = new BinaryExpression (Location,
                     BinaryOperation.Assign,
                     new NameExpression (ident.Location, ident.Value),
-                    ParseExpression (stream)
+                    ParseExpression ()
                 );
             }
-            return new VariableDeclaration (stream.Location, ident.Value, value);
+            return new VariableDeclaration (Location, ident.Value, value);
         }
 
         /*
-		 * given <condition> {
-		 *     when <expression>
-		 *         <statement>
-		 * }
-		 */
-        private static AstNode ParseGiven (TokenStream stream)
+         * given <condition> {
+         *     when <expression>
+         *         <statement>
+         * }
+         */
+        private AstNode ParseGiven ()
         {
-            SourceLocation location = stream.Location;
-            stream.Expect (TokenClass.Keyword, "given");
-            stream.Expect (TokenClass.OpenParan);
-            AstNode value = ParseExpression (stream);
-            stream.Expect (TokenClass.CloseParan);
-            stream.Expect (TokenClass.OpenBrace);
-            AstNode defaultBlock = new CompilationUnit (stream.Location);
+            SourceLocation location = Location;
+            Expect (TokenClass.Keyword, "given");
+            Expect (TokenClass.OpenParan);
+            AstNode value = ParseExpression ();
+            Expect (TokenClass.CloseParan);
+            Expect (TokenClass.OpenBrace);
+            AstNode defaultBlock = new CompilationUnit (Location);
             List<WhenStatement> whenStatements = new List<WhenStatement> ();
-            while (!stream.EndOfStream && !stream.Match (TokenClass.CloseBrace)) {
-                whenStatements.Add (ParseWhen (stream));
-                if (stream.Accept (TokenClass.Keyword, "default")) {
-                    defaultBlock = ParseStatement (stream); 
+            while (!EndOfStream && !Match (TokenClass.CloseBrace)) {
+                whenStatements.Add (ParseWhen ());
+                if (Accept (TokenClass.Keyword, "default")) {
+                    defaultBlock = ParseStatement (); 
                 }
             }
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
             return new GivenStatement (location, value, whenStatements, defaultBlock);
         }
 
         /*
-		 * given <condition> {
-		 *     when <expression>
-		 *         <statement>
-		 * }
-		 */
-        private static WhenStatement ParseWhen (TokenStream stream)
+         * given <condition> {
+         *     when <expression>
+         *         <statement>
+         * }
+         */
+        private WhenStatement ParseWhen ()
         {
-            SourceLocation location = stream.Location;
-            stream.Expect (TokenClass.Keyword, "when");
-            AstNode value = ParseExpression (stream);
-            AstNode body = ParseStatement (stream);
+            SourceLocation location = Location;
+            Expect (TokenClass.Keyword, "when");
+            AstNode value = ParseExpression ();
+            AstNode body = ParseStatement ();
 
             return new WhenStatement (location, value, body);
         }
 
         /*
-		 * if (<expression> 
-		 *     <statement>
-		 * [
-		 * else
-		 *     <statement>
-		 * ]
-		 */
-        private static AstNode ParseIf (TokenStream stream)
+         * if (<expression> 
+         *     <statement>
+         * [
+         * else
+         *     <statement>
+         * ]
+         */
+        private AstNode ParseIf ()
         {
-            SourceLocation location = stream.Location;
-            stream.Expect (TokenClass.Keyword, "if");
-            stream.Expect (TokenClass.OpenParan);
-            AstNode predicate = ParseExpression (stream);
-            stream.Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement (stream);
+            SourceLocation location = Location;
+            Expect (TokenClass.Keyword, "if");
+            Expect (TokenClass.OpenParan);
+            AstNode predicate = ParseExpression ();
+            Expect (TokenClass.CloseParan);
+            AstNode body = ParseStatement ();
             AstNode elseBody = null;
-            if (stream.Accept (TokenClass.Keyword, "else")) {
-                elseBody = ParseStatement (stream);
+            if (Accept (TokenClass.Keyword, "else")) {
+                elseBody = ParseStatement ();
             }
             return new IfStatement (location, predicate, body, elseBody);
         }
 
         /*
-		 * for (<initializer>; <condition>; <afterthought>)
-		 *     <statement>
+         * for (<initializer>; <condition>; <afterthought>)
+         *     <statement>
          * --- OR ---
          * for (<identifier> in <expression) 
          *     <statement>
-		 */
-        private static AstNode ParseFor (TokenStream stream)
+         */
+        private AstNode ParseFor ()
         {
-            SourceLocation location = stream.Location;
+            SourceLocation location = Location;
 
-            if (stream.PeekToken (3) != null &&
-                stream.PeekToken (3).Class == TokenClass.Keyword &&
-                stream.PeekToken (3).Value == "in") {
-                return ParseForeach (stream);
+            if (PeekToken (3) != null &&
+                PeekToken (3).Class == TokenClass.Keyword &&
+                PeekToken (3).Value == "in") {
+                return ParseForeach ();
             }
 
-            stream.Expect (TokenClass.Keyword, "for");
-            stream.Expect (TokenClass.OpenParan);
-            AstNode initializer = new Expression (stream.Location, ParseExpression (stream));
-            stream.Expect (TokenClass.SemiColon);
-            AstNode condition = ParseExpression (stream);
-            stream.Expect (TokenClass.SemiColon);
-            AstNode afterThought = new Expression (stream.Location, ParseExpression (stream));
-            stream.Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement (stream);
+            Expect (TokenClass.Keyword, "for");
+            Expect (TokenClass.OpenParan);
+            AstNode initializer = new Expression (Location, ParseExpression ());
+            Expect (TokenClass.SemiColon);
+            AstNode condition = ParseExpression ();
+            Expect (TokenClass.SemiColon);
+            AstNode afterThought = new Expression (Location, ParseExpression ());
+            Expect (TokenClass.CloseParan);
+            AstNode body = ParseStatement ();
 
             return new ForStatement (location, initializer, condition, afterThought, body);
         }
@@ -666,194 +692,194 @@ namespace Iodine.Compiler
         /*
          * NOTE: Usage of this foreach keyword is deprecated infavor of doing 
          * for (<identifier> in <expression>
-		 * foreach (<identifier> in <expression>)
-		 *     <statement>
-		 */
-        private static AstNode ParseForeach (TokenStream stream)
+         * foreach (<identifier> in <expression>)
+         *     <statement>
+         */
+        private AstNode ParseForeach ()
         {
-            if (stream.Match (TokenClass.Keyword, "for")) {
-                stream.Expect (TokenClass.Keyword, "for");
+            if (Match (TokenClass.Keyword, "for")) {
+                Expect (TokenClass.Keyword, "for");
             } else {
-                stream.Expect (TokenClass.Keyword, "foreach");
+                Expect (TokenClass.Keyword, "foreach");
             }
-            stream.Expect (TokenClass.OpenParan);
-            Token identifier = stream.Expect (TokenClass.Identifier);
-            stream.Expect (TokenClass.Keyword, "in");
-            AstNode expr = ParseExpression (stream);
-            stream.Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement (stream);
-            return new ForeachStatement (stream.Location, identifier.Value, expr, body);
+            Expect (TokenClass.OpenParan);
+            Token identifier = Expect (TokenClass.Identifier);
+            Expect (TokenClass.Keyword, "in");
+            AstNode expr = ParseExpression ();
+            Expect (TokenClass.CloseParan);
+            AstNode body = ParseStatement ();
+            return new ForeachStatement (Location, identifier.Value, expr, body);
         }
 
         /*
-		 * do 
-		 *     <statement>
-		 * while (<expression>)
-		 */
-        private static AstNode ParseDoWhile (TokenStream stream)
+         * do 
+         *     <statement>
+         * while (<expression>)
+         */
+        private AstNode ParseDoWhile ()
         {
-            SourceLocation location = stream.Location;
-            stream.Expect (TokenClass.Keyword, "do");
-            AstNode body = ParseStatement (stream);
-            stream.Expect (TokenClass.Keyword, "while");
-            stream.Expect (TokenClass.OpenParan);
-            AstNode condition = ParseExpression (stream);
-            stream.Expect (TokenClass.CloseParan);
+            SourceLocation location = Location;
+            Expect (TokenClass.Keyword, "do");
+            AstNode body = ParseStatement ();
+            Expect (TokenClass.Keyword, "while");
+            Expect (TokenClass.OpenParan);
+            AstNode condition = ParseExpression ();
+            Expect (TokenClass.CloseParan);
             return new DoStatement (location, condition, body);
         }
 
         /*
-		 * while (<expression>) 
-		 *     <statement>
-		 */
-        private static AstNode ParseWhile (TokenStream stream)
+         * while (<expression>) 
+         *     <statement>
+         */
+        private AstNode ParseWhile ()
         {
-            SourceLocation location = stream.Location;
-            stream.Expect (TokenClass.Keyword, "while");
-            stream.Expect (TokenClass.OpenParan);
-            AstNode condition = ParseExpression (stream);
-            stream.Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement (stream);
+            SourceLocation location = Location;
+            Expect (TokenClass.Keyword, "while");
+            Expect (TokenClass.OpenParan);
+            AstNode condition = ParseExpression ();
+            Expect (TokenClass.CloseParan);
+            AstNode body = ParseStatement ();
             return new WhileStatement (location, condition, body);
         }
 
         /*
-		 * with (<expression) 
-		 *      <statement>
-		 */
-        private static AstNode ParseWith (TokenStream stream)
+         * with (<expression) 
+         *      <statement>
+         */
+        private AstNode ParseWith ()
         {
-            SourceLocation location = stream.Location;
-            stream.Expect (TokenClass.Keyword, "with");
-            stream.Expect (TokenClass.OpenParan);
-            AstNode value = ParseExpression (stream);
-            stream.Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement (stream);
+            SourceLocation location = Location;
+            Expect (TokenClass.Keyword, "with");
+            Expect (TokenClass.OpenParan);
+            AstNode value = ParseExpression ();
+            Expect (TokenClass.CloseParan);
+            AstNode body = ParseStatement ();
             return new WithStatement (location, value, body);
         }
 
         /*
-		 * raise <expression>;
-		 */
-        private static AstNode ParseRaise (TokenStream stream)
+         * raise <expression>;
+         */
+        private AstNode ParseRaise ()
         {
-            stream.Expect (TokenClass.Keyword, "raise");
-            return new RaiseStatement (stream.Location, ParseExpression (stream));
+            Expect (TokenClass.Keyword, "raise");
+            return new RaiseStatement (Location, ParseExpression ());
         }
 
-        private static AstNode ParseReturn (TokenStream stream)
+        private AstNode ParseReturn ()
         {
-            stream.Expect (TokenClass.Keyword, "return");
-            if (stream.Accept (TokenClass.SemiColon)) {
-                return new ReturnStatement (stream.Location, new CodeBlock (stream.Location));
+            Expect (TokenClass.Keyword, "return");
+            if (Accept (TokenClass.SemiColon)) {
+                return new ReturnStatement (Location, new CodeBlock (Location));
             } else {
-                return new ReturnStatement (stream.Location, ParseExpression (stream));
+                return new ReturnStatement (Location, ParseExpression ());
             }
         }
 
-        private static AstNode ParseYield (TokenStream stream)
+        private AstNode ParseYield ()
         {
-            stream.Expect (TokenClass.Keyword, "yield");
-            return new YieldStatement (stream.Location, ParseExpression (stream));
+            Expect (TokenClass.Keyword, "yield");
+            return new YieldStatement (Location, ParseExpression ());
         }
 
         #endregion
 
         #region Expressions
 
-        private static AstNode ParseExpression (TokenStream stream)
+        protected AstNode ParseExpression ()
         {
-            return ParseAssign (stream);
+            return ParseAssign ();
         }
 
-        private static AstNode ParseAssign (TokenStream stream)
+        private AstNode ParseAssign ()
         {
-            AstNode expr = ParseTernaryIfElse (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseTernaryIfElse ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign,
-                        expr, ParseTernaryIfElse (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign,
+                        expr, ParseTernaryIfElse ());
                     continue;
                 case "+=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.Add, expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "-=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.Sub,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "*=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.Mul,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "/=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.Div,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "%=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.Mod,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "^=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.Xor,
                             expr, 
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "&=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.And,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "|=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.Or,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case "<<=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.LeftShift,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 case ">>=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Assign, expr,
-                        new BinaryExpression (stream.Location,
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Assign, expr,
+                        new BinaryExpression (Location,
                             BinaryOperation.RightShift,
                             expr,
-                            ParseTernaryIfElse (stream)));
+                            ParseTernaryIfElse ()));
                     continue;
                 default:
                     break;
@@ -863,36 +889,36 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private static AstNode ParseTernaryIfElse (TokenStream stream)
+        private AstNode ParseTernaryIfElse ()
         {
-            AstNode expr = ParseRange (stream);
-            while (stream.Accept (TokenClass.Keyword, "when")) {
-                AstNode condition = ParseExpression (stream);
-                stream.Expect (TokenClass.Keyword, "else");
-                AstNode altValue = ParseTernaryIfElse (stream);
+            AstNode expr = ParseRange ();
+            while (Accept (TokenClass.Keyword, "when")) {
+                AstNode condition = ParseExpression ();
+                Expect (TokenClass.Keyword, "else");
+                AstNode altValue = ParseTernaryIfElse ();
                 expr = new TernaryExpression (expr.Location, condition, expr, altValue);
             }
             return expr;
         }
 
-        private static AstNode ParseRange (TokenStream stream)
+        private AstNode ParseRange ()
         {
-            AstNode expr = ParseBoolOr (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseBoolOr ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "...":
-                    stream.Accept (TokenClass.Operator);
+                    Accept (TokenClass.Operator);
                     expr = new BinaryExpression (
-                        stream.Location,
+                        Location,
                         BinaryOperation.ClosedRange,
                         expr,
-                        ParseBoolOr (stream)
+                        ParseBoolOr ()
                     );
                     continue;
                 case "..":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.HalfRange, expr,
-                        ParseBoolOr (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.HalfRange, expr,
+                        ParseBoolOr ());
                     continue;
                 default:
                     break;
@@ -902,20 +928,20 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private static AstNode ParseBoolOr (TokenStream stream)
+        private AstNode ParseBoolOr ()
         {
-            AstNode expr = ParseBoolAnd (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseBoolAnd ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "||":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.BoolOr, expr,
-                        ParseBoolAnd (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.BoolOr, expr,
+                        ParseBoolAnd ());
                     continue;
                 case "??":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.NullCoalescing, expr,
-                        ParseBoolAnd (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.NullCoalescing, expr,
+                        ParseBoolAnd ());
                     continue;
                 default:
                     break;
@@ -925,57 +951,57 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private static AstNode ParseBoolAnd (TokenStream stream)
+        private AstNode ParseBoolAnd ()
         {
-            AstNode expr = ParseOr (stream);
-            while (stream.Accept (TokenClass.Operator, "&&")) {
-                expr = new BinaryExpression (stream.Location, BinaryOperation.BoolAnd, expr, ParseOr (stream));
+            AstNode expr = ParseOr ();
+            while (Accept (TokenClass.Operator, "&&")) {
+                expr = new BinaryExpression (Location, BinaryOperation.BoolAnd, expr, ParseOr ());
             }
             return expr;
         }
 
-        public static AstNode ParseOr (TokenStream stream)
+        private AstNode ParseOr ()
         {
-            AstNode expr = ParseXor (stream);
-            while (stream.Accept (TokenClass.Operator, "|")) {
-                expr = new BinaryExpression (stream.Location, BinaryOperation.Or, expr, ParseXor (stream));
+            AstNode expr = ParseXor ();
+            while (Accept (TokenClass.Operator, "|")) {
+                expr = new BinaryExpression (Location, BinaryOperation.Or, expr, ParseXor ());
             }
             return expr;
         }
 
-        public static AstNode ParseXor (TokenStream stream)
+        private AstNode ParseXor ()
         {
-            AstNode expr = ParseAnd (stream);
-            while (stream.Accept (TokenClass.Operator, "^")) {
-                expr = new BinaryExpression (stream.Location, BinaryOperation.Xor, expr, ParseAnd (stream));
+            AstNode expr = ParseAnd ();
+            while (Accept (TokenClass.Operator, "^")) {
+                expr = new BinaryExpression (Location, BinaryOperation.Xor, expr, ParseAnd ());
             }
             return expr;
         }
 
-        public static AstNode ParseAnd (TokenStream stream)
+        private AstNode ParseAnd ()
         {
-            AstNode expr = ParseEquals (stream);
-            while (stream.Accept (TokenClass.Operator, "&")) {
-                expr = new BinaryExpression (stream.Location, BinaryOperation.And, expr,
-                    ParseEquals (stream));
+            AstNode expr = ParseEquals ();
+            while (Accept (TokenClass.Operator, "&")) {
+                expr = new BinaryExpression (Location, BinaryOperation.And, expr,
+                    ParseEquals ());
             }
             return expr;
         }
 
-        public static AstNode ParseEquals (TokenStream stream)
+        private AstNode ParseEquals ()
         {
-            AstNode expr = ParseRelationalOp (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseRelationalOp ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "==":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Equals, expr,
-                        ParseRelationalOp (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Equals, expr,
+                        ParseRelationalOp ());
                     continue;
                 case "!=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.NotEquals, expr,
-                        ParseRelationalOp (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.NotEquals, expr,
+                        ParseRelationalOp ());
                     continue;
                 default:
                     break;
@@ -985,45 +1011,45 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        public static AstNode ParseRelationalOp (TokenStream stream)
+        private AstNode ParseRelationalOp ()
         {
-            AstNode expr = ParseBitshift (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseBitshift ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case ">":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.GreaterThan, expr,
-                        ParseBitshift (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.GreaterThan, expr,
+                        ParseBitshift ());
                     continue;
                 case "<":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.LessThan, expr,
-                        ParseBitshift (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.LessThan, expr,
+                        ParseBitshift ());
                     continue;
                 case ">=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.GreaterThanOrEqu, expr,
-                        ParseBitshift (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.GreaterThanOrEqu, expr,
+                        ParseBitshift ());
                     continue;
                 case "<=":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.LessThanOrEqu, expr,
-                        ParseBitshift (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.LessThanOrEqu, expr,
+                        ParseBitshift ());
                     continue;
                 case "is":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.InstanceOf, expr,
-                        ParseBitshift (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.InstanceOf, expr,
+                        ParseBitshift ());
                     continue;
                 case "isnot":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.NotInstanceOf, expr,
-                        ParseBitshift (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.NotInstanceOf, expr,
+                        ParseBitshift ());
                     continue;
                 case "as":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.DynamicCast, expr,
-                        ParseBitshift (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.DynamicCast, expr,
+                        ParseBitshift ());
                     continue;
                 default:
                     break;
@@ -1033,20 +1059,20 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        public static AstNode ParseBitshift (TokenStream stream)
+        private AstNode ParseBitshift ()
         {
-            AstNode expr = ParseAdditive (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseAdditive ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "<<":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.LeftShift, expr,
-                        ParseAdditive (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.LeftShift, expr,
+                        ParseAdditive ());
                     continue;
                 case ">>":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.RightShift, expr,
-                        ParseAdditive (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.RightShift, expr,
+                        ParseAdditive ());
                     continue;
                 default:
                     break;
@@ -1056,20 +1082,20 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        public static AstNode ParseAdditive (TokenStream stream)
+        private AstNode ParseAdditive ()
         {
-            AstNode expr = ParseMultiplicative (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseMultiplicative ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "+":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Add, expr,
-                        ParseMultiplicative (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Add, expr,
+                        ParseMultiplicative ());
                     continue;
                 case "-":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Sub, expr,
-                        ParseMultiplicative (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Sub, expr,
+                        ParseMultiplicative ());
                     continue;
                 default:
                     break;
@@ -1079,25 +1105,25 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        public static AstNode ParseMultiplicative (TokenStream stream)
+        private AstNode ParseMultiplicative ()
         {
-            AstNode expr = ParseUnary (stream);
-            while (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            AstNode expr = ParseUnary ();
+            while (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "*":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Mul, expr,
-                        ParseUnary (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Mul, expr,
+                        ParseUnary ());
                     continue;
                 case "/":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Div, expr,
-                        ParseUnary (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Div, expr,
+                        ParseUnary ());
                     continue;
                 case "%":
-                    stream.Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (stream.Location, BinaryOperation.Mod, expr,
-                        ParseUnary (stream));
+                    Accept (TokenClass.Operator);
+                    expr = new BinaryExpression (Location, BinaryOperation.Mod, expr,
+                        ParseUnary ());
                     continue;
                 default:
                     break;
@@ -1107,130 +1133,127 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        public static AstNode ParseUnary (TokenStream stream)
+        private AstNode ParseUnary ()
         {
-            if (stream.Match (TokenClass.Operator)) {
-                switch (stream.Current.Value) {
+            if (Match (TokenClass.Operator)) {
+                switch (Current.Value) {
                 case "-":
-                    stream.Accept (TokenClass.Operator);
-                    return new UnaryExpression (stream.Location, UnaryOperation.Negate, ParseUnary (
-                        stream));
+                    Accept (TokenClass.Operator);
+                    return new UnaryExpression (Location, UnaryOperation.Negate, ParseUnary ());
                 case "~":
-                    stream.Accept (TokenClass.Operator);
-                    return new UnaryExpression (stream.Location, UnaryOperation.Not, ParseUnary (
-                        stream));
+                    Accept (TokenClass.Operator);
+                    return new UnaryExpression (Location, UnaryOperation.Not, ParseUnary ());
                 case "!":
-                    stream.Accept (TokenClass.Operator);
-                    return new UnaryExpression (stream.Location, UnaryOperation.BoolNot, ParseUnary (
-                        stream));
+                    Accept (TokenClass.Operator);
+                    return new UnaryExpression (Location, UnaryOperation.BoolNot, ParseUnary ());
 
                 }
             }
-            return ParseCallSubscriptAccess (stream);
+            return ParseCallSubscriptAccess ();
         }
 
-        public static AstNode ParseCallSubscriptAccess (TokenStream stream)
+        private AstNode ParseCallSubscriptAccess ()
         {
-            return ParseCallSubscriptAccess (stream, ParseTerm (stream));
+            return ParseCallSubscriptAccess (ParseTerm ());
         }
 
-        public static AstNode ParseCallSubscriptAccess (TokenStream stream, AstNode lvalue)
+        private AstNode ParseCallSubscriptAccess (AstNode lvalue)
         {
-            if (stream.Match (TokenClass.OpenParan)) {
-                return ParseCallSubscriptAccess (stream, new CallExpression (stream.Location, lvalue,
-                    ParseArgumentList (stream)));
-            } else if (stream.Match (TokenClass.OpenBracket)) {
-                return ParseCallSubscriptAccess (stream, ParseIndexer (lvalue, stream));
-            } else if (stream.Match (TokenClass.Operator, ".")) {
-                return ParseCallSubscriptAccess (stream, ParseGet (lvalue, stream));
-            } else if (stream.Match (TokenClass.Operator, ".?")) {
-                return ParseCallSubscriptAccess (stream, ParseGetOrNull (lvalue, stream));
+            if (Match (TokenClass.OpenParan)) {
+                return ParseCallSubscriptAccess (new CallExpression (Location, lvalue,
+                    ParseArgumentList ()));
+            } else if (Match (TokenClass.OpenBracket)) {
+                return ParseCallSubscriptAccess (ParseIndexer (lvalue));
+            } else if (Match (TokenClass.Operator, ".")) {
+                return ParseCallSubscriptAccess (ParseGet (lvalue));
+            } else if (Match (TokenClass.Operator, ".?")) {
+                return ParseCallSubscriptAccess (ParseGetOrNull (lvalue));
             }
             return lvalue;
         }
 
-        public static AstNode ParseTerm (TokenStream stream)
+        private AstNode ParseTerm ()
         {
-            if (stream.Current == null) {
+            if (Current == null) {
                 return null;
             }
-            switch (stream.Current.Class) {
+            switch (Current.Class) {
             case TokenClass.Identifier:
-                return new NameExpression (stream.Location, stream.ReadToken ().Value);
+                return new NameExpression (Location, ReadToken ().Value);
             case TokenClass.IntLiteral:
                 long lval;
-                if (!long.TryParse (stream.Current.Value, out lval)) {
-                    stream.ErrorLog.Add (Errors.IntegerOverBounds, stream.Current.Location);
+                if (!long.TryParse (Current.Value, out lval)) {
+                    errorLog.Add (Errors.IntegerOverBounds, Current.Location);
                 }
-                stream.ReadToken ();
-                return new IntegerExpression (stream.Location, lval);
+                ReadToken ();
+                return new IntegerExpression (Location, lval);
             case TokenClass.FloatLiteral:
-                return new FloatExpression (stream.Location, double.Parse (
-                    stream.ReadToken ().Value));
+                return new FloatExpression (Location, double.Parse (
+                    ReadToken ().Value));
             case TokenClass.InterpolatedStringLiteral:
-                AstNode val = ParseString (stream.Location, stream, stream.ReadToken ().Value);
+                AstNode val = ParseString (Location, ReadToken ().Value);
                 if (val == null) {
-                    stream.MakeError ();
-                    return new StringExpression (stream.Location, "");
+                    MakeError ();
+                    return new StringExpression (Location, "");
                 }
                 return val;
             case TokenClass.StringLiteral:
-                return new StringExpression (stream.Location, stream.ReadToken ().Value);
+                return new StringExpression (Location, ReadToken ().Value);
             case TokenClass.BinaryStringLiteral:
-                return new StringExpression (stream.Location, stream.ReadToken ().Value, true);
+                return new StringExpression (Location, ReadToken ().Value, true);
             case TokenClass.OpenBracket:
-                return ParseList (stream);
+                return ParseList ();
             case TokenClass.OpenBrace:
-                return ParseHash (stream);
+                return ParseHash ();
             case TokenClass.OpenParan:
-                stream.ReadToken ();
-                AstNode expr = ParseExpression (stream);
-                if (stream.Accept (TokenClass.Comma)) {
-                    return ParseTuple (expr, stream);
+                ReadToken ();
+                AstNode expr = ParseExpression ();
+                if (Accept (TokenClass.Comma)) {
+                    return ParseTuple (expr);
                 }
-                stream.Expect (TokenClass.CloseParan);
+                Expect (TokenClass.CloseParan);
                 return expr;
             case TokenClass.Keyword:
-                switch (stream.Current.Value) {
+                switch (Current.Value) {
                 case "self":
-                    stream.ReadToken ();
-                    return new SelfExpression (stream.Location);
+                    ReadToken ();
+                    return new SelfExpression (Location);
                 case "true":
-                    stream.ReadToken ();
-                    return new TrueExpression (stream.Location);
+                    ReadToken ();
+                    return new TrueExpression (Location);
                 case "false":
-                    stream.ReadToken ();
-                    return new FalseExpression (stream.Location);
+                    ReadToken ();
+                    return new FalseExpression (Location);
                 case "null":
-                    stream.ReadToken ();
-                    return new NullExpression (stream.Location);
+                    ReadToken ();
+                    return new NullExpression (Location);
                 case "lambda":
-                    return ParseLambda (stream);
+                    return ParseLambda ();
                 case "match":
-                    return ParseMatch (stream);
+                    return ParseMatch ();
                 }
                 break;
             }
-		
-            stream.MakeError ();
+        
+            MakeError ();
             return null;
         }
 
-        private static AstNode ParseMatch (TokenStream stream)
+        private AstNode ParseMatch ()
         {
-            stream.Expect (TokenClass.Keyword, "match");
-            MatchExpression expr = new MatchExpression (stream.Location, ParseExpression (stream));
-            stream.Expect (TokenClass.OpenBrace);
-            while (stream.Accept (TokenClass.Keyword, "case")) {
+            Expect (TokenClass.Keyword, "match");
+            MatchExpression expr = new MatchExpression (Location, ParseExpression ());
+            Expect (TokenClass.OpenBrace);
+            while (Accept (TokenClass.Keyword, "case")) {
                 AstNode condition = null;
-                AstNode pattern = ParsePattern (stream);
-                if (stream.Accept (TokenClass.Keyword, "when")) {
-                    condition = ParseExpression (stream);
+                AstNode pattern = ParsePattern ();
+                if (Accept (TokenClass.Keyword, "when")) {
+                    condition = ParseExpression ();
                 }
                 AstNode value = null;
 
-                if (stream.Accept (TokenClass.Operator, "=>")) {
-                    value = ParseExpression (stream);
+                if (Accept (TokenClass.Operator, "=>")) {
+                    value = ParseExpression ();
                     expr.AddCase (new CaseExpression (
                         pattern.Location,
                         pattern,
@@ -1239,7 +1262,7 @@ namespace Iodine.Compiler
                         false
                     ));
                 } else {
-                    value = ParseStatement (stream);
+                    value = ParseStatement ();
                     expr.AddCase (new CaseExpression (
                         pattern.Location,
                         pattern, 
@@ -1249,137 +1272,136 @@ namespace Iodine.Compiler
                     ));
                 }
             }
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
             return expr;
         }
 
-        private static AstNode ParsePattern (TokenStream stream)
+        private AstNode ParsePattern ()
         {
-            return ParsePatternOr (stream);
+            return ParsePatternOr ();
         }
 
-        private static AstNode ParsePatternOr (TokenStream stream)
+        private AstNode ParsePatternOr ()
         {
-            AstNode expr = ParsePatternAnd (stream);
-            while (stream.Match (TokenClass.Operator, "|")) {
-                stream.Accept (TokenClass.Operator);
-                expr = new PatternExpression (stream.Location,
+            AstNode expr = ParsePatternAnd ();
+            while (Match (TokenClass.Operator, "|")) {
+                Accept (TokenClass.Operator);
+                expr = new PatternExpression (Location,
                     BinaryOperation.Or,
                     expr,
-                    ParsePatternAnd (stream)
+                    ParsePatternAnd ()
                 );
             }
             return expr;
         }
 
-        private static AstNode ParsePatternAnd (TokenStream stream)
+        private AstNode ParsePatternAnd ()
         {
-            AstNode expr = ParsePatternTerm (stream);
-            while (stream.Match (TokenClass.Operator, "&")) {
-                stream.Accept (TokenClass.Operator);
-                expr = new PatternExpression (stream.Location,
+            AstNode expr = ParsePatternTerm ();
+            while (Match (TokenClass.Operator, "&")) {
+                Accept (TokenClass.Operator);
+                expr = new PatternExpression (Location,
                     BinaryOperation.And,
                     expr,
-                    ParsePatternTerm (stream)
+                    ParsePatternTerm ()
                 );
             }
             return expr;
         }
 
-        private static AstNode ParsePatternTerm (TokenStream stream)
+        private AstNode ParsePatternTerm ()
         {
-            return ParseTerm (stream);
+            return ParseTerm ();
         }
 
-        private static AstNode ParseLambda (TokenStream stream)
+        private AstNode ParseLambda ()
         {
-            stream.Expect (TokenClass.Keyword, "lambda");
+            Expect (TokenClass.Keyword, "lambda");
             bool isInstanceMethod;
             bool isVariadic;
             bool acceptsKwargs;
 
             List<string> parameters = ParseFuncParameters (
-                stream,
                 out isInstanceMethod,
                 out isVariadic,
                 out acceptsKwargs
             );
 
             LambdaExpression decl = new LambdaExpression (
-                stream.Location, 
+                Location, 
                 isInstanceMethod, 
                 isVariadic, 
                 acceptsKwargs, 
                 parameters
             );
 
-            if (stream.Accept (TokenClass.Operator, "=>")) {
-                decl.AddStatement (new ReturnStatement (stream.Location, ParseExpression (stream)));
+            if (Accept (TokenClass.Operator, "=>")) {
+                decl.AddStatement (new ReturnStatement (Location, ParseExpression ()));
             } else {
-                decl.AddStatement (ParseStatement (stream));
+                decl.AddStatement (ParseStatement ());
             }
-			
+            
             return decl;
         }
 
-        private static AstNode ParseIndexer (AstNode lvalue, TokenStream stream)
+        private AstNode ParseIndexer (AstNode lvalue)
         {
-            stream.Expect (TokenClass.OpenBracket);
-            AstNode index = ParseExpression (stream);
-            stream.Expect (TokenClass.CloseBracket);
-            return new IndexerExpression (stream.Location, lvalue, index);
+            Expect (TokenClass.OpenBracket);
+            AstNode index = ParseExpression ();
+            Expect (TokenClass.CloseBracket);
+            return new IndexerExpression (Location, lvalue, index);
         }
 
-        private static AstNode ParseGet (AstNode lvalue, TokenStream stream)
+        private AstNode ParseGet (AstNode lvalue)
         {
-            stream.Expect (TokenClass.Operator, ".");
-            Token ident = stream.Expect (TokenClass.Identifier);
-            return new GetExpression (stream.Location, lvalue, ident.Value);
+            Expect (TokenClass.Operator, ".");
+            Token ident = Expect (TokenClass.Identifier);
+            return new GetExpression (Location, lvalue, ident.Value);
         }
 
-        private static AstNode ParseGetOrNull (AstNode lvalue, TokenStream stream)
+        private AstNode ParseGetOrNull (AstNode lvalue)
         {
-            stream.Expect (TokenClass.Operator, ".?");
-            Token ident = stream.Expect (TokenClass.Identifier);
-            return new GetDefaultExpression (stream.Location, lvalue, ident.Value);
+            Expect (TokenClass.Operator, ".?");
+            Token ident = Expect (TokenClass.Identifier);
+            return new GetDefaultExpression (Location, lvalue, ident.Value);
         }
 
-        public static SuperCallStatement ParseSuperCall (TokenStream stream, ClassDeclaration parent)
+        private SuperCallStatement ParseSuperCall (ClassDeclaration parent)
         {
-            SourceLocation location = stream.Location;
-            stream.Expect (TokenClass.Keyword, "super");
-            ArgumentList argumentList = ParseArgumentList (stream);
-            while (stream.Accept (TokenClass.SemiColon))
+            SourceLocation location = Location;
+            Expect (TokenClass.Keyword, "super");
+            ArgumentList argumentList = ParseArgumentList ();
+            while (Accept (TokenClass.SemiColon))
                 ;
             return new SuperCallStatement (location, parent, argumentList);
         }
 
-        private static ArgumentList ParseArgumentList (TokenStream stream)
+        private ArgumentList ParseArgumentList ()
         {
-            ArgumentList argList = new ArgumentList (stream.Location);
-            stream.Expect (TokenClass.OpenParan);
+            ArgumentList argList = new ArgumentList (Location);
+            Expect (TokenClass.OpenParan);
             KeywordArgumentList kwargs = null;
-            while (!stream.Match (TokenClass.CloseParan)) {
-                if (stream.Accept (TokenClass.Operator, "*")) {
+            while (!Match (TokenClass.CloseParan)) {
+                if (Accept (TokenClass.Operator, "*")) {
                     argList.Packed = true;
-                    argList.AddArgument (ParseExpression (stream));
+                    argList.AddArgument (ParseExpression ());
                     break;
                 }
-                AstNode arg = ParseExpression (stream);
-                if (stream.Accept (TokenClass.Colon)) {
+                AstNode arg = ParseExpression ();
+                if (Accept (TokenClass.Colon)) {
                     if (kwargs == null) {
                         kwargs = new KeywordArgumentList (arg.Location);
                     }
                     NameExpression ident = arg as NameExpression;
-                    AstNode val = ParseExpression (stream);
+                    AstNode val = ParseExpression ();
                     if (ident == null) {
-                        stream.ErrorLog.Add (Errors.ExpectedIdentifier, stream.Location);
+                        errorLog.Add (Errors.ExpectedIdentifier, Location);
                     } else {
                         kwargs.Add (ident.Value, val);
                     }
                 } else
                     argList.AddArgument (arg);
-                if (!stream.Accept (TokenClass.Comma)) {
+                if (!Accept (TokenClass.Comma)) {
                     break;
                 }
 
@@ -1387,74 +1409,74 @@ namespace Iodine.Compiler
             if (kwargs != null) {
                 argList.AddArgument (kwargs);
             }
-            stream.Expect (TokenClass.CloseParan);
+            Expect (TokenClass.CloseParan);
             return argList;
 
         }
 
-        private static AstNode ParseList (TokenStream stream)
+        private AstNode ParseList ()
         {
-            stream.Expect (TokenClass.OpenBracket);
-            ListExpression ret = new ListExpression (stream.Location);
-            while (!stream.Match (TokenClass.CloseBracket)) {
-                AstNode expr = ParseExpression (stream);
-                if (stream.Accept (TokenClass.Keyword, "for")) {
-                    string ident = stream.Expect (TokenClass.Identifier).Value;
-                    stream.Expect (TokenClass.Keyword, "in");
-                    AstNode iterator = ParseExpression (stream);
+            Expect (TokenClass.OpenBracket);
+            ListExpression ret = new ListExpression (Location);
+            while (!Match (TokenClass.CloseBracket)) {
+                AstNode expr = ParseExpression ();
+                if (Accept (TokenClass.Keyword, "for")) {
+                    string ident = Expect (TokenClass.Identifier).Value;
+                    Expect (TokenClass.Keyword, "in");
+                    AstNode iterator = ParseExpression ();
                     AstNode predicate = null;
-                    if (stream.Accept (TokenClass.Keyword, "when")) {
-                        predicate = ParseExpression (stream);
+                    if (Accept (TokenClass.Keyword, "when")) {
+                        predicate = ParseExpression ();
                     }
-                    stream.Expect (TokenClass.CloseBracket);
+                    Expect (TokenClass.CloseBracket);
                     return new ListCompExpression (expr.Location, expr, ident, iterator, predicate);
                 }
                 ret.AddItem (expr);
-                if (!stream.Accept (TokenClass.Comma)) {
+                if (!Accept (TokenClass.Comma)) {
                     break;
                 }
             }
-            stream.Expect (TokenClass.CloseBracket);
+            Expect (TokenClass.CloseBracket);
             return ret;
         }
 
-        private static AstNode ParseHash (TokenStream stream)
+        private AstNode ParseHash ()
         {
-            stream.Expect (TokenClass.OpenBrace);
-            HashExpression ret = new HashExpression (stream.Location);
-            while (!stream.Match (TokenClass.CloseBrace)) {
-                AstNode key = ParseExpression (stream);
-                stream.Expect (TokenClass.Colon);
-                AstNode value = ParseExpression (stream);
+            Expect (TokenClass.OpenBrace);
+            HashExpression ret = new HashExpression (Location);
+            while (!Match (TokenClass.CloseBrace)) {
+                AstNode key = ParseExpression ();
+                Expect (TokenClass.Colon);
+                AstNode value = ParseExpression ();
                 ret.AddItem (key, value);
-                if (!stream.Accept (TokenClass.Comma)) {
+                if (!Accept (TokenClass.Comma)) {
                     break;
                 }
             }
-            stream.Expect (TokenClass.CloseBrace);
+            Expect (TokenClass.CloseBrace);
             return ret;
         }
 
-        private static AstNode ParseTuple (AstNode firstVal, TokenStream stream)
+        private AstNode ParseTuple (AstNode firstVal)
         {
-            TupleExpression tuple = new TupleExpression (stream.Location);
+            TupleExpression tuple = new TupleExpression (Location);
             tuple.AddItem (firstVal);
-            while (!stream.Match (TokenClass.CloseParan)) {
-                tuple.AddItem (ParseExpression (stream));
-                if (!stream.Accept (TokenClass.Comma)) {
+            while (!Match (TokenClass.CloseParan)) {
+                tuple.AddItem (ParseExpression ());
+                if (!Accept (TokenClass.Comma)) {
                     break;
                 }
             }
-            stream.Expect (TokenClass.CloseParan);
+            Expect (TokenClass.CloseParan);
             return tuple;
         }
 
-        private static AstNode ParseString (SourceLocation loc, TokenStream stream, string str)
+        private AstNode ParseString (SourceLocation loc, string str)
         {
             /*
-			 * This might be a *bit* hacky, but, basically Iodine string interpolation
-			 * is *basically* just syntactic sugar for Str.format (...)
-			 */
+             * This might be a *bit* hacky, but, basically Iodine string interpolation
+             * is *basically* just syntactic sugar for Str.format (...)
+             */
             int pos = 0;
             string accum = "";
             List<string> subExpressions = new List<string> ();
@@ -1475,14 +1497,145 @@ namespace Iodine.Compiler
             StringExpression ret = new StringExpression (loc, accum);
 
             foreach (string name in subExpressions) {
-                Tokenizer tokenizer = new Tokenizer (stream.ErrorLog, name);
-                TokenStream subStream = tokenizer.Scan ();
-                var expression = ParseExpression (subStream);
+                Tokenizer tokenizer = new Tokenizer (errorLog, name);
+
+                Parser parser = new Parser (errorLog, tokenizer.Scan ());
+                var expression = parser.ParseExpression ();
                 ret.AddSubExpression (expression);
             }
             return ret;
         }
 
+        #endregion
+
+        #region Token Manipulation functions
+
+
+        public void Synchronize ()
+        {
+            while (Current != null) {
+                Token tok = ReadToken ();
+                switch (tok.Class) {
+                case TokenClass.CloseBracket:
+                case TokenClass.SemiColon:
+                    return;
+                }
+            }
+        }
+
+        public void AddToken (Token token)
+        {
+            tokens.Add (token);
+        }
+
+        public bool Match (TokenClass clazz)
+        {
+            return PeekToken () != null && PeekToken ().Class == clazz;
+        }
+
+        public bool Match (TokenClass clazz1, TokenClass clazz2)
+        {
+            return PeekToken () != null && PeekToken ().Class == clazz1 &&
+                PeekToken (1) != null &&
+                PeekToken (1).Class == clazz2;
+        }
+
+        public bool Match (TokenClass clazz, string val)
+        {
+            return PeekToken () != null &&
+                PeekToken ().Class == clazz &&
+                PeekToken ().Value == val;
+        }
+
+        public bool Accept (TokenClass clazz)
+        {
+            if (PeekToken () != null && PeekToken ().Class == clazz) {
+                ReadToken ();
+                return true;
+            }
+            return false;
+        }
+
+        public bool Accept (TokenClass clazz, ref Token token)
+        {
+            if (PeekToken () != null && PeekToken ().Class == clazz) {
+                token = ReadToken ();
+                return true;
+            }
+            return false;
+        }
+
+        public bool Accept (TokenClass clazz, string val)
+        {
+            if (PeekToken () != null && PeekToken ().Class == clazz && PeekToken ().Value == val) {
+                ReadToken ();
+                return true;
+            }
+            return false;
+        }
+
+        public Token Expect (TokenClass clazz)
+        {
+            Token ret = null;
+            if (Accept (clazz, ref ret)) {
+                return ret;
+            }
+            Token offender = ReadToken ();
+            if (offender != null) {
+                errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+                throw new SyntaxException (errorLog);
+            } else {
+                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+                throw new EndOfFileException ();
+            };
+        }
+
+        public Token Expect (TokenClass clazz, string val)
+        {
+            Token ret = PeekToken ();
+            if (Accept (clazz, val)) {
+                return ret;
+            }
+            Token offender = ReadToken ();
+            if (offender != null) {
+                errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+                throw new SyntaxException (errorLog);
+            } else {
+                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+                throw new EndOfFileException ();
+            }
+        }
+
+        public void MakeError ()
+        {
+            if (PeekToken () == null) {
+                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+                throw new EndOfFileException ();
+            }
+            errorLog.Add (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
+            throw new SyntaxException (errorLog);
+        }
+
+        private Token PeekToken ()
+        {
+            return PeekToken (0);
+        }
+
+        public Token PeekToken (int n)
+        {
+            if (position + n < tokens.Count) {
+                return tokens [position + n];
+            }
+            return null;
+        }
+
+        public Token ReadToken ()
+        {
+            if (position >= tokens.Count) {
+                return null;
+            }
+            return tokens [position++];
+        }
         #endregion
     }
 }

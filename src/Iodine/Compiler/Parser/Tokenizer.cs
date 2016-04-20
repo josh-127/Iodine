@@ -55,14 +55,14 @@ namespace Iodine.Compiler
             location = new SourceLocation (0, 0, file);
         }
 
-        public TokenStream Scan ()
+        public IEnumerable<Token> Scan ()
         {
-            TokenStream retStream = new TokenStream (errorLog);
+            List<Token> tokens = new List<Token> ();
             EatWhiteSpaces ();
             while (PeekChar () != -1) {
                 Token nextToken = NextToken ();
                 if (nextToken != null)
-                    retStream.AddToken (nextToken);
+                    tokens.Add (nextToken);
                 EatWhiteSpaces ();
             }
 
@@ -70,7 +70,7 @@ namespace Iodine.Compiler
                 throw new SyntaxException (errorLog);
             }
 
-            return retStream;
+            return tokens;
         }
 
         private Token NextToken ()
