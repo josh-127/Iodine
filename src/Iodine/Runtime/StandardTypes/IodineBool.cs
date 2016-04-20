@@ -63,6 +63,17 @@ namespace Iodine.Runtime
             this.Value = val;
         }
 
+        public override bool Equals (object obj)
+        {
+            IodineBool boolVal = obj as IodineBool;
+
+            if (boolVal != null) {
+                return boolVal.Value == Value;
+            }
+
+            return false;
+        }
+
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
             IodineBool boolVal = right as IodineBool;

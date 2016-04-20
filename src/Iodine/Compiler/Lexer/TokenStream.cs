@@ -150,8 +150,7 @@ namespace Iodine.Compiler
             } else {
                 errorLog.Add (Errors.UnexpectedEndOfFile, Location);
                 throw new EndOfFileException ();
-            }
-            return new Token (clazz, "", Location);
+            };
         }
 
         public Token Expect (TokenClass clazz, string val)
@@ -168,7 +167,6 @@ namespace Iodine.Compiler
                 errorLog.Add (Errors.UnexpectedEndOfFile, Location);
                 throw new EndOfFileException ();
             }
-            return new Token (clazz, "", Location);
         }
 
         public void MakeError ()
@@ -186,7 +184,7 @@ namespace Iodine.Compiler
             return PeekToken (0);
         }
 
-        private Token PeekToken (int n)
+        public Token PeekToken (int n)
         {
             if (Position + n < tokens.Count) {
                 return tokens [Position + n];

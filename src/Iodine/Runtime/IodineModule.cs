@@ -37,10 +37,6 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Runtime
 {
-    /*
-	 * This also needs to be rethought out.
-	 * TODO: Redesign this...
-	 */
     public abstract class IodineModule : IodineObject
     {
         private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");

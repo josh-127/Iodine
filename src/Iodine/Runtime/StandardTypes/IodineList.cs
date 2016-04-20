@@ -114,6 +114,23 @@ namespace Iodine.Runtime
         {
         }
 
+        public override bool Equals (IodineObject obj)
+        {
+            IodineList listVal = obj as IodineList;
+
+            if (listVal != null && listVal.Objects.Count == Objects.Count) {
+                for (int i = 0; i < Objects.Count; i++) {
+                    if (!Objects [i].Equals (listVal.Objects [i])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         public override IodineObject Len (VirtualMachine vm)
         {
             return new IodineInteger (Objects.Count);

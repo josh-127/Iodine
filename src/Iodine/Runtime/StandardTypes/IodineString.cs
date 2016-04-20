@@ -84,6 +84,17 @@ namespace Iodine.Runtime
             SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, this));
         }
 
+        public override bool Equals (IodineObject obj)
+        {
+            IodineString strVal = obj as IodineString;
+
+            if (strVal != null) {
+                return strVal.Value == Value;
+            }
+
+            return false;
+        }
+
         public override IodineObject Len (VirtualMachine vm)
         {
             return new IodineInteger (Value.Length);

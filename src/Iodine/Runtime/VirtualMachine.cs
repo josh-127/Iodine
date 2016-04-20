@@ -34,6 +34,7 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Iodine.Util;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime

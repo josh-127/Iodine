@@ -44,10 +44,21 @@ namespace Iodine.Runtime
         public readonly IodineTypeDefinition TypeDef;
         public readonly Dictionary<string, IodineObject> Attributes = new Dictionary<string, IodineObject> ();
 
+        /// <summary>
+        /// Gets or sets the base class
+        /// </summary>
+        /// <value>The base.</value>
         public IodineObject Base { set; get; }
 
+        /// <summary>
+        /// A list of contracts this object implements
+        /// </summary>
         public readonly List<IodineContract> Interfaces = new List<IodineContract> ();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Iodine.Runtime.IodineObject"/> class.
+        /// </summary>
+        /// <param name="typeDef">Type of this object.</param>
         public IodineObject (IodineTypeDefinition typeDef)
         {
             TypeDef = typeDef;
@@ -158,6 +169,11 @@ namespace Iodine.Runtime
             return null;
         }
 
+        public virtual bool Equals (IodineObject obj)
+        {
+            return Equals ((object)obj);
+        }
+      
         public IodineObject PerformBinaryOperation (VirtualMachine vm,
             BinaryOperation binop,
             IodineObject rvalue)

@@ -64,6 +64,23 @@ namespace Iodine.Runtime
             Objects = items;
         }
 
+        public override bool Equals (object obj)
+        {
+            IodineTuple tupleVal = obj as IodineTuple;
+
+            if (tupleVal != null && tupleVal.Objects.Length == Objects.Length) {
+                for (int i = 0; i < Objects.Length; i++) {
+                    if (!Objects [i].Equals (tupleVal.Objects [i])) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
         public override IodineObject Len (VirtualMachine vm)
         {
             return new IodineInteger (Objects.Length);

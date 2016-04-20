@@ -61,6 +61,17 @@ namespace Iodine.Runtime
             Value = val;
         }
 
+        public override bool Equals (object obj)
+        {
+            IodineFloat floatVal = obj as IodineFloat;
+
+            if (floatVal != null) {
+                return floatVal.Value == Value;
+            }
+
+            return false;
+        }
+
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
             double floatVal;

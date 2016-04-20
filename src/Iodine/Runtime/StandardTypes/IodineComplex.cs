@@ -91,6 +91,17 @@ namespace Iodine.Runtime
             Value = complex;
         }
 
+        public override bool Equals (object obj)
+        {
+            IodineComplex complexVal = obj as IodineComplex;
+
+            if (complexVal != null) {
+                return complexVal.Value == Value;
+            }
+
+            return false;
+        }
+
         public override IodineObject Add (VirtualMachine vm, IodineObject left)
         {
             Complex leftComplex;

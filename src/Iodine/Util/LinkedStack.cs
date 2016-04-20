@@ -29,7 +29,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Iodine.Runtime
+namespace Iodine.Util
 {
     /// <summary>
     /// My own stack implementation, I don't know how well this will perform however I wrote this

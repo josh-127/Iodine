@@ -45,6 +45,7 @@ namespace Iodine.Runtime
             StackFrame = frame;
             SetAttribute ("parent", new InternalIodineProperty (GetParentFrame, null));
             SetAttribute ("printTrace", new BuiltinMethodCallback (PrintTrace, this));
+            //SetAttribute ("name", frame.Method.Name);
         }
 
         private IodineObject GetParentFrame (VirtualMachine vm)

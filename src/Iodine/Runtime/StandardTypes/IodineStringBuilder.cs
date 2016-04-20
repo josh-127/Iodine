@@ -58,6 +58,17 @@ namespace Iodine.Runtime
             SetAttribute ("append", new BuiltinMethodCallback (Append, null));
         }
 
+        public override bool Equals (object obj)
+        {
+            IodineStringBuilder strVal = obj as IodineStringBuilder;
+
+            if (strVal != null) {
+                return strVal.ToString () == ToString ();
+            }
+
+            return false;
+        }
+
         public override string ToString ()
         {
             return buffer.ToString ();

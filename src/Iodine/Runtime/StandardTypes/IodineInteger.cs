@@ -84,6 +84,17 @@ namespace Iodine.Runtime
             Value = val;
         }
 
+        public override bool Equals (object obj)
+        {
+            IodineInteger intVal = obj as IodineInteger;
+
+            if (intVal != null) {
+                return intVal.Value == Value;
+            }
+
+            return false;
+        }
+
         #region Operator implementations
 
         public override IodineObject Add (VirtualMachine vm, IodineObject right)

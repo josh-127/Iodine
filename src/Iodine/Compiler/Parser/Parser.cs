@@ -636,10 +636,20 @@ namespace Iodine.Compiler
         /*
 		 * for (<initializer>; <condition>; <afterthought>)
 		 *     <statement>
+         * --- OR ---
+         * for (<identifier> in <expression) 
+         *     <statement>
 		 */
         private static AstNode ParseFor (TokenStream stream)
         {
             SourceLocation location = stream.Location;
+
+            if (stream.PeekToken (3) != null &&
+                stream.PeekToken (3).Class == TokenClass.Keyword &&
+                stream.PeekToken (3).Value == "in") {
+                return ParseForeach (stream);
+            }
+
             stream.Expect (TokenClass.Keyword, "for");
             stream.Expect (TokenClass.OpenParan);
             AstNode initializer = new Expression (stream.Location, ParseExpression (stream));
@@ -654,12 +664,18 @@ namespace Iodine.Compiler
         }
 
         /*
+         * NOTE: Usage of this foreach keyword is deprecated infavor of doing 
+         * for (<identifier> in <expression>
 		 * foreach (<identifier> in <expression>)
 		 *     <statement>
 		 */
         private static AstNode ParseForeach (TokenStream stream)
         {
-            stream.Expect (TokenClass.Keyword, "foreach");
+            if (stream.Match (TokenClass.Keyword, "for")) {
+                stream.Expect (TokenClass.Keyword, "for");
+            } else {
+                stream.Expect (TokenClass.Keyword, "foreach");
+            }
             stream.Expect (TokenClass.OpenParan);
             Token identifier = stream.Expect (TokenClass.Identifier);
             stream.Expect (TokenClass.Keyword, "in");
