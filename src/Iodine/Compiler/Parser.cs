@@ -253,10 +253,10 @@ namespace Iodine.Compiler
             do {
                 string attr = Expect (TokenClass.Identifier).Value;
                 ret.Append (attr);
-                if (Match (TokenClass.Operator, ".")) {
+                if (Match (TokenClass.MemberAccess)) {
                     ret.Append ('.');
                 }
-            } while (Accept (TokenClass.Operator, "."));
+            } while (Accept (TokenClass.MemberAccess));
             return ret.ToString ();
         }
 
@@ -401,7 +401,7 @@ namespace Iodine.Compiler
         private UseStatement ParseUse ()
         {
             Expect (TokenClass.Keyword, "use");
-            bool relative = Accept (TokenClass.Operator, ".");
+            bool relative = Accept (TokenClass.MemberAccess);
             string ident = "";
 
             if (!Match (TokenClass.Operator, "*")) {
@@ -427,7 +427,7 @@ namespace Iodine.Compiler
                 }
                 Expect (TokenClass.Keyword, "from");
 
-                relative = Accept (TokenClass.Operator, ".");
+                relative = Accept (TokenClass.MemberAccess);
                 string module = ParseModuleName ();
                 return new UseStatement (Location, module, items, wildcard, relative);
             }
@@ -438,10 +438,10 @@ namespace Iodine.Compiler
         {
             Token initIdent = Expect (TokenClass.Identifier);
 
-            if (Match (TokenClass.Operator, ".")) {
+            if (Match (TokenClass.MemberAccess)) {
                 StringBuilder accum = new StringBuilder ();
                 accum.Append (initIdent.Value);
-                while (Accept (TokenClass.Operator, ".")) {
+                while (Accept (TokenClass.MemberAccess)) {
                     Token ident = Expect (TokenClass.Identifier);
                     accum.Append (Path.DirectorySeparatorChar);
                     accum.Append (ident.Value);
