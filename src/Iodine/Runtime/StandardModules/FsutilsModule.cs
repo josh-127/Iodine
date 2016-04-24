@@ -43,9 +43,12 @@ namespace Iodine.Runtime
             SetAttribute ("copy", new BuiltinMethodCallback (Copy, this));
             SetAttribute ("copytree", new BuiltinMethodCallback (Exists, this));
             SetAttribute ("exists", new BuiltinMethodCallback (Exists, this));
-            SetAttribute ("isDir", new BuiltinMethodCallback (IsDir, this));
-            SetAttribute ("isFile", new BuiltinMethodCallback (IsFile, this));
-            ;
+            SetAttribute ("isdir", new BuiltinMethodCallback (IsDir, this));
+            SetAttribute ("isfile", new BuiltinMethodCallback (IsFile, this));
+            SetAttribute ("read", new BuiltinMethodCallback (Read, this));
+            SetAttribute ("readbytes", new BuiltinMethodCallback (ReadBytes, this));
+            SetAttribute ("readlines", new BuiltinMethodCallback (ReadLines, this));
+
             SetAttribute ("getCreationTime", new BuiltinMethodCallback (GetModifiedTime, this));
             SetAttribute ("getModifiedTime", new BuiltinMethodCallback (GetCreationTime, this));
         }
@@ -164,6 +167,90 @@ namespace Iodine.Runtime
             }
 
             return IodineBool.Create (File.Exists (path.Value));
+        }
+
+        /**
+         * Iodine Function: read (path)
+         * Description: Reads all text from a file
+         */
+        private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineString path = args [0] as IodineString;
+
+            if (path == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+
+            if (!File.Exists (path.Value)) {
+                vm.RaiseException (new IodineIOException ("File does not exist"));
+                return null;
+            }
+
+            return new IodineString (File.ReadAllText (path.Value));
+        }
+
+        /**
+         * Iodine Function: readbytes (path)
+         * Description: Reads all bytes from a file
+         */
+        private IodineObject ReadBytes (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineString path = args [0] as IodineString;
+
+            if (path == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+
+            if (!File.Exists (path.Value)) {
+                vm.RaiseException (new IodineIOException ("File does not exist"));
+                return null;
+            }
+
+            return new IodineBytes (File.ReadAllBytes (path.Value));
+        }
+
+        /**
+         * Iodine Function: readlines (path)
+         * Description: Reads all lines from a file
+         */
+        private IodineObject ReadLines (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineString path = args [0] as IodineString;
+
+            if (path == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+
+            if (!File.Exists (path.Value)) {
+                vm.RaiseException (new IodineIOException ("File does not exist"));
+                return null;
+            }
+
+            List<IodineObject> lines = new List<IodineObject> ();
+
+            foreach (string line in File.ReadAllLines (path.Value)) {
+                lines.Add (new IodineString (line));
+            }
+
+            return new IodineList (lines);
         }
 
         /**

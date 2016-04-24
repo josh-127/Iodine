@@ -100,7 +100,6 @@ namespace Iodine.Modules.Extras
                 SetAttribute ("acceptSsl", new BuiltinMethodCallback (acceptSsl, this));
                 SetAttribute ("listen", new BuiltinMethodCallback (listen, this));
                 SetAttribute ("receive", new BuiltinMethodCallback (receive, this));
-                SetAttribute ("receiveRaw", new BuiltinMethodCallback (receiveRaw, this));
                 SetAttribute ("getBytesAvailable", new BuiltinMethodCallback (getBytesAvailable, this));
                 SetAttribute ("getStream", new BuiltinMethodCallback (getStream, this));
                 SetAttribute ("close", new BuiltinMethodCallback (close, this));
@@ -298,15 +297,6 @@ namespace Iodine.Modules.Extras
                     }
                 }
                 return null;
-            }
-
-            private IodineByteArray receiveRaw (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                IodineInteger n = args [0] as IodineInteger;
-                byte[] buf = new byte[n.Value];
-                for (int i = 0; i < n.Value; i++)
-                    buf [i] = (byte)stream.ReadByte ();
-                return new IodineByteArray (buf);
             }
 
             private IodineObject receive (VirtualMachine vm, IodineObject self, IodineObject[] args)

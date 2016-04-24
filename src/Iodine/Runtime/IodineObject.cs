@@ -41,7 +41,6 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
 
-        public readonly IodineTypeDefinition TypeDef;
         public readonly Dictionary<string, IodineObject> Attributes = new Dictionary<string, IodineObject> ();
 
         /// <summary>
@@ -55,11 +54,25 @@ namespace Iodine.Runtime
         /// </summary>
         public readonly List<IodineContract> Interfaces = new List<IodineContract> ();
 
+        public IodineTypeDefinition TypeDef {
+            private set;
+            get;
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Iodine.Runtime.IodineObject"/> class.
         /// </summary>
         /// <param name="typeDef">Type of this object.</param>
         public IodineObject (IodineTypeDefinition typeDef)
+        {
+            SetType (typeDef);
+        }
+
+        protected IodineObject ()
+        {
+        }
+
+        public void SetType (IodineTypeDefinition typeDef)
         {
             TypeDef = typeDef;
             Attributes ["__type__"] = typeDef;
@@ -151,10 +164,22 @@ namespace Iodine.Runtime
             return ToString (vm);
         }
 
+        public virtual IodineObject Slice (VirtualMachine vm, IodineSlice slice)
+        {
+
+            if (Attributes.ContainsKey ("__getItem__")) {
+                return Attributes ["__getItem__"].Invoke (vm, new IodineObject[] { slice });
+            } else {
+
+                return null;
+            }
+
+        }
+
         public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
         {
-            if (Attributes.ContainsKey ("__setIndex__")) {
-                Attributes ["__setIndex__"].Invoke (vm, new IodineObject[] {
+            if (Attributes.ContainsKey ("__setItem__")) {
+                Attributes ["__setItem__"].Invoke (vm, new IodineObject[] {
                     key,
                     value
                 });
@@ -163,8 +188,8 @@ namespace Iodine.Runtime
 
         public virtual IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            if (Attributes.ContainsKey ("__getIndex__")) {
-                return Attributes ["__getIndex__"].Invoke (vm, new IodineObject[] { key });
+            if (Attributes.ContainsKey ("__getItem__")) {
+                return Attributes ["__getItem__"].Invoke (vm, new IodineObject[] { key });
             }
             return null;
         }
@@ -234,10 +259,10 @@ namespace Iodine.Runtime
                 methodName = "__negate__";
                 break;
             case UnaryOperation.Not:
-                methodName = "__not__";
+                methodName = "__invert__";
                 break;
             case UnaryOperation.BoolNot:
-                methodName = "__logicalNot__";
+                methodName = "__not__";
                 break;
             }
             if (HasAttribute (methodName)) {
@@ -439,16 +464,16 @@ namespace Iodine.Runtime
 
         public virtual IodineObject NotEquals (VirtualMachine vm, IodineObject left)
         {
-            if (Attributes.ContainsKey ("__notEquals__")) {
-                return GetAttribute (vm, "__notEquals__").Invoke (vm, new IodineObject[] { left });
+            if (Attributes.ContainsKey ("__notequals__")) {
+                return GetAttribute (vm, "__notequals__").Invoke (vm, new IodineObject[] { left });
             }
             return IodineBool.Create (this != left);
         }
 
         public virtual IodineObject RightShift (VirtualMachine vm, IodineObject left)
         {
-            if (Attributes.ContainsKey ("__rightShift__")) {
-                return GetAttribute (vm, "__rightShift__").Invoke (vm, new IodineObject[] { left });
+            if (Attributes.ContainsKey ("__rightshift__")) {
+                return GetAttribute (vm, "__rightshift__").Invoke (vm, new IodineObject[] { left });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -458,8 +483,8 @@ namespace Iodine.Runtime
 
         public virtual IodineObject LeftShift (VirtualMachine vm, IodineObject left)
         {
-            if (Attributes.ContainsKey ("__leftShift__")) {
-                return GetAttribute (vm, "__leftShift__").Invoke (vm, new IodineObject[] { left });
+            if (Attributes.ContainsKey ("__leftshit__")) {
+                return GetAttribute (vm, "__leftshit__").Invoke (vm, new IodineObject[] { left });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -469,8 +494,8 @@ namespace Iodine.Runtime
 
         public virtual IodineObject LessThan (VirtualMachine vm, IodineObject left)
         {
-            if (Attributes.ContainsKey ("__lessThan__")) {
-                return GetAttribute (vm, "__lessThan__").Invoke (vm, new IodineObject[] { left });
+            if (Attributes.ContainsKey ("__lt__")) {
+                return GetAttribute (vm, "__lt__").Invoke (vm, new IodineObject[] { left });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -480,8 +505,8 @@ namespace Iodine.Runtime
 
         public virtual IodineObject GreaterThan (VirtualMachine vm, IodineObject left)
         {
-            if (Attributes.ContainsKey ("__greaterThan__")) {
-                return GetAttribute (vm, "__greaterThan__").Invoke (vm, new IodineObject[] { left });
+            if (Attributes.ContainsKey ("__gt__")) {
+                return GetAttribute (vm, "__gt__").Invoke (vm, new IodineObject[] { left });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -492,8 +517,8 @@ namespace Iodine.Runtime
 
         public virtual IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject left)
         {
-            if (Attributes.ContainsKey ("__lessThanOrEqu__")) {
-                return GetAttribute (vm, "__lessThanOrEqu__").Invoke (vm, new IodineObject[] { left });
+            if (Attributes.ContainsKey ("__lte__")) {
+                return GetAttribute (vm, "__lte__").Invoke (vm, new IodineObject[] { left });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -503,8 +528,8 @@ namespace Iodine.Runtime
 
         public virtual IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject left)
         {
-            if (Attributes.ContainsKey ("__greaterThanOrEqu__")) {
-                return GetAttribute (vm, "__greaterThanOrEqu__").Invoke (vm, new IodineObject[] { left });
+            if (Attributes.ContainsKey ("__gte__")) {
+                return GetAttribute (vm, "__gte__").Invoke (vm, new IodineObject[] { left });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")

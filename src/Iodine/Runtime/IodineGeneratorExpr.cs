@@ -29,32 +29,58 @@
 
 using System;
 
-namespace Iodine.Compiler.Ast
+namespace Iodine.Runtime
 {
-    public class GetDefaultExpression : AstNode
+    public class IodineGeneratorExpr : IodineObject
     {
-        public AstNode Target {
-            private set;
-            get;
-        }
+        public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("GenExpr");
 
-        public readonly string Field;
+        public readonly IodineMethod Target;
+        private StackFrame frame;
+        private IodineObject value;
 
-        public GetDefaultExpression (SourceLocation location, AstNode target, string field)
-            : base (location)
+        public IodineGeneratorExpr (StackFrame frame, IodineMethod target)
+            : base (TypeDefinition)
         {
+            this.frame = frame.Duplicate (frame);
             Target = target;
-            Field = field;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override bool IsCallable ()
         {
-            visitor.Accept (this);
+            return true;
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override IodineObject GetIterator (VirtualMachine vm)
         {
-            Target.Visit (visitor);
+            return this;
+        }
+
+        public override bool IterMoveNext (VirtualMachine vm)
+        {
+            if (frame.AbortExecution) {
+                return false;
+            }
+
+            value = vm.InvokeMethod (Target, frame, frame.Self, new IodineObject[] {});
+
+            return frame.Yielded;
+        }
+
+        public override IodineObject IterGetCurrent (VirtualMachine vm)
+        {
+            frame.Yielded = false;
+            return value;
+        }
+
+        public override void IterReset (VirtualMachine vm)
+        {
+            
+        }
+
+        public override string ToString ()
+        {
+            return string.Format ("<GenExpr>");
         }
     }
 }

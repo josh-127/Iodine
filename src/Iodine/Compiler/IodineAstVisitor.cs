@@ -78,11 +78,11 @@ namespace Iodine.Compiler
         {
         }
 
-        public virtual void Accept (GetExpression getAttr)
+        public virtual void Accept (MemberExpression getAttr)
         {
         }
 
-        public virtual void Accept (GetDefaultExpression getAttr)
+        public virtual void Accept (MemberDefaultExpression getAttr)
         {
         }
 
@@ -155,6 +155,10 @@ namespace Iodine.Compiler
         }
 
         public virtual void Accept (IndexerExpression indexer)
+        {
+        }
+
+        public virtual void Accept (SliceExpression slice)
         {
         }
 
@@ -242,7 +246,15 @@ namespace Iodine.Compiler
         {
         }
 
+        public virtual void Accept (GeneratorExpression genExpr)
+        {
+        }
+
         public virtual void Accept (TernaryExpression ifExpr)
+        {
+        }
+
+        public virtual void Accept (AssignStatement assign)
         {
         }
 

@@ -99,7 +99,6 @@ namespace Iodine.Compiler
             case '-':
             case '*':
             case '/':
-            case '.':
             case '=':
             case '<':
             case '>':
@@ -111,6 +110,7 @@ namespace Iodine.Compiler
             case '%':
             case '@':
             case '?':
+            case '.':
                 return ReadOperator ();
             case '{':
                 ReadChar ();
@@ -182,7 +182,7 @@ namespace Iodine.Compiler
                 accum.Append ((char)ReadChar ());
             }
 
-            return new Token (TokenClass.IntLiteral, Int32.Parse (accum.ToString (),
+            return new Token (TokenClass.IntLiteral, Int64.Parse (accum.ToString (),
                 System.Globalization.NumberStyles.HexNumber).ToString (), location);
         }
 
@@ -357,6 +357,8 @@ namespace Iodine.Compiler
             }
 
             switch (nextTwoChars) {
+            case ".?":
+                return new Token (TokenClass.MemberDefaultAccess, ".?", location);
             case ">>":
             case "<<":
             case "&&":
@@ -376,13 +378,17 @@ namespace Iodine.Compiler
             case "|=":
             case "??":
             case "..":
-            case ".?":
                 ReadChar ();
                 return new Token (TokenClass.Operator, nextTwoChars, location);
             case "/*":
                 ReadChar ();
                 ReadLineComment ();
                 return null;
+            }
+
+            switch (op) {
+            case '.':
+                return new Token (TokenClass.MemberAccess, ".", location);
             default:
                 return new Token (TokenClass.Operator, op.ToString (), location);
             }

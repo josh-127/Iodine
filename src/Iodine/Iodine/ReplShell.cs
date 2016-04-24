@@ -59,7 +59,7 @@ namespace Iodine
                         var result = unit.Compile (context);
                         IodineObject ret = context.Invoke (result, new IodineObject[] { });
                         if (!(ret is IodineNull)) {
-                            Console.WriteLine (ret);
+                            Console.WriteLine (ret.Represent (context.VirtualMachine));
                         }
                     }
                 } catch (UnhandledIodineExceptionException ex) {

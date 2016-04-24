@@ -116,7 +116,7 @@ func disassemble (obj) {
         buffer.append (_getMnemonic (ins.opcode, ins.immediate).padRight (30));
         
         buffer.append (ins.immediate);
-        if (ins.immediateRef isnot null.__type__) {
+        if (ins.immediateRef isnot Null) {
             buffer.append (" (#{Str (ins.immediateRef)})");
         }
         print (buffer);

@@ -37,6 +37,10 @@ namespace Iodine.Runtime
     // TODO: Implement binary mode
     public class IodineStream : IodineObject
     {
+        public const int SEEK_SET = 0;
+        public const int SEEK_CUR = 1;
+        public const int SEEK_END = 2;
+
         private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("File");
 
         public bool Closed { set; get; }
@@ -49,20 +53,20 @@ namespace Iodine.Runtime
 
         public bool BinaryMode { private set; get; }
 
-        public IodineStream (Stream file, bool canWrite, bool canRead)
+        public IodineStream (Stream file, bool canWrite, bool canRead, bool binary = false)
             : base (TypeDefinition)
         {
             File = file;
             CanRead = canRead;
             CanWrite = canWrite;
             SetAttribute ("write", new BuiltinMethodCallback (Write, this));
+            SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, this));
             SetAttribute ("read", new BuiltinMethodCallback (Read, this));
             SetAttribute ("readln", new BuiltinMethodCallback (Readln, this));
             SetAttribute ("close", new BuiltinMethodCallback (Close, this));
             SetAttribute ("flush", new BuiltinMethodCallback (Flush, this));
-            SetAttribute ("readAllText", new BuiltinMethodCallback (ReadAll, this));
+            SetAttribute ("readAll", new BuiltinMethodCallback (ReadAll, this));
         }
-
 
         public override IodineObject Len (VirtualMachine vm)
         {
@@ -94,22 +98,56 @@ namespace Iodine.Runtime
             }
 
             foreach (IodineObject obj in args) {
-                if (obj is IodineString) {
-                    Write (obj.ToString ());
-                } else if (obj is IodineBytes) {
-                    IodineBytes arr = obj as IodineBytes;
-                    File.Write (arr.Value, 0, arr.Value.Length);
-                } else if (obj is IodineInteger) {
-                    IodineInteger intVal = obj as IodineInteger;
-                    Write ((byte)intVal.Value);
-                } else if (obj is IodineByteArray) {
-                    IodineByteArray arr = obj as IodineByteArray;
-                    File.Write (arr.Array, 0, arr.Array.Length);
-                } else {
-                    vm.RaiseException (new IodineTypeException (""));
+                InternalWrite (obj);
+            }
+            return null;
+        }
+
+        /**
+         * Iodine Method: Stream.writeln (self, *args);
+         * Description: Writes each item in *args to the underlying stream
+         */
+        private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (Closed) { 
+                vm.RaiseException (new IodineIOException ("Stream has been closed!"));
+                return null;
+            }
+
+            if (!CanWrite) {
+                vm.RaiseException (new IodineIOException ("Can not write to stream!"));
+                return null;
+            }
+
+            foreach (IodineObject obj in args) {
+                if (!InternalWrite (obj)) {
+                    vm.RaiseException (new IodineNotSupportedException (
+                        "The requested type is not supported"
+                    ));
+                    return null;
+                }
+                foreach (byte b in Environment.NewLine) {
+                    File.WriteByte (b);
                 }
             }
             return null;
+        }
+
+        private bool InternalWrite (IodineObject obj)
+        {
+            if (obj is IodineString) {
+                Write (obj.ToString ());
+            } else if (obj is IodineBytes) {
+                IodineBytes arr = obj as IodineBytes;
+                File.Write (arr.Value, 0, arr.Value.Length);
+            } else if (obj is IodineInteger) {
+                IodineInteger intVal = obj as IodineInteger;
+                Write ((byte)intVal.Value);
+            } else {
+                return false;
+            }
+
+            return true;
         }
 
         /**
@@ -145,6 +183,17 @@ namespace Iodine.Runtime
             }
         }
 
+        private IodineObject InternalRead (int n)
+        {
+            byte[] buf = new byte[n];
+            File.Read (buf, 0, buf.Length);
+
+            if (BinaryMode) {
+                return new IodineBytes (buf);
+            }
+            return new IodineString (Encoding.UTF8.GetString (buf));
+        }
+
         private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] argss)
         {
             if (Closed) { 
@@ -157,7 +206,21 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            return new IodineString (ReadLine ());
+            return InternalReadln ();
+        }
+
+        private IodineObject InternalReadln ()
+        {
+            List<byte> bytes = new List<byte> ();
+            int ch = 0;
+            while ((ch = File.ReadByte ()) != '\n' && ch != -1) {
+                bytes.Add ((byte)ch);
+            }
+
+            if (BinaryMode) {
+                return new IodineBytes (bytes.ToArray ());
+            }
+            return new IodineString (Encoding.UTF8.GetString (bytes.ToArray ()));
         }
 
         /**
@@ -171,6 +234,60 @@ namespace Iodine.Runtime
                 return null;
             }
             return new IodineInteger (File.Position);
+        }
+
+        private IodineObject Seek (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            if (Closed) {
+                vm.RaiseException (new IodineException ("The underlying stream has been closed!"));
+                return null;
+            }
+
+            if (!File.CanSeek) {
+                vm.RaiseException (new IodineIOException ("The stream does not support seek"));
+                return null;
+            }
+
+            IodineInteger offsetObj = args [0] as IodineInteger;
+            int whence = SEEK_SET;
+            long offset = offsetObj.Value;
+
+            if (offsetObj == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
+
+            if (args.Length > 1) {
+                IodineInteger whenceObj = args [1] as IodineInteger;
+
+                if (whenceObj == null) {
+                    vm.RaiseException (new IodineTypeException ("Int"));
+                    return null;
+                }
+
+                whence = (int)whenceObj.Value;
+            }
+
+            switch (whence) {
+            case SEEK_SET:
+                File.Position = offset;
+                break;
+            case SEEK_CUR:
+                File.Seek (offset, SeekOrigin.Current);
+                break;
+            case SEEK_END:
+                File.Seek (offset, SeekOrigin.End);
+                break;
+            default:
+                vm.RaiseException (new IodineNotSupportedException ());
+                return null;
+            }
+            return null;
         }
 
         /**
@@ -213,12 +330,16 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            StringBuilder builder = new StringBuilder ();
+            List<byte> bytes = new List<byte> ();
             int ch = 0;
             while ((ch = File.ReadByte ()) != -1) {
-                builder.Append ((char)ch);
+                bytes.Add ((byte)ch);
             }
-            return new IodineString (builder.ToString ());
+
+            if (BinaryMode) {
+                return new IodineBytes (bytes.ToArray ());
+            }
+            return new IodineString (Encoding.UTF8.GetString (bytes.ToArray ()));
         }
 
         private void Write (string str)
@@ -237,7 +358,7 @@ namespace Iodine.Runtime
         {
             StringBuilder builder = new StringBuilder ();
             int ch = 0;
-            while ((ch = File.ReadByte ()) != '\n' && ch != '\r' && ch != -1) {
+            while ((ch = File.ReadByte ()) != '\n' && ch != -1) {
                 builder.Append ((char)ch);
             }
             return builder.ToString ();

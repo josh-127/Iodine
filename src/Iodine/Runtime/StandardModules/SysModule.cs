@@ -47,7 +47,7 @@ namespace Iodine.Runtime
             // TODO: Make path accessible
             //SetAttribute ("path", new IodineList (IodineModule.SearchPaths));
             SetAttribute ("exit", new BuiltinMethodCallback (Exit, this));
-            SetAttribute ("getFrame", new BuiltinMethodCallback (GetFrame, this));
+            SetAttribute ("getframe", new BuiltinMethodCallback (GetFrame, this));
             SetAttribute ("_warn", new BuiltinMethodCallback (Warn, this));
             SetAttribute ("_getWarnMask", new BuiltinMethodCallback (GetWarnMask, this));
             SetAttribute ("_setWarnMask", new BuiltinMethodCallback (SetWarnMask, this));

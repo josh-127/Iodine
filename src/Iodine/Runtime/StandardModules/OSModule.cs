@@ -190,14 +190,16 @@ namespace Iodine.Runtime
             SetAttribute ("USER_DIR", new IodineString (Environment.GetFolderPath (
                 Environment.SpecialFolder.UserProfile)));
             SetAttribute ("ENV_SEP", new IodineString (Path.PathSeparator.ToString ()));
-
+            SetAttribute ("SEEK_SET", new IodineInteger (IodineStream.SEEK_SET));
+            SetAttribute ("SEEK_CUR", new IodineInteger (IodineStream.SEEK_CUR));
+            SetAttribute ("SEEK_END", new IodineInteger (IodineStream.SEEK_END));
             SetAttribute ("getEnv", new BuiltinMethodCallback (GetEnv, this)); // DEPRECATED
             SetAttribute ("setEnv", new BuiltinMethodCallback (SetEnv, this)); // DEPRECATED
             SetAttribute ("putenv", new BuiltinMethodCallback (SetEnv, this));
             SetAttribute ("getenv", new BuiltinMethodCallback (GetEnv, this));
             SetAttribute ("getcwd", new BuiltinMethodCallback (GetCwd, this));
             SetAttribute ("setcwd", new BuiltinMethodCallback (SetCwd, this));
-            SetAttribute ("getUsername", new BuiltinMethodCallback (GetUsername, this));
+            SetAttribute ("getlogin", new BuiltinMethodCallback (GetUsername, this));
             SetAttribute ("call", new BuiltinMethodCallback (Call, this));
             SetAttribute ("spawn", new BuiltinMethodCallback (Spawn, this));
             SetAttribute ("popen", new BuiltinMethodCallback (Popen, this));

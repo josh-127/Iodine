@@ -67,6 +67,10 @@ namespace Iodine.Util
 		#endif
         public void Push (T obj)
         {
+            if (Count > 7278) {
+
+                throw new Exception ();
+            }
             if (top == null) {
                 top = new StackItem <T> (obj);
             } else {
@@ -92,6 +96,11 @@ namespace Iodine.Util
         public T Peek ()
         {
             return top.Item;
+        }
+
+        public void Clear ()
+        {
+            top = null;
         }
     }
 }

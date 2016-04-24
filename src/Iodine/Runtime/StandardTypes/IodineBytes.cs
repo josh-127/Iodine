@@ -51,10 +51,6 @@ namespace Iodine.Runtime
                     vm.RaiseException (new IodineArgumentException (1));
                 }
 
-                if (args [0] is IodineByteArray) {
-                    return new IodineBytes (((IodineByteArray)args [0]).Array);
-                }
-
                 return new IodineBytes (args [0].ToString ());
             }
         }
@@ -66,8 +62,8 @@ namespace Iodine.Runtime
         public IodineBytes ()
             : base (TypeDefinition)
         {
-            SetAttribute ("indexOf", new BuiltinMethodCallback (IndexOf, this));
-            SetAttribute ("lastIndexOf", new BuiltinMethodCallback (IndexOf, this));
+            SetAttribute ("index", new BuiltinMethodCallback (IndexOf, this));
+            SetAttribute ("rindex", new BuiltinMethodCallback (IndexOf, this));
             SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
         }
@@ -84,6 +80,11 @@ namespace Iodine.Runtime
             Value = Encoding.ASCII.GetBytes (val);
         }
 
+        public override IodineObject Represent (VirtualMachine vm)
+        {
+            return new IodineString (String.Format ("b'{0}'", Encoding.ASCII.GetString (Value)));
+        }
+
         public override IodineObject Len (VirtualMachine vm)
         {
             return new IodineInteger (Value.Length);
@@ -92,10 +93,12 @@ namespace Iodine.Runtime
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
             IodineBytes str = right as IodineBytes;
+
             if (str == null) {
                 vm.RaiseException ("Right hand value must be of type Bytes!");
                 return null;
             }
+
             byte[] newArr = new byte[str.Value.Length + Value.Length];
             Array.Copy (Value, newArr, Value.Length);
             Array.Copy (str.Value, 0, newArr, Value.Length, str.Value.Length);

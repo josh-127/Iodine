@@ -79,7 +79,7 @@ class Event {
      * @param callback The event handler
      */
     func __add__ (self, callback) {
-        self._handlers.add (callback);
+        self._handlers.append (callback);
         return self;
     }
 

@@ -91,7 +91,7 @@ namespace Iodine.Runtime
             Value = complex;
         }
 
-        public override bool Equals (object obj)
+        public override bool Equals (IodineObject obj)
         {
             IodineComplex complexVal = obj as IodineComplex;
 

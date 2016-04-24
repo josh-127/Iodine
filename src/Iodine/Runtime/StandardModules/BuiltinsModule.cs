@@ -65,7 +65,7 @@ namespace Iodine.Runtime
             SetAttribute ("Tuple", IodineTuple.TypeDefinition);
             SetAttribute ("List", IodineList.TypeDefinition);
             SetAttribute ("Object", new BuiltinMethodCallback (Object, null));
-            SetAttribute ("HashMap", IodineHashMap.TypeDefinition);
+            SetAttribute ("Dict", IodineDictionary.TypeDefinition);
             SetAttribute ("repr", new BuiltinMethodCallback (Repr, null));
             SetAttribute ("filter", new BuiltinMethodCallback (Filter, null));
             SetAttribute ("map", new BuiltinMethodCallback (Map, null)); 
@@ -75,7 +75,6 @@ namespace Iodine.Runtime
             SetAttribute ("range", new BuiltinMethodCallback (Range, null));
             SetAttribute ("open", new BuiltinMethodCallback (Open, null));
             SetAttribute ("Exception", IodineException.TypeDefinition);
-            SetAttribute ("ByteArray", IodineByteArray.TypeDefinition);
             SetAttribute ("TypeException", IodineTypeException.TypeDefinition);
             SetAttribute ("TypeCastException", IodineTypeCastException.TypeDefinition);
             SetAttribute ("ArgumentException", IodineArgumentException.TypeDefinition);
@@ -89,6 +88,7 @@ namespace Iodine.Runtime
             SetAttribute ("StringBuffer", IodineStringBuilder.TypeDefinition);
             SetAttribute ("Null", IodineNull.Instance.TypeDef);
             SetAttribute ("TypeDef", IodineTypeDefinition.TypeDefinition);
+            SetAttribute ("__globals__", IodineGlobals.Instance);
             ExistsInGlobalNamespace = true;
         }
 
@@ -189,7 +189,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return null;
             }
-            IodineHashMap hash = args [1] as IodineHashMap;
+            IodineDictionary hash = args [1] as IodineDictionary;
             Dictionary<string, IodineObject> items = new Dictionary<string, IodineObject> ();
 
             foreach (IodineObject key in hash.Keys) {
@@ -261,16 +261,16 @@ namespace Iodine.Runtime
             }
 
             IodineString str = args [0] as IodineString;
-            IodineHashMap map = null;
+            IodineDictionary map = null;
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
                 return null;
             }
 
             if (args.Length >= 2) {
-                map = args [1] as IodineHashMap;
+                map = args [1] as IodineDictionary;
                 if (map == null) {
-                    vm.RaiseException (new IodineTypeException ("HashMap"));
+                    vm.RaiseException (new IodineTypeException ("Dict"));
                     return null;
                 }
             }
@@ -278,7 +278,7 @@ namespace Iodine.Runtime
             return Eval (vm, str.ToString (), map);
         }
 
-        private IodineObject Eval (VirtualMachine host, string source, IodineHashMap dict)
+        private IodineObject Eval (VirtualMachine host, string source, IodineDictionary dict)
         {
             VirtualMachine vm = host;
 
@@ -576,6 +576,7 @@ namespace Iodine.Runtime
             bool canRead = false;
             bool canWrite = false;
             bool append = false;
+            bool binary = false;
 
             foreach (char c in mode.Value) {
                 switch (c) {
@@ -584,6 +585,9 @@ namespace Iodine.Runtime
                     break;
                 case 'r':
                     canRead = true;
+                    break;
+                case 'b':
+                    binary = true;
                     break;
                 case 'a':
                     append = true;
@@ -597,13 +601,13 @@ namespace Iodine.Runtime
             }
 
             if (append)
-                return new IodineStream (File.Open (filePath.Value, FileMode.Append), true, true);
+                return new IodineStream (File.Open (filePath.Value, FileMode.Append), true, true, binary);
             else if (canRead && canWrite)
-                return new IodineStream (File.Open (filePath.Value, FileMode.Create), canWrite, canRead);
+                return new IodineStream (File.Open (filePath.Value, FileMode.Create), canWrite, canRead, binary);
             else if (canRead)
-                return new IodineStream (File.OpenRead (filePath.Value), canWrite, canRead);
+                return new IodineStream (File.OpenRead (filePath.Value), canWrite, canRead, binary);
             else if (canWrite)
-                return new IodineStream (File.Open (filePath.Value, FileMode.Create), canWrite, canRead);
+                return new IodineStream (File.Open (filePath.Value, FileMode.Create), canWrite, canRead, binary);
             return null;
         }
 

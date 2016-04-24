@@ -97,7 +97,7 @@ class TypedMultiFunc {
      * @param typeList A list of types that define this signature
      */
     func define (self, method, *typeList) {
-        self._dispatchTable.add (TypedMultiFunc.TypedOverload (method, typeList));
+        self._dispatchTable.append (TypedMultiFunc.TypedOverload (method, typeList));
     }
 
     func __invoke__ (self, *args) {

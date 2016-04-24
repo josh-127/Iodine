@@ -34,15 +34,14 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-    // TODO: Rewrite this, this is a *mess*
-    public class IodineHashMap : IodineObject
+    public class IodineDictionary : IodineObject
     {
         public static readonly IodineTypeDefinition TypeDefinition = new MapTypeDef ();
 
         class MapTypeDef : IodineTypeDefinition
         {
             public MapTypeDef ()
-                : base ("HashMap")
+                : base ("Dict")
             {
             }
 
@@ -50,7 +49,7 @@ namespace Iodine.Runtime
             {
                 if (args.Length >= 1) {
                     IodineList inputList = args [0] as IodineList;
-                    IodineHashMap ret = new IodineHashMap ();
+                    IodineDictionary ret = new IodineDictionary ();
                     if (inputList != null) {
                         foreach (IodineObject item in inputList.Objects) {
                             IodineTuple kv = item as IodineTuple;
@@ -61,7 +60,7 @@ namespace Iodine.Runtime
                     } 
                     return ret;
                 }
-                return new IodineHashMap ();
+                return new IodineDictionary ();
             }
         }
 
@@ -75,7 +74,7 @@ namespace Iodine.Runtime
             }
         }
 
-        public IodineHashMap ()
+        public IodineDictionary ()
             : base (TypeDefinition)
         {
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
@@ -103,7 +102,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineHashMap map = obj as IodineHashMap;
+            IodineDictionary map = obj as IodineDictionary;
 
             if (map != null) {
                 return CompareTo (map);
@@ -114,7 +113,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
-            IodineHashMap hash = right as IodineHashMap;
+            IodineDictionary hash = right as IodineDictionary;
             if (hash == null) {
                 vm.RaiseException (new IodineTypeException ("HashMap"));
                 return null;
@@ -170,7 +169,7 @@ namespace Iodine.Runtime
         /// </summary>
         /// <returns><c>true</c>, if they are equal, <c>false</c> otherwise.</returns>
         /// <param name="hash">Dictionary</param>
-        private bool CompareTo (IodineHashMap hash)
+        private bool CompareTo (IodineDictionary hash)
         {
             if (hash.dict.Count != this.dict.Count) {
                 return false;

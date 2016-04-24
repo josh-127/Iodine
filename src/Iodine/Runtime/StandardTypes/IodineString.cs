@@ -63,10 +63,13 @@ namespace Iodine.Runtime
             : base (TypeDefinition)
         {
             Value = val;
-            SetAttribute ("lower", new BuiltinMethodCallback (ToLower, this));
-            SetAttribute ("upper", new BuiltinMethodCallback (toUpper, this));
+            SetAttribute ("lower", new BuiltinMethodCallback (Lower, this));
+            SetAttribute ("upper", new BuiltinMethodCallback (Upper, this));
             SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
-            SetAttribute ("indexOf", new BuiltinMethodCallback (IndexOf, this));
+            SetAttribute ("index", new BuiltinMethodCallback (IndexOf, this));
+            SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, this));
+            SetAttribute ("find", new BuiltinMethodCallback (Find, this));
+            SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
             SetAttribute ("replace", new BuiltinMethodCallback (Replace, this));
             SetAttribute ("startsWith", new BuiltinMethodCallback (StartsWith, this));
@@ -98,6 +101,55 @@ namespace Iodine.Runtime
         public override IodineObject Len (VirtualMachine vm)
         {
             return new IodineInteger (Value.Length);
+        }
+
+        public override IodineObject Slice (VirtualMachine vm, IodineSlice slice)
+        {
+            return new IodineString (Substring (
+                slice.Start,
+                slice.Stop,
+                slice.Stride,
+                slice.DefaultStart,
+                slice.DefaultStop)
+            );
+        }
+
+        private string Substring (int start, int end, int stride, bool defaultStart, bool defaultEnd)
+        {
+            int actualStart = start >= 0 ? start : Value.Length - (start + 2);
+            int actualEnd = end >= 0 ? end : Value.Length - (end + 2);
+
+            StringBuilder accum = new StringBuilder ();
+
+            if (stride >= 0) {
+
+                if (defaultStart) {
+                    actualStart = 0;
+                }
+
+                if (defaultEnd) {
+                    actualEnd = Value.Length;
+                }
+
+                for (int i = actualStart; i < actualEnd; i += stride) {
+                    accum.Append (Value [i]);
+                }
+            } else {
+                
+                if (defaultStart) {
+                    actualStart = Value.Length - 1;
+                }
+
+                if (defaultEnd) {
+                    actualEnd = 0;
+                }
+
+                for (int i = actualStart; i >= actualEnd; i += stride) {
+                    accum.Append (Value [i]);
+                }
+            }
+
+            return accum.ToString ();
         }
 
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
@@ -182,19 +234,19 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.toUpper (self);
+		 * Iodine Method: Str.upper (self);
 		 * Description: Returns the uppercase representation of this string
 		 */
-        private IodineObject toUpper (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        private IodineObject Upper (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Value.ToUpper ());
         }
 
         /**
-		 * Iodine Method: Str.toLower (self);
+		 * Iodine Method: Str.lower (self);
 		 * Description: Returns the lowercase representation of this string
 		 */
-        private IodineObject ToLower (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        private IodineObject Lower (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Value.ToLower ());
         }
@@ -236,7 +288,7 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.indexOf (self, value);
+		 * Iodine Method: Str.index (self, value);
 		 * Description: Returns the first positio of value in this string 
 		 */
         private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -247,14 +299,98 @@ namespace Iodine.Runtime
             }
 
             IodineString ch = args [0] as IodineString;
-            char val;
+
             if (ch == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
                 return null;
             }
-            val = ch.Value [0];
+
+            string val = ch.ToString ();
+
+            if (!Value.Contains (val)) {
+                vm.RaiseException (new IodineKeyNotFound ());
+                return null;
+            }
 
             return new IodineInteger (Value.IndexOf (val));
+        }
+
+        /**
+         * Iodine Method: Str.rindex (self, value);
+         * Description: Returns the first positio of value in this string 
+         */
+        private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineString ch = args [0] as IodineString;
+
+            if (ch == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+
+            string val = ch.ToString ();
+
+            if (!Value.Contains (val)) {
+                vm.RaiseException (new IodineKeyNotFound ());
+                return null;
+            }
+            return new IodineInteger (Value.LastIndexOf (val));
+        }
+
+        /**
+         * Iodine Method: Str.find (self, value);
+         * Description: Returns the first positio of value in this string 
+         */
+        private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineString ch = args [0] as IodineString;
+
+            if (ch == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+            string val = ch.ToString ();
+
+            if (!Value.Contains (val)) {
+                return new IodineInteger (-1);
+            }
+
+            return new IodineInteger (Value.IndexOf (val));
+        }
+
+        /**
+         * Iodine Method: Str.rfind (self, value);
+         * Description: Returns the first positio of value in this string 
+         */
+        private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineString ch = args [0] as IodineString;
+
+            if (ch == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+            string val = ch.ToString ();
+
+            if (!Value.Contains (val)) {
+                return new IodineInteger (-1);
+            }
+            return new IodineInteger (Value.LastIndexOf (val));
         }
 
         /**

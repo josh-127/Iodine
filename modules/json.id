@@ -87,7 +87,7 @@ class JsonFile {
                     ret = [];
                     expect (JsonFile.JsonTokenType.BEGIN_ARRAY);
                     while (position < size && !matchToken (JsonFile.JsonTokenType.END_ARRAY)) {
-                        ret.add (parseItem ());
+                        ret.append (parseItem ());
                         if (!matchToken (JsonFile.JsonTokenType.VALUE_SEPERATOR)) {
                             break;
                         }
@@ -225,40 +225,40 @@ class JsonFile {
             given (ch) {
                 when "{" {
                     readChar ();
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_OBJECT, "{"));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_OBJECT, "{"));
                 }
                 when "}" {
                     readChar ();
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.END_OBJECT, "}"));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.END_OBJECT, "}"));
                 }
                 when "[" {
                     readChar ();
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_ARRAY, "["));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_ARRAY, "["));
                 }
                 when "]" {
                     readChar ();
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.END_ARRAY, "]"));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.END_ARRAY, "]"));
                 }
                 when ":" {
                     readChar ();
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NAME_SEPERATOR, ":"));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.NAME_SEPERATOR, ":"));
                 }
                 when "," {
                     readChar ();
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.VALUE_SEPERATOR, ","));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.VALUE_SEPERATOR, ","));
                 }
                 when "-" {
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
                 }
                 when "\"" {
-                    tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.STRING_LITERAL, scanString ()));
+                    tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.STRING_LITERAL, scanString ()));
                 }
             }
 
             if (ch.isDigit ()) {
-                tokens.add (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
+                tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
             } else if (ch.isLetter ()) {
-                tokens.add (scanConstant ());           
+                tokens.append (scanConstant ());           
             } else if (len (tokens) == last) {
                 raise InvalidJsonException ();
             }
@@ -294,7 +294,7 @@ func _dump (item) {
             return _dump (x);
         });
         return "[{}]".format (",".join (items));
-    } else if (item is HashMap) {
+    } else if (item is Dict) {
         items = map (item, lambda (x) {
            return _dump (x) + " : " + _dump (item [x]);
         });

@@ -150,12 +150,12 @@ namespace Iodine.Compiler
             indexer.VisitChildren (this);
         }
 
-        public override void Accept (GetExpression getAttr)
+        public override void Accept (MemberExpression getAttr)
         {
             getAttr.VisitChildren (this);
         }
 
-        public override void Accept (GetDefaultExpression getAttr)
+        public override void Accept (MemberDefaultExpression getAttr)
         {
             getAttr.VisitChildren (this);
         }

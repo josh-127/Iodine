@@ -513,12 +513,15 @@ namespace Iodine.Compiler
                     return ParseSuperCall (new ClassDeclaration (Location, "", null));
                 }
             }
+
             if (Match (TokenClass.OpenBrace)) {
                 return ParseBlock ();
             } else if (Accept (TokenClass.SemiColon)) {
                 return new Statement (Location);
             } else if (Match (TokenClass.Operator, "@")) {
                 return ParseFunction ();
+            } else if (PeekToken (1) != null && PeekToken (1).Class == TokenClass.Comma) {
+                return ParseAssignStatement ();
             } else {
                 AstNode node = ParseExpression ();
                 if (node == null) {
@@ -783,13 +786,63 @@ namespace Iodine.Compiler
             return new YieldStatement (Location, ParseExpression ());
         }
 
+
+        private AstNode ParseAssignStatement ()
+        {
+            List<string> identifiers = new List<string> ();
+
+
+            SourceLocation location = Location;
+
+            while (!Match (TokenClass.Operator, "=")) {
+                Token ident = Expect (TokenClass.Identifier);
+                identifiers.Add (ident.Value);
+
+                if (!Match (TokenClass.Operator, "=")) {
+                    Expect (TokenClass.Comma);
+                }
+            }
+
+            Expect (TokenClass.Operator, "=");
+
+            bool isPacked = false;
+
+            List<AstNode> expressions = new List<AstNode> ();
+
+            do {
+                expressions.Add (ParseExpression ());
+            } while (Accept (TokenClass.Comma));
+
+            if (identifiers.Count > 0 && expressions.Count == 1) {
+                isPacked = true;
+            }
+
+            return new AssignStatement (location, identifiers, expressions, isPacked);
+        }
+
         #endregion
 
         #region Expressions
 
         protected AstNode ParseExpression ()
         {
-            return ParseAssign ();
+            return ParseGeneratorExpression ();
+        }
+
+        private AstNode ParseGeneratorExpression ()
+        {
+            AstNode expr = ParseAssign ();
+            if (Accept (TokenClass.Keyword, "for")) {
+                string ident = Expect (TokenClass.Identifier).Value;
+                Expect (TokenClass.Keyword, "in");
+                AstNode iterator = ParseExpression ();
+                AstNode predicate = null;
+                if (Accept (TokenClass.Keyword, "if")) {
+                    predicate = ParseExpression ();
+                }
+                return new GeneratorExpression (expr.Location, expr, ident, iterator, predicate);
+            }
+            return expr;
         }
 
         private AstNode ParseAssign ()
@@ -1164,12 +1217,26 @@ namespace Iodine.Compiler
                     ParseArgumentList ()));
             } else if (Match (TokenClass.OpenBracket)) {
                 return ParseCallSubscriptAccess (ParseIndexer (lvalue));
-            } else if (Match (TokenClass.Operator, ".")) {
+            } else if (Match (TokenClass.MemberAccess)) {
                 return ParseCallSubscriptAccess (ParseGet (lvalue));
-            } else if (Match (TokenClass.Operator, ".?")) {
+            } else if (Match (TokenClass.MemberDefaultAccess)) {
                 return ParseCallSubscriptAccess (ParseGetOrNull (lvalue));
             }
             return lvalue;
+        }
+            
+        private AstNode ParseGet (AstNode lvalue)
+        {
+            Expect (TokenClass.MemberAccess);
+            Token ident = Expect (TokenClass.Identifier);
+            return new MemberExpression (Location, lvalue, ident.Value);
+        }
+
+        private AstNode ParseGetOrNull (AstNode lvalue)
+        {
+            Expect (TokenClass.MemberDefaultAccess);
+            Token ident = Expect (TokenClass.Identifier);
+            return new MemberDefaultExpression (Location, lvalue, ident.Value);
         }
 
         private AstNode ParseTerm ()
@@ -1347,25 +1414,45 @@ namespace Iodine.Compiler
         private AstNode ParseIndexer (AstNode lvalue)
         {
             Expect (TokenClass.OpenBracket);
+
+            if (Accept (TokenClass.Colon)) {
+                return ParseSlice (lvalue, null);
+            }
+
             AstNode index = ParseExpression ();
+
+            if (Accept (TokenClass.Colon)) {
+                return ParseSlice (lvalue, index);
+            }
+
             Expect (TokenClass.CloseBracket);
             return new IndexerExpression (Location, lvalue, index);
         }
 
-        private AstNode ParseGet (AstNode lvalue)
+        private AstNode ParseSlice (AstNode lvalue, AstNode start)
         {
-            Expect (TokenClass.Operator, ".");
-            Token ident = Expect (TokenClass.Identifier);
-            return new GetExpression (Location, lvalue, ident.Value);
-        }
+            if (Accept (TokenClass.CloseBracket)) {
+                return new SliceExpression (lvalue.Location, lvalue, start, null, null);
+            }
 
-        private AstNode ParseGetOrNull (AstNode lvalue)
-        {
-            Expect (TokenClass.Operator, ".?");
-            Token ident = Expect (TokenClass.Identifier);
-            return new GetDefaultExpression (Location, lvalue, ident.Value);
-        }
+            AstNode end = null;
+            AstNode step = null;
 
+            if (Accept (TokenClass.Colon)) {
+                step = ParseExpression ();
+            } else {
+                end = ParseExpression ();
+
+                if (Accept (TokenClass.Colon)) {
+                    step = ParseExpression ();
+                }
+            }
+
+            Expect (TokenClass.CloseBracket);
+
+            return new SliceExpression (lvalue.Location, lvalue, start, end, step);
+        }
+            
         private SuperCallStatement ParseSuperCall (ClassDeclaration parent)
         {
             SourceLocation location = Location;
@@ -1419,13 +1506,13 @@ namespace Iodine.Compiler
             Expect (TokenClass.OpenBracket);
             ListExpression ret = new ListExpression (Location);
             while (!Match (TokenClass.CloseBracket)) {
-                AstNode expr = ParseExpression ();
+                AstNode expr = ParseAssign ();
                 if (Accept (TokenClass.Keyword, "for")) {
                     string ident = Expect (TokenClass.Identifier).Value;
                     Expect (TokenClass.Keyword, "in");
                     AstNode iterator = ParseExpression ();
                     AstNode predicate = null;
-                    if (Accept (TokenClass.Keyword, "when")) {
+                    if (Accept (TokenClass.Keyword, "if")) {
                         predicate = ParseExpression ();
                     }
                     Expect (TokenClass.CloseBracket);

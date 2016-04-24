@@ -47,7 +47,6 @@ namespace Iodine.Runtime
                 this.Value = val;
                 SetAttribute ("find", new BuiltinMethodCallback (Find, this));
                 SetAttribute ("isMatch", new BuiltinMethodCallback (IsMatch, this));
-
             }
 
             /**

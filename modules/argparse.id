@@ -32,17 +32,17 @@ class CommandLineOptions {
     
     func CommandLineOptions (self) {
         self.arguments = List ();
-        self.options = HashMap ();
-        self.verbs = HashMap ();
+        self.options = {};
+        self.verbs = {};
     }
     
     func addArgument (self, name, *args) {
         if (len (args) == 0) {
-            self.arguments.add (CommandLineOptions.CommandLineArgument (name, false, false));
+            self.arguments.append (CommandLineOptions.CommandLineArgument (name, false, false));
         } else if (len (args) == 1) {
-            self.arguments.add (CommandLineOptions.CommandLineArgument (name, args [0], false));
+            self.arguments.append (CommandLineOptions.CommandLineArgument (name, args [0], false));
         } else {
-            self.arguments.add (CommandLineOptions.CommandLineArgument (name, args [0], args [1]));
+            self.arguments.append (CommandLineOptions.CommandLineArgument (name, args [0], args [1]));
         }
     }
     
@@ -112,7 +112,7 @@ func parseArgs (options, args) {
             verbArgs = List ();
             while (arg != "" && !isVerb (peekArg ())) {
                 arg = nextArg ();
-                verbArgs.add (arg);
+                verbArgs.append (arg);
             }
             verb.callback (parseArgs (verb.options, verbArgs));
         } else if (currentArgument < argCount) {

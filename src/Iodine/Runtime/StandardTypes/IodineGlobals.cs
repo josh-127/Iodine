@@ -28,66 +28,63 @@
 **/
 
 using System;
+using System.Collections.Generic;
+using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-    /// <summary>
-    /// Operation codes used by the Virtual Machine
-    /// </summary>
-    public enum Opcode
+    public class IodineGlobals : IodineObject, IIodineProperty
     {
-        Nop = 0,
-        BinOp = 1,
-        UnaryOp = 2,
-        Pop = 3,
-        Dup = 4,
-        Dup3 = 5,
-        LoadConst = 6,
-        LoadNull = 7,
-        LoadSelf = 8,
-        LoadTrue = 9,
-        LoadFalse = 0x0A,
-        LoadLocal = 0x0B,
-        StoreLocal = 0x0C,
-        LoadGlobal = 0x0D,
-        StoreGlobal = 0x0E,
-        LoadAttributeOrNull = 0x0F,
-        LoadAttribute = 0x10,
-        StoreAttribute = 0x11,
-        LoadIndex = 0x12,
-        StoreIndex = 0x13,
-        Invoke = 0x14,
-        InvokeSuper = 0x15,
-        InvokeVar = 0x16,
-        Return = 0x17,
-        Yield = 0x18,
-        JumpIfTrue = 0x19,
-        JumpIfFalse = 0x1A,
-        Jump = 0x1B,
-        BuildHash = 0x1C,
-        BuildList = 0x1D,
-        BuildTuple = 0x1E,
-        BuildClosure = 0x1F,
-        GetIter = 0x20,
-        IterGetNext = 0x21,
-        IterMoveNext = 0x22,
-        IterReset = 0x23,
-        Raise = 0x24,
-        PushExceptionHandler = 0x25,
-        PopExceptionHandler = 0x26,
-        LoadException = 0x27,
-        BeginExcept = 0x28,
-        InstanceOf = 0x29,
-        DynamicCast = 0x2A,
-        Import = 0x2B,
-        ImportFrom = 0x2C,
-        ImportAll = 0x2D,
-        SwitchLookup = 0x2E,
-        NullCoalesce = 0x2F,
-        BeginWith = 0x30,
-        EndWith = 0x31,
-        Slice = 0x32,
-        BuildGenExpr = 0x33
+        public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Globals");
+
+        class GlobalsObject : IodineObject
+        {
+            public GlobalsObject ()
+                : base (TypeDefinition)
+            {
+            }
+
+            public override void SetAttribute (VirtualMachine vm, string name, IodineObject value)
+            {
+                vm.Globals [name] = value;
+            }
+
+            public override IodineObject GetAttribute (VirtualMachine vm, string name)
+            {
+                return vm.Globals [name];
+            }
+
+        }
+
+        public readonly static IodineObject Instance = new IodineGlobals ();
+
+        private static IodineObject _Instance = new GlobalsObject ();
+
+        protected IodineGlobals ()
+            : base (TypeDefinition)
+        {
+        }
+
+        public IodineObject Set (VirtualMachine vm, IodineObject obj)
+        {
+            IodineDictionary dict = obj as IodineDictionary;
+            if (dict != null) {
+                foreach (IodineObject key in dict.Keys) {
+                    vm.Globals [key.ToString ()] = dict.Get (key);
+                }
+            }
+            return null;
+        }
+
+        public IodineObject Get (VirtualMachine vm)
+        {
+            IodineDictionary ret = new IodineDictionary ();
+            foreach (KeyValuePair<string, IodineObject> kv in vm.Globals) {
+                ret.Set (new IodineString (kv.Key), kv.Value);
+            }
+            return ret;
+        }
+
     }
 }
 

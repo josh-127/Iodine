@@ -10,7 +10,7 @@
  * @yield Object The items of the chain
  */
 func chain (*iterables) {
-    foreach (iterator in iterables) {
+    for (iterator in iterables) {
         foreach (item in iterator) {
             yield item;
         }
@@ -24,7 +24,7 @@ func chain (*iterables) {
  * @return null
  */
 func each (iterator, callback) {
-    foreach (item in iterator) {
+    for (item in iterator) {
         callback (item);
     }
 }
@@ -37,7 +37,7 @@ func each (iterator, callback) {
  */
 func take (iterator, count) {
     i = 0;
-    foreach (item in iterator) {
+    for (item in iterator) {
         if (i < count) {
             yield item;
         }
@@ -52,7 +52,7 @@ func take (iterator, count) {
  * @yield Object The elements
  */
 func takeWhile (iterator, callback) {
-    foreach (item in iterator) {
+    for (item in iterator) {
         if (!typecast (Bool, callback (item))) {
             break;
         }
@@ -68,7 +68,7 @@ func takeWhile (iterator, callback) {
  */
 func skip (iterator, count) {
     i = 0;
-    foreach (item in iterator) {
+    for (item in iterator) {
         if (i >= count) {
             yield item;
         }
@@ -82,7 +82,7 @@ func skip (iterator, count) {
  * @yield Object The remaining elements
  */
 func skipWhile (iterator, callback) {
-    foreach (item in iterator) {
+    for (item in iterator) {
         if (typecast (Bool, callback (item))) {
             continue;
         }

@@ -29,65 +29,43 @@
 
 using System;
 
-namespace Iodine.Runtime
+namespace Iodine.Compiler.Ast
 {
-    /// <summary>
-    /// Operation codes used by the Virtual Machine
-    /// </summary>
-    public enum Opcode
+    public class GeneratorExpression : AstNode
     {
-        Nop = 0,
-        BinOp = 1,
-        UnaryOp = 2,
-        Pop = 3,
-        Dup = 4,
-        Dup3 = 5,
-        LoadConst = 6,
-        LoadNull = 7,
-        LoadSelf = 8,
-        LoadTrue = 9,
-        LoadFalse = 0x0A,
-        LoadLocal = 0x0B,
-        StoreLocal = 0x0C,
-        LoadGlobal = 0x0D,
-        StoreGlobal = 0x0E,
-        LoadAttributeOrNull = 0x0F,
-        LoadAttribute = 0x10,
-        StoreAttribute = 0x11,
-        LoadIndex = 0x12,
-        StoreIndex = 0x13,
-        Invoke = 0x14,
-        InvokeSuper = 0x15,
-        InvokeVar = 0x16,
-        Return = 0x17,
-        Yield = 0x18,
-        JumpIfTrue = 0x19,
-        JumpIfFalse = 0x1A,
-        Jump = 0x1B,
-        BuildHash = 0x1C,
-        BuildList = 0x1D,
-        BuildTuple = 0x1E,
-        BuildClosure = 0x1F,
-        GetIter = 0x20,
-        IterGetNext = 0x21,
-        IterMoveNext = 0x22,
-        IterReset = 0x23,
-        Raise = 0x24,
-        PushExceptionHandler = 0x25,
-        PopExceptionHandler = 0x26,
-        LoadException = 0x27,
-        BeginExcept = 0x28,
-        InstanceOf = 0x29,
-        DynamicCast = 0x2A,
-        Import = 0x2B,
-        ImportFrom = 0x2C,
-        ImportAll = 0x2D,
-        SwitchLookup = 0x2E,
-        NullCoalesce = 0x2F,
-        BeginWith = 0x30,
-        EndWith = 0x31,
-        Slice = 0x32,
-        BuildGenExpr = 0x33
+        public string Identifier { private set; get; }
+
+        public readonly AstNode Expression;
+
+        public AstNode Iterator;
+
+        public AstNode Predicate;
+
+        public GeneratorExpression (SourceLocation location, AstNode expression,
+            string ident,
+            AstNode iterator,
+            AstNode predicate = null)
+            : base (location)
+        {
+            Expression = expression;
+            Iterator = iterator;
+            Identifier = ident;
+            Predicate = predicate; 
+        }
+
+        public override void Visit (IodineAstVisitor visitor)
+        {
+            visitor.Accept (this);
+        }
+
+        public override void VisitChildren (IodineAstVisitor visitor)
+        {
+            Expression.Visit (visitor);
+            Iterator.Visit (visitor);
+            if (Predicate != null) {
+                Predicate.Visit (visitor);
+            }
+        }
     }
 }
 

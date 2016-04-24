@@ -43,8 +43,9 @@ namespace Iodine.Runtime
         {
             SetAttribute ("rand", new BuiltinMethodCallback (Rand, this));
             SetAttribute ("randInt", new BuiltinMethodCallback (RandInt, this));
-            SetAttribute ("choice", new BuiltinMethodCallback (Choice, this));
+            SetAttribute ("choose", new BuiltinMethodCallback (Choice, this));
             SetAttribute ("cryptoString", new BuiltinMethodCallback (CryptoString, this));
+            //SetAttribute ("urandom", new BuiltinMethodCallback (CryptoString, this));
         }
 
         /**

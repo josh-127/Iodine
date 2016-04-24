@@ -53,7 +53,7 @@ namespace Iodine.Runtime
                 SetAttribute ("day", new IodineInteger (val.Day));
                 SetAttribute ("month", new IodineInteger (val.Month));
                 SetAttribute ("year", new IodineInteger (val.Year));
-                SetAttribute ("unixTime", new IodineInteger (unixEsposh));
+                SetAttribute ("epoch", new IodineInteger (unixEsposh));
             }
 
             public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)

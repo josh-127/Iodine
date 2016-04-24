@@ -62,7 +62,7 @@ namespace Iodine.Modules.Extras
         public DNSModule ()
             : base ("dns")
         {
-            SetAttribute ("getHostEntry", new BuiltinMethodCallback (getHostEntry, this));
+            SetAttribute ("lookup", new BuiltinMethodCallback (getHostEntry, this));
         }
 
         private IodineObject getHostEntry (VirtualMachine vm, IodineObject self, IodineObject[] args)

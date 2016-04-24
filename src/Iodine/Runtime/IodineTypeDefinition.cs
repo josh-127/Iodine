@@ -77,7 +77,7 @@ namespace Iodine.Runtime
                 clazz.Base = baseType;
 
                 if (args.Length > 2) {
-                    IodineHashMap map = args [2] as IodineHashMap;
+                    IodineDictionary map = args [2] as IodineDictionary;
 
                     foreach (IodineObject key in map.Keys) {
                         clazz.SetAttribute (key.ToString (), map.Get (key));

@@ -90,7 +90,7 @@ namespace ModuleMySQL
             var resList = new IodineList (new IodineObject[]{ });
 
             foreach (DataRow row in table.Rows) {
-                var items = new IodineHashMap ();
+                var items = new IodineDictionary ();
                 foreach (DataColumn col in table.Columns) {
                     items.Set (new IodineString (col.ColumnName), new IodineString ((row [col.ColumnName]).ToString ()));
                 }

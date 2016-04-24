@@ -34,7 +34,8 @@ namespace Iodine.Runtime
 {
     /// <summary>
     /// Represents an IodineTrait. An IodineTrait describes which members a class may
-    /// have
+    /// have, although classes do not have to actually implement a trait. In short, 
+    /// traits are what I like to call "non-censual interfaces"
     /// </summary>
     public class IodineTrait : IodineTypeDefinition
     {
@@ -51,6 +52,11 @@ namespace Iodine.Runtime
             RequiredMethods.Add (method);
         }
 
+        /// <summary>
+        /// Determines whether an object has this trait
+        /// </summary>
+        /// <returns><c>true</c> if obj has trait; otherwise, <c>false</c>.</returns>
+        /// <param name="obj">Object.</param>
         public bool HasTrait (IodineObject obj)
         {
             foreach (IodineMethod method in RequiredMethods) {
@@ -75,6 +81,8 @@ namespace Iodine.Runtime
                     if (!match) {
                         return false;
                     }
+                } else {
+                    return false;
                 }
             }
 

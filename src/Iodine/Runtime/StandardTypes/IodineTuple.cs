@@ -86,6 +86,55 @@ namespace Iodine.Runtime
             return new IodineInteger (Objects.Length);
         }
 
+        public override IodineObject Slice (VirtualMachine vm, IodineSlice slice)
+        {
+            return Subtuple (
+                slice.Start,
+                slice.Stop,
+                slice.Stride,
+                slice.DefaultStart,
+                slice.DefaultStop
+            );
+        }
+
+        private IodineTuple Subtuple (int start, int end, int stride, bool defaultStart, bool defaultEnd)
+        {
+            int actualStart = start >= 0 ? start : Objects.Length - (start + 2);
+            int actualEnd = end >= 0 ? end : Objects.Length - (end + 2);
+
+            List<IodineObject> accum = new List<IodineObject> ();
+
+            if (stride >= 0) {
+
+                if (defaultStart) {
+                    actualStart = 0;
+                }
+
+                if (defaultEnd) {
+                    actualEnd = Objects.Length;
+                }
+
+                for (int i = actualStart; i < actualEnd; i += stride) {
+                    accum.Add (Objects [i]);
+                }
+            } else {
+
+                if (defaultStart) {
+                    actualStart = Objects.Length - 1;
+                }
+
+                if (defaultEnd) {
+                    actualEnd = 0;
+                }
+
+                for (int i = actualStart; i >= actualEnd; i += stride) {
+                    accum.Add (Objects [i]);
+                }
+            }
+
+            return new IodineTuple (accum.ToArray ());
+        }
+
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
             IodineInteger index = key as IodineInteger;

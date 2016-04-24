@@ -29,8 +29,9 @@
 using System;
 using System.Collections.Generic;
 using Iodine.Runtime;
+using Iodine.Util;
 
-namespace Iodine.Compiler
+namespace Iodine.Compiler 
 {
     public class MethodBuilder : IodineMethod
     {

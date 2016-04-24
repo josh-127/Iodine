@@ -52,7 +52,9 @@ namespace Iodine.Compiler
         SemiColon,
         Colon,
         Operator,
-        Comma
+        Comma,
+        MemberAccess,
+        MemberDefaultAccess
     }
 
     /// <summary>

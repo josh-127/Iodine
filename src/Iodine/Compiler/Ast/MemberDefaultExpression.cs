@@ -31,16 +31,16 @@ using System;
 
 namespace Iodine.Compiler.Ast
 {
-    public class GetExpression : AstNode
+    public class MemberDefaultExpression : AstNode
     {
-        public readonly string Field;
-
         public AstNode Target {
             private set;
             get;
         }
 
-        public GetExpression (SourceLocation location, AstNode target, string field)
+        public readonly string Field;
+
+        public MemberDefaultExpression (SourceLocation location, AstNode target, string field)
             : base (location)
         {
             Target = target;

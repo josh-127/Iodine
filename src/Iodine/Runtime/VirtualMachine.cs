@@ -175,6 +175,7 @@ namespace Iodine.Runtime
             }
 
             NewFrame (frame);
+
             return Invoke (method, arguments);
         }
 
@@ -208,10 +209,10 @@ namespace Iodine.Runtime
                     /*
                      * At the moment, keyword arguments are passed to the function as an IodineHashMap,
                      */
-                    if (i < arguments.Length && arguments [i] is IodineHashMap) {
+                    if (i < arguments.Length && arguments [i] is IodineDictionary) {
                         Top.StoreLocal (method.Parameters [param], arguments [i]);
                     } else {
-                        Top.StoreLocal (method.Parameters [param], new IodineHashMap ());
+                        Top.StoreLocal (method.Parameters [param], new IodineDictionary ());
                     }
                 } else {
                     Top.StoreLocal (method.Parameters [param], arguments [i++]);
@@ -237,11 +238,15 @@ namespace Iodine.Runtime
 				
 
             IodineObject retVal = lastObject ?? IodineNull.Instance;
+           
+            if (top.Yielded) {
+                top.Pop ();
+            }
 
             /*
-             * Calls __exit__ on any object used in a with statment
+             * Calls __exit__ on any object used in a with statement
              */
-            while (top.DisposableObjects.Count > 0) {
+            while (!top.Yielded && top.DisposableObjects.Count > 0) {
                 top.DisposableObjects.Pop ().Exit (this);
             }
 
@@ -280,13 +285,14 @@ namespace Iodine.Runtime
             if (traceCallback != null) {
                 traceCallback (TraceType.Exception, this, Top, currentLocation);
             }
+
             IodineExceptionHandler handler = PopCurrentExceptionHandler ();
             if (handler == null) { // No exception handler
-                /*
-				 * The program has gone haywire and we ARE going to crash, however
-				 * we must attempt to properly dispose any objects created inside 
-				 * Iodine's with statement
-				 */
+               /*
+                * The program has gone haywire and we ARE going to crash, however
+                * we must attempt to properly dispose any objects created inside 
+                * Iodine's with statement
+                */
                 StackFrame top = Top;
                 while (top != null) {
                     while (top.DisposableObjects.Count > 0) {
@@ -308,7 +314,7 @@ namespace Iodine.Runtime
         }
 
         /// <summary>
-        /// Sets the trace calback function (For debugging).
+        /// Sets the trace callback function (For debugging).
         /// </summary>
         /// <param name="callback">Callback.</param>
         public void SetTrace (TraceCallback callback)
@@ -324,6 +330,10 @@ namespace Iodine.Runtime
             }
         }
 
+        /// <summary>
+        /// Unwinds the stack n frames
+        /// </summary>
+        /// <param name="frames">Frames.</param>
         private void UnwindStack (int frames)
         {
             for (int i = 0; i < frames; i++) {
@@ -412,7 +422,11 @@ namespace Iodine.Runtime
                 {
                     string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
                     if (Globals.ContainsKey (name) || Top.Module.IsAnonymous) {
-                        Globals [name] = Pop ();
+                        if (Globals.ContainsKey (name) && Globals [name] is IIodineProperty) {
+                            ((IIodineProperty)Globals [name]).Set (this, Pop ());
+                        } else {
+                            Globals [name] = Pop ();
+                        }
                     } else {
                         Top.Module.SetAttribute (this, name, Pop ());
                     }
@@ -424,7 +438,11 @@ namespace Iodine.Runtime
                     if (Top.Module.Attributes.ContainsKey (name)) {
                         Push (Top.Module.GetAttribute (this, name));
                     } else if (Globals.ContainsKey (name)) {
-                        Push (Globals [name]);
+                        if (Globals.ContainsKey (name) && Globals [name] is IIodineProperty) {
+                            Push (((IIodineProperty)Globals [name]).Get (this));
+                        } else {
+                            Push (Globals [name]);
+                        }
                     } else {
                         RaiseException (new IodineAttributeNotFoundException (name));
                     }
@@ -566,7 +584,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildHash:
                 {
-                    IodineHashMap hash = new IodineHashMap ();
+                    IodineDictionary hash = new IodineDictionary ();
                     for (int i = 0; i < instruction.Argument; i++) {
                         IodineObject val = Pop ();
                         IodineObject key = Pop ();
@@ -597,6 +615,35 @@ namespace Iodine.Runtime
                 {
                     IodineMethod method = Pop () as IodineMethod;
                     Push (new IodineClosure (Top, method));
+                    break;
+                }
+
+            case Opcode.BuildGenExpr:
+                {
+                    IodineMethod method = Pop () as IodineMethod;
+                    Push (new IodineGeneratorExpr (Top, method));
+                    break;
+                }
+            case Opcode.Slice:
+                {
+                    IodineObject target = Pop ();
+
+                    IodineInteger[] arguments = new IodineInteger[3];
+
+                    for (int i = 0; i < 3; i++) {
+                        IodineObject obj = Pop ();
+                        arguments [i] = obj as IodineInteger;
+
+                        if (obj != IodineNull.Instance && arguments [i] == null) {
+                            RaiseException (new IodineTypeException ("Int"));
+                            break;
+                        }
+                    }
+
+                    IodineSlice slice = new IodineSlice (arguments [0], arguments [1], arguments [2]);
+
+                    Push (target.Slice (this, slice));
+
                     break;
                 }
             case Opcode.GetIter:

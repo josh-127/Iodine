@@ -81,7 +81,7 @@ namespace Iodine.Modules.Extras
                     vm.RaiseException (e.Message);
                     return null;
                 }
-                return new IodineByteArray (data);
+                return new IodineBytes (data);
             }
 
             private IodineObject downloadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)

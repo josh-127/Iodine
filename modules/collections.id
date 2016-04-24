@@ -32,13 +32,13 @@ class Array : ICollection {
         self.list = [];
         self.length = 0;
         self.capacity = -1;
-        foreach (key in kwargs) {
+        for (key in kwargs) {
             given (key) {
                 when "capacity" {
                     self.capacity = typecast (Int, kwargs [key]);
                 }
                 when "items"  {
-                    foreach (i in typecast (List, kwargs [key])) {
+                    for (i in typecast (List, kwargs [key])) {
                         self.add (i);
                     }
                 }
@@ -82,7 +82,7 @@ class Array : ICollection {
         if (self.length == self.capacity) {
             raise Exception ("Maximum capacity reached.");
         }
-        self.list.add (item);
+        self.list.append (item);
         self.length += 1;
     }
  
@@ -91,7 +91,7 @@ class Array : ICollection {
     # @return null
     func remove (self, item) {
         i = 0;
-        foreach (x in self.list) {
+        for (x in self.list) {
             if (x == item) {
                 self.list.removeAt (i);
                 self.length -= 1;
@@ -189,13 +189,13 @@ class Set : ICollection {
         self.list = [];
         self.cardinality = 0;
         self.capacity = -1;
-        foreach (key in kwargs) {
+        for (key in kwargs) {
             given (key) {
                 when "capacity" {
                     self.capacity = typecast (Int, kwargs [key]);
                 }
                 when "items" {
-                    foreach (i in typecast (List, kwargs [key])) {
+                    for (i in typecast (List, kwargs [key])) {
                         self.add (i);
                     }
                 }
@@ -232,7 +232,7 @@ class Set : ICollection {
         if (self.contains (item)) {
             raise Exception ("The item is already an element of the set.");
         }
-        self.list.add (item);
+        self.list.append (item);
         self.cardinality += 1;
     }
  
@@ -241,7 +241,7 @@ class Set : ICollection {
     # @return null
     func remove (self, item) {
         i = 0;
-        foreach (x in self.list) {
+        for (x in self.list) {
             if (x == item) {
                 self.list.removeAt (i);
                 self.cardinality -= 1;
@@ -258,7 +258,7 @@ class Set : ICollection {
     func union (self, other) {
         typecast (Set, other);
         set = Set (items: other.list);
-        foreach (item in self.list) {
+        for (item in self.list) {
             if (!other.contains (item))
                 set.add (item)
         }
@@ -271,7 +271,7 @@ class Set : ICollection {
     func intersection (self, other) {
         typecast (Set, other);
         set = Set ();
-        foreach (item in self.list) {
+        for (item in self.list) {
             if (other.contains (item))
                 set.add (item)
         }
@@ -284,7 +284,7 @@ class Set : ICollection {
     func difference (self, other) {
         typecast (Set, other);
         set = Set ();
-        foreach (item in self.list) {
+        for (item in self.list) {
             if (!other.contains (item))
                 set.add (item);
         }
@@ -297,7 +297,7 @@ class Set : ICollection {
     func superset (self, other) {
         typecast (Set, other);
         i = 0;
-        foreach (item in self.list) {
+        for (item in self.list) {
             if (other.contains (item))
                 i += 1
         }
@@ -310,7 +310,7 @@ class Set : ICollection {
     func subset (self, other) {
         typecast (Set, other);
         i = 0;
-        foreach (item in other.list) {
+        for (item in other.list) {
             if (self.contains (item))
                 i += 1;
         }
@@ -443,13 +443,13 @@ class Stack : ICollection {
         self.list = [];
         self.top = 0;
         self.capacity = -1;
-        foreach (key in kwargs) {
+        for (key in kwargs) {
             given (key) {
                 when "capacity" {
                     self.capacity = typecast (Int, kwargs [key]);
                 }
                 when "items" { 
-                    foreach (i in typecast (List, kwargs [key])) {
+                    for (i in typecast (List, kwargs [key])) {
                         self.push (i);
                     }
                 }
@@ -486,7 +486,7 @@ class Stack : ICollection {
     func push (self, item) {
         if (self.top == self.capacity)
             raise Exception ("Maximum capacity reached.")
-        self.list.add (item);
+        self.list.append (item);
         self.top += 1;
     }
  

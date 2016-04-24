@@ -154,7 +154,7 @@ namespace Iodine.Runtime
                 return null;
             }
             IodineObject o1 = args [0];
-            IodineHashMap map = new IodineHashMap ();
+            IodineDictionary map = new IodineDictionary ();
             foreach (string key in o1.Attributes.Keys) {
                 map.Set (new IodineString (key), o1.Attributes [key]);
             }
