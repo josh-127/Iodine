@@ -480,8 +480,6 @@ namespace Iodine.Compiler
                     return ParseIf ();
                 case "given":
                     return ParseGiven ();
-                case "for":
-                    return ParseFor ();
                 case "foreach":
                     return ParseForeach ();
                 case "with":
@@ -511,6 +509,19 @@ namespace Iodine.Compiler
                 case "super":
                     errorLog.Add (Errors.SuperCalledAfter, Location);
                     return ParseSuperCall (new ClassDeclaration (Location, "", null));
+                }
+
+                /*
+                 * HACK: In order to make semicolons optional, there has to be a way distinguish between the
+                 * for statement and for used in a generator expression. This can be accomplished by checking
+                 * to see if there is a parenthesis after the for
+                 */
+                if (Match (TokenClass.Keyword, "for")) {
+                    bool isExpression = PeekToken () == null || PeekToken (1).Class != TokenClass.OpenParan;
+
+                    if (!isExpression) {
+                        return ParseFor ();
+                    }
                 }
             }
 
@@ -832,7 +843,13 @@ namespace Iodine.Compiler
         private AstNode ParseGeneratorExpression ()
         {
             AstNode expr = ParseAssign ();
-            if (Accept (TokenClass.Keyword, "for")) {
+
+            bool isGenExpr = Match (TokenClass.Keyword, "for")
+                && PeekToken (1) != null
+                && PeekToken (1).Class != TokenClass.OpenParan;
+            
+            if (isGenExpr) {
+                Expect (TokenClass.Keyword, "for");
                 string ident = Expect (TokenClass.Identifier).Value;
                 Expect (TokenClass.Keyword, "in");
                 AstNode iterator = ParseExpression ();

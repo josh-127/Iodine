@@ -411,11 +411,16 @@ namespace Iodine.Compiler
             errorLog.Add (Errors.UnexpectedEndOfFile, location);
         }
 
-        private void EatWhiteSpaces ()
+        private bool EatWhiteSpaces ()
         {
+            bool hadNewLine = false;
             while (char.IsWhiteSpace ((char)PeekChar ())) {
-                ReadChar ();
+                char ch = (char)ReadChar ();
+                if (ch == '\n') {
+                    hadNewLine = true;
+                }
             }
+            return hadNewLine;
         }
 
         private bool MatchString (string str)
