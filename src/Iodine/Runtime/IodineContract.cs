@@ -66,7 +66,7 @@ namespace Iodine.Runtime
 
         public override string ToString ()
         {
-            return string.Format ("<Interface {0}>", Name);
+            return string.Format ("<Contract {0}>", Name);
         }
     }
 }

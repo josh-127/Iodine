@@ -66,6 +66,10 @@ namespace Iodine.Runtime
                     IodineMethod objMethod = attr as IodineMethod;
 
                     if (objMethod == null) {
+                        // HACK: Make builtin methods work
+                        if (attr is BuiltinMethodCallback) {
+                            continue;
+                        }
                         if (attr is IodineBoundMethod) {
                             objMethod = ((IodineBoundMethod)attr).Method;
                         } else {

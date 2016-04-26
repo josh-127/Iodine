@@ -46,6 +46,11 @@ namespace Iodine.Runtime
             this.end = max;
             this.step = step;
             this.min = min;
+
+            // HACK: Add __iter__ attribute to match Iterable trait
+            SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] args) => {
+                return GetIterator (vm);
+            }, this));
         }
 
         public override IodineObject GetIterator (VirtualMachine vm)
