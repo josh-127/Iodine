@@ -66,6 +66,11 @@ namespace Iodine.Runtime
             SetAttribute ("rindex", new BuiltinMethodCallback (IndexOf, this));
             SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
+
+            // HACK: Add __iter__ attribute to match Iterable trait
+            SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] args) => {
+                return GetIterator (vm);
+            }, this));
         }
 
         public IodineBytes (byte[] val)
