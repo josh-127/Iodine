@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>COMPILE_EXTRAS</DefineConstants>
+    <DefineConstants>COMPILE_EXTRAS </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Framework)' == '.NET 4.5|NET45' ">
     <Optimize>true</Optimize>
@@ -74,7 +74,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExtraModules\SslModule.cs" />
     <Compile Include="Runtime\IIodineProperty.cs" />
-    <Compile Include="Runtime\IodineStackFrame.cs" />
     <Compile Include="Runtime\IodineConfiguration.cs" />
     <Compile Include="Compiler\SyntaxException.cs" />
     <Compile Include="Runtime\IodineBuiltinModule.cs" />
@@ -227,6 +226,8 @@
     <Compile Include="Runtime\IodineGeneratorExpr.cs" />
     <Compile Include="Compiler\Ast\AssignStatement.cs" />
     <Compile Include="Runtime\StandardTypes\IodineGlobals.cs" />
+    <Compile Include="Util\AttributeDictionary.cs" />
+    <Compile Include="Runtime\StackFrame.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

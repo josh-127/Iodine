@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -64,9 +64,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: exit (code)
-		 * Description: Forcefully terminates the current process (Including the Iodine host)
-		 */
+         * Iodine Function: exit (code)
+         * Description: Forcefully terminates the current process (Including the Iodine host)
+         */
         private IodineObject Exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -118,10 +118,10 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: _warn (type, msg)
-		 * Description: Internal low level function for issuing warnings
-		 * See modules/warnings.id
-		 */
+         * Iodine Function: _warn (type, msg)
+         * Description: Internal low level function for issuing warnings
+         * See modules/warnings.id
+         */
         private IodineObject Warn (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -147,20 +147,20 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: _getWarnMask ()
-		 * Description: Internal low level function for obtaining the current warning mask
-		 * See modules/warnings.id
-		 */
+         * Iodine Function: _getWarnMask ()
+         * Description: Internal low level function for obtaining the current warning mask
+         * See modules/warnings.id
+         */
         private IodineObject GetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineInteger ((long)vm.Context.WarningFilter);
         }
 
         /**
-		 * Iodine Function: _setWarnMask (val)
-		 * Description: Internal low level function for settings the current warning mask
-		 * See modules/warnings.id
-		 */
+         * Iodine Function: _setWarnMask (val)
+         * Description: Internal low level function for settings the current warning mask
+         * See modules/warnings.id
+         */
         private IodineObject SetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {

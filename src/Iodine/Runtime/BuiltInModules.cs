@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -41,8 +41,8 @@ namespace Iodine.Runtime
         static BuiltInModules ()
         {
             var modules = Assembly.GetExecutingAssembly ().GetTypes ()
-				.Where (p => p.IsSubclassOf (typeof(IodineModule)));
-			
+                .Where (p => p.IsSubclassOf (typeof(IodineModule)));
+            
             foreach (Type type in modules) {
                 if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
                     IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (

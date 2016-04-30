@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -51,8 +51,8 @@ namespace Iodine.Compiler
         public readonly TypeRegistry TypeRegistry = new TypeRegistry ();
         // Type registry for .NET interops
         /*
-		 * Where we can search for modules
-		 */
+         * Where we can search for modules
+         */
         public readonly List<string> SearchPath = new List<string> ();
 
         // Globals

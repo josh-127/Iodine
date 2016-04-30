@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -29,6 +29,7 @@
 
 using System;
 using System.Collections.Generic;
+using Iodine.Util;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime
@@ -41,7 +42,7 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
 
-        public readonly Dictionary<string, IodineObject> Attributes = new Dictionary<string, IodineObject> ();
+        public readonly AttributeDictionary Attributes = new AttributeDictionary ();
 
         /// <summary>
         /// Gets or sets the base class
@@ -72,6 +73,10 @@ namespace Iodine.Runtime
         {
         }
 
+        /// <summary>
+        /// Modifies the type of this object
+        /// </summary>
+        /// <param name="typeDef">The new type.</param>
         public void SetType (IodineTypeDefinition typeDef)
         {
             TypeDef = typeDef;
@@ -126,16 +131,17 @@ namespace Iodine.Runtime
 
         public IodineObject GetAttribute (string name)
         {
-            if (Attributes.ContainsKey (name))
-                return Attributes [name];
-            else if (Base != null && Base.Attributes.ContainsKey (name))
-                return Base.GetAttribute (name);
-            return null;
-        }
+            IodineObject ret;
+            Attributes.TryGetValue (name, out ret);
 
-        public virtual bool IsCallable ()
-        {
-            return Attributes.ContainsKey ("__invoke__") && Attributes ["__invoke__"].IsCallable ();
+            bool hasAttribute = Attributes.TryGetValue (name, out ret) ||
+                Base != null &&
+                Base.Attributes.TryGetValue (name, out ret);
+
+            if (hasAttribute) {
+                return ret;
+            }
+            return null;
         }
 
         public virtual IodineObject GetAttribute (VirtualMachine vm, string name)
@@ -148,6 +154,20 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Determines whether this instance is callable.
+        /// </summary>
+        /// <returns><c>true</c> if this instance is callable; otherwise, <c>false</c>.</returns>
+        public virtual bool IsCallable ()
+        {
+            return Attributes.ContainsKey ("__invoke__") && Attributes ["__invoke__"].IsCallable ();
+        }
+
+        /// <summary>
+        /// Returns a human friendly representation of this object
+        /// </summary>
+        /// <returns>The string.</returns>
+        /// <param name="vm">Vm.</param>
         public virtual IodineObject ToString (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__str__")) {
@@ -156,6 +176,11 @@ namespace Iodine.Runtime
             return new IodineString (ToString ());
         }
 
+        /// <summary>
+        /// Returns a string represention of this object. This representation *should* be valid
+        /// Iodine code and pastable into an Iodine REPL. 
+        /// </summary>
+        /// <param name="vm">Vm.</param>
         public virtual IodineObject Represent (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__repr__")) {
@@ -183,6 +208,8 @@ namespace Iodine.Runtime
                     key,
                     value
                 });
+            } else {
+                vm.RaiseException (new IodineNotSupportedException ("__setItem__ not implemented!"));
             }
         }
 
@@ -198,8 +225,16 @@ namespace Iodine.Runtime
         {
             return Equals ((object)obj);
         }
-      
-        public IodineObject PerformBinaryOperation (VirtualMachine vm,
+
+        /// <summary>
+        /// Dispatches the proper overload for the specified binary operator
+        /// </summary>
+        /// <returns>The result of invoking the overload for Binop.</returns>
+        /// <param name="vm">Vm.</param>
+        /// <param name="binop">Binary Operation.</param>
+        /// <param name="rvalue">Right hand value.</param>
+        public IodineObject PerformBinaryOperation (
+            VirtualMachine vm,
             BinaryOperation binop,
             IodineObject rvalue)
         {
@@ -251,29 +286,33 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Dispatches the overload for a specified unary operation
+        /// </summary>
+        /// <returns>The unary operation.</returns>
+        /// <param name="vm">Vm.</param>
+        /// <param name="op">Operand.</param>
         public virtual IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
         {
-            string methodName = null;
             switch (op) {
             case UnaryOperation.Negate:
-                methodName = "__negate__";
-                break;
+                return Negate (vm);
             case UnaryOperation.Not:
-                methodName = "__invert__";
-                break;
+                return Not (vm);
             case UnaryOperation.BoolNot:
-                methodName = "__not__";
-                break;
-            }
-            if (HasAttribute (methodName)) {
-                return GetAttribute (vm, methodName).Invoke (vm, new IodineObject[] { });
+                return LogicalNot (vm);
             }
             vm.RaiseException (new IodineNotSupportedException (
-                "The requested unary operator has not been implemented")
-            );
+                "The requested unary operator has not been implemented"
+            ));
             return null;
         }
 
+        /// <summary>
+        /// Calls this object as a method (Overloading the call operator)
+        /// </summary>
+        /// <param name="vm">Vm.</param>
+        /// <param name="arguments">Arguments.</param>
         public virtual IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
             if (HasAttribute ("__invoke__")) {
@@ -285,11 +324,20 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Determines whether this instance is evaluates as true.
+        /// </summary>
+        /// <returns><c>true</c> if this instance evaluates as true; otherwise, <c>false</c>.</returns>
         public virtual bool IsTrue ()
         {
             return true;
         }
 
+        /// <summary>
+        /// Retrieves the length (Size) of this object. By default, this simply
+        /// attempts to call self.__len__ ();
+        /// </summary>
+        /// <param name="vm">Vm.</param>
         public virtual IodineObject Len (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__len__")) {
@@ -323,6 +371,9 @@ namespace Iodine.Runtime
 
         #region Unary Operator Stubs
 
+        /*
+         * - unary prefix operator
+         */
         public virtual IodineObject Negate (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__negate__")) {
@@ -335,8 +386,8 @@ namespace Iodine.Runtime
         }
 
         /*
-		 * ~ unary prefix operator
-		 */
+         * ~ unary prefix operator
+         */
         public virtual IodineObject Not (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__invert__")) {
@@ -348,9 +399,9 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /*
-		 * ! unary prefix operator
-		 */
+       /*
+        * ! unary prefix operator
+        */
         public virtual IodineObject LogicalNot (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__not__")) {

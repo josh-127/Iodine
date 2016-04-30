@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -71,7 +71,7 @@ namespace Iodine.Modules.Extras
 
         public class IodineSocketException : IodineException
         {
-			
+            
         }
 
         public class IodineSocket : IodineObject
@@ -323,10 +323,10 @@ namespace Iodine.Modules.Extras
             }
 
             /*
-			 * I have no idea why, but for some reason using DnsEndPoint for establishing a 
-			 * socket connection throws a FeatureNotImplemented exception on Mono 4.0.3 so
-			 * this will have to do 
-			 */
+             * I have no idea why, but for some reason using DnsEndPoint for establishing a 
+             * socket connection throws a FeatureNotImplemented exception on Mono 4.0.3 so
+             * this will have to do 
+             */
             private static IPAddress DnsLookUp (string host)
             {
                 IPHostEntry entries = Dns.GetHostEntry (host);

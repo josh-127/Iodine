@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -34,13 +34,15 @@ namespace Iodine.Compiler.Ast
     public class VariableDeclaration : AstNode
     {
         public readonly string Name;
+        public readonly bool Global;
         public readonly AstNode Value;
 
-        public VariableDeclaration (SourceLocation location, string name, AstNode value = null)
+        public VariableDeclaration (SourceLocation location, bool global, string name, AstNode value = null)
             : base (location)
         {
             Name = name;
             Value = value;
+            Global = global;
         }
 
         public override void Visit (IodineAstVisitor visitor)

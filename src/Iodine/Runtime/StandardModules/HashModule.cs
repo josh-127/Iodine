@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -45,9 +45,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: sha256 (data)
-		 * Description: Returns the SHA256 digest of data
-		 */
+         * Iodine Function: sha256 (data)
+         * Description: Returns the SHA256 digest of data
+         */
         private IodineObject Sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -69,9 +69,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: sha1 (data)
-		 * Description: Returns the SHA1 digest of data
-		 */
+         * Iodine Function: sha1 (data)
+         * Description: Returns the SHA1 digest of data
+         */
         private IodineObject Sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -94,9 +94,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: sha512 (data)
-		 * Description: Returns the SHA512 digest of data
-		 */
+         * Iodine Function: sha512 (data)
+         * Description: Returns the SHA512 digest of data
+         */
         private IodineObject Sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -118,9 +118,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: md5 (data)
-		 * Description: Returns the MD5 digest of data
-		 */
+         * Iodine Function: md5 (data)
+         * Description: Returns the MD5 digest of data
+         */
         private IodineObject Md5 (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

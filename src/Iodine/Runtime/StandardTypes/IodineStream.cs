@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -82,9 +82,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Stream.write (self, *args);
-		 * Description: Writes each item in *args to the underlying stream
-		 */
+         * Iodine Method: Stream.write (self, *args);
+         * Description: Writes each item in *args to the underlying stream
+         */
         private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (Closed) { 
@@ -151,9 +151,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Stream.read (self, [n]);
-		 * Description: Reads n bytes from the underlying steam, or until the next line if n is not specified
-		 */
+         * Iodine Method: Stream.read (self, [n]);
+         * Description: Reads n bytes from the underlying steam, or until the next line if n is not specified
+         */
         private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (Closed) { 
@@ -224,9 +224,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Stream.tell (self);
-		 * Description: Returns the current position of the underlying stream
-		 */
+         * Iodine Method: Stream.tell (self);
+         * Description: Returns the current position of the underlying stream
+         */
         private IodineObject Tell (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (Closed) { 
@@ -291,9 +291,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Stream.close (self);
-		 * Description: Closes the underlying stream
-		 */
+         * Iodine Method: Stream.close (self);
+         * Description: Closes the underlying stream
+         */
         private IodineObject Close (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (this.Closed) { 
@@ -305,9 +305,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Stream.flush (self);
-		 * Description: Flushes the underlying stream
-		 */
+         * Iodine Method: Stream.flush (self);
+         * Description: Flushes the underlying stream
+         */
         private IodineObject Flush (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (this.Closed) { 
@@ -320,9 +320,9 @@ namespace Iodine.Runtime
 
 
         /**
-		 * Iodine Method: Stream.readAll (self);
-		 * Description: Reads the entire file
-		 */
+         * Iodine Method: Stream.readAll (self);
+         * Description: Reads the entire file
+         */
         private IodineObject ReadAll (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (this.Closed) { 

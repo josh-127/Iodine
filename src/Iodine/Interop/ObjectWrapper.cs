@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -74,9 +74,9 @@ namespace Iodine.Interop
             string name)
         {
             var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Instance)
-				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
-				.Select (p => (MethodInfo)p);
-			
+                .Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
+                .Select (p => (MethodInfo)p);
+            
             if (methods.Count () > 1) {
                 return MethodWrapper.Create (registry, methods, self); 
             } else {

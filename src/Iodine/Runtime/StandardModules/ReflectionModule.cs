@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -125,9 +125,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: hasAttribute (obj, attr)
-		 * Description: Returns true if obj contains attribute attr
-		 */
+         * Iodine Function: hasAttribute (obj, attr)
+         * Description: Returns true if obj contains attribute attr
+         */
         private IodineObject HasAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -144,9 +144,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getAttributes (obj)
-		 * Description: Returns a hashmap containing all attributes found in obj
-		 */
+         * Iodine Function: getAttributes (obj)
+         * Description: Returns a hashmap containing all attributes found in obj
+         */
         private IodineObject GetAttributes (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -162,9 +162,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getInterfaces (obj)
-		 * Description: Returns a list of all interfaces obj implements
-		 */
+         * Iodine Function: getInterfaces (obj)
+         * Description: Returns a list of all interfaces obj implements
+         */
         private IodineObject GetInterfaces (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -177,9 +177,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: setAttribute (obj, key, value)
-		 * Description: Sets obj.key to value
-		 */
+         * Iodine Function: setAttribute (obj, key, value)
+         * Description: Sets obj.key to value
+         */
         private IodineObject SetAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 3) {
@@ -212,9 +212,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getBytecode (item)
-		 * Description: Returns a list of instructions from an iodine method
-		 */
+         * Iodine Function: getBytecode (item)
+         * Description: Returns a list of instructions from an iodine method
+         */
         private IodineObject GetBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             IodineMethod method = args [0] as IodineMethod;
@@ -233,9 +233,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isMethod (item)
-		 * Description: Returns true if item is an iodine method
-		 */
+         * Iodine Function: isMethod (item)
+         * Description: Returns true if item is an iodine method
+         */
         private IodineObject IsMethod (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -251,9 +251,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isGeneratorMethod (item)
-		 * Description: Returns true if item is an iodine generator
-		 */
+         * Iodine Function: isGeneratorMethod (item)
+         * Description: Returns true if item is an iodine generator
+         */
         private IodineObject IsGeneratorMethod (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -269,9 +269,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isFunction (item)
-		 * Description: Returns true if item is an iodine function
-		 */
+         * Iodine Function: isFunction (item)
+         * Description: Returns true if item is an iodine function
+         */
         private IodineObject IsFunction (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -286,9 +286,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isBuiltin (item)
-		 * Description: Returns true if item is a built in Iodine function
-		 */
+         * Iodine Function: isBuiltin (item)
+         * Description: Returns true if item is a built in Iodine function
+         */
         private IodineObject IsBuiltin (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -304,9 +304,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isClass (item)
-		 * Description: Returns true if item is an iodine class
-		 */
+         * Iodine Function: isClass (item)
+         * Description: Returns true if item is an iodine class
+         */
         private IodineObject IsClass (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -322,9 +322,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isType (item)
-		 * Description: Returns true if item is an iodine type
-		 */
+         * Iodine Function: isType (item)
+         * Description: Returns true if item is an iodine type
+         */
         private IodineObject IsType (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -340,9 +340,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isModule (item)
-		 * Description: Returns true if item is an Iodine module
-		 */
+         * Iodine Function: isModule (item)
+         * Description: Returns true if item is an Iodine module
+         */
         private IodineObject IsModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -357,9 +357,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isProperty (item)
-		 * Description: Returns true if item is an Iodine property
-		 */
+         * Iodine Function: isProperty (item)
+         * Description: Returns true if item is an Iodine property
+         */
         private IodineObject IsProperty (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {

@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -34,9 +34,9 @@ using Iodine.Compiler;
 namespace Iodine.Runtime
 {
     /*
-	 * Should I move all these classes into seperate files? Make a subdirectory for them?
-	 * TODO: Decide
-	 */
+     * Should I move all these classes into seperate files? Make a subdirectory for them?
+     * TODO: Decide
+     */
     public class IodineException : IodineObject
     {
         public static readonly IodineTypeDefinition TypeDefinition = new ExceptionTypeDef ();
@@ -80,7 +80,7 @@ namespace Iodine.Runtime
             Message = String.Format (format, args);
             SetAttribute ("message", new IodineString (this.Message));
         }
-			
+            
     }
 
     public class IodineStackOverflow : IodineException
@@ -349,9 +349,9 @@ namespace Iodine.Runtime
             while (top != null) {
                 Console.WriteLine (" at {0} (Module: {1}, Line: {2})", top.Method.Name, top.Module.Name,
                     top.Location != null ?
-					top.Location.Line + 1 : 
-					0);
-				
+                    top.Location.Line + 1 : 
+                    0);
+                
                 top = top.Parent;
             }
         }

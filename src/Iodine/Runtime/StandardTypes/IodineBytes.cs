@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -177,9 +177,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: Bytes.indexOf (self, value)
-		 * Description: Returns the first position of value
-		 */
+         * Iodine Function: Bytes.indexOf (self, value)
+         * Description: Returns the first position of value
+         */
         private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -203,9 +203,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: Bytes.lastIndexOf (self, value)
-		 * Description: Returns the last position of value
-		 */
+         * Iodine Function: Bytes.lastIndexOf (self, value)
+         * Description: Returns the last position of value
+         */
         private IodineObject LastIndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -231,9 +231,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: Bytes.substr (self, start, [length])
-		 * Description: Returns the substring of this value starting at start
-		 */
+         * Iodine Function: Bytes.substr (self, start, [length])
+         * Description: Returns the substring of this value starting at start
+         */
         private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -288,9 +288,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: Bytes.contains (self, value)
-		 * Description: Returns true if this byte string contains value
-		 */
+         * Iodine Function: Bytes.contains (self, value)
+         * Description: Returns true if this byte string contains value
+         */
         private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {

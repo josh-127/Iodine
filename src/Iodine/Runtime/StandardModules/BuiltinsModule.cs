@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -93,9 +93,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: property (getter, [setter])
-		 * Description: Returns a property using the getter and setter method provided
-		 */
+         * Iodine Function: property (getter, [setter])
+         * Description: Returns a property using the getter and setter method provided
+         */
         private IodineObject Property (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -108,9 +108,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: require ()
-		 * Description: Internal use for use statement, not intended to be called directly!!!
-		 */
+         * Iodine Function: require ()
+         * Description: Internal use for use statement, not intended to be called directly!!!
+         */
         private IodineObject Require (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -163,7 +163,7 @@ namespace Iodine.Runtime
                 }
 
                 vm.SetGlobal (Path.GetFileNameWithoutExtension (fullPath), module);
-				
+                
                 if (names.Objects.Length > 0) {
                     foreach (IodineObject item in names.Objects) {
                         vm.SetGlobal (item.ToString (),
@@ -180,9 +180,9 @@ namespace Iodine.Runtime
         }
 
         /*
-		 * Iodine Function: invoke (obj, globals);
-		 * Description: Invokes an iodine object under a new Iodine context
-		 */
+         * Iodine Function: invoke (obj, globals);
+         * Description: Invokes an iodine object under a new Iodine context
+         */
         private IodineObject Invoke (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -207,9 +207,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: chr (val)
-		 * Description: Returns the character representation of val
-		 */
+         * Iodine Function: chr (val)
+         * Description: Returns the character representation of val
+         */
         private IodineObject Chr (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -221,9 +221,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: ord (val)
-		 * Description: Returns the numeric representation of character val
-		 */
+         * Iodine Function: ord (val)
+         * Description: Returns the numeric representation of character val
+         */
         private IodineObject Ord (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -241,9 +241,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: len (val)
-		 * Description: Returns the length of val, calling val.__len__ ()
-		 */
+         * Iodine Function: len (val)
+         * Description: Returns the length of val, calling val.__len__ ()
+         */
         private IodineObject Len (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -306,9 +306,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: typeof (val)
-		 * Description: Returns the type of val
-		 */
+         * Iodine Function: typeof (val)
+         * Description: Returns the type of val
+         */
         private IodineObject Typeof (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -319,9 +319,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: typecast (type, val)
-		 * Description: Casts val to type, raising an exception of val is not of the specified type
-		 */
+         * Iodine Function: typecast (type, val)
+         * Description: Casts val to type, raising an exception of val is not of the specified type
+         */
         private IodineObject Typecast (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -343,9 +343,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: print (*args)
-		 * Description: Prints each string in args
-		 */
+         * Iodine Function: print (*args)
+         * Description: Prints each string in args
+         */
         private IodineObject Print (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             foreach (IodineObject arg in args) {
@@ -355,9 +355,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: input ([prompt])
-		 * Description: Reads a line from stdin, displaying prompt
-		 */
+         * Iodine Function: input ([prompt])
+         * Description: Reads a line from stdin, displaying prompt
+         */
         private IodineObject Input (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             foreach (IodineObject arg in args) {
@@ -368,18 +368,18 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: Object ()
-		 * Description: Returns a new Iodine Object with no associated type information
-		 */
+         * Iodine Function: Object ()
+         * Description: Returns a new Iodine Object with no associated type information
+         */
         private IodineObject Object (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineObject (IodineObject.ObjectTypeDef);
         }
 
         /**
-		 * Iodine Function: repr (obj)
-		 * Description: Returns the string representation of an obj, calling obj.__repr__ ()
-		 */
+         * Iodine Function: repr (obj)
+         * Description: Returns the string representation of an obj, calling obj.__repr__ ()
+         */
         private IodineObject Repr (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -390,10 +390,10 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: filter (iterable, func) 
-		 * Description: Iterates though each item in iterable, passing them to func. If func returns
-		 * true, the value is appened to a list which is returned to the caller
-		 */
+         * Iodine Function: filter (iterable, func) 
+         * Description: Iterates though each item in iterable, passing them to func. If func returns
+         * true, the value is appened to a list which is returned to the caller
+         */
         private IodineObject Filter (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -416,10 +416,10 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: map (iterable, func)
-		 * Description: Iterates through each item in iterable, passing each item to func and appending
-		 * the result to a list which is returned to the caller
-		 */
+         * Iodine Function: map (iterable, func)
+         * Description: Iterates through each item in iterable, passing each item to func and appending
+         * the result to a list which is returned to the caller
+         */
         private IodineObject Map (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -461,8 +461,8 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * 
-		 */
+         * 
+         */
         private IodineObject Zip (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -490,9 +490,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: sum (iterable)
-		 * Description: Adds each item in the supplied iterable object
-		 */
+         * Iodine Function: sum (iterable)
+         * Description: Adds each item in the supplied iterable object
+         */
         private IodineObject Sum (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -512,9 +512,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: range (start, [end], step = 1)
-		 * Description: Returns a new iterator that will yield integers between the specified range
-		 */
+         * Iodine Function: range (start, [end], step = 1)
+         * Description: Returns a new iterator that will yield integers between the specified range
+         */
         private IodineObject Range (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             long start = 0;
@@ -556,9 +556,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: open (path, mode)
-		 * Description: Attempts to open a file, returning a new Stream object
-		 */
+         * Iodine Function: open (path, mode)
+         * Description: Attempts to open a file, returning a new Stream object
+         */
         private IodineObject Open (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {

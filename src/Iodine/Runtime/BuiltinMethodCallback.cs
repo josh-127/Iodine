@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -34,7 +34,7 @@ using Iodine.Compiler;
 namespace Iodine.Runtime
 {
     public delegate IodineObject IodineMethodDelegate (VirtualMachine vm,IodineObject self,
-		IodineObject[] arguments);
+        IodineObject[] arguments);
 
     /// <summary>
     /// Represents a C# method that can be called in Iodine
@@ -83,7 +83,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineInternalErrorException (ex));
             }
             return null;
-			
+            
         }
     }
 }

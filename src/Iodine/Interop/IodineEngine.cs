@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -86,7 +86,7 @@ namespace Iodine.Interop
         /// <param name="name">Name of the class.</param>
         /// <typeparam name="T">The class.</typeparam>
         public void RegisterClass<T> (string name)
-			where T : class
+            where T : class
         {
             Type type = typeof(T);
             ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
@@ -101,7 +101,7 @@ namespace Iodine.Interop
         /// <param name="name">Name of the class.</param>
         /// <typeparam name="T">The class.</typeparam>
         public void RegisterStruct<T> (string name)
-			where T : struct
+            where T : struct
         {
             Type type = typeof(T);
             ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
@@ -132,8 +132,8 @@ namespace Iodine.Interop
             foreach (Type type in classes) {
                 if (type.Namespace != "") {
                     string moduleName = type.Namespace.Contains (".") ? 
-						type.Namespace.Substring (type.Namespace.LastIndexOf (".") + 1) :
-						type.Namespace;
+                        type.Namespace.Substring (type.Namespace.LastIndexOf (".") + 1) :
+                        type.Namespace;
                     IodineModule module = null;
                     if (!modules.ContainsKey (type.Namespace)) {
                         #warning This needs fixed
@@ -146,7 +146,7 @@ namespace Iodine.Interop
                                                type.Name);
                     module.SetAttribute (type.Name, wrapper);
                     typeRegistry.AddTypeMapping (type, wrapper, null);
-					
+                    
                 }
             }
         }
@@ -236,8 +236,8 @@ namespace Iodine.Interop
         private IodineModule ResolveModule (string path)
         {
             /*
-			 * Resolve any imported .NET modules
-			 */
+             * Resolve any imported .NET modules
+             */
             string moduleName = path.Replace ("\\", ".").Replace ("/", ".");
             if (modules.ContainsKey (moduleName)) {
                 return modules [moduleName];
