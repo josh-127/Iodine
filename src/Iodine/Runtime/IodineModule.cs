@@ -49,11 +49,11 @@ namespace Iodine.Runtime
         }
 
         /*
-        * Anonymous modules will use the global dictionary for storage rather than the modules own
-        * dictionary. This is *kind of* a hack, but this functionality is *sort of* necessary for 
-        * Iodine REPLs to work properly
-        */
-        internal bool IsAnonymous {
+		 * Anonymous modules will use the global dictionary for storage rather than the modules own
+         * dictionary. This is *kind of* a hack, but this functionality is *sort of* necessary for 
+         * Iodine REPLs to work properly
+         */
+        public bool IsAnonymous {
             set;
             get;
         }
