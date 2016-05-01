@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -50,9 +50,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Regex.find (self, pattern)
-			 * Description: Finds the first match of pattern
-			 */
+             * Iodine Method: Regex.find (self, pattern)
+             * Description: Finds the first match of pattern
+             */
             private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 if (args.Length <= 0) {
@@ -70,9 +70,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Regex.isMatch (str)
-			 * Description: Returns true if str is a match
-			 */
+             * Iodine Method: Regex.isMatch (str)
+             * Description: Returns true if str is a match
+             */
             private IodineObject IsMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 if (args.Length <= 0) {
@@ -90,9 +90,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Regex.replace (self, pattern, value)
-			 * Description: Replaces all substrings that match pattern with value
-			 */
+             * Iodine Method: Regex.replace (self, pattern, value)
+             * Description: Replaces all substrings that match pattern with value
+             */
             private IodineObject Replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 if (args.Length <= 1) {
@@ -156,9 +156,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Match.getNextMatch (self)
-			 * Description: Returns the next match
-			 */
+             * Iodine Method: Match.getNextMatch (self)
+             * Description: Returns the next match
+             */
             private IodineObject GetNextMatch (VirtualMachine vm, IodineObject self, IodineObject[] EventArgs)
             {
                 return new IodineMatch (Value.NextMatch ());
@@ -174,9 +174,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: compile (pattern)
-		 * Description: Compiles a regular expression pattern
-		 */
+         * Iodine Function: compile (pattern)
+         * Description: Compiles a regular expression pattern
+         */
         private IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -194,9 +194,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: find (str, pattern)
-		 * Description: Finds the first match in str
-		 */
+         * Iodine Function: find (str, pattern)
+         * Description: Finds the first match in str
+         */
         private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -215,9 +215,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isMatch (str, pattern)
-		 * Description: Returns true if any values in str match pattern
-		 */
+         * Iodine Function: isMatch (str, pattern)
+         * Description: Returns true if any values in str match pattern
+         */
         private IodineObject IsMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {

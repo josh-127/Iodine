@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -239,27 +239,27 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.upper (self);
-		 * Description: Returns the uppercase representation of this string
-		 */
+         * Iodine Method: Str.upper (self);
+         * Description: Returns the uppercase representation of this string
+         */
         private IodineObject Upper (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Value.ToUpper ());
         }
 
         /**
-		 * Iodine Method: Str.lower (self);
-		 * Description: Returns the lowercase representation of this string
-		 */
+         * Iodine Method: Str.lower (self);
+         * Description: Returns the lowercase representation of this string
+         */
         private IodineObject Lower (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Value.ToLower ());
         }
 
         /**
-		 * Iodine Method: Str.substr (self, index, [length]);
-		 * Description: Returns a substring of this string starting from index
-		 */
+         * Iodine Method: Str.substr (self, index, [length]);
+         * Description: Returns a substring of this string starting from index
+         */
         private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -293,9 +293,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.index (self, value);
-		 * Description: Returns the first positio of value in this string 
-		 */
+         * Iodine Method: Str.index (self, value);
+         * Description: Returns the first positio of value in this string 
+         */
         private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -399,9 +399,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.contains (self, value);
-		 * Description: Returns true if this string contains value 
-		 */
+         * Iodine Method: Str.contains (self, value);
+         * Description: Returns true if this string contains value 
+         */
         private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -412,9 +412,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.startsWith (self, value);
-		 * Description: Returns true if this string starts with value 
-		 */
+         * Iodine Method: Str.startsWith (self, value);
+         * Description: Returns true if this string starts with value 
+         */
         private IodineObject StartsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -425,9 +425,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.endsWith (self, value);
-		 * Description: Returns true if this string ends with value
-		 */
+         * Iodine Method: Str.endsWith (self, value);
+         * Description: Returns true if this string ends with value
+         */
         private IodineObject EndsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -438,9 +438,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.replace (self, oldValue, newValue);
-		 * Description: Replaces all occurances of oldValue with newVale
-		 */
+         * Iodine Method: Str.replace (self, oldValue, newValue);
+         * Description: Replaces all occurances of oldValue with newVale
+         */
         private IodineObject Replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -457,9 +457,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.split (self, seperator);
-		 * Description: Splits this string by seperator, returning a list of substrings
-		 */
+         * Iodine Method: Str.split (self, seperator);
+         * Description: Splits this string by seperator, returning a list of substrings
+         */
         private IodineObject Split (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -485,18 +485,18 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.trim (self);
-		 * Description: Returns this string with all leading and trailing white spaces removed
-		 */
+         * Iodine Method: Str.trim (self);
+         * Description: Returns this string with all leading and trailing white spaces removed
+         */
         private IodineObject Trim (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Value.Trim ());
         }
 
         /**
-		 * Iodine Method: Str.join (self, *args);
-		 * Description: Combines each item in *args using this string as a seperator
-		 */
+         * Iodine Method: Str.join (self, *args);
+         * Description: Combines each item in *args using this string as a seperator
+         */
         private IodineObject Join (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             StringBuilder accum = new StringBuilder ();
@@ -515,9 +515,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.format (self, *args);
-		 * Description: Treats the string as a format specifier, applying it to *args
-		 */
+         * Iodine Method: Str.format (self, *args);
+         * Description: Treats the string as a format specifier, applying it to *args
+         */
         private IodineObject Format (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             string format = this.Value;
@@ -526,9 +526,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.isLetter (self);
-		 * Description: Returns true if this string is a letter
-		 */
+         * Iodine Method: Str.isLetter (self);
+         * Description: Returns true if this string is a letter
+         */
         private IodineObject IsLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             bool result = Value.Length == 0 ? false : true;
@@ -541,9 +541,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.isDigit (self);
-		 * Description: Returns true if this string is a numerical character
-		 */
+         * Iodine Method: Str.isDigit (self);
+         * Description: Returns true if this string is a numerical character
+         */
         private IodineObject IsDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             bool result = Value.Length == 0 ? false : true;
@@ -556,9 +556,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.isLetterOrDigit (self);
-		 * Description: Returns true if this string is a letter or a digit
-		 */
+         * Iodine Method: Str.isLetterOrDigit (self);
+         * Description: Returns true if this string is a letter or a digit
+         */
         private IodineObject IsLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             bool result = Value.Length == 0 ? false : true;
@@ -571,9 +571,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.isWhiteSpace (self);
-		 * Description: Returns true if this string is a whitespace character
-		 */
+         * Iodine Method: Str.isWhiteSpace (self);
+         * Description: Returns true if this string is a whitespace character
+         */
         private IodineObject IsWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             bool result = Value.Length == 0 ? false : true;
@@ -586,9 +586,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.isSymbol (self);
-		 * Description: Returns true if this string is a symbol
-		 */
+         * Iodine Method: Str.isSymbol (self);
+         * Description: Returns true if this string is a symbol
+         */
         private IodineObject IsSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             bool result = Value.Length == 0 ? false : true;
@@ -602,9 +602,9 @@ namespace Iodine.Runtime
 
 
         /**
-		 * Iodine Method: Str.padRight (self, amount [, char]);
-		 * Description: Returns true if this string is a symbol
-		 */
+         * Iodine Method: Str.padRight (self, amount [, char]);
+         * Description: Returns true if this string is a symbol
+         */
         private IodineObject PadRight (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             char ch = ' ';
@@ -636,9 +636,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: Str.padLeft (self, amount [, char]);
-		 * Description: Returns true if this string is a symbol
-		 */
+         * Iodine Method: Str.padLeft (self, amount [, char]);
+         * Description: Returns true if this string is a symbol
+         */
         private IodineObject PadLeft (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             char ch = ' ';

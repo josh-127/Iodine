@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -51,13 +51,13 @@ namespace Iodine.Interop
 
             var suitableOverload = type.GetConstructors ().Where (p => p.GetParameters ().Length ==
                                    arguments.Length).
-				FirstOrDefault ();
-			
+                FirstOrDefault ();
+            
             Type[] types = suitableOverload.GetParameters ().Select (p => p.ParameterType).ToArray ();
 
             object[] objects = arguments.Select (p => typeRegistry.ConvertToNativeObject (p,
                                    types [i++])).ToArray ();
-			
+            
             return ObjectWrapper.CreateFromObject (typeRegistry, this, suitableOverload.Invoke (objects));
         }
 
@@ -69,7 +69,7 @@ namespace Iodine.Interop
                 switch (info.MemberType) {
                 case MemberTypes.Method:
                     if (!wrapper.HasAttribute (info.Name)) {
-						
+                        
                         wrapper.SetAttribute (info.Name, CreateMultiMethod (registry, type, info.Name));
                     }
                     break;
@@ -92,8 +92,8 @@ namespace Iodine.Interop
             string name)
         {
             var methods = type.GetMembers (BindingFlags.Public | BindingFlags.Static)
-				.Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
-				.Select (p => (MethodInfo)p);
+                .Where (p => p.Name == name && p.MemberType == MemberTypes.Method)
+                .Select (p => (MethodInfo)p);
             return MethodWrapper.Create (registry, methods, null); 
         }
     }

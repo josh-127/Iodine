@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -498,7 +498,8 @@ namespace Iodine.Compiler
                     return ParseYield ();
                 case "try":
                     return ParseTryExcept ();
-                case "var":
+                case "global":
+                case "local":
                     return ParseVariableDeclaration ();
                 case "break":
                     Accept (TokenClass.Keyword);
@@ -595,7 +596,14 @@ namespace Iodine.Compiler
 
         private VariableDeclaration ParseVariableDeclaration ()
         {
-            Expect (TokenClass.Keyword, "var");
+            bool global = false;
+
+            if (Accept (TokenClass.Keyword, "global")) {
+                global = true;
+            } else {
+                Expect (TokenClass.Keyword, "local");
+            }
+
             Token ident = Expect (TokenClass.Identifier);
             AstNode value = null;
             if (Accept (TokenClass.Operator, "=")) {
@@ -605,7 +613,7 @@ namespace Iodine.Compiler
                     ParseExpression ()
                 );
             }
-            return new VariableDeclaration (Location, ident.Value, value);
+            return new VariableDeclaration (Location, global, ident.Value, value);
         }
 
         /*

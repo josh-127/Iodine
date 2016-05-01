@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -46,9 +46,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: pack (format, data)
-		 * Description: Packs a tuple, data into a byte string according to format
-		 */
+         * Iodine Function: pack (format, data)
+         * Description: Packs a tuple, data into a byte string according to format
+         */
         private IodineObject Pack (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -104,9 +104,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: unpack (format, bytes)
-		 * Description: Unpacks a tuple from a byte string according to format
-		 */
+         * Iodine Function: unpack (format, bytes)
+         * Description: Unpacks a tuple from a byte string according to format
+         */
         private IodineObject Unpack (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -162,9 +162,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getSize (format)
-		 * Description: Returns the size in bytes of a struct packed using the supplied format specifier
-		 */
+         * Iodine Function: getSize (format)
+         * Description: Returns the size in bytes of a struct packed using the supplied format specifier
+         */
         private IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {

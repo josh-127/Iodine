@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -55,9 +55,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Function: Directory.getFiles (dir)
-			 * Description: Returns a list of all files in dir
-			 */
+             * Iodine Function: Directory.getFiles (dir)
+             * Description: Returns a list of all files in dir
+             */
             private IodineObject listFiles (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -86,9 +86,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Function: Directory.getDirectories (dir)
-			 * Description: Returns a list of all directories in dir
-			 */
+             * Iodine Function: Directory.getDirectories (dir)
+             * Description: Returns a list of all directories in dir
+             */
             private IodineObject listDirectories (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -118,9 +118,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Function: Directory.remove (dir)
-			 * Description: Removes a directory
-			 */
+             * Iodine Function: Directory.remove (dir)
+             * Description: Removes a directory
+             */
             private IodineObject remove (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -146,9 +146,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Function: Directory.removeTree (dir)
-			 * Description: Removes a directory and all associated sub directories
-			 */
+             * Iodine Function: Directory.removeTree (dir)
+             * Description: Removes a directory and all associated sub directories
+             */
             private IodineObject removeTree (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -174,9 +174,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Function: Directory.exists (dir)
-			 * Description: Returns true if dir exists
-			 */
+             * Iodine Function: Directory.exists (dir)
+             * Description: Returns true if dir exists
+             */
             private IodineObject exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -194,9 +194,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Function: Directory.create (dir)
-			 * Description: Creates directory dir
-			 */
+             * Iodine Function: Directory.create (dir)
+             * Description: Creates directory dir
+             */
             private IodineObject create (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -425,9 +425,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: exists (path)
-		 * Description: Returns true if path is a valid file on the disk
-		 */
+         * Iodine Function: exists (path)
+         * Description: Returns true if path is a valid file on the disk
+         */
         private IodineObject exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -447,9 +447,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isDir (path)
-		 * Description: Returns true if path is a valid directory
-		 */
+         * Iodine Function: isDir (path)
+         * Description: Returns true if path is a valid directory
+         */
         private IodineObject isDir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -469,9 +469,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isFile (path)
-		 * Description: Returns true if path is a valid file
-		 */
+         * Iodine Function: isFile (path)
+         * Description: Returns true if path is a valid file
+         */
         private IodineObject isFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -491,9 +491,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: mkdir (dir)
-		 * Description: Creates directory dir
-		 */
+         * Iodine Function: mkdir (dir)
+         * Description: Creates directory dir
+         */
         private IodineObject mkdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -511,9 +511,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: rmdir (dir)
-		 * Description: Removes an empty directory
-		 */
+         * Iodine Function: rmdir (dir)
+         * Description: Removes an empty directory
+         */
         private IodineObject rmdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -542,9 +542,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: rmtree (dir)
-		 * Description: Removes an directory, deleting all subfiles
-		 */
+         * Iodine Function: rmtree (dir)
+         * Description: Removes an directory, deleting all subfiles
+         */
         private IodineObject rmtree (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             vm.Context.Warn (WarningType.DeprecationWarning, "The io module has been deprecated. Use os or fsutils");
@@ -596,9 +596,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getModifiedTime (dir)
-		 * Description: Removes an directory, deleting all subfiles
-		 */
+         * Iodine Function: getModifiedTime (dir)
+         * Description: Removes an directory, deleting all subfiles
+         */
         private IodineObject getModifiedTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -46,9 +46,9 @@ namespace Iodine.Runtime
                 }
 
                 /**
-				 * Iodine Class: Thread (func)
-				 * Description: Represents a thread, upon starting the thread, func () will be executed
-				 */
+                 * Iodine Class: Thread (func)
+                 * Description: Represents a thread, upon starting the thread, func () will be executed
+                 */
                 public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
                 {
                     if (args.Length <= 0) {
@@ -83,9 +83,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Thread.start (self)
-			 * Description: Starts the thread
-			 */
+             * Iodine Method: Thread.start (self)
+             * Description: Starts the thread
+             */
             private IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 Value.Start ();
@@ -93,9 +93,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Thread.abort (self)
-			 * Description: Aborts the thread
-			 */
+             * Iodine Method: Thread.abort (self)
+             * Description: Aborts the thread
+             */
             private IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 Value.Abort ();
@@ -103,9 +103,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Thread.isAlive (self)
-			 * Description: Returns true if the thread is alive
-			 */
+             * Iodine Method: Thread.isAlive (self)
+             * Description: Returns true if the thread is alive
+             */
             private IodineObject IsAlive (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 return IodineBool.Create (Value.IsAlive);
@@ -140,9 +140,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Lock.aquire (self)
-			 * Description: Aquires the log
-			 */
+             * Iodine Method: Lock.aquire (self)
+             * Description: Aquires the log
+             */
             private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 while (_lock)
@@ -152,9 +152,9 @@ namespace Iodine.Runtime
             }
 
             /*
-			 * Iodine Method: Lock.release (self)
-			 * Description: Releases the lock
-			 */
+             * Iodine Method: Lock.release (self)
+             * Description: Releases the lock
+             */
             private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 _lock = false;
@@ -162,9 +162,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Lock.isLocked (self)
-			 * Description: Returns true if the lock has been aquired
-			 */
+             * Iodine Method: Lock.isLocked (self)
+             * Description: Returns true if the lock has been aquired
+             */
             private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 return IodineBool.Create (_lock);
@@ -208,9 +208,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Semaphore.acquire (self)
-			 * Description: Decrements the semaphore
-			 */
+             * Iodine Method: Semaphore.acquire (self)
+             * Description: Decrements the semaphore
+             */
             private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 semaphore--;
@@ -220,18 +220,18 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: Semaphore.release (self)
-			 * Description: Increments the semaphore
-			 */
+             * Iodine Method: Semaphore.release (self)
+             * Description: Increments the semaphore
+             */
             private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 semaphore++;
                 return null;
             }
 
-            /**
-			 * Returns true if the semaphore is less than 0
-			 */
+           /**
+            * Returns true if the semaphore is less than 0
+            */
             private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 return IodineBool.Create (semaphore < 0);
@@ -247,10 +247,10 @@ namespace Iodine.Runtime
             SetAttribute ("sleep", new BuiltinMethodCallback (Sleep, this));
         }
 
-        /**
-		 * Iodine Function: sleep (t)
-		 * Description: Suspends the current thread for t milliseconds 
-		 */
+       /**
+        * Iodine Function: sleep (t)
+        * Description: Suspends the current thread for t milliseconds 
+        */
         private IodineObject Sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

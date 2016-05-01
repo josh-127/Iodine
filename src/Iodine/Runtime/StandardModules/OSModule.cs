@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -118,9 +118,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: subprocess.write (self, *args)
-			 * Description: Writes each string passed in *args to the process's standard input stream
-			 */
+             * Iodine Method: subprocess.write (self, *args)
+             * Description: Writes each string passed in *args to the process's standard input stream
+             */
             private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 foreach (IodineObject obj in args) {
@@ -132,16 +132,16 @@ namespace Iodine.Runtime
                     }
 
                     StdinWriteString (vm, str.Value);
-				
+                
                 }
                 return null;
             }
 
             /**
-			 * Iodine Method: subprocess.writeln (self, *args)
-			 * Description: Writes each string passed in *args to the process's standard input stream
-			 * and appends \n to the output
-			 */
+             * Iodine Method: subprocess.writeln (self, *args)
+             * Description: Writes each string passed in *args to the process's standard input stream
+             * and appends \n to the output
+             */
             private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 foreach (IodineObject obj in args) {
@@ -159,9 +159,9 @@ namespace Iodine.Runtime
             }
 
             /**
-			 * Iodine Method: subprocess.readln (self)
-			 * Description: Reads a line from the process's standard output stream
-			 */
+             * Iodine Method: subprocess.readln (self)
+             * Description: Reads a line from the process's standard output stream
+             */
             private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 return new IodineString (Value.StandardOutput.ReadLine ());
@@ -213,9 +213,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: procs ()
-		 * Description: Returns a list of running processes
-		 */
+         * Iodine Function: procs ()
+         * Description: Returns a list of running processes
+         */
         private IodineObject GetProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             IodineList list = new IodineList (new IodineObject[] { });
@@ -226,27 +226,27 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getLogin ()
-		 * Description: Returns the username of the current user
-		 */
+         * Iodine Function: getLogin ()
+         * Description: Returns the username of the current user
+         */
         private IodineObject GetUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Environment.UserName);
         }
 
         /**
-		 * Iodine Function: getcwd ();
-		 * Description: Gets the current working directory
-		 */
+         * Iodine Function: getcwd ();
+         * Description: Gets the current working directory
+         */
         private IodineObject GetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Environment.CurrentDirectory);
         }
 
         /**
-		 * Iodine Function: setcwd (cwd)
-		 * Description: Sets the current working directory
-		 */
+         * Iodine Function: setcwd (cwd)
+         * Description: Sets the current working directory
+         */
         private IodineObject SetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -266,9 +266,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getenv (name)
-		 * Description: Gets an environmental variable
-		 */
+         * Iodine Function: getenv (name)
+         * Description: Gets an environmental variable
+         */
         private IodineObject GetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -291,9 +291,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: putenv (name, value)
-		 * Description: Sets an environmental variable
-		 */
+         * Iodine Function: putenv (name, value)
+         * Description: Sets an environmental variable
+         */
         private IodineObject SetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -344,9 +344,9 @@ namespace Iodine.Runtime
         }
 
         /*
-		 * Iodine Function: call (program. [arguments, [useShell = false]])
-		 * Description: Executes program, waiting for it to exit and returning its exit code
-		 */
+         * Iodine Function: call (program. [arguments, [useShell = false]])
+         * Description: Executes program, waiting for it to exit and returning its exit code
+         */
         private IodineObject Call (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -401,10 +401,10 @@ namespace Iodine.Runtime
         }
 
         /*
-		 * Iodine Function: popen (command, mode)
-		 * Description: Executes command, returning a new stream representing the newly
-		 * created processes standard input and output
-		 */
+         * Iodine Function: popen (command, mode)
+         * Description: Executes command, returning a new stream representing the newly
+         * created processes standard input and output
+         */
         private IodineObject Popen (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -476,9 +476,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: system (command)
-		 * Description: Runs command with the system shell
-		 */
+         * Iodine Function: system (command)
+         * Description: Runs command with the system shell
+         */
         private IodineObject System (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -517,9 +517,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: unlink (file)
-		 * Description: Removes file
-		 */
+         * Iodine Function: unlink (file)
+         * Description: Removes file
+         */
         private IodineObject Unlink (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -544,9 +544,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: mkdir (dir)
-		 * Description: Creates directory dir
-		 */
+         * Iodine Function: mkdir (dir)
+         * Description: Creates directory dir
+         */
         private IodineObject Mkdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -563,9 +563,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: rmdir (dir)
-		 * Description: Removes an empty directory
-		 */
+         * Iodine Function: rmdir (dir)
+         * Description: Removes an empty directory
+         */
         private IodineObject Rmdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -593,9 +593,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: rmtree (dir)
-		 * Description: Removes an directory, deleting all subfiles
-		 */
+         * Iodine Function: rmtree (dir)
+         * Description: Removes an directory, deleting all subfiles
+         */
         private IodineObject Rmtree (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -623,8 +623,8 @@ namespace Iodine.Runtime
         }
 
         /*
-		 * Recurisively remove a directory
-		 */
+         * Recurisively remove a directory
+         */
         private static bool RemoveRecursive (string target)
         {
             DirectoryInfo dir = new DirectoryInfo (target);
@@ -649,9 +649,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: list (dir)
-		 * Description: Returns a list of all files in a directory
-		 */
+         * Iodine Function: list (dir)
+         * Description: Returns a list of all files in a directory
+         */
         private IodineObject List (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {

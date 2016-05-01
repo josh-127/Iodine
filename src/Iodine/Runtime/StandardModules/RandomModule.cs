@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -49,18 +49,18 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: rand ()
-		 * Description: Returns a random number between 0 and 1
-		 */
+         * Iodine Function: rand ()
+         * Description: Returns a random number between 0 and 1
+         */
         private IodineObject Rand (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineFloat (rgn.NextDouble ());
         }
 
         /**
-		 * Iodine Function: rand (a, [b])
-		 * Description: returns a random integer between 0 and a, or between a and b (if b is supplied)
-		 */
+         * Iodine Function: rand (a, [b])
+         * Description: returns a random integer between 0 and a, or between a and b (if b is supplied)
+         */
         private IodineObject RandInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -90,15 +90,15 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: cryptoString (size)
-		 */
+         * Iodine Function: cryptoString (size)
+         */
         private IodineObject CryptoString (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-				
+                
             IodineInteger count = args [0] as IodineInteger;
 
             if (count == null) {
@@ -112,8 +112,8 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: choice (iterable)
-		 */
+         * Iodine Function: choice (iterable)
+         */
         private IodineObject Choice (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

@@ -27,37 +27,13 @@
 //   * DAMAGE.
 // /**
 using System;
+using System.Collections.Generic;
 using Iodine.Runtime;
 
-namespace Iodine.Compiler
+namespace Iodine.Util
 {
-    public class ModuleBuilder : IodineModule
+    public sealed class AttributeDictionary : Dictionary<string, IodineObject>
     {
-        public new MethodBuilder Initializer {
-            private set;
-            get;
-        }
-
-        public ModuleBuilder (string name)
-            : base (name)
-        {
-            Initializer = new MethodBuilder (this, "__init__", false, 0, false, false);
-            base.Initializer = Initializer;
-        }
-
-        public void AddMethod (IodineMethod method)
-        {
-            Attributes [method.Name] = method;
-        }
-
-        public int DefineConstant (IodineObject obj)
-        {
-            if (!ConstantPool.Contains (obj)) {
-                ConstantPool.Add (obj);
-                return ConstantPool.Count - 1;
-            }
-            return ConstantPool.IndexOf (obj);
-        }
     }
 }
 

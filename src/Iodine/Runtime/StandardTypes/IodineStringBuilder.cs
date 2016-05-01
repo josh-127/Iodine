@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -85,9 +85,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: StringBuffer.append (self, *args);
-		 * Description: Appends each item in *args to the string buffer
-		 */
+         * Iodine Method: StringBuffer.append (self, *args);
+         * Description: Appends each item in *args to the string buffer
+         */
         private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             foreach (IodineObject obj in args) {
@@ -97,9 +97,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: StringBuffer.clear (self)
-		 * Description: Clears the string buffer
-		 */
+         * Iodine Method: StringBuffer.clear (self)
+         * Description: Clears the string buffer
+         */
         private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             buffer.Clear ();

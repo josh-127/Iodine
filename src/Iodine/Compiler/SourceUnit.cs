@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -70,8 +70,8 @@ namespace Iodine.Compiler
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             context.ErrorLog.Clear ();
             string moduleName = Path == null ? "__anonymous__" :
-				System.IO.Path.GetFileNameWithoutExtension (Path);
-			
+                System.IO.Path.GetFileNameWithoutExtension (Path);
+            
             if (HasPath) {
                 string wd = System.IO.Path.GetDirectoryName (Path);
                 string depPath = System.IO.Path.Combine (wd, ".deps");

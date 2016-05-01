@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -301,7 +301,7 @@ namespace Iodine.Compiler
 
             for (int i = 0; i < funcDecl.Parameters.Count; i++) {
                 methodBuilder.Parameters [funcDecl.Parameters [i]] =
-					Context.SymbolTable.AddSymbol (funcDecl.Parameters [i]);
+                    Context.SymbolTable.AddSymbol (funcDecl.Parameters [i]);
             }
 
             CreateContext (methodBuilder);
@@ -365,7 +365,7 @@ namespace Iodine.Compiler
         public override void Accept (ClassDeclaration classDecl)
         {
             ClassBuilder clazz = CompileClass (classDecl);
-		
+        
             if (Context.SymbolTable.IsInGlobalScope) {
                 Context.CurrentModule.SetAttribute (classDecl.Name, clazz);
             } else {
@@ -459,10 +459,10 @@ namespace Iodine.Compiler
                                 Path.GetDirectoryName (useStmt.Location.File),
                                 useStmt.Module);
             /*
-			 * Implementation detail: The use statement in all reality is simply an 
-			 * alias for the function require (); Here we translate the use statement
-			 * into a call to the require function
-			 */
+             * Implementation detail: The use statement in all reality is simply an 
+             * alias for the function require (); Here we translate the use statement
+             * into a call to the require function
+             */
             if (useStmt.Wildcard) {
                 Context.CurrentModule.Initializer.EmitInstruction (useStmt.Location, Opcode.LoadConst,
                     Context.CurrentModule.DefineConstant (new IodineString (import))
@@ -610,8 +610,8 @@ namespace Iodine.Compiler
             Context.CurrentMethod.EmitInstruction (ifStmt.Body.Location, Opcode.JumpIfFalse, elseLabel);
             ifStmt.Body.Visit (this);
             Context.CurrentMethod.EmitInstruction (ifStmt.ElseBody != null
-				? ifStmt.ElseBody.Location
-				: ifStmt.Location,
+                ? ifStmt.ElseBody.Location
+                : ifStmt.Location,
                 Opcode.Jump,
                 endLabel
             );
@@ -925,7 +925,7 @@ namespace Iodine.Compiler
 
             for (int i = 0; i < lambda.Parameters.Count; i++) {
                 anonMethod.Parameters [lambda.Parameters [i]] =
-					Context.SymbolTable.AddSymbol (lambda.Parameters [i]);
+                    Context.SymbolTable.AddSymbol (lambda.Parameters [i]);
             }
 
             CreateContext (anonMethod);
@@ -1037,8 +1037,8 @@ namespace Iodine.Compiler
             binop.Left.Visit (this);
 
             /*
-			 * Short circuit evaluation 
-			 */
+             * Short circuit evaluation 
+             */
             switch (binop.Operation) {
             case BinaryOperation.BoolAnd:
                 Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Dup);
@@ -1439,8 +1439,8 @@ namespace Iodine.Compiler
             expression.Left.Visit (this);
 
             /*
-			 * Short circuit evaluation 
-			 */
+             * Short circuit evaluation 
+             */
             switch (expression.Operation) {
             case BinaryOperation.And:
                 Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Dup);
@@ -1534,9 +1534,9 @@ namespace Iodine.Compiler
         }
 
         /*
-		 * Emits the instructions required for loading the class that contains
-		 * the attribute 'item'
-		 */
+         * Emits the instructions required for loading the class that contains
+         * the attribute 'item'
+         */
         private void LoadAssociatedClass (string item = null)
         {
             ClassBuilder current = Context.CurrentClass;
@@ -1611,8 +1611,8 @@ namespace Iodine.Compiler
             str.VisitChildren (this); // A string can contain a list of sub expressions for string interpolation
 
             IodineObject constant = str.Binary ?
-				(IodineObject)new IodineBytes (str.Value) :
-				(IodineObject)new IodineString (str.Value);
+                (IodineObject)new IodineBytes (str.Value) :
+                (IodineObject)new IodineString (str.Value);
 
             Context.CurrentMethod.EmitInstruction (str.Location,
                 Opcode.LoadConst, 

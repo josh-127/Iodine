@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -63,8 +63,8 @@ namespace Iodine.Util
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         public void Push (T obj)
         {
             if (Count > 7278) {
@@ -80,8 +80,8 @@ namespace Iodine.Util
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         public T Pop ()
         {
             Count--;
@@ -91,8 +91,8 @@ namespace Iodine.Util
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         public T Peek ()
         {
             return top.Item;

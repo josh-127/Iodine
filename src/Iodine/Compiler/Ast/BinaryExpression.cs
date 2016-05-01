@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -113,7 +113,7 @@ namespace Iodine.Compiler.Ast
                     }
                     break;
                 }
-			
+            
             case BinaryOperation.LeftShift:
                 {
                     if (left is IntegerExpression && right is IntegerExpression) {

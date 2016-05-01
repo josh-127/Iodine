@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -54,9 +54,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: copy (src, dest)
-		 * Description: Copies a file 
-		 */
+         * Iodine Function: copy (src, dest)
+         * Description: Copies a file 
+         */
         private IodineObject Copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -83,9 +83,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: copytree (src, dest)
-		 * Description: Copies a directory and its contents
-		 */
+         * Iodine Function: copytree (src, dest)
+         * Description: Copies a directory and its contents
+         */
         private IodineObject Copytree (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -107,9 +107,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: exists (path)
-		 * Description: Returns true if path is a valid file on the disk
-		 */
+         * Iodine Function: exists (path)
+         * Description: Returns true if path is a valid file on the disk
+         */
         private IodineObject Exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -128,9 +128,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isDir (path)
-		 * Description: Returns true if path is a valid directory
-		 */
+         * Iodine Function: isDir (path)
+         * Description: Returns true if path is a valid directory
+         */
         private IodineObject IsDir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -149,9 +149,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: isFile (path)
-		 * Description: Returns true if path is a valid file
-		 */
+         * Iodine Function: isFile (path)
+         * Description: Returns true if path is a valid file
+         */
         private IodineObject IsFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -254,9 +254,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: getModifiedTime (dir)
-		 * Description: Removes an directory, deleting all subfiles
-		 */
+         * Iodine Function: getModifiedTime (dir)
+         * Description: Removes an directory, deleting all subfiles
+         */
         private IodineObject GetModifiedTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

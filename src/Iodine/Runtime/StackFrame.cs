@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -136,8 +136,8 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         internal void StoreLocal (int index, IodineObject obj)
         {
             if (parentLocals.ContainsKey (index)) {
@@ -147,32 +147,32 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         internal IodineObject LoadLocal (int index)
         {
             return locals [index];
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         internal void Push (IodineObject obj)
         {
             stack.Push (obj ?? IodineNull.Instance);
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         internal IodineObject Pop ()
         {
             return stack.Pop ();
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         internal StackFrame Duplicate (StackFrame top)
         {
             Dictionary<int, IodineObject> oldLocals = new Dictionary<int, IodineObject> ();

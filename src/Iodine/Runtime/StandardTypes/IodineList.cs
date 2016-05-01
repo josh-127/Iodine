@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -286,9 +286,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: List.append (self, *items)
-		 * Description: Appends each item to the list
-		 */
+         * Iodine Method: List.append (self, *items)
+         * Description: Appends each item to the list
+         */
         private IodineObject Add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
             if (arguments.Length <= 0) {
@@ -303,9 +303,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: List.appendRange (self, item)
-		 * Description: Iterates through item, appending each item to the list
-		 */
+         * Iodine Method: List.appendRange (self, item)
+         * Description: Iterates through item, appending each item to the list
+         */
         private IodineObject AddRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
             if (arguments.Length <= 0) {
@@ -358,9 +358,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: List.remove (self, item)
-		 * Description: Removes item from the list
-		 */
+         * Iodine Method: List.remove (self, item)
+         * Description: Removes item from the list
+         */
         private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
             if (arguments.Length <= 0) {
@@ -376,9 +376,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: List.removeAt (self, index)
-		 * Description: Removes the item at index
-		 */
+         * Iodine Method: List.removeAt (self, index)
+         * Description: Removes the item at index
+         */
         private IodineObject RemoveAt (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
             if (arguments.Length <= 0) {
@@ -394,9 +394,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: List.contains (self, value)
-		 * Description: Appends each item to the list
-		 */
+         * Iodine Method: List.contains (self, value)
+         * Description: Appends each item to the list
+         */
         private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
             if (arguments.Length <= 0) {
@@ -416,9 +416,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: List.splice (self, start, [end])
-		 * Description: Returns a sublist starting at start, and optionally ending at end
-		 */
+         * Iodine Method: List.splice (self, start, [end])
+         * Description: Returns a sublist starting at start, and optionally ending at end
+         */
         private IodineObject Splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
             if (arguments.Length <= 0) {
@@ -464,9 +464,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Method: List.clear (self)
-		 * Description: Clears all items in this list
-		 */
+         * Iodine Method: List.clear (self)
+         * Description: Clears all items in this list
+         */
         private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
             Objects.Clear ();

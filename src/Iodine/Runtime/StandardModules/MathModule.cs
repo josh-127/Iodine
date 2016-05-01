@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -56,9 +56,9 @@ namespace Iodine.Runtime
         }
 
         /**
-		 * Iodine Function: pow (val, power)
-		 * Description: raises val to power
-		 */
+         * Iodine Function: pow (val, power)
+         * Description: raises val to power
+         */
         private IodineObject Pow (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {

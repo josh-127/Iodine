@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -41,10 +41,10 @@ namespace Iodine.Runtime
 {
     // Callback for debugger
     public delegate bool TraceCallback (TraceType type,
-		VirtualMachine vm,
-		StackFrame frame,
-		SourceLocation location
-	);
+        VirtualMachine vm,
+        StackFrame frame,
+        SourceLocation location
+    );
 
     public enum TraceType
     {
@@ -167,7 +167,7 @@ namespace Iodine.Runtime
             IodineObject[] arguments)
         {
             int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 :
-				method.ParameterCount;
+                method.ParameterCount;
             if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
                 (!method.Variadic && arguments.Length < requiredArgs)) {
                 RaiseException (new IodineArgumentException (method.ParameterCount));
@@ -235,7 +235,7 @@ namespace Iodine.Runtime
                 ExecuteInstruction ();
                 top.Location = currentLocation;
             }
-				
+                
 
             IodineObject retVal = lastObject ?? IodineNull.Instance;
            
@@ -357,8 +357,8 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         private void ExecuteInstruction ()
         {
             if (instruction.Location != null) {
@@ -777,8 +777,8 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         /// <summary>
         /// Pushes an item onto the evaluation stack
         /// </summary>
@@ -795,8 +795,8 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         private IodineObject Pop ()
         {
             stackSize--;
@@ -804,8 +804,8 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         private void NewFrame (StackFrame frame)
         {
             frameCount++;
@@ -815,8 +815,8 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         private void NewFrame (IodineMethod method, IodineObject[] args, IodineObject self)
         {
             frameCount++;
@@ -826,8 +826,8 @@ namespace Iodine.Runtime
         }
 
         #if DOTNET_45
-		[MethodImpl (MethodImplOptions.AggressiveInlining)]
-		#endif
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
         public StackFrame EndFrame ()
         {
             frameCount--;

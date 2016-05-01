@@ -1,4 +1,4 @@
-﻿/**
+/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -144,7 +144,7 @@ namespace Iodine.Compiler
                     return ReadIdentifier ();
                 }
                 errorLog.Add (Errors.UnexpectedToken, location, (char)ReadChar ());
-				
+                
                 return null;
             }
         }
@@ -221,8 +221,8 @@ namespace Iodine.Compiler
                 errorLog.Add (Errors.UnterminatedStringLiteral, location);
             }
             return new Token (ch == '"' ? 
-				TokenClass.InterpolatedStringLiteral :
-				TokenClass.StringLiteral,
+                TokenClass.InterpolatedStringLiteral :
+                TokenClass.StringLiteral,
                 accum.ToString (),
                 location
             );
