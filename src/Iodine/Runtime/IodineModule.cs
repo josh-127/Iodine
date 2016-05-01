@@ -51,7 +51,7 @@ namespace Iodine.Runtime
         /*
 		 * Anonymous modules will use the global dictionary for storage rather than the modules own dictionary
 		 */
-        internal bool IsAnonymous {
+        public bool IsAnonymous {
             set;
             get;
         }

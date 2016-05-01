@@ -83,6 +83,9 @@ namespace Iodine.Runtime
             SetAttribute ("set", new BuiltinMethodCallback (Set, this));
             SetAttribute ("get", new BuiltinMethodCallback (Get, this));
             SetAttribute ("remove", new BuiltinMethodCallback (Remove, this));
+            SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] args) => {
+                return GetIterator (vm);
+            }, this));
         }
 
         public override IodineObject Len (VirtualMachine vm)
