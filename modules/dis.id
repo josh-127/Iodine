@@ -108,12 +108,12 @@ func disassemble (obj) {
 
         buffer = StringBuffer ();
         if (ins.line != lastLine) {
-            buffer.append (Str (ins.line).padRight (8));
+            buffer.append (Str (ins.line).ljust (8));
         } else {
-            buffer.append ("".padLeft (8));
+            buffer.append ("".rjust (8));
         }
         lastLine = ins.line;
-        buffer.append (_getMnemonic (ins.opcode, ins.immediate).padRight (30));
+        buffer.append (_getMnemonic (ins.opcode, ins.immediate).ljust (30));
         
         buffer.append (ins.immediate);
         if (ins.immediateRef isnot Null) {

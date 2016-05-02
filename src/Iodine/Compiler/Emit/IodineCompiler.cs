@@ -824,7 +824,7 @@ namespace Iodine.Compiler
                 for (int i = 0; i < assignStmt.Identifiers.Count; i++) {
                     assignStmt.Expressions [i].Visit (this);
                     string ident = assignStmt.Identifiers [i];
-                    if (symbolTable.IsGlobal (ident)) {
+                    if (symbolTable.IsGlobal (ident) || assignStmt.Global) {
                         Context.CurrentMethod.EmitInstruction (
                             Opcode.StoreGlobal,
                             Context.CurrentModule.DefineConstant (new IodineName (ident))
@@ -864,7 +864,7 @@ namespace Iodine.Compiler
 
                 Context.CurrentMethod.EmitInstruction (Opcode.LoadIndex);
 
-                if (symbolTable.IsGlobal (ident)) {
+                if (symbolTable.IsGlobal (ident) || assignStmt.Global) {
                     Context.CurrentMethod.EmitInstruction (
                         Opcode.StoreGlobal,
                         Context.CurrentModule.DefineConstant (new IodineName (ident))

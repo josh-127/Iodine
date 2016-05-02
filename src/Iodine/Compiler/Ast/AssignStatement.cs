@@ -33,6 +33,7 @@ namespace Iodine.Compiler.Ast
 {
     public class AssignStatement : AstNode 
     {
+        public readonly bool Global;
         public readonly List<string> Identifiers = new List<string> ();
         public readonly List<AstNode> Expressions = new List<AstNode> ();
 
@@ -47,11 +48,13 @@ namespace Iodine.Compiler.Ast
 
         public AssignStatement (
             SourceLocation location,
+            bool global,
             IEnumerable<string> identifiers,
             IEnumerable<AstNode> expressions,
             bool isPacked)
             : base (location)
         {
+            Global = global;
             Identifiers.AddRange (identifiers);
             Expressions.AddRange (expressions);
             Packed = isPacked;

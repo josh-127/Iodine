@@ -40,7 +40,7 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-    [IodineBuiltinModule ("ssl")]
+    [IodineBuiltinModule ("net/ssl")]
     internal class SslModule : IodineModule
     {
         public SslModule ()

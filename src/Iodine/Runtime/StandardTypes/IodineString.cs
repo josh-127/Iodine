@@ -72,17 +72,19 @@ namespace Iodine.Runtime
             SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
             SetAttribute ("replace", new BuiltinMethodCallback (Replace, this));
-            SetAttribute ("startsWith", new BuiltinMethodCallback (StartsWith, this));
-            SetAttribute ("endsWith", new BuiltinMethodCallback (EndsWith, this));
+            SetAttribute ("startsWith", new BuiltinMethodCallback (StartsWith, this)); // DEPRECATED: Use startswith instead
+            SetAttribute ("endsWith", new BuiltinMethodCallback (EndsWith, this)); // DEPRECATED: Use endswith instead
+            SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, this));
+            SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, this));
             SetAttribute ("split", new BuiltinMethodCallback (Split, this));
             SetAttribute ("join", new BuiltinMethodCallback (Join, this));
             SetAttribute ("trim", new BuiltinMethodCallback (Trim, this));
             SetAttribute ("format", new BuiltinMethodCallback (Format, this));
-            SetAttribute ("isLetter", new BuiltinMethodCallback (IsLetter, this));
-            SetAttribute ("isDigit", new BuiltinMethodCallback (IsDigit, this));
-            SetAttribute ("isLetterOrDigit", new BuiltinMethodCallback (IsLetterOrDigit, this));
-            SetAttribute ("isWhiteSpace", new BuiltinMethodCallback (IsWhiteSpace, this));
-            SetAttribute ("isSymbol", new BuiltinMethodCallback (IsSymbol, this));
+            SetAttribute ("isalpha", new BuiltinMethodCallback (IsLetter, this));
+            SetAttribute ("isdigit", new BuiltinMethodCallback (IsDigit, this));
+            SetAttribute ("isalnum", new BuiltinMethodCallback (IsLetterOrDigit, this));
+            SetAttribute ("iswhitespace", new BuiltinMethodCallback (IsWhiteSpace, this));
+            SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, this));
             SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, this));
             SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, this));
 

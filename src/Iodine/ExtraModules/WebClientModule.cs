@@ -35,7 +35,7 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-    [IodineBuiltinModule ("webclient")]
+    [IodineBuiltinModule ("net/webclient")]
     internal class WebClientModule : IodineModule
     {
         public class IodineWebClient : IodineObject

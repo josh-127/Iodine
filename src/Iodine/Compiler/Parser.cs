@@ -499,8 +499,7 @@ namespace Iodine.Compiler
                 case "try":
                     return ParseTryExcept ();
                 case "global":
-                case "local":
-                    return ParseVariableDeclaration ();
+                    return ParseAssignStatement ();
                 case "break":
                     Accept (TokenClass.Keyword);
                     return new BreakStatement (Location);
@@ -810,6 +809,13 @@ namespace Iodine.Compiler
         {
             List<string> identifiers = new List<string> ();
 
+            bool isGlobal = false;
+
+            if (Accept (TokenClass.Keyword, "global")) {
+                isGlobal = true;
+            } else {
+                Accept (TokenClass.Keyword, "local");
+            }
 
             SourceLocation location = Location;
 
@@ -832,11 +838,11 @@ namespace Iodine.Compiler
                 expressions.Add (ParseExpression ());
             } while (Accept (TokenClass.Comma));
 
-            if (identifiers.Count > 0 && expressions.Count == 1) {
+            if (identifiers.Count > 1 && expressions.Count == 1) {
                 isPacked = true;
             }
 
-            return new AssignStatement (location, identifiers, expressions, isPacked);
+            return new AssignStatement (location, isGlobal, identifiers, expressions, isPacked);
         }
 
         #endregion
@@ -1096,38 +1102,59 @@ namespace Iodine.Compiler
                 switch (Current.Value) {
                 case ">":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.GreaterThan, expr,
-                        ParseBitshift ());
+                    expr = new BinaryExpression (Location,
+                        BinaryOperation.GreaterThan,
+                        expr,
+                        ParseBitshift ()
+                    );
                     continue;
                 case "<":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.LessThan, expr,
-                        ParseBitshift ());
+                    expr = new BinaryExpression (Location,
+                        BinaryOperation.LessThan,
+                        expr,
+                        ParseBitshift ()
+                    );
                     continue;
                 case ">=":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.GreaterThanOrEqu, expr,
-                        ParseBitshift ());
+                    expr = new BinaryExpression (Location,
+                        BinaryOperation.GreaterThanOrEqu,
+                        expr,
+                        ParseBitshift ()
+                    );
                     continue;
                 case "<=":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.LessThanOrEqu, expr,
-                        ParseBitshift ());
+                    expr = new BinaryExpression (Location,
+                        BinaryOperation.LessThanOrEqu,
+                        expr,
+                        ParseBitshift ()
+                    );
                     continue;
                 case "is":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.InstanceOf, expr,
-                        ParseBitshift ());
+                    expr = new BinaryExpression (Location,
+                        BinaryOperation.InstanceOf,
+                        expr,
+                        ParseBitshift ()
+                    );
                     continue;
                 case "isnot":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.NotInstanceOf, expr,
-                        ParseBitshift ());
+                    expr = new BinaryExpression (Location,
+                        BinaryOperation.NotInstanceOf,
+                        expr,
+                        ParseBitshift ()
+                    );
                     continue;
                 case "as":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.DynamicCast, expr,
-                        ParseBitshift ());
+                    expr = new BinaryExpression (Location,
+                        BinaryOperation.DynamicCast,
+                        expr,
+                        ParseBitshift ()
+                    );
                     continue;
                 default:
                     break;

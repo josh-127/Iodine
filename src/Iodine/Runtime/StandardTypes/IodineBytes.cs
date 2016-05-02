@@ -30,6 +30,7 @@
 using System;
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime
@@ -51,7 +52,27 @@ namespace Iodine.Runtime
                     vm.RaiseException (new IodineArgumentException (1));
                 }
 
-                return new IodineBytes (args [0].ToString ());
+                if (args [0] is IodineString) {
+                    return new IodineBytes (args [0].ToString ());
+                }
+
+                IodineObject iter = args [0];
+
+                iter.IterReset (vm);
+
+                List<byte> bytes = new List<byte> ();
+
+                while (iter.IterMoveNext (vm)) {
+                    IodineInteger b = iter.IterGetCurrent (vm) as IodineInteger;
+
+                    if (b == null) {
+                        vm.RaiseException (new IodineException ("Int"));
+                        return null;
+                    }
+                    bytes.Add ((byte)(b.Value & 0xFF));
+                }
+
+                return new IodineBytes (bytes.ToArray ());
             }
         }
 

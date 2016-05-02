@@ -1,10 +1,12 @@
-__globals__ = __globals__;
+
 class RestrictedContext {
     
     func RestrictedContext (self, *args) {
         self._dict = {};
-        self.__originalGlobals__ = __globals__;
-        global something;
+    }
+
+    func invoke (self, item) {
+        __globals__.invoke (item, self._dict);
     }
     
     func __setItem__ (self, key, value) {
@@ -12,27 +14,11 @@ class RestrictedContext {
     }
     
     func __enter__ (self) {
-        __globals__ = self._dict;
+        self.__originalGlobals__ = __globals__;
+        global __globals__ = self._dict;
     }
     
     func __exit__ (self) {
-        __globals__ = self.__originalGlobals__;
+        global __globals__ = self.__originalGlobals__;
     }
 }
-
-
-myContext = RestrictedContext ();
-
-originalPrint = print;
-
-myContext ["print"] = lambda (p) {
-    originalPrint ("Faggot says " + p);
-};
-
-print ("Before");
-
-with (myContext) {
-    print ("Hi.");
-}
-
-print ("After");

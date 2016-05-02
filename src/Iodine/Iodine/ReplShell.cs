@@ -50,6 +50,13 @@ namespace Iodine
 
             IodineContext context = new IodineContext ();
             context.ShouldOptimize = false;
+
+            context.Globals ["quit"] = new BuiltinMethodCallback (
+                ((VirtualMachine vm, IodineObject self, IodineObject[] arguments) => {
+                Environment.Exit (0);
+                    return null;
+            }), null);
+
             while (true) {
                 Console.Write (">>> ");
                 var source = Console.ReadLine ();

@@ -14,7 +14,7 @@ class InvalidJsonException : Exception {
 }
 
 /**
- * Represents a JSON file
+ * Represents a JSON fileisl
  */
 class JsonFile {
     # JSON token types   
@@ -160,7 +160,7 @@ class JsonFile {
         func scanConstant () {
             accum = "";
             result = null;
-            while (peekChar ().isLetter ()) {
+            while (peekChar ().isalpha ()) {
                 accum += readChar ();
             }
             given (accum) {
@@ -178,7 +178,7 @@ class JsonFile {
         }
 
         func eatWhitespace () {
-            while (peekChar ().isWhiteSpace ()) {
+            while (peekChar ().iswhitespace ()) {
                 readChar ();
             }
         }
@@ -214,7 +214,7 @@ class JsonFile {
             do {
                 accum += readChar ();
                 ch = peekChar (); 
-            } while (ch.isDigit ());
+            } while (ch.isdigit ());
             return Int (accum);
         }   
 
@@ -255,9 +255,9 @@ class JsonFile {
                 }
             }
 
-            if (ch.isDigit ()) {
+            if (ch.isdigit ()) {
                 tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
-            } else if (ch.isLetter ()) {
+            } else if (ch.isalpha ()) {
                 tokens.append (scanConstant ());           
             } else if (len (tokens) == last) {
                 raise InvalidJsonException ();
