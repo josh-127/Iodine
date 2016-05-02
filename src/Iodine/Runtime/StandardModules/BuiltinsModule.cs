@@ -59,6 +59,7 @@ namespace Iodine.Runtime
             SetAttribute ("input", new BuiltinMethodCallback (Input, null));
             SetAttribute ("Complex", IodineComplex.TypeDefinition);
             SetAttribute ("Int", IodineInteger.TypeDefinition);
+            SetAttribute ("BigInt", IodineBigInt.TypeDefinition);
             SetAttribute ("Float", IodineFloat.TypeDefinition);
             SetAttribute ("Str", IodineString.TypeDefinition);
             SetAttribute ("Bytes", IodineBytes.TypeDefinition);
