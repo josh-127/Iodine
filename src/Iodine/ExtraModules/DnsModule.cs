@@ -36,7 +36,7 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-    [IodineBuiltinModule ("dns")]
+    [IodineBuiltinModule ("net/dns")]
     internal class DNSModule : IodineModule
     {
         public class IodineHostEntry : IodineObject

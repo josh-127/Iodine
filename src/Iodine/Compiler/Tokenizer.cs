@@ -324,6 +324,7 @@ namespace Iodine.Compiler
             case "when":
             case "var":
             case "with":
+            case "global":
                 return new Token (TokenClass.Keyword, accum.ToString (), location);
             case "is":
             case "isnot":

@@ -40,7 +40,7 @@ using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
 {
-    [IodineBuiltinModule ("socket")]
+    [IodineBuiltinModule ("net/socket")]
     internal class SocketModule : IodineModule
     {
         public class IodineProtocolType : IodineObject

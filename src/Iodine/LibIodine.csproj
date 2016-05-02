@@ -228,6 +228,7 @@
     <Compile Include="Runtime\StandardTypes\IodineGlobals.cs" />
     <Compile Include="Util\AttributeDictionary.cs" />
     <Compile Include="Runtime\StackFrame.cs" />
+    <Compile Include="Runtime\StandardTypes\IodineBigInt.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

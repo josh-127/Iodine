@@ -32,7 +32,7 @@ using System.Security.Cryptography;
 
 namespace Iodine.Runtime
 {
-    [IodineBuiltinModule ("hash")]
+    [IodineBuiltinModule ("_hashfunctions")]
     public class HashModule : IodineModule
     {
         public HashModule ()

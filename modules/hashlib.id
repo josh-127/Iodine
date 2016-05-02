@@ -1,0 +1,38 @@
+/**
+ * Provides common hashing functions
+ * @module hashlib
+ * @author GruntTheDivine
+ */
+ 
+ 
+# Builtin hash functions
+use _hashfunctions;
+
+# SplittyDev's Whirlpool implementation
+use WhirlpoolAlgol from _whirlpool;
+
+
+class HashAlgol {
+    func update (self, item) { }
+    func digest (self) { }
+}
+
+/*
+ * Builtin hash functions
+ */
+func sha1 (obj) => __hashfunctions__.sha1 (obj);
+func sha256 (obj) => __hashfunctions__.sha256 (obj);
+func sha512 (obj) => __hashfunctions__.sha512 (obj);
+func md5 (obj) => __hashfunctions__.md5 (obj);
+
+/**
+ * Computes the whirlpool digest of the given parameter
+ * @param obj The object to hash
+ * @returns The whirlpool digest of the given parameter
+ */
+func whirlpool (obj) {
+    algol = WhirlpoolAlgol ();
+    algol.update (obj);
+    return algol.digest ();
+}
+
