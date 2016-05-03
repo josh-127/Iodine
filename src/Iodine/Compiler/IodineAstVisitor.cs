@@ -90,6 +90,10 @@ namespace Iodine.Compiler
         {
         }
 
+        public virtual void Accept (BigIntegerExpression integer)
+        {
+        }
+
         public virtual void Accept (IfStatement ifStmt)
         {
         }

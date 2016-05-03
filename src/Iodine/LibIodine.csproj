@@ -229,6 +229,7 @@
     <Compile Include="Util\AttributeDictionary.cs" />
     <Compile Include="Runtime\StackFrame.cs" />
     <Compile Include="Runtime\StandardTypes\IodineBigInt.cs" />
+    <Compile Include="Compiler\Ast\BigIntegerExpression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -250,7 +251,7 @@
           <StandardHeader Text="/**&#xA;  * Copyright (c) 2015, GruntTheDivine All rights reserved.&#xA;&#xA;  * Redistribution and use in source and binary forms, with or without modification,&#xA;  * are permitted provided that the following conditions are met:&#xA;  * &#xA;  *  * Redistributions of source code must retain the above copyright notice, this list&#xA;  *    of conditions and the following disclaimer.&#xA;  * &#xA;  *  * Redistributions in binary form must reproduce the above copyright notice, this&#xA;  *    list of conditions and the following disclaimer in the documentation and/or&#xA;  *    other materials provided with the distribution.&#xA;&#xA;  * Neither the name of the copyright holder nor the names of its contributors may be&#xA;  * used to endorse or promote products derived from this software without specific&#xA;  * prior written permission.&#xA;  * &#xA;  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY&#xA;  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES&#xA;  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT&#xA;  * SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,&#xA;  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED&#xA;  * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR&#xA;  * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN&#xA;  * CONTRACT ,STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN&#xA;  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH&#xA;  * DAMAGE.&#xA;/**" IncludeInNewFiles="True" />
           <TextStylePolicy NoTabsAfterNonTabs="True" EolMarker="Unix" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
           <XmlFormattingPolicy inheritsSet="Mono" inheritsScope="application/xml" scope="application/xml" />
-          <CSharpFormattingPolicy AlignToFirstMethodDeclarationParameter="False" AlignToFirstIndexerDeclarationParameter="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <NameConventionPolicy>
             <Rules>
               <NamingRule Name="Namespaces" AffectedEntity="Namespace" VisibilityMask="VisibilityMask" NamingStyle="PascalCase" IncludeInstanceMembers="True" IncludeStaticEntities="True" />
