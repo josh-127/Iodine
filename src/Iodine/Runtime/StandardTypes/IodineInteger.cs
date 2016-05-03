@@ -105,9 +105,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value + bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value + floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -119,9 +123,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value - bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value - floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -133,9 +141,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value * bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value * floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -147,9 +159,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value / bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value / floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -237,9 +253,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value == bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Math.Abs (Value - floatVal.Value) < double.Epsilon);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -251,9 +271,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value != bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Math.Abs (Value - floatVal.Value) > double.Epsilon);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -265,9 +289,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value > bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value > floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -279,9 +307,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value >= bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value >= floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
             }
@@ -292,9 +324,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value < bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value < floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -306,9 +342,13 @@ namespace Iodine.Runtime
         {
             IodineInteger intVal = right as IodineInteger;
             IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value <= bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value <= floatVal.Value);
                 }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
