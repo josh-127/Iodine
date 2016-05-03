@@ -87,8 +87,12 @@ namespace Iodine.Runtime
         public override bool Equals (IodineObject obj)
         {
             IodineInteger intVal = obj as IodineInteger;
+            IodineBigInt bigVal = obj as IodineBigInt;
 
             if (intVal != null) {
+                if (bigVal != null) {
+                    return bigVal.Value == Value;
+                }
                 return intVal.Value == Value;
             }
 
@@ -100,7 +104,15 @@ namespace Iodine.Runtime
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value + bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value + floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -110,7 +122,15 @@ namespace Iodine.Runtime
         public override IodineObject Sub (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value - bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value - floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -120,7 +140,15 @@ namespace Iodine.Runtime
         public override IodineObject Mul (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value * bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value * floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -130,7 +158,15 @@ namespace Iodine.Runtime
         public override IodineObject Div (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value / bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return new IodineFloat (Value / floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -140,7 +176,11 @@ namespace Iodine.Runtime
         public override IodineObject Mod (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value % bigVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -150,7 +190,11 @@ namespace Iodine.Runtime
         public override IodineObject And (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value & bigVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -160,7 +204,11 @@ namespace Iodine.Runtime
         public override IodineObject Or (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value | bigVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -170,7 +218,11 @@ namespace Iodine.Runtime
         public override IodineObject Xor (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return new IodineBigInt (Value ^ bigVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -200,7 +252,15 @@ namespace Iodine.Runtime
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return IodineBool.Create (Value == bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Math.Abs (Value - floatVal.Value) < double.Epsilon);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -210,7 +270,15 @@ namespace Iodine.Runtime
         public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return IodineBool.Create (Value != bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Math.Abs (Value - floatVal.Value) > double.Epsilon);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -220,7 +288,15 @@ namespace Iodine.Runtime
         public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return IodineBool.Create (Value > bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value > floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -230,7 +306,15 @@ namespace Iodine.Runtime
         public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return IodineBool.Create (Value >= bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value >= floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
             }
             return IodineBool.Create (Value >= intVal.Value);
@@ -239,7 +323,15 @@ namespace Iodine.Runtime
         public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return IodineBool.Create (Value < bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value < floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }
@@ -249,7 +341,15 @@ namespace Iodine.Runtime
         public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
         {
             IodineInteger intVal = right as IodineInteger;
+            IodineBigInt bigVal = right as IodineBigInt;
+            IodineFloat floatVal = right as IodineFloat;
             if (intVal == null) {
+                if (bigVal != null) {
+                    return IodineBool.Create (Value <= bigVal.Value);
+                }
+                if (floatVal != null) {
+                    return IodineBool.Create (Value <= floatVal.Value);
+                }
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
             }

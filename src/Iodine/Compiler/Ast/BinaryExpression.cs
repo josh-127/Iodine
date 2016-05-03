@@ -84,6 +84,10 @@ namespace Iodine.Compiler.Ast
                             ((IntegerExpression)left).Value + ((IntegerExpression)right).Value
                         );
                     }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        return new BigIntegerExpression (right.Location,
+                            ((BigIntegerExpression)left).Value + ((BigIntegerExpression)right).Value);
+                    }
                     break;
                 }
             case BinaryOperation.Sub:
@@ -92,6 +96,10 @@ namespace Iodine.Compiler.Ast
                         return new IntegerExpression (right.Location,
                             ((IntegerExpression)left).Value - ((IntegerExpression)right).Value
                         );
+                    }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        return new BigIntegerExpression (right.Location,
+                            ((BigIntegerExpression)left).Value - ((BigIntegerExpression)right).Value);
                     }
                     break;
                 }
@@ -102,6 +110,10 @@ namespace Iodine.Compiler.Ast
                             ((IntegerExpression)left).Value * ((IntegerExpression)right).Value
                         );
                     }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        return new BigIntegerExpression (right.Location,
+                            ((BigIntegerExpression)left).Value * ((BigIntegerExpression)right).Value);
+                    }
                     break;
                 }
             case BinaryOperation.Div:
@@ -110,6 +122,10 @@ namespace Iodine.Compiler.Ast
                         return new IntegerExpression (right.Location,
                             ((IntegerExpression)left).Value / ((IntegerExpression)right).Value
                         );
+                    }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        return new BigIntegerExpression (right.Location,
+                            ((BigIntegerExpression)left).Value / ((BigIntegerExpression)right).Value);
                     }
                     break;
                 }
@@ -138,6 +154,10 @@ namespace Iodine.Compiler.Ast
                         bool res = ((IntegerExpression)left).Value == ((IntegerExpression)right).Value;
                         return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
                     }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        bool res = ((BigIntegerExpression)left).Value == ((BigIntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);
+                    }
                     break;
                 }
             case BinaryOperation.NotEquals:
@@ -145,6 +165,10 @@ namespace Iodine.Compiler.Ast
                     if (left is IntegerExpression && right is IntegerExpression) {
                         bool res = ((IntegerExpression)left).Value != ((IntegerExpression)right).Value;
                         return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        bool res = ((BigIntegerExpression)left).Value != ((BigIntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);
                     }
                     break;
                 }
@@ -154,13 +178,21 @@ namespace Iodine.Compiler.Ast
                         bool res = ((IntegerExpression)left).Value > ((IntegerExpression)right).Value;
                         return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
                     }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        bool res = ((BigIntegerExpression)left).Value > ((BigIntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);
+                    }
                     break;
                 }
             case BinaryOperation.GreaterThanOrEqu:
                 {
                     if (left is IntegerExpression && right is IntegerExpression) {
-                        bool res = ((IntegerExpression)left).Value > ((IntegerExpression)right).Value;
+                        bool res = ((IntegerExpression)left).Value >= ((IntegerExpression)right).Value;
                         return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        bool res = ((BigIntegerExpression)left).Value >= ((BigIntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);
                     }
                     break;
                 }
@@ -170,6 +202,10 @@ namespace Iodine.Compiler.Ast
                         bool res = ((IntegerExpression)left).Value < ((IntegerExpression)right).Value;
                         return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);  
                     }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        bool res = ((BigIntegerExpression)left).Value < ((BigIntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);
+                    }
                     break;
                 }
             case BinaryOperation.LessThanOrEqu:
@@ -177,6 +213,10 @@ namespace Iodine.Compiler.Ast
                     if (left is IntegerExpression && right is IntegerExpression) {
                         bool res = ((IntegerExpression)left).Value <= ((IntegerExpression)right).Value;
                         return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location); 
+                    }
+                    if (left is BigIntegerExpression && right is BigIntegerExpression) {
+                        bool res = ((BigIntegerExpression)left).Value <= ((BigIntegerExpression)right).Value;
+                        return res ? (AstNode)new TrueExpression (left.Location) : (AstNode)new FalseExpression (right.Location);
                     }
                     break;
                 }

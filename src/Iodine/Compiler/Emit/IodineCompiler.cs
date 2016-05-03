@@ -1587,6 +1587,27 @@ namespace Iodine.Compiler
             }
         }
 
+        public override void Accept (BigIntegerExpression integer)
+        {
+            Context.CurrentMethod.EmitInstruction (integer.Location,
+                Opcode.LoadConst,
+                Context.CurrentModule.DefineConstant (new IodineBigInt (integer.Value))
+            );
+
+            if (Context.IsPatternExpression) {
+                Context.CurrentMethod.EmitInstruction (
+                    integer.Location,
+                    Opcode.LoadLocal,
+                    Context.PatternTemporary
+                );
+                Context.CurrentMethod.EmitInstruction (
+                    integer.Location,
+                    Opcode.BinOp,
+                    (int)BinaryOperation.Equals
+                );
+            }
+        }
+
         public override void Accept (FloatExpression num)
         {
             Context.CurrentMethod.EmitInstruction (num.Location,

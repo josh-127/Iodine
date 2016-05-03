@@ -32,6 +32,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using Iodine.Compiler.Ast;
+using System.Numerics;
 
 namespace Iodine.Compiler
 {
@@ -1300,12 +1301,21 @@ namespace Iodine.Compiler
             case TokenClass.Identifier:
                 return new NameExpression (Location, ReadToken ().Value);
             case TokenClass.IntLiteral:
-                long lval;
-                if (!long.TryParse (Current.Value, out lval)) {
-                    errorLog.Add (Errors.IntegerOverBounds, Current.Location);
+                long lval64;
+                BigInteger lvalbig = BigInteger.Zero;
+                bool big = false;
+                if (!long.TryParse (Current.Value, out lval64)) {
+                    if (!BigInteger.TryParse (Current.Value, out lvalbig)) {
+                        errorLog.Add (Errors.IntegerOverBounds, Current.Location);
+                    } else {
+                        big = true;
+                    }
                 }
                 ReadToken ();
-                return new IntegerExpression (Location, lval);
+                if (big) {
+                    return new BigIntegerExpression (Location, lvalbig);
+                }
+                return new IntegerExpression (Location, lval64);
             case TokenClass.FloatLiteral:
                 return new FloatExpression (Location, double.Parse (
                     ReadToken ().Value));
