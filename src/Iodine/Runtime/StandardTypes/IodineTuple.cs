@@ -54,7 +54,38 @@ namespace Iodine.Runtime
             }
         }
 
-        private int iterIndex = 0;
+        class TupleIterable : IodineObject
+        {
+            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("TupleIterator");
+
+            private int iterIndex = 0;
+            private IodineObject[] objects;
+
+            public TupleIterable (IodineObject[] objects)
+                : base (TypeDefinition)
+            {
+                this.objects = objects;
+            }
+
+            public override IodineObject IterGetCurrent (VirtualMachine vm)
+            {
+                return objects [iterIndex - 1];
+            }
+
+            public override bool IterMoveNext (VirtualMachine vm)
+            {
+                if (iterIndex >= objects.Length) {
+                    return false;
+                }
+                iterIndex++;
+                return true;
+            }
+
+            public override void IterReset (VirtualMachine vm)
+            {
+                iterIndex = 0;
+            }
+        }
 
         public IodineObject[] Objects { private set; get; }
 
@@ -151,25 +182,7 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIterator (VirtualMachine vm)
         {
-            return this;
-        }
-
-        public override IodineObject IterGetCurrent (VirtualMachine vm)
-        {
-            return Objects [iterIndex - 1];
-        }
-
-        public override bool IterMoveNext (VirtualMachine vm)
-        {
-            if (iterIndex >= Objects.Length)
-                return false;
-            iterIndex++;
-            return true;
-        }
-
-        public override void IterReset (VirtualMachine vm)
-        {
-            iterIndex = 0;
+            return new TupleIterable (Objects);
         }
 
         public override IodineObject Represent (VirtualMachine vm)

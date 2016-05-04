@@ -55,7 +55,40 @@ namespace Iodine.Runtime
             }
         }
 
-        private int iterIndex = 0;
+        class StringIterator : IodineObject
+        {
+            static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("StrIterator");
+
+            private string value;
+
+            private int iterIndex = 0;
+
+            public StringIterator (string value)
+                : base (TypeDefinition)
+            {
+                this.value = value;
+            }
+
+            public override IodineObject IterGetCurrent (VirtualMachine vm)
+            {
+                return new IodineString (value [iterIndex - 1].ToString ());
+            }
+
+            public override bool IterMoveNext (VirtualMachine vm)
+            {
+                if (iterIndex >= value.Length) {
+                    return false;
+                }
+                iterIndex++;
+                return true;
+            }
+
+            public override void IterReset (VirtualMachine vm)
+            {
+                iterIndex = 0;
+            }
+        }
+
 
         public string Value { private set; get; }
 
@@ -213,28 +246,9 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIterator (VirtualMachine vm)
         {
-            return this;
+            return new StringIterator (Value);
         }
-
-        public override IodineObject IterGetCurrent (VirtualMachine vm)
-        {
-            return new IodineString (Value [iterIndex - 1].ToString ());
-        }
-
-        public override bool IterMoveNext (VirtualMachine vm)
-        {
-            if (iterIndex >= Value.Length) {
-                return false;
-            }
-            iterIndex++;
-            return true;
-        }
-
-        public override void IterReset (VirtualMachine vm)
-        {
-            iterIndex = 0;
-        }
-
+      
         public override IodineObject Represent (VirtualMachine vm)
         {
             return new IodineString (String.Format ("\"{0}\"", Value));
