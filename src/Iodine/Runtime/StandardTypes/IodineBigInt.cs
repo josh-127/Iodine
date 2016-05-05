@@ -232,6 +232,26 @@ namespace Iodine.Runtime
             return IodineBool.Create (Value <= intVal);
         }
 
+        public override IodineObject LeftShift (VirtualMachine vm, IodineObject right)
+        {
+            BigInteger intVal;
+            if (!ConvertToBigInt (right, out intVal)) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineBigInt (Value * BigInteger.Pow (2, (int)(uint)intVal));
+        }
+
+        public override IodineObject RightShift (VirtualMachine vm, IodineObject right)
+        {
+            BigInteger intVal;
+            if (!ConvertToBigInt (right, out intVal)) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineBigInt (Value / BigInteger.Pow (2, (int)(uint)intVal));
+        }
+
         #endregion
 
         public override IodineObject PerformUnaryOperation (VirtualMachine vm, UnaryOperation op)
