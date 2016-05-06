@@ -34,8 +34,45 @@ namespace Iodine.Runtime
 {
     public class IodineRange : IodineObject
     {
-        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
-        private long iterIndex = 0;
+        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Range");
+
+        class RangeIterator : IodineObject
+        {
+            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
+
+            private long iterIndex = 0;
+            private long min;
+            private long end;
+            private long step;
+
+            public RangeIterator (long min, long max, long step)
+                : base (TypeDefinition)
+            {
+                this.end = max;
+                this.step = step;
+                this.min = min;
+            }
+
+            public override IodineObject IterGetCurrent (VirtualMachine vm)
+            {
+                return new IodineInteger (iterIndex - 1);
+            }
+
+            public override bool IterMoveNext (VirtualMachine vm)
+            {
+                if (iterIndex >= this.end) {
+                    return false;
+                }
+                iterIndex += this.step;
+                return true;
+            }
+
+            public override void IterReset (VirtualMachine vm)
+            {
+                this.iterIndex = min;
+            }
+        }
+
         private long min;
         private long end;
         private long step;
@@ -55,26 +92,7 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIterator (VirtualMachine vm)
         {
-            return this;
-        }
-
-        public override IodineObject IterGetCurrent (VirtualMachine vm)
-        {
-            return new IodineInteger (iterIndex - 1);
-        }
-
-        public override bool IterMoveNext (VirtualMachine vm)
-        {
-            if (iterIndex >= this.end) {
-                return false;
-            }
-            iterIndex += this.step;
-            return true;
-        }
-
-        public override void IterReset (VirtualMachine vm)
-        {
-            this.iterIndex = min;
+            return new RangeIterator (min, end, step);
         }
 
         public override string ToString ()

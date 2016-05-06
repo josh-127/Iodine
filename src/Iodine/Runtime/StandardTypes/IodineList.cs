@@ -64,7 +64,38 @@ namespace Iodine.Runtime
             }
         }
 
-        private int iterIndex = 0;
+        class ListIterator : IodineObject
+        {
+            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("ListIterator");
+
+            private int iterIndex = 0;
+            private List<IodineObject> objects;
+
+            public ListIterator (List<IodineObject> objects)
+                : base (TypeDefinition)
+            {
+                this.objects = objects;
+            }
+
+            public override IodineObject IterGetCurrent (VirtualMachine vm)
+            {
+                return objects [iterIndex - 1];
+            }
+
+            public override bool IterMoveNext (VirtualMachine vm)
+            {
+                if (iterIndex >= objects.Count) {
+                    return false;
+                }
+                iterIndex++;
+                return true;
+            }
+
+            public override void IterReset (VirtualMachine vm)
+            {
+                iterIndex = 0;
+            }
+        }
 
         public List<IodineObject> Objects { private set; get; }
 
@@ -86,29 +117,6 @@ namespace Iodine.Runtime
 
             SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
                 return GetIterator (vm);
-            }, this));
-
-            SetAttribute ("__iter_reset__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
-                IterReset (vm);
-                return IodineNull.Instance;
-            }, this));
-
-            SetAttribute ("__iter_getcurrent__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
-                return IterGetCurrent (vm);
-            }, this));
-
-            SetAttribute ("__iter_movenext__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
-                return IodineBool.Create (IterMoveNext (vm));
-            }, this));
-
-
-            SetAttribute ("__setitem__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
-                SetIndex (vm, args [0], args [1]);
-                return IodineNull.Instance;
-            }, this));
-
-            SetAttribute ("__getitem__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
-                return GetIndex (vm, args [0]);
             }, this));
 
             Objects = list;
@@ -241,26 +249,7 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIterator (VirtualMachine vm)
         {
-            return this;
-        }
-
-        public override IodineObject IterGetCurrent (VirtualMachine vm)
-        {
-            return Objects [iterIndex - 1];
-        }
-
-        public override bool IterMoveNext (VirtualMachine vm)
-        {
-            if (iterIndex >= Objects.Count) {
-                return false;
-            }
-            iterIndex++;
-            return true;
-        }
-
-        public override void IterReset (VirtualMachine vm)
-        {
-            iterIndex = 0;
+            return new ListIterator (Objects);
         }
 
         public override IodineObject Represent (VirtualMachine vm)
@@ -276,11 +265,14 @@ namespace Iodine.Runtime
 
         private bool Compare (IodineList list1, IodineList list2)
         {
-            if (list1.Objects.Count != list2.Objects.Count)
+            if (list1.Objects.Count != list2.Objects.Count) {
                 return false;
+            }
+
             for (int i = 0; i < list1.Objects.Count; i++) {
-                if (list1.Objects [i].GetHashCode () != list2.Objects [i].GetHashCode ())
+                if (list1.Objects [i].GetHashCode () != list2.Objects [i].GetHashCode ()) {
                     return false;
+                }
             }
             return true;
         }
