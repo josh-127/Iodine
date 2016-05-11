@@ -31,6 +31,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Iodine.Runtime;
+using System.Numerics;
+using System.Collections;
 
 namespace Iodine.Interop
 {
@@ -62,6 +64,7 @@ namespace Iodine.Interop
             AddTypeMapping (typeof(string), IodineString.TypeDefinition, new StringTypeMapping ());
             AddTypeMapping (typeof(float), IodineFloat.TypeDefinition, new FloatTypeMapping ());
             AddTypeMapping (typeof(double), IodineFloat.TypeDefinition, new DoubleTypeMapping ());
+            AddTypeMapping (typeof(BigInteger), IodineBigInt.TypeDefinition, new BigIntegerTypeMapping ());
             //AddTypeMapping (null, IodineList.TypeDefinition, new ArrayTypeMapping ());
             //AddTypeMapping (null, IodineTuple.TypeDefinition, new ArrayTypeMapping ());
         }
@@ -92,13 +95,17 @@ namespace Iodine.Interop
             return null;
         }
 
-        private IodineList ConvertFromArray (object[] array)
+        private IodineList ConvertFromArray (ICollection collection)
         {
-            IodineObject[] iodineObjects = new IodineObject[array.Length];
-            for (int i = 0; i < array.Length; i++) {
-                iodineObjects [i] = ConvertToIodineObject (array [i]);
-            }
-            return new IodineList (iodineObjects);
+            var enumerator = collection.GetEnumerator ();
+            IodineObject [] objects = new IodineObject [collection.Count];
+            var i = 0;
+            do {
+                objects [i++] = ConvertToIodineObject (enumerator.Current);
+                if (i == collection.Count)
+                    break;
+            } while (enumerator.MoveNext ());
+            return new IodineList (objects);
         }
 
         public object ConvertToNativeObject (IodineObject obj)
@@ -152,8 +159,11 @@ namespace Iodine.Interop
 
         private object[] ConvertToArray (IodineObject obj)
         {
-            // #TODO Implement this
-            return null;
+            var list = (IodineList)obj;
+            var arr = new object [list.Objects.Count];
+            for (var i = 0; i < list.Objects.Count; i++)
+                arr [i] = ConvertToNativeObject (list.Objects [i]);
+            return arr;
         }
     }
 }
