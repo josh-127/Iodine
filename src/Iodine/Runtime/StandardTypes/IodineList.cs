@@ -104,10 +104,10 @@ namespace Iodine.Runtime
         {
             SetAttribute ("append", new BuiltinMethodCallback (Add, this));
             SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, this));
-            SetAttribute ("appendRange", new BuiltinMethodCallback (AddRange, this));
+            SetAttribute ("appendrange", new BuiltinMethodCallback (AddRange, this));
             SetAttribute ("discard", new BuiltinMethodCallback (Discard, this));
             SetAttribute ("remove", new BuiltinMethodCallback (Remove, this));
-            SetAttribute ("removeAt", new BuiltinMethodCallback (RemoveAt, this));
+            SetAttribute ("removeat", new BuiltinMethodCallback (RemoveAt, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
             SetAttribute ("clear", new BuiltinMethodCallback (Clear, this));
             SetAttribute ("index", new BuiltinMethodCallback (Index, this));

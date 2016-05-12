@@ -726,10 +726,16 @@ namespace Iodine.Compiler
             );
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterGetNext);
-            Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location,
-                Opcode.StoreLocal,
-                Context.SymbolTable.AddSymbol (foreachStmt.Item)
-            );
+
+            if (foreachStmt.Items.Count == 1) {
+                Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location,
+                    Opcode.StoreLocal,
+                    Context.SymbolTable.AddSymbol (foreachStmt.Items [0])
+                );
+            } else {
+                
+                CompileForeachWithAutounpack (foreachStmt.Items);
+            }
 
             foreachStmt.Body.Visit (this);
 
@@ -740,6 +746,36 @@ namespace Iodine.Compiler
 
             Context.BreakLabels.Pop ();
             Context.ContinueLabels.Pop ();
+        }
+
+        private void CompileForeachWithAutounpack (List<string> identifiers)
+        {
+            int local = Context.CurrentMethod.CreateTemporary ();
+
+            Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, local);
+
+            for (int i = 0; i < identifiers.Count; i++) {
+
+                string ident = identifiers [i];
+
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadLocal, local);
+
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadConst,
+                    Context.CurrentModule.DefineConstant (new IodineInteger (i))
+                );
+
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadIndex);
+
+                int localIndex = symbolTable.IsSymbolDefined (ident) ?
+                    symbolTable.GetSymbolIndex (ident) :
+                    symbolTable.AddSymbol (ident);
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.StoreLocal,
+                    localIndex
+                );
+
+            }
         }
 
         public override void Accept (RaiseStatement raise)

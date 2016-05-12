@@ -42,7 +42,7 @@ namespace Iodine.Runtime
         {
             SetAttribute ("pack", new BuiltinMethodCallback (Pack, this));
             SetAttribute ("unpack", new BuiltinMethodCallback (Unpack, this));
-            SetAttribute ("getSize", new BuiltinMethodCallback (GetSize, this));
+            SetAttribute ("getsize", new BuiltinMethodCallback (GetSize, this));
         }
 
         /**

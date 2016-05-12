@@ -105,8 +105,6 @@ namespace Iodine.Runtime
             SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
             SetAttribute ("replace", new BuiltinMethodCallback (Replace, this));
-            SetAttribute ("startsWith", new BuiltinMethodCallback (StartsWith, this)); // DEPRECATED: Use startswith instead
-            SetAttribute ("endsWith", new BuiltinMethodCallback (EndsWith, this)); // DEPRECATED: Use endswith instead
             SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, this));
             SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, this));
             SetAttribute ("split", new BuiltinMethodCallback (Split, this));

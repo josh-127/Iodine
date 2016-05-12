@@ -79,7 +79,7 @@ namespace Iodine.Runtime
                 Value = t;
                 SetAttribute ("start", new BuiltinMethodCallback (Start, this));
                 SetAttribute ("abort", new BuiltinMethodCallback (Abort, this));
-                SetAttribute ("isAlive", new BuiltinMethodCallback (IsAlive, this));
+                SetAttribute ("isalive", new BuiltinMethodCallback (IsAlive, this));
             }
 
             /**

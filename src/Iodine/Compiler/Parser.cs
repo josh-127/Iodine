@@ -692,9 +692,7 @@ namespace Iodine.Compiler
         {
             SourceLocation location = Location;
 
-            if (PeekToken (3) != null &&
-                PeekToken (3).Class == TokenClass.Keyword &&
-                PeekToken (3).Value == "in") {
+            if (Match (3, TokenClass.Keyword, "in") || Match (3, TokenClass.Comma)) {
                 return ParseForeach ();
             }
 
@@ -725,12 +723,19 @@ namespace Iodine.Compiler
                 Expect (TokenClass.Keyword, "foreach");
             }
             Expect (TokenClass.OpenParan);
-            Token identifier = Expect (TokenClass.Identifier);
+            bool anotherValue = false;
+            List<string> identifiers = new List<string> ();
+            do {
+                Token identifier = Expect (TokenClass.Identifier);
+                anotherValue = Accept (TokenClass.Comma);
+                identifiers.Add (identifier.Value);
+            } while (anotherValue);
+
             Expect (TokenClass.Keyword, "in");
             AstNode expr = ParseExpression ();
             Expect (TokenClass.CloseParan);
             AstNode body = ParseStatement ();
-            return new ForeachStatement (Location, identifier.Value, expr, body);
+            return new ForeachStatement (Location, identifiers, expr, body);
         }
 
         /*
@@ -1694,6 +1699,18 @@ namespace Iodine.Compiler
             return PeekToken () != null &&
                 PeekToken ().Class == clazz &&
                 PeekToken ().Value == val;
+        }
+
+        public bool Match (int lookahead, TokenClass clazz)
+        {
+            return PeekToken (lookahead) != null && PeekToken (lookahead).Class == clazz;
+        }
+
+        public bool Match (int lookahead, TokenClass clazz, string val)
+        {
+            return PeekToken (lookahead) != null &&
+                PeekToken (lookahead).Class == clazz &&
+                PeekToken (lookahead).Value == val;
         }
 
         public bool Accept (TokenClass clazz)

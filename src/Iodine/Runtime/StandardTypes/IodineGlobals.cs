@@ -58,8 +58,6 @@ namespace Iodine.Runtime
 
         public readonly static IodineObject Instance = new IodineGlobals ();
 
-        private static IodineObject _Instance = new GlobalsObject ();
-
         protected IodineGlobals ()
             : base (TypeDefinition)
         {

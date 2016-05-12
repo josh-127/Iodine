@@ -47,6 +47,7 @@ namespace Iodine.Runtime
             SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
             SetAttribute ("invoke", new BuiltinMethodCallback (Invoke, null));
             SetAttribute ("require", new BuiltinMethodCallback (Require, null));
+            SetAttribute ("compile", new BuiltinMethodCallback (Compile, null));
             SetAttribute ("chr", new BuiltinMethodCallback (Chr, null));
             SetAttribute ("ord", new BuiltinMethodCallback (Ord, null));
             SetAttribute ("len", new BuiltinMethodCallback (Len, null));
@@ -92,6 +93,17 @@ namespace Iodine.Runtime
             SetAttribute ("TypeDef", IodineTypeDefinition.TypeDefinition);
             SetAttribute ("__globals__", IodineGlobals.Instance);
             ExistsInGlobalNamespace = true;
+        }
+
+        /**
+         * Iodine Function: compile (source)
+         * Description: Compiles a string of Iodine source code, returning an invokable iodine module
+         */
+        private IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            IodineString source = args [0] as IodineString;
+            SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
+            return unit.Compile (vm.Context);
         }
 
         /**
