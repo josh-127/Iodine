@@ -1,4 +1,4 @@
-/**
+﻿/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -28,34 +28,21 @@
 **/
 
 using System;
-using System.Collections;
+using System.Numerics;
 using Iodine.Runtime;
 
 namespace Iodine.Interop
 {
-    class ArrayTypeMapping : TypeMapping
+    class BigIntegerTypeMapping : TypeMapping
     {
         public override object ConvertFrom (TypeRegistry registry, IodineObject obj)
         {
-            var list = (IodineList)obj;
-            var arr = new object [list.Objects.Count];
-            for (var i = 0; i < list.Objects.Count; i++)
-                arr [i] = registry.ConvertToNativeObject (list.Objects [i]);
-            return arr;
+            return ((IodineBigInt)obj).Value;
         }
 
         public override IodineObject ConvertFrom (TypeRegistry registry, object obj)
         {
-            var collection = (ICollection)obj;
-            var enumerator = collection.GetEnumerator ();
-            IodineObject [] objects = new IodineObject [collection.Count];
-            var i = 0;
-            do {
-                objects [i++] = registry.ConvertToIodineObject (enumerator.Current);
-                if (i == collection.Count)
-                    break;
-            } while (enumerator.MoveNext ());
-            return new IodineList (objects);
+            return new IodineBigInt ((BigInteger) obj);
         }
     }
 }
