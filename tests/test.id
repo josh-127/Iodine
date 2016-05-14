@@ -1,4 +1,4 @@
-use describe, expect from espresso;
+use describe, expect from testing;
 
 # Class tests
 class A {
@@ -178,7 +178,7 @@ describe('Iodine', lambda(test) {
             lambda() {
                 _list = [];
                 foreach (i in generatorTest ()) {
-                    _list.add (i);
+                    _list.append (i);
                 }
                 expect(_list[0]).to.equal(1);
                 expect(_list[1]).to.equal(2);
@@ -186,10 +186,10 @@ describe('Iodine', lambda(test) {
             });
     });
 
-    test.describe('HashMap', lambda(test) {
+    test.describe('Dict', lambda(test) {
         test.it('should be created using {}', lambda() {
             map = {};
-            expect(map).to.be.a('HashMap');
+            expect(map).to.be.a('Dict');
         });
 
         test.it('should index using keys', lambda() {
@@ -260,10 +260,11 @@ describe('Iodine', lambda(test) {
             };
 
             _map = map(hmap, lambda(item) {
-                if (item != 'a') {
-                    return item;
+                key, value = item;
+                if (key != 'a') {
+                    return key;
                 }
-                return 'a' + item;
+                return 'a' + key;
             });
 
             expect(_map.contains('aa')).to.be._true();
@@ -280,8 +281,8 @@ describe('Iodine', lambda(test) {
             };
 
             _list = [];
-            foreach (item in hash) {
-                _list.add(item);
+            for (key, value in hash) {
+                _list.append (key);
             }
 
             expect(_list.contains('a')).to.be._true();

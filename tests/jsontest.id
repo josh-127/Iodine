@@ -1,5 +1,5 @@
 use JsonFile, parse from json;
-use describe, expect from espresso;
+use describe, expect from testing;
 
 describe ("json module", lambda (test) {
     test.describe ("Scanning", lambda (test) {
