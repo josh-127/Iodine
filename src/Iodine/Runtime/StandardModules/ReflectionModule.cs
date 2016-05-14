@@ -33,6 +33,9 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides functions for inspecting live objects."
+    )]
     [IodineBuiltinModule ("inspect")]
     public class ReflectionModule : IodineModule
     {
@@ -109,13 +112,14 @@ namespace Iodine.Runtime
             : base ("inspect")
         {
             SetAttribute ("getbytecode", new BuiltinMethodCallback (GetBytecode, this));
-            SetAttribute ("hasAttribute", new BuiltinMethodCallback (HasAttribute, this));
-            SetAttribute ("setAttribute", new BuiltinMethodCallback (SetAttribute, this));
+            SetAttribute ("hasattribute", new BuiltinMethodCallback (HasAttribute, this));
+            SetAttribute ("setattribute", new BuiltinMethodCallback (SetAttribute, this));
             SetAttribute ("getAttributes", new BuiltinMethodCallback (GetAttributes, this));
-            SetAttribute ("getInterfaces", new BuiltinMethodCallback (GetInterfaces, this));
+            SetAttribute ("getmembers", new BuiltinMethodCallback (GetAttributes, this));
+            SetAttribute ("getinterfaces", new BuiltinMethodCallback (GetInterfaces, this));
             SetAttribute ("loadModule", new BuiltinMethodCallback (LoadModule, this));
-            SetAttribute ("compileModule", new BuiltinMethodCallback (CompileModule, this));
             SetAttribute ("isclass", new BuiltinMethodCallback (IsClass, this));
+            SetAttribute ("istype", new BuiltinMethodCallback (IsType, this));
             SetAttribute ("ismethod", new BuiltinMethodCallback (IsMethod, this));
             SetAttribute ("isfunction", new BuiltinMethodCallback (IsFunction, this));
             SetAttribute ("isgeneratormethod", new BuiltinMethodCallback (IsGeneratorMethod, this));
@@ -154,9 +158,19 @@ namespace Iodine.Runtime
                 return null;
             }
             IodineObject o1 = args [0];
+            IodineObject func = null;
+
+            if (args.Length > 1) {
+                func = args [1];
+            }
+
             IodineDictionary map = new IodineDictionary ();
             foreach (string key in o1.Attributes.Keys) {
-                map.Set (new IodineString (key), o1.Attributes [key]);
+                IodineObject value = o1.Attributes [key];
+
+                if (func == null || func.Invoke (vm, new IodineObject[] { value }) == IodineBool.True) {
+                    map.Set (new IodineString (key), o1.Attributes [key]);
+                }
             }
             return map;
         }

@@ -32,6 +32,9 @@ using System.Security.Cryptography;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides functions for generating random values."
+    )]
     [IodineBuiltinModule ("random")]
     public class RandomModule : IodineModule
     {

@@ -33,8 +33,10 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
-    public delegate IodineObject IodineMethodDelegate (VirtualMachine vm,IodineObject self,
-        IodineObject[] arguments);
+    public delegate IodineObject IodineMethodDelegate (VirtualMachine vm,
+        IodineObject self,
+        IodineObject[] arguments
+    );
 
     /// <summary>
     /// Represents a C# method that can be called in Iodine
@@ -58,6 +60,14 @@ namespace Iodine.Runtime
         {
             Self = self;
             Callback = callback;
+            object[] attributes = callback.GetInvocationList() [0].Method.GetCustomAttributes (false);
+
+            foreach (object attr in attributes) {
+                if (attr is BuiltinDocString) {
+                    BuiltinDocString docstr = attr as BuiltinDocString;
+                    SetAttribute ("__doc__", new IodineString (docstr.DocumentationString));
+                }
+            }
         }
 
         public override bool IsCallable ()

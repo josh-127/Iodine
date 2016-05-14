@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Numerics;
@@ -43,6 +44,7 @@ namespace Iodine.Compiler
         private int sourceLen;
         private string source;
         private string file;
+        private string lastDocStr = null;
         private ErrorSink errorLog;
         private SourceLocation location;
 
@@ -62,8 +64,10 @@ namespace Iodine.Compiler
             EatWhiteSpaces ();
             while (PeekChar () != -1) {
                 Token nextToken = NextToken ();
-                if (nextToken != null)
+                if (nextToken != null) {
                     tokens.Add (nextToken);
+                    lastDocStr = null;
+                }
                 EatWhiteSpaces ();
             }
 
@@ -114,31 +118,31 @@ namespace Iodine.Compiler
                 return ReadOperator ();
             case '{':
                 ReadChar ();
-                return new Token (TokenClass.OpenBrace, "{", location);
+                return new Token (TokenClass.OpenBrace, "{", lastDocStr, location);
             case '}':
                 ReadChar ();
-                return new Token (TokenClass.CloseBrace, "}", location);
+                return new Token (TokenClass.CloseBrace, "}", lastDocStr, location);
             case '(':
                 ReadChar ();
-                return new Token (TokenClass.OpenParan, "(", location);
+                return new Token (TokenClass.OpenParan, "(", lastDocStr, location);
             case ')':
                 ReadChar ();
-                return new Token (TokenClass.CloseParan, ")", location);
+                return new Token (TokenClass.CloseParan, ")", lastDocStr, location);
             case '[':
                 ReadChar ();
-                return new Token (TokenClass.OpenBracket, "[", location);
+                return new Token (TokenClass.OpenBracket, "[", lastDocStr, location);
             case ']':
                 ReadChar ();
-                return new Token (TokenClass.CloseBracket, "]", location);
+                return new Token (TokenClass.CloseBracket, "]", lastDocStr, location);
             case ';':
                 ReadChar ();
-                return new Token (TokenClass.SemiColon, ";", location);
+                return new Token (TokenClass.SemiColon, ";", lastDocStr, location);
             case ':':
                 ReadChar ();
-                return new Token (TokenClass.Colon, ":", location);
+                return new Token (TokenClass.Colon, ":", lastDocStr, location);
             case ',':
                 ReadChar ();
-                return new Token (TokenClass.Comma, ",", location);
+                return new Token (TokenClass.Comma, ",", lastDocStr, location);
             default:
                 if (char.IsLetter (ch)) {
                     return ReadIdentifier ();
@@ -171,7 +175,7 @@ namespace Iodine.Compiler
                 accum.Append ((char)ReadChar ());
                 ch = (char)PeekChar ();
             } while (char.IsDigit (ch) || ch == '.');
-            return new Token (TokenClass.IntLiteral, accum.ToString (), location);
+            return new Token (TokenClass.IntLiteral, accum.ToString (), lastDocStr, location);
         }
 
         private Token ReadHexNumber (StringBuilder accum)
@@ -199,7 +203,7 @@ namespace Iodine.Compiler
             }
             if (string.IsNullOrEmpty (val))
                 errorLog.Add (Errors.IllegalSyntax, location);
-            return new Token (TokenClass.IntLiteral, val, location);
+            return new Token (TokenClass.IntLiteral, val, lastDocStr, location);
         }
 
         private static bool IsHexNumber (char c)
@@ -216,7 +220,7 @@ namespace Iodine.Compiler
                 buffer.Append ((char)ReadChar ());
                 ch = (char)PeekChar ();
             } while (char.IsDigit (ch));
-            return new Token (TokenClass.FloatLiteral, buffer.ToString (), location);
+            return new Token (TokenClass.FloatLiteral, buffer.ToString (), lastDocStr, location);
         }
 
         private Token ReadStringLiteral ()
@@ -240,6 +244,7 @@ namespace Iodine.Compiler
                 TokenClass.InterpolatedStringLiteral :
                 TokenClass.StringLiteral,
                 accum.ToString (),
+                lastDocStr,
                 location
             );
         }
@@ -264,6 +269,7 @@ namespace Iodine.Compiler
 
             return new Token (TokenClass.BinaryStringLiteral,
                 accum.ToString (),
+                lastDocStr,
                 location
             );
         }
@@ -342,13 +348,13 @@ namespace Iodine.Compiler
             case "var":
             case "with":
             case "global":
-                return new Token (TokenClass.Keyword, accum.ToString (), location);
+                return new Token (TokenClass.Keyword, accum.ToString (), lastDocStr, location);
             case "is":
             case "isnot":
             case "as":
-                return new Token (TokenClass.Operator, accum.ToString (), location);
+                return new Token (TokenClass.Operator, accum.ToString (), lastDocStr, location);
             default:
-                return new Token (TokenClass.Identifier, accum.ToString (), location);
+                return new Token (TokenClass.Identifier, accum.ToString (), lastDocStr, location);
             }
         }
 
@@ -359,23 +365,28 @@ namespace Iodine.Compiler
             string nextThreeChars = op + ((char)PeekChar ()).ToString () + ((char)PeekChar (1)).ToString ();
 
             switch (nextThreeChars) {
+            case "/**":
+                ReadChar ();
+                ReadChar ();
+                ReadDocComment ();
+                return null;
             case "<<=":
                 ReadChar ();
                 ReadChar ();
-                return new Token (TokenClass.Operator, nextThreeChars, location);
+                return new Token (TokenClass.Operator, nextThreeChars, lastDocStr, location);
             case ">>=":
                 ReadChar ();
                 ReadChar ();
-                return new Token (TokenClass.Operator, nextThreeChars, location);
+                return new Token (TokenClass.Operator, nextThreeChars, lastDocStr, location);
             case "...":
                 ReadChar ();
                 ReadChar ();
-                return new Token (TokenClass.Operator, nextThreeChars, location);
+                return new Token (TokenClass.Operator, nextThreeChars, lastDocStr, location);
             }
 
             switch (nextTwoChars) {
             case ".?":
-                return new Token (TokenClass.MemberDefaultAccess, ".?", location);
+                return new Token (TokenClass.MemberDefaultAccess, ".?", lastDocStr, location);
             case ">>":
             case "<<":
             case "&&":
@@ -396,7 +407,7 @@ namespace Iodine.Compiler
             case "??":
             case "..":
                 ReadChar ();
-                return new Token (TokenClass.Operator, nextTwoChars, location);
+                return new Token (TokenClass.Operator, nextTwoChars, lastDocStr, location);
             case "/*":
                 ReadChar ();
                 ReadLineComment ();
@@ -405,9 +416,9 @@ namespace Iodine.Compiler
 
             switch (op) {
             case '.':
-                return new Token (TokenClass.MemberAccess, ".", location);
+                return new Token (TokenClass.MemberAccess, ".", lastDocStr, location);
             default:
-                return new Token (TokenClass.Operator, op.ToString (), location);
+                return new Token (TokenClass.Operator, op.ToString (), lastDocStr, location);
             }
         }
 
@@ -423,6 +434,34 @@ namespace Iodine.Compiler
                         return;
                     }
                 }
+            }
+
+            errorLog.Add (Errors.UnexpectedEndOfFile, location);
+        }
+
+        private void ReadDocComment ()
+        {
+            StringBuilder accum = new StringBuilder ();
+            while (PeekChar () != -1) {
+
+                char ch = (char)ReadChar ();
+
+                accum.Append (ch);
+
+                if (ch == '*') {
+                    if ((char)PeekChar () == '/') {
+                        ReadChar ();
+
+                        string doc = accum.ToString ();
+                        var lines = doc.Split ('\n')
+                            .Select (p => p.Trim ())
+                            .Where (p => p.StartsWith ("*"))
+                            .Select (p => p.Substring (p.IndexOf ('*') + 1).Trim ());
+                        lastDocStr = String.Join ("\n", lines);
+                        return;
+                    }
+                }
+
             }
 
             errorLog.Add (Errors.UnexpectedEndOfFile, location);

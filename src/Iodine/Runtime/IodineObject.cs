@@ -189,13 +189,26 @@ namespace Iodine.Runtime
             return ToString (vm);
         }
 
+
+        /// <summary>
+        /// Compares this instance with another iodine object.
+        /// </summary>
+        /// <param name="vm">Virtual Machine.</param>
+        /// <param name="obj">Object.</param>
+        public virtual IodineObject Compare (VirtualMachine vm, IodineObject obj)
+        {
+            if (HasAttribute ("__cmp__")) {
+                return GetAttribute ("__cmp__").Invoke (vm, new IodineObject[] { obj });
+            }
+            return IodineBool.False;
+        }
+
         public virtual IodineObject Slice (VirtualMachine vm, IodineSlice slice)
         {
 
             if (Attributes.ContainsKey ("__getItem__")) {
                 return Attributes ["__getItem__"].Invoke (vm, new IodineObject[] { slice });
             } else {
-
                 return null;
             }
 

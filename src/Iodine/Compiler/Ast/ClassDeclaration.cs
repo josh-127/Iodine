@@ -36,7 +36,7 @@ namespace Iodine.Compiler.Ast
     public class ClassDeclaration : AstNode
     {
         public readonly string Name;
-
+        public readonly string Documentation;
         public readonly List<string> Base;
 
         public FunctionDeclaration Constructor {
@@ -46,12 +46,15 @@ namespace Iodine.Compiler.Ast
 
         public readonly List<AstNode> Members = new List<AstNode> ();
 
-        public ClassDeclaration (SourceLocation location, string name, List<string> baseClass)
-            : base (location)
+        public ClassDeclaration (SourceLocation location,
+            string name,
+            List<string> baseClass,
+            string doc) : base (location)
         {
             Name = name;
             Base = baseClass;
-            FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, new List<string> ());
+            Documentation = doc;
+            FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, new List<string> (), "");
             Constructor = dummyCtor;
         }
 

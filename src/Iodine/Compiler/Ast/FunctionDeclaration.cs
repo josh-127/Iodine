@@ -39,6 +39,8 @@ namespace Iodine.Compiler.Ast
             get;
         }
 
+        public readonly string Documentation;
+
         public IList<string> Parameters { private set; get; }
 
         public bool InstanceMethod { private set; get; }
@@ -54,11 +56,13 @@ namespace Iodine.Compiler.Ast
             bool isInstanceMethod,
             bool isVariadic,
             bool hasKeywordArgs,
-            IList<string> parameters)
-            : base (location)
+            IList<string> parameters,
+            string doc
+        ) : base (location)
         {
             Name = name;
             Parameters = parameters;
+            Documentation = doc;
             InstanceMethod = isInstanceMethod;
             Variadic = isVariadic;
             AcceptsKeywordArgs = hasKeywordArgs;

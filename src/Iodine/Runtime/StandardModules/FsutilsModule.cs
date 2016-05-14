@@ -34,6 +34,9 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides miscellaneous functions for interacting with the host operating system's filesystem."
+    )]
     [IodineBuiltinModule ("fsutils")]
     public class FSUtilsModule : IodineModule
     {
@@ -53,10 +56,11 @@ namespace Iodine.Runtime
             SetAttribute ("getModifiedTime", new BuiltinMethodCallback (GetCreationTime, this));
         }
 
-        /**
-         * Iodine Function: copy (src, dest)
-         * Description: Copies a file 
-         */
+        [BuiltinDocString (
+            "Copies a file.",
+            "@param src The source file.",
+            "@param dest The destination file."
+        )]
         private IodineObject Copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -82,10 +86,11 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: copytree (src, dest)
-         * Description: Copies a directory and its contents
-         */
+        [BuiltinDocString (
+            "Copies a directory.",
+            "@param src The source directory.",
+            "@param dest The destination directory."
+        )]
         private IodineObject Copytree (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -105,11 +110,11 @@ namespace Iodine.Runtime
 
             return null;
         }
-
-        /**
-         * Iodine Function: exists (path)
-         * Description: Returns true if path is a valid file on the disk
-         */
+            
+        [BuiltinDocString (
+            "Returns true if a file or directory exist.",
+            "@param path The file name."
+        )]
         private IodineObject Exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -127,10 +132,10 @@ namespace Iodine.Runtime
             return IodineBool.Create (Directory.Exists (path.Value) || File.Exists (path.Value));
         }
 
-        /**
-         * Iodine Function: isDir (path)
-         * Description: Returns true if path is a valid directory
-         */
+        [BuiltinDocString (
+            "Returns true if a path string is a directory.",
+            "@param path The path to test."
+        )]
         private IodineObject IsDir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -148,10 +153,10 @@ namespace Iodine.Runtime
             return IodineBool.Create (Directory.Exists (path.Value));
         }
 
-        /**
-         * Iodine Function: isFile (path)
-         * Description: Returns true if path is a valid file
-         */
+        [BuiltinDocString (
+            "Returns true if a path string is a file.",
+            "@param path The path to test."
+        )]
         private IodineObject IsFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -169,10 +174,10 @@ namespace Iodine.Runtime
             return IodineBool.Create (File.Exists (path.Value));
         }
 
-        /**
-         * Iodine Function: read (path)
-         * Description: Reads all text from a file
-         */
+        [BuiltinDocString (
+            "Reads all text from a file, returning a string.",
+            "@param path The file to read."
+        )]
         private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -194,11 +199,11 @@ namespace Iodine.Runtime
 
             return new IodineString (File.ReadAllText (path.Value));
         }
-
-        /**
-         * Iodine Function: readbytes (path)
-         * Description: Reads all bytes from a file
-         */
+       
+        [BuiltinDocString (
+            "Reads all bytes from a file, returning a byte string.",
+            "@param path The file to read."
+        )]
         private IodineObject ReadBytes (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -221,10 +226,10 @@ namespace Iodine.Runtime
             return new IodineBytes (File.ReadAllBytes (path.Value));
         }
 
-        /**
-         * Iodine Function: readlines (path)
-         * Description: Reads all lines from a file
-         */
+        [BuiltinDocString (
+            "Reads all lines from a file, returning a new list.",
+            "@param path The file to read."
+        )]
         private IodineObject ReadLines (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

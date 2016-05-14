@@ -54,7 +54,8 @@ namespace Iodine.Compiler
         Operator,
         Comma,
         MemberAccess,
-        MemberDefaultAccess
+        MemberDefaultAccess,
+        DocComment
     }
 
     /// <summary>
@@ -63,6 +64,7 @@ namespace Iodine.Compiler
     public sealed class Token
     {
         public readonly string Value;
+        public readonly string Documentation;
         public readonly TokenClass Class;
         public readonly SourceLocation Location;
 
@@ -71,11 +73,13 @@ namespace Iodine.Compiler
         /// </summary>
         /// <param name="clazz">Token class.</param>
         /// <param name="value">Value.</param>
+        /// <param name="doc">Documentation string.</param>
         /// <param name="location">Location.</param>
-        public Token (TokenClass clazz, string value, SourceLocation location)
+        public Token (TokenClass clazz, string value, string doc, SourceLocation location)
         {
             Class = clazz;
             Value = value;
+            Documentation = doc;
             Location = location;
         }
 

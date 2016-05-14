@@ -194,6 +194,8 @@ namespace Iodine.Compiler
 
             ClassBuilder clazz = new ClassBuilder (classDecl.Name, initializer, constructor, Context.CurrentClass);
 
+            clazz.SetAttribute ("__doc__", new IodineString (classDecl.Documentation));
+
             CreateContext (clazz);
 
             foreach (AstNode member in classDecl.Members) {
@@ -252,6 +254,9 @@ namespace Iodine.Compiler
             foreach (string name in enumDecl.Items.Keys) {
                 ienum.AddItem (name, enumDecl.Items [name]);
             }
+
+            ienum.SetAttribute ("__doc__", new IodineString (enumDecl.Documentation));
+
             return ienum;
         }
 
@@ -268,6 +273,9 @@ namespace Iodine.Compiler
                     decl.AcceptsKeywordArgs
                 ));
             }
+
+            contract.SetAttribute ("__doc__", new IodineString (contractDecl.Documentation));
+
             return contract;
         }
 
@@ -284,6 +292,9 @@ namespace Iodine.Compiler
                     decl.AcceptsKeywordArgs
                 ));
             }
+
+            trait.SetAttribute ("__doc__", new IodineString (traitDecl.Documentation));
+
             return trait;
         }
 
@@ -298,6 +309,9 @@ namespace Iodine.Compiler
                 funcDecl.Variadic,
                 funcDecl.AcceptsKeywordArgs
             );
+
+
+            methodBuilder.SetAttribute ("__doc__", new IodineString (funcDecl.Documentation));
 
             for (int i = 0; i < funcDecl.Parameters.Count; i++) {
                 methodBuilder.Parameters [funcDecl.Parameters [i]] =
@@ -333,6 +347,8 @@ namespace Iodine.Compiler
                 funcDecl.Variadic,
                 funcDecl.AcceptsKeywordArgs
             );
+
+            anonMethod.SetAttribute ("__doc__", new IodineString (funcDecl.Documentation));
 
             for (int i = 0; i < funcDecl.Parameters.Count; i++) {
                 anonMethod.Parameters [funcDecl.Parameters [i]] = Context.SymbolTable.AddSymbol (funcDecl.Parameters [i]);

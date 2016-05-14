@@ -35,6 +35,9 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides a portable way for interacting with the host operating system"
+    )]
     [IodineBuiltinModule ("os")]
     public class OSModule : IodineModule
     {
@@ -212,10 +215,9 @@ namespace Iodine.Runtime
             SetAttribute ("list", new BuiltinMethodCallback (List, this));
         }
 
-        /**
-         * Iodine Function: procs ()
-         * Description: Returns a list of running processes
-         */
+        [BuiltinDocString (@"
+            Returns a list of processes running on the machine.
+        ")]
         private IodineObject GetProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             IodineList list = new IodineList (new IodineObject[] { });
@@ -225,28 +227,26 @@ namespace Iodine.Runtime
             return list;
         }
 
-        /**
-         * Iodine Function: getLogin ()
-         * Description: Returns the username of the current user
-         */
+        [BuiltinDocString (@"
+            Returns the login name of the current user.
+        ")]
         private IodineObject GetUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Environment.UserName);
         }
 
-        /**
-         * Iodine Function: getcwd ();
-         * Description: Gets the current working directory
-         */
+        [BuiltinDocString (@"
+            Returns the current working directory.
+        ")]
         private IodineObject GetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Environment.CurrentDirectory);
         }
 
-        /**
-         * Iodine Function: setcwd (cwd)
-         * Description: Sets the current working directory
-         */
+        [BuiltinDocString (@"
+            Sets the current working directory.
+            @param cwd The new current working directory.
+        ")]
         private IodineObject SetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -265,10 +265,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: getenv (name)
-         * Description: Gets an environmental variable
-         */
+        [BuiltinDocString (@"
+            Returns the value of an environmental variable.
+            @param env The name of the environmental variable.
+        ")]
         private IodineObject GetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -290,10 +290,11 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: putenv (name, value)
-         * Description: Sets an environmental variable
-         */
+        [BuiltinDocString (@"
+            Sets an environmental variable to a specified value
+            @param env The name of the environmental variable.
+            @param value The value to set the environmental variable.
+        ")]
         private IodineObject SetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {

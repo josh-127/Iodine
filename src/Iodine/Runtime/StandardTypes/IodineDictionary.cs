@@ -64,7 +64,42 @@ namespace Iodine.Runtime
             }
         }
 
-        private int iterIndex = 0;
+        class DictIterator : IodineObject
+        {
+            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("DictIterator");
+
+            private int iterIndex = 0;
+            private ObjectDictionary dict;
+
+            public DictIterator (ObjectDictionary dict)
+                : base (TypeDefinition)
+            {
+                this.dict = dict;
+            }
+
+            public override IodineObject IterGetCurrent (VirtualMachine vm)
+            {
+                IodineObject key = dict.Get (iterIndex - 1);
+                return new IodineTuple (new IodineObject[] {
+                    key,
+                    dict.Get (key)
+                });
+            }
+
+            public override bool IterMoveNext (VirtualMachine vm)
+            {
+                if (iterIndex >= dict.Count) {
+                    return false;
+                }
+                iterIndex++;
+                return true;
+            }
+
+            public override void IterReset (VirtualMachine vm)
+            {
+                iterIndex = 0;
+            }
+        }
 
         protected readonly ObjectDictionary dict = new ObjectDictionary ();
 
@@ -126,26 +161,7 @@ namespace Iodine.Runtime
        
         public override IodineObject GetIterator (VirtualMachine vm)
         {
-            return this;
-        }
-
-        public override IodineObject IterGetCurrent (VirtualMachine vm)
-        {
-            return dict.Get (iterIndex - 1);
-        }
-
-        public override bool IterMoveNext (VirtualMachine vm)
-        {
-            if (iterIndex >= dict.Count) {
-                return false;
-            }
-            iterIndex++;
-            return true;
-        }
-
-        public override void IterReset (VirtualMachine vm)
-        {
-            iterIndex = 0;
+            return new DictIterator (dict);
         }
 
         /// <summary>

@@ -34,6 +34,9 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides functions for converting Iodine types to C structs."
+    )]
     [IodineBuiltinModule ("struct")]
     public class StructModule : IodineModule
     {
@@ -45,10 +48,11 @@ namespace Iodine.Runtime
             SetAttribute ("getsize", new BuiltinMethodCallback (GetSize, this));
         }
 
-        /**
-         * Iodine Function: pack (format, data)
-         * Description: Packs a tuple, data into a byte string according to format
-         */
+        [BuiltinDocString (
+            "Packs a struct from a supplied format specifier and tuple.",
+            "@param format The format describing how [tuple] is to be packed into the struct.",
+            "@param tuple A tuple containing all the items which are to be packed into the struct."
+        )]
         private IodineObject Pack (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -103,10 +107,11 @@ namespace Iodine.Runtime
             }
         }
 
-        /**
-         * Iodine Function: unpack (format, bytes)
-         * Description: Unpacks a tuple from a byte string according to format
-         */
+        [BuiltinDocString (
+            "Unpacks a struct from a supplied format specifier, returning a tuple.",
+            "@param format The format describing how [tuple] is to be packed into the struct.",
+            "@param tuple A tuple containing all the items which are to be packed into the struct."
+        )]
         private IodineObject Unpack (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -161,10 +166,10 @@ namespace Iodine.Runtime
             }
         }
 
-        /**
-         * Iodine Function: getSize (format)
-         * Description: Returns the size in bytes of a struct packed using the supplied format specifier
-         */
+        [BuiltinDocString (
+            "Returns the length of a struct format specifier. ",
+            "@param format The format specifier."
+        )]
         private IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
