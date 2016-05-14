@@ -4,7 +4,7 @@
  * @author GruntTheDivine
  */
 
-use reflection;
+use inspect;
 
 
 _instructions = [

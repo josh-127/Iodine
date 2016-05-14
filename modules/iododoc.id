@@ -1,0 +1,200 @@
+/**
+ * Module for creating documentation from live iodine objects
+ * @author GruntTheDivine
+ */
+ 
+use inspect;
+use __builtins__;
+
+contract DocumentationFormatter {
+    func formatDoc (documentation);
+}
+
+enum DocType {
+    FUNCTION = 0,
+    CLASS = 1,
+    CONTRACT = 2,
+    TRAIT = 3,
+    ENUM = 4,
+    MODULE = 5,
+}
+
+class CodeItem {
+    func CodeItem (self, doctype, str) {
+        self.doctype = doctype;
+        self.str = str;
+        self.description = "";
+    }
+}
+
+class FuncItem : CodeItem {
+    func FuncItem (self, name, f) {
+        super (DocType.FUNCTION, f.__doc__);
+        self.name = name;
+        self.params = [];
+        self.parseDocumentation (f.__doc__);
+    }
+    
+    func parseDocumentation (self, docstr) {
+        buf = StringBuffer ();
+        for (str in docstr.split ('\n')) {
+           if (str.startswith ("@param ")) {
+               name = str.substr (str.find (" ") + 1);
+               if (!name.contains (" ")) {
+                   raise Exception ("Invalid param str!");
+               }
+               description = name.substr (name.find (" "));
+               name = name.substr (0, name.find (" "));
+               self.params.append (FuncParam (name, description));
+           } else {
+               buf.append (str);
+           }
+        }
+        self.description = Str (buf);
+    }
+}
+
+class ClassItem : CodeItem {
+    func ClassItem (self, name, c) {
+        super (DocType.CLASS, c.__doc__);
+        self.name = name;
+        self.params = [];
+        self.parseDocumentation (c.__doc__);
+    }
+    
+    func parseDocumentation (self, docstr) {
+        buf = StringBuffer ();
+        for (str in docstr.split ('\n')) {
+           if (str.startswith ("@param ")) {
+               name = str.substr (str.find (" ") + 1);
+               if (!name.contains (" ")) {
+                   raise Exception ("Invalid param str!");
+               }
+               description = name.substr (name.find (" "));
+               name = name.substr (0, name.find (" "));
+               self.params.append (FuncParam (name, description));
+           } else {
+               buf.append (str);
+           }
+        }
+        self.description = Str (buf);
+    }
+}
+
+class FuncParam {
+    func FuncParam (self, name, description) {
+        self.name = name;
+        self.description = description;
+    }
+    
+    func __str__ (self) {
+        return self.name;
+    }
+}
+
+class HtmlFormatter {
+    func HtmlFormatter (self) {
+        self.indentLevel = 0;
+    }
+    
+    func format (self, items, output) {
+        for (item in items) {
+            output.append ("[#{item.name}](##{item.name}) "); 
+        }
+        
+        output.append ("\n\n");
+        
+        for (item in items) {
+            self.formatItem (item, output);
+        }
+    }
+    
+    func formatItem (self, item, output) {
+        given (item.doctype) {
+            when DocType.FUNCTION {
+                self.formatFunc (item, output);
+            }
+            when DocType.CLASS {
+                self.formatClass (item, output);
+            }
+            when DocType.Contract {
+                
+            }
+            when DocType.TRAIT {
+                
+            }
+            when DocType.MODULE {
+                
+            }
+        }
+    }
+    
+    func formatFunc (self, doc, output) {
+        output.append ("<strong><code>#{doc.name}</code></strong> (");
+        output.append (", ".join (doc.params));
+        output.append (")<br>\n");
+        output.append ("<p style='margin-left:50px'>\n");
+        output.append (doc.description);
+        output.append ("<br>\n");
+        output.append ("<table>");
+        for (param in doc.params) {
+            output.append ("<tr>");
+            output.append ("<td><code>#{param.name}</code></td>");
+            output.append ("<td>#{param.description}</td>\n");
+            output.append ("</tr></br>");
+        }
+        output.append ("</table>");
+        output.append ("</p>");
+    }
+    
+    func formatClass (self, doc, output) {
+        output.append ("class <strong><code>#{doc.name}</code></strong> (");
+        output.append (", ".join (doc.params));
+        output.append (")<br>\n");
+        output.append ("<p style='margin-left:50px'>\n");
+        output.append (doc.description);
+        output.append ("<br>\n");
+        output.append ("<table>");
+        for (param in doc.params) {
+            output.append ("<tr>");
+            output.append ("<td><code>#{param.name}</code></td>");
+            output.append ("<td>#{param.description}</td>\n");
+            output.append ("</tr></br>");
+        }
+        output.append ("</table>");
+        output.append ("</p>");
+    }
+    
+    func formatContract (self, doc, output) {
+        
+    }
+    
+    func getIdentStr (self, additional) {
+        buf = StringBuffer ();
+        for (i in 0 .. (self.indentLevel + additional) * 2) {
+            buf.append ("&nbsp;");
+        }
+        return Str (buf);
+    }
+}
+
+func compiledoc (obj, *args) {
+    items = [];
+    
+    for (name, attr in inspect.getmembers (obj)) {
+        
+        if (inspect.hasattribute (attr, "__doc__")) {
+            if (inspect.ismethod (attr) || inspect.isbuiltin (attr)) {
+                items.append (FuncItem (name, attr));
+            }
+            
+            if (inspect.istype (attr)) {
+                items.append (ClassItem (name, attr));
+            }
+        }
+    }
+    items = sort (items, lambda (p) => p.name);
+    
+    return items;
+}
+
