@@ -59,7 +59,7 @@ namespace Iodine
 
             while (true) {
                 Console.Write (">>> ");
-                var source = Console.ReadLine ();
+                var source = Console.ReadLine ().Trim ();
                 try {
                     if (source.Length > 0) {
                         SourceUnit unit = SourceUnit.CreateFromSource (source);

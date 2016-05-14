@@ -32,6 +32,9 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides methods for retrieving the current date and time"
+    )]
     [IodineBuiltinModule ("datetime")]
     public class DateTimeModule : IodineModule
     {
@@ -118,6 +121,9 @@ namespace Iodine.Runtime
             SetAttribute ("now", new BuiltinMethodCallback (Now, this));
         }
 
+        [BuiltinDocString (
+            "Returns the current time."
+        )]
         private static IodineObject Now (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineTimeStamp (DateTime.Now);

@@ -106,7 +106,8 @@ namespace Iodine.Compiler
          */
         private AstNode ParseClass ()
         {
-            Expect (TokenClass.Keyword, "class");
+            string doc = Expect (TokenClass.Keyword, "class").Documentation;
+
             string name = Expect (TokenClass.Identifier).Value;
 
             List<string> baseClass = new List<string> ();
@@ -116,7 +117,7 @@ namespace Iodine.Compiler
                 } while (Accept (TokenClass.Comma));
             }
 
-            ClassDeclaration clazz = new ClassDeclaration (Location, name, baseClass);
+            ClassDeclaration clazz = new ClassDeclaration (Location, name, baseClass, doc);
 
             Expect (TokenClass.OpenBrace);
 
@@ -157,9 +158,9 @@ namespace Iodine.Compiler
          */
         private AstNode ParseEnum ()
         {
-            Expect (TokenClass.Keyword, "enum");
+            string doc = Expect (TokenClass.Keyword, "enum").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
-            EnumDeclaration decl = new EnumDeclaration (Location, name);
+            EnumDeclaration decl = new EnumDeclaration (Location, name, doc);
 
             Expect (TokenClass.OpenBrace);
 
@@ -195,10 +196,10 @@ namespace Iodine.Compiler
          */
         private AstNode ParseContract ()
         {
-            Expect (TokenClass.Keyword, "contract");
+            string doc = Expect (TokenClass.Keyword, "contract").Value;
             string name = Expect (TokenClass.Identifier).Value;
 
-            ContractDeclaration contract = new ContractDeclaration (Location, name);
+            ContractDeclaration contract = new ContractDeclaration (Location, name, doc);
 
             Expect (TokenClass.OpenBrace);
 
@@ -225,10 +226,10 @@ namespace Iodine.Compiler
          */
         private AstNode ParseTrait ()
         {
-            Expect (TokenClass.Keyword, "trait");
+            string doc = Expect (TokenClass.Keyword, "trait").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
 
-            TraitDeclaration trait = new TraitDeclaration (Location, name);
+            TraitDeclaration trait = new TraitDeclaration (Location, name, doc);
 
             Expect (TokenClass.OpenBrace);
 
@@ -264,6 +265,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseFunction (bool prototype = false, ClassDeclaration cdecl = null)
         {
+            string doc = Current.Documentation;
             if (Accept (TokenClass.Operator, "@")) {
                 /*
                  * Function decorators in the form of 
@@ -313,7 +315,8 @@ namespace Iodine.Compiler
                 isInstanceMethod,
                 isVariadic,
                 hasKeywordArgs,
-                parameters
+                parameters,
+                doc
             );
 
             if (!prototype) {
@@ -509,7 +512,7 @@ namespace Iodine.Compiler
                     return new ContinueStatement (Location);
                 case "super":
                     errorLog.Add (Errors.SuperCalledAfter, Location);
-                    return ParseSuperCall (new ClassDeclaration (Location, "", null));
+                    return ParseSuperCall (new ClassDeclaration (Location, "", null, null));
                 }
 
                 /*
@@ -692,9 +695,7 @@ namespace Iodine.Compiler
         {
             SourceLocation location = Location;
 
-            if (PeekToken (3) != null &&
-                PeekToken (3).Class == TokenClass.Keyword &&
-                PeekToken (3).Value == "in") {
+            if (Match (3, TokenClass.Keyword, "in") || Match (3, TokenClass.Comma)) {
                 return ParseForeach ();
             }
 
@@ -725,12 +726,19 @@ namespace Iodine.Compiler
                 Expect (TokenClass.Keyword, "foreach");
             }
             Expect (TokenClass.OpenParan);
-            Token identifier = Expect (TokenClass.Identifier);
+            bool anotherValue = false;
+            List<string> identifiers = new List<string> ();
+            do {
+                Token identifier = Expect (TokenClass.Identifier);
+                anotherValue = Accept (TokenClass.Comma);
+                identifiers.Add (identifier.Value);
+            } while (anotherValue);
+
             Expect (TokenClass.Keyword, "in");
             AstNode expr = ParseExpression ();
             Expect (TokenClass.CloseParan);
             AstNode body = ParseStatement ();
-            return new ForeachStatement (Location, identifier.Value, expr, body);
+            return new ForeachStatement (Location, identifiers, expr, body);
         }
 
         /*
@@ -1694,6 +1702,18 @@ namespace Iodine.Compiler
             return PeekToken () != null &&
                 PeekToken ().Class == clazz &&
                 PeekToken ().Value == val;
+        }
+
+        public bool Match (int lookahead, TokenClass clazz)
+        {
+            return PeekToken (lookahead) != null && PeekToken (lookahead).Class == clazz;
+        }
+
+        public bool Match (int lookahead, TokenClass clazz, string val)
+        {
+            return PeekToken (lookahead) != null &&
+                PeekToken (lookahead).Class == clazz &&
+                PeekToken (lookahead).Value == val;
         }
 
         public bool Accept (TokenClass clazz)

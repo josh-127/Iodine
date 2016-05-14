@@ -35,13 +35,15 @@ namespace Iodine.Compiler.Ast
     public class EnumDeclaration : AstNode
     {
         public readonly string Name;
+        public readonly string Documentation;
 
         public Dictionary<string, int> Items { private set; get; }
 
-        public EnumDeclaration (SourceLocation location, string name)
+        public EnumDeclaration (SourceLocation location, string name, string doc)
             : base (location)
         {
             Name = name;
+            Documentation = doc;
             Items = new Dictionary<string, int> ();
         }
 

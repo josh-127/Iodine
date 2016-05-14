@@ -35,12 +35,14 @@ namespace Iodine.Compiler.Ast
     public class ContractDeclaration : AstNode
     {
         public readonly string Name;
+        public readonly string Documentation;
         public readonly List<AstNode> Members = new List<AstNode> ();
 
-        public ContractDeclaration (SourceLocation location, string name)
+        public ContractDeclaration (SourceLocation location, string name, string doc)
             : base (location)
         {
             Name = name;
+            Documentation = doc;
         }
 
         public void AddMember (AstNode member)

@@ -48,6 +48,7 @@ namespace Iodine.Runtime
         {
             Constructor = constructor;
             Initializer = initializer;
+            SetAttribute ("__doc__", IodineString.Empty);
         }
 
         public override IodineObject GetAttribute (VirtualMachine vm, string name)

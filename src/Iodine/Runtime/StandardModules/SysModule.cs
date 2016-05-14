@@ -49,8 +49,8 @@ namespace Iodine.Runtime
             SetAttribute ("exit", new BuiltinMethodCallback (Exit, this));
             SetAttribute ("getframe", new BuiltinMethodCallback (GetFrame, this));
             SetAttribute ("_warn", new BuiltinMethodCallback (Warn, this));
-            SetAttribute ("_getWarnMask", new BuiltinMethodCallback (GetWarnMask, this));
-            SetAttribute ("_setWarnMask", new BuiltinMethodCallback (SetWarnMask, this));
+            SetAttribute ("_getwarnmask", new BuiltinMethodCallback (GetWarnMask, this));
+            SetAttribute ("_setwarnmask", new BuiltinMethodCallback (SetWarnMask, this));
             SetAttribute ("path", new InternalIodineProperty (GetPath, null));
             SetAttribute ("VERSION_MAJOR", new IodineInteger (major));
             SetAttribute ("VERSION_MINOR", new IodineInteger (minor));

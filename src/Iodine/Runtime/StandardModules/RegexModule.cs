@@ -46,7 +46,7 @@ namespace Iodine.Runtime
             {
                 this.Value = val;
                 SetAttribute ("find", new BuiltinMethodCallback (Find, this));
-                SetAttribute ("isMatch", new BuiltinMethodCallback (IsMatch, this));
+                SetAttribute ("ismatch", new BuiltinMethodCallback (IsMatch, this));
             }
 
             /**
@@ -127,7 +127,7 @@ namespace Iodine.Runtime
                 Value = val;
                 SetAttribute ("value", new IodineString (val.Value));
                 SetAttribute ("success", IodineBool.Create (val.Success));
-                SetAttribute ("getNextMatch", new BuiltinMethodCallback (GetNextMatch, this));
+                SetAttribute ("nextmatch", new BuiltinMethodCallback (GetNextMatch, this));
             }
 
             public override IodineObject GetIterator (VirtualMachine vm)
@@ -170,7 +170,7 @@ namespace Iodine.Runtime
         {
             SetAttribute ("compile", new BuiltinMethodCallback (Compile, this));
             SetAttribute ("find", new BuiltinMethodCallback (Find, this));
-            SetAttribute ("isMatch", new BuiltinMethodCallback (IsMatch, this));
+            SetAttribute ("ismatch", new BuiltinMethodCallback (IsMatch, this));
         }
 
         /**

@@ -56,6 +56,7 @@ namespace Iodine.Runtime
         {
             SetAttribute ("clear", new BuiltinMethodCallback (Clear, null));
             SetAttribute ("append", new BuiltinMethodCallback (Append, null));
+            SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, null));
         }
 
         public override bool Equals (IodineObject obj)
@@ -92,6 +93,19 @@ namespace Iodine.Runtime
         {
             foreach (IodineObject obj in args) {
                 buffer.Append (obj.ToString (vm));
+            }
+            return null;
+        }
+
+
+        /**
+         * Iodine Method: StringBuffer.prepend (self, *args);
+         * Description: Appends each item in *args to the string buffer
+         */
+        private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            foreach (IodineObject obj in args) {
+                buffer.Insert (0, obj.ToString (vm));
             }
             return null;
         }

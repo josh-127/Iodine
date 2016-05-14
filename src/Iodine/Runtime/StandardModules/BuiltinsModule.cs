@@ -47,6 +47,7 @@ namespace Iodine.Runtime
             SetAttribute ("stderr", new IodineStream (Console.OpenStandardError (), true, false));
             SetAttribute ("invoke", new BuiltinMethodCallback (Invoke, null));
             SetAttribute ("require", new BuiltinMethodCallback (Require, null));
+            SetAttribute ("compile", new BuiltinMethodCallback (Compile, null));
             SetAttribute ("chr", new BuiltinMethodCallback (Chr, null));
             SetAttribute ("ord", new BuiltinMethodCallback (Ord, null));
             SetAttribute ("len", new BuiltinMethodCallback (Len, null));
@@ -74,6 +75,7 @@ namespace Iodine.Runtime
             SetAttribute ("reduce", new BuiltinMethodCallback (Reduce, null));
             SetAttribute ("zip", new BuiltinMethodCallback (Zip, null)); 
             SetAttribute ("sum", new BuiltinMethodCallback (Sum, null)); 
+            SetAttribute ("sort", new BuiltinMethodCallback (Sort, null));
             SetAttribute ("range", new BuiltinMethodCallback (Range, null));
             SetAttribute ("open", new BuiltinMethodCallback (Open, null));
             SetAttribute ("Exception", IodineException.TypeDefinition);
@@ -94,10 +96,23 @@ namespace Iodine.Runtime
             ExistsInGlobalNamespace = true;
         }
 
-        /**
-         * Iodine Function: property (getter, [setter])
-         * Description: Returns a property using the getter and setter method provided
-         */
+        [BuiltinDocString (
+            "Compiles a string of iodine code, returning a callable",
+            "object.",
+            "@param source The source code to compile."
+        )]
+        private IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            IodineString source = args [0] as IodineString;
+            SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
+            return unit.Compile (vm.Context);
+        }
+
+        [BuiltinDocString (
+            "Returns a new Property object.",
+            "@param getter The getter for this property.",
+            "@param setter The setter for this property."
+        )]
         private IodineObject Property (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -108,11 +123,10 @@ namespace Iodine.Runtime
             IodineObject setter = args.Length > 1 ? args [1] : null;
             return new IodineProperty (getter, setter, null);
         }
-
-        /**
-         * Iodine Function: require ()
-         * Description: Internal use for use statement, not intended to be called directly!!!
-         */
+            
+        [BuiltinDocString (
+            "Internal function used by the 'use' statement, do not call this directly."
+        )]
         private IodineObject Require (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -181,10 +195,12 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /*
-         * Iodine Function: invoke (obj, globals);
-         * Description: Invokes an iodine object under a new Iodine context
-         */
+        [BuiltinDocString (
+            "Invokes the specified callable under a new Iodine context.",
+            "Optionally uses the specified dict as the instance's global symbol table.",
+            "@param callable The calalble to be invoked",
+            "@param dict The global symbol table to be used"
+        )]
         private IodineObject Invoke (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -208,10 +224,10 @@ namespace Iodine.Runtime
             }
         }
 
-        /**
-         * Iodine Function: chr (val)
-         * Description: Returns the character representation of val
-         */
+        [BuiltinDocString (
+            "Returns the character representation of a specified integer.",
+            "@param num The numerical UTF-16 code"
+        )]
         private IodineObject Chr (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -222,10 +238,10 @@ namespace Iodine.Runtime
             return new IodineString (((char)(int)ascii.Value).ToString ());
         }
 
-        /**
-         * Iodine Function: ord (val)
-         * Description: Returns the numeric representation of character val
-         */
+        [BuiltinDocString (
+            "Returns the numeric representation of a character.",
+            "@param char The character"
+        )]
         private IodineObject Ord (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -242,10 +258,11 @@ namespace Iodine.Runtime
             return new IodineInteger ((int)str.Value [0]);
         }
 
-        /**
-         * Iodine Function: hex (val)
-         * Description: Returns the hex representation of val
-         */
+        [BuiltinDocString (
+            "Returns hexadecimal representation of a specified object,",
+            "supports both Bytes and Str objects.",
+            "@param obj The object to convert into a hex string."
+        )]
         private IodineObject Hex (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             string[] lut = new string[] { 
@@ -315,10 +332,13 @@ namespace Iodine.Runtime
             return new IodineString (accum.ToString ());
         }
 
-        /**
-         * Iodine Function: len (val)
-         * Description: Returns the length of val, calling val.__len__ ()
-         */
+
+        [BuiltinDocString (
+            "Returns the length of the specified object. ",
+            "If the object does not implement __len__, ",
+            "an AttributeNotFoundException is raised.",
+            "@param countable The object whose length is to be determined."
+        )]
         private IodineObject Len (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -328,6 +348,10 @@ namespace Iodine.Runtime
             return args [0].Len (vm);
         }
 
+        [BuiltinDocString (
+            "Evaluates a string of Iodine source code.",
+            "@param source The source code to be evaluated."
+        )]
         private IodineObject Eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -380,10 +404,10 @@ namespace Iodine.Runtime
             return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{ });
         }
 
-        /**
-         * Iodine Function: typeof (val)
-         * Description: Returns the type of val
-         */
+        [BuiltinDocString (
+            "Returns the type definition of the specified object.",
+            "@param object The object whose type is to be determined."
+        )]
         private IodineObject Typeof (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -393,10 +417,13 @@ namespace Iodine.Runtime
             return args [0].TypeDef;
         }
 
-        /**
-         * Iodine Function: typecast (type, val)
-         * Description: Casts val to type, raising an exception of val is not of the specified type
-         */
+        [BuiltinDocString (
+            "Performs a sanity check, verifying that the specified ",
+            "[object] is an instance of [type]. ",
+            "If the test fails, a TypeCastException is raised.",
+            "@param type The type to be tested against",
+            "@param object The object to be tested"
+        )]
         private IodineObject Typecast (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -417,10 +444,7 @@ namespace Iodine.Runtime
             return args [1];
         }
 
-        /**
-         * Iodine Function: print (*args)
-         * Description: Prints each string in args
-         */
+        [BuiltinDocString ("Prints a string to the standard output stream")]
         private IodineObject Print (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             foreach (IodineObject arg in args) {
@@ -429,10 +453,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: input ([prompt])
-         * Description: Reads a line from stdin, displaying prompt
-         */
+        [BuiltinDocString (
+            "Reads from the standard input stream. Optionally displays the specified prompt.",
+            "@param prompt Optional prompt to display"
+        )]
         private IodineObject Input (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             foreach (IodineObject arg in args) {
@@ -451,10 +475,13 @@ namespace Iodine.Runtime
             return new IodineObject (IodineObject.ObjectTypeDef);
         }
 
-        /**
-         * Iodine Function: repr (obj)
-         * Description: Returns the string representation of an obj, calling obj.__repr__ ()
-         */
+        [BuiltinDocString (
+            "Returns a string representation of the specified object, ",
+            "which is obtained by calling its __repr__ function. ",
+            "If the object does not implement the __repr__ function, ",
+            "its default string representation is returned.",
+            "@param object The object to be represented"
+        )]
         private IodineObject Repr (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -464,11 +491,13 @@ namespace Iodine.Runtime
             return args [0].Represent (vm);
         }
 
-        /**
-         * Iodine Function: filter (iterable, func) 
-         * Description: Iterates though each item in iterable, passing them to func. If func returns
-         * true, the value is appened to a list which is returned to the caller
-         */
+        [BuiltinDocString (
+            "Iterates over the specified iterable, passing the result of each iteration to the specified ",
+            "callable. If the callable returns true, the result is appended to a list that is returned ",
+            "to the caller.",
+            "@param iterable The iterable to be iterated over.",
+            "@param callable The callable to be used for filtering."
+        )]
         private IodineObject Filter (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -490,11 +519,12 @@ namespace Iodine.Runtime
             return list;
         }
 
-        /**
-         * Iodine Function: map (iterable, func)
-         * Description: Iterates through each item in iterable, passing each item to func and appending
-         * the result to a list which is returned to the caller
-         */
+        [BuiltinDocString (
+            "Iterates over the specified iterable, passing the result of each iteration to the specified ",
+            "callable. The result of the specified callable is added to a list that is returned to the caller.",
+            "@param iterable The iterable to be iterated over.",
+            "@param callable The callable to be used for mapping."
+        )]
         private IodineObject Map (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -514,6 +544,14 @@ namespace Iodine.Runtime
             return list;
         }
 
+        [BuiltinDocString (
+            "Reduces all members of the specified iterable by applying the specified callable to each item ",
+            "left to right. The callable passed to reduce receives two arguments, the first one being the ",
+            "result of the last call to it and the second one being the current item from the iterable.",
+            "@param iterable The iterable to be iterated over.",
+            "@param callable The callable to be used for reduced.",
+            "@param default The default item."
+        )]
         private IodineObject Reduce (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -535,9 +573,11 @@ namespace Iodine.Runtime
             return result;
         }
 
-        /**
-         * 
-         */
+        [BuiltinDocString (
+            "Iterates over each iterable in [iterables], appending every item to a tuple, ",
+            "that is then appended to a list which is returned to the caller.",
+            "@param iterables The iterables to be zipped"
+        )]
         private IodineObject Zip (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -564,10 +604,11 @@ namespace Iodine.Runtime
             }
         }
 
-        /**
-         * Iodine Function: sum (iterable)
-         * Description: Adds each item in the supplied iterable object
-         */
+        [BuiltinDocString (
+            "Reduces the iterable by adding each item together, starting with [default].",
+            "@param iterable The iterable to be summed up",
+            "@param default The default item (Optional)"
+        )]
         private IodineObject Sum (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -586,10 +627,54 @@ namespace Iodine.Runtime
             return initial;
         }
 
-        /**
-         * Iodine Function: range (start, [end], step = 1)
-         * Description: Returns a new iterator that will yield integers between the specified range
-         */
+        [BuiltinDocString (
+            "Returns an sorted tuple created from an iterable sequence. An optional function can be provided that ",
+            "can be used to sort the iterable sequence.",
+            "@param iterable The iterable to be sorted",
+            "@param [key] The function which will return a key (Optional)"
+        )]
+        private IodineObject Sort (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineObject collection = args [0].GetIterator (vm);
+            IodineObject func = null;
+
+            if (args.Length > 1) {
+                func = args [1];
+            }
+
+            List<IodineObject> items = new List<IodineObject> ();
+
+            collection.IterReset (vm);
+
+            while (collection.IterMoveNext (vm)) {
+                IodineObject item = collection.IterGetCurrent (vm);
+                items.Add (item);
+            }
+
+            items.Sort ((x, y) => {
+                if (func != null) {
+                    x = func.Invoke (vm, new IodineObject[] { x });
+                    y = func.Invoke (vm, new IodineObject[] { y });
+                }
+                IodineInteger i = x.Compare (vm, y) as IodineInteger;
+                return (int)i.Value;
+            });
+
+            return new IodineTuple (items.ToArray ());
+        }
+
+        [BuiltinDocString (
+            "Returns an iterable sequence containing [n] items, starting with 0 and incrementing by 1, until [n] ",
+            "is reached.",
+            "@param start The first number in the sequence (Or, last if no other arguments are supplied)",
+            "@param end Last number in the sequence (Optional)",
+            "@param step By how much the current number increases every step to reach [end] (Optional)"
+        )]
         private IodineObject Range (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             long start = 0;
@@ -630,10 +715,16 @@ namespace Iodine.Runtime
             return new IodineRange (start, end, step);
         }
 
-        /**
-         * Iodine Function: open (path, mode)
-         * Description: Attempts to open a file, returning a new Stream object
-         */
+        [BuiltinDocString (
+            "Opens up a file using the specified mode, returning a new stream object.",
+            "@list Supported modes",
+            "@item r - Read",
+            "@item w - Write",
+            "@item a - Append",
+            "@item b - Binary ",
+            "@param file The filename",
+            "@param mode The mode."
+        )]
         private IodineObject Open (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {

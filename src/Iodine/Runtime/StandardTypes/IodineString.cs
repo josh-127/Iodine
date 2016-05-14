@@ -37,6 +37,7 @@ namespace Iodine.Runtime
     public class IodineString : IodineObject
     {
         public static readonly IodineTypeDefinition TypeDefinition = new StringTypeDef ();
+        public static readonly IodineString Empty = new IodineString ("");
 
         class StringTypeDef : IodineTypeDefinition
         {
@@ -105,8 +106,6 @@ namespace Iodine.Runtime
             SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, this));
             SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
             SetAttribute ("replace", new BuiltinMethodCallback (Replace, this));
-            SetAttribute ("startsWith", new BuiltinMethodCallback (StartsWith, this)); // DEPRECATED: Use startswith instead
-            SetAttribute ("endsWith", new BuiltinMethodCallback (EndsWith, this)); // DEPRECATED: Use endswith instead
             SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, this));
             SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, this));
             SetAttribute ("split", new BuiltinMethodCallback (Split, this));
@@ -152,6 +151,11 @@ namespace Iodine.Runtime
                 slice.DefaultStart,
                 slice.DefaultStop)
             );
+        }
+
+        public override IodineObject Compare (VirtualMachine vm, IodineObject obj)
+        {
+            return new IodineInteger (Value.CompareTo (obj.ToString ()));
         }
 
         private string Substring (int start, int end, int stride, bool defaultStart, bool defaultEnd)
@@ -523,7 +527,7 @@ namespace Iodine.Runtime
             while (collection.IterMoveNext (vm)) {
                 IodineObject o = collection.IterGetCurrent (vm);
                 accum.AppendFormat ("{0}{1}", last, sep);
-                last = o.ToString ();
+                last = o.ToString (vm).ToString ();
                 sep = Value;
             }
             accum.Append (last);

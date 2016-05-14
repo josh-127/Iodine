@@ -230,7 +230,11 @@
     <Compile Include="Runtime\StackFrame.cs" />
     <Compile Include="Runtime\StandardTypes\IodineBigInt.cs" />
     <Compile Include="Compiler\Ast\BigIntegerExpression.cs" />
+<<<<<<< HEAD
     <Compile Include="Interop\TypeMappings\BigIntegerTypeMapping.cs" />
+=======
+    <Compile Include="Runtime\BuiltinDocString.cs" />
+>>>>>>> upstream/master
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -65,7 +65,7 @@ namespace Iodine.Runtime
             SetAttribute ("readln", new BuiltinMethodCallback (Readln, this));
             SetAttribute ("close", new BuiltinMethodCallback (Close, this));
             SetAttribute ("flush", new BuiltinMethodCallback (Flush, this));
-            SetAttribute ("readAll", new BuiltinMethodCallback (ReadAll, this));
+            SetAttribute ("readall", new BuiltinMethodCallback (ReadAll, this));
         }
 
         public override IodineObject Len (VirtualMachine vm)

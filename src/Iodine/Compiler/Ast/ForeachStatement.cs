@@ -28,12 +28,13 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
     public class ForeachStatement : AstNode
     {
-        public readonly string Item;
+        public readonly List<string> Items = new List<string> ();
 
         public AstNode Iterator {
             private set;
@@ -45,10 +46,10 @@ namespace Iodine.Compiler.Ast
             get;
         }
 
-        public ForeachStatement (SourceLocation location, string item, AstNode iterator, AstNode body)
+        public ForeachStatement (SourceLocation location, IEnumerable<string> items, AstNode iterator, AstNode body)
             : base (location)
         {
-            Item = item;
+            Items.AddRange (items);
             Iterator = iterator;
             Body = body;
         }

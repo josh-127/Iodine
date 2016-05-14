@@ -39,6 +39,10 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition TypeDefinition = new BytesTypeDef ();
 
+        [BuiltinDocString (
+            "Returns a new Bytes instance and attempts to convert the supplied argument into a Bytes object.",
+            "@param value A value to convert into a bytes object."
+        )]
         class BytesTypeDef : IodineTypeDefinition
         {
             public BytesTypeDef ()

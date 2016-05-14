@@ -33,6 +33,9 @@ using System.Reflection;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides miscellaneous mathematical functions."
+    )]
     [IodineBuiltinModule ("math")]
     public class MathModule : IodineModule
     {
