@@ -310,7 +310,7 @@ class Expect {
     }
 
     func _false(self) {
-        test = type(self.obj) == type(false) && self.obj == false;
+        test = self.obj == false;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be false'.format(self.obj));
         }
