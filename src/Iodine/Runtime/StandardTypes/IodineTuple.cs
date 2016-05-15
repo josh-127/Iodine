@@ -42,6 +42,7 @@ namespace Iodine.Runtime
             public TupleTypeDef ()
                 : base ("Tuple")
             {
+                Console.WriteLine (TypeDef.GetType ().ToString ());
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)

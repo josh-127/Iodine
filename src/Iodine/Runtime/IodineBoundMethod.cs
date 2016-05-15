@@ -56,6 +56,7 @@ namespace Iodine.Runtime
             : base (InstanceTypeDef)
         {
             Method = method;
+            SetAttribute ("__doc__", method.Attributes ["__doc__"]);
             Self = self;
         }
 

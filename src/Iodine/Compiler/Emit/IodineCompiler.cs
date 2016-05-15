@@ -313,13 +313,18 @@ namespace Iodine.Compiler
 
             methodBuilder.SetAttribute ("__doc__", new IodineString (funcDecl.Documentation));
 
-            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-                methodBuilder.Parameters [funcDecl.Parameters [i]] =
-                    Context.SymbolTable.AddSymbol (funcDecl.Parameters [i]);
-            }
-
             CreateContext (methodBuilder);
 
+            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
+                int symbolIndex = Context.SymbolTable.AddSymbol (funcDecl.Parameters [i].Name);
+                methodBuilder.Parameters [funcDecl.Parameters [i].Name] = symbolIndex;
+
+                if (funcDecl.Parameters [i].HasType) {
+                    funcDecl.Parameters [i].Type.Visit (this);
+                    Context.CurrentMethod.EmitInstruction (Opcode.CastLocal, symbolIndex);
+                }
+            }
+                
             funcDecl.VisitChildren (this);
 
             DestroyContext ();
@@ -350,11 +355,17 @@ namespace Iodine.Compiler
 
             anonMethod.SetAttribute ("__doc__", new IodineString (funcDecl.Documentation));
 
-            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-                anonMethod.Parameters [funcDecl.Parameters [i]] = Context.SymbolTable.AddSymbol (funcDecl.Parameters [i]);
-            }
-
             CreateContext (anonMethod);
+
+            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
+                int symbolIndex = Context.SymbolTable.AddSymbol (funcDecl.Parameters [i].Name);
+                anonMethod.Parameters [funcDecl.Parameters [i].Name] = symbolIndex;
+
+                if (funcDecl.Parameters [i].HasType) {
+                    funcDecl.Parameters [i].Type.Visit (this);
+                    Context.CurrentMethod.EmitInstruction (Opcode.CastLocal, symbolIndex);
+                }
+            }
 
             funcDecl.VisitChildren (this);
 
@@ -377,7 +388,7 @@ namespace Iodine.Compiler
 
             Context.SymbolTable.ExitScope ();
         }
-
+            
         public override void Accept (ClassDeclaration classDecl)
         {
             ClassBuilder clazz = CompileClass (classDecl);
@@ -975,12 +986,17 @@ namespace Iodine.Compiler
                 lambda.AcceptsKeywordArguments
             );
 
-            for (int i = 0; i < lambda.Parameters.Count; i++) {
-                anonMethod.Parameters [lambda.Parameters [i]] =
-                    Context.SymbolTable.AddSymbol (lambda.Parameters [i]);
-            }
-
             CreateContext (anonMethod);
+
+            for (int i = 0; i < lambda.Parameters.Count; i++) {
+                int symbolIndex = Context.SymbolTable.AddSymbol (lambda.Parameters [i].Name);
+                anonMethod.Parameters [lambda.Parameters [i].Name] = symbolIndex;
+
+                if (lambda.Parameters [i].HasType) {
+                    lambda.Parameters [i].Type.Visit (this);
+                    Context.CurrentMethod.EmitInstruction (Opcode.CastLocal, symbolIndex);
+                }
+            }
 
             lambda.VisitChildren (this);
 

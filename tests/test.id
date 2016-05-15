@@ -316,6 +316,13 @@ describe('Iodine', lambda(test) {
                 expect(list.contains(4)).to.be._true();
             });
         });
+
+        test.describe('remove', lambda(test) {
+            list = [1, 2, 3]
+            test.it('remove should remove value from list', lambda() {
+                list.remove (2);
+            });
+        });
     });
 
     test.describe('Int', lambda(test) {

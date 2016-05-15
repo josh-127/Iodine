@@ -54,7 +54,7 @@ namespace Iodine.Compiler.Ast
             Name = name;
             Base = baseClass;
             Documentation = doc;
-            FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, new List<string> (), "");
+            FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, new List<NamedParameter> (), "");
             Constructor = dummyCtor;
         }
 

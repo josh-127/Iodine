@@ -41,7 +41,7 @@ namespace Iodine.Compiler.Ast
 
         public readonly string Documentation;
 
-        public IList<string> Parameters { private set; get; }
+        public IList<NamedParameter> Parameters { private set; get; }
 
         public bool InstanceMethod { private set; get; }
 
@@ -56,7 +56,7 @@ namespace Iodine.Compiler.Ast
             bool isInstanceMethod,
             bool isVariadic,
             bool hasKeywordArgs,
-            IList<string> parameters,
+            IList<NamedParameter> parameters,
             string doc
         ) : base (location)
         {

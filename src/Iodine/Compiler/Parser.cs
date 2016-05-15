@@ -304,7 +304,7 @@ namespace Iodine.Compiler
 
             Token ident = Expect (TokenClass.Identifier);
 
-            List<string> parameters = ParseFuncParameters (
+            List<NamedParameter> parameters = ParseFuncParameters (
               out isInstanceMethod,
               out isVariadic,
               out hasKeywordArgs
@@ -347,7 +347,7 @@ namespace Iodine.Compiler
             return decl;
         }
 
-        private List<string> ParseFuncParameters (
+        private List<NamedParameter> ParseFuncParameters (
             out bool isInstanceMethod,
             out bool isVariadic,
             out bool hasKeywordArgs)
@@ -355,7 +355,7 @@ namespace Iodine.Compiler
             isVariadic = false;
             hasKeywordArgs = false;
             isInstanceMethod = false;
-            List<string> ret = new List<string> ();
+            List<NamedParameter> ret = new List<NamedParameter> ();
             Expect (TokenClass.OpenParan);
             if (Accept (TokenClass.Keyword, "self")) {
                 isInstanceMethod = true;
@@ -370,11 +370,11 @@ namespace Iodine.Compiler
                     if (Accept (TokenClass.Operator, "*")) {
                         hasKeywordArgs = true;
                         Token ident = Expect (TokenClass.Identifier);
-                        ret.Add (ident.Value);
+                        ret.Add (new NamedParameter (ident.Value));
                     } else {
                         isVariadic = true;
                         Token ident = Expect (TokenClass.Identifier);
-                        ret.Add (ident.Value);
+                        ret.Add (new NamedParameter (ident.Value));
                     }
                 } else {
                     if (hasKeywordArgs) {
@@ -384,7 +384,14 @@ namespace Iodine.Compiler
                         errorLog.Add (Errors.ArgumentAfterVariadicArgs, Location);
                     }
                     Token param = Expect (TokenClass.Identifier);
-                    ret.Add (param.Value);
+
+                    AstNode type = null;
+
+                    if (Accept (TokenClass.Colon)) {
+                        type = ParseExpression ();
+                    }
+
+                    ret.Add (new NamedParameter (param.Value, type));
                 }
                 if (!Accept (TokenClass.Comma)) {
                     break;
@@ -1458,7 +1465,7 @@ namespace Iodine.Compiler
             bool isVariadic;
             bool acceptsKwargs;
 
-            List<string> parameters = ParseFuncParameters (
+            List<NamedParameter> parameters = ParseFuncParameters (
                 out isInstanceMethod,
                 out isVariadic,
                 out acceptsKwargs

@@ -34,7 +34,7 @@ namespace Iodine.Compiler.Ast
 {
     public class LambdaExpression : AstNode
     {
-        public IList<string> Parameters { private set; get; }
+        public IList<NamedParameter> Parameters { private set; get; }
 
         public bool InstanceMethod { private set; get; }
 
@@ -48,7 +48,7 @@ namespace Iodine.Compiler.Ast
             bool isInstanceMethod,
             bool variadic,
             bool acceptsKeywordArguments,
-            IList<string> parameters)
+            IList<NamedParameter> parameters)
             : base (location)
         {
             Parameters = parameters;

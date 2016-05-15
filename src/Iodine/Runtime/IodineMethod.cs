@@ -122,6 +122,7 @@ namespace Iodine.Runtime
         public IodineMethod ()
             : base (MethodTypeDef)
         {
+            SetAttribute ("__doc__", IodineString.Empty);
         }
 
         public override bool IsCallable ()

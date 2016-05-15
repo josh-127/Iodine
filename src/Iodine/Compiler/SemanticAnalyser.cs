@@ -69,8 +69,8 @@ namespace Iodine.Compiler
 
             symbolTable.EnterScope ();
 
-            foreach (string param in decl.Parameters) {
-                symbolTable.AddSymbol (param);
+            foreach (NamedParameter param in decl.Parameters) {
+                symbolTable.AddSymbol (param.Name);
             }
 
             symbolTable.ExitScope ();

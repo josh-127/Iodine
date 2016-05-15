@@ -215,9 +215,7 @@ namespace Iodine.Runtime
             SetAttribute ("list", new BuiltinMethodCallback (List, this));
         }
 
-        [BuiltinDocString (@"
-            Returns a list of processes running on the machine.
-        ")]
+        [BuiltinDocString ("Returns a list of processes running on the machine.")]
         private IodineObject GetProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             IodineList list = new IodineList (new IodineObject[] { });
@@ -227,26 +225,22 @@ namespace Iodine.Runtime
             return list;
         }
 
-        [BuiltinDocString (@"
-            Returns the login name of the current user.
-        ")]
+        [BuiltinDocString ("Returns the login name of the current user.")]
         private IodineObject GetUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Environment.UserName);
         }
 
-        [BuiltinDocString (@"
-            Returns the current working directory.
-        ")]
+        [BuiltinDocString ("Returns the current working directory.")]
         private IodineObject GetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineString (Environment.CurrentDirectory);
         }
 
-        [BuiltinDocString (@"
-            Sets the current working directory.
-            @param cwd The new current working directory.
-        ")]
+        [BuiltinDocString (
+            "Sets the current working directory.",
+            "@param cwd The new current working directory."
+        )]
         private IodineObject SetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -265,10 +259,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        [BuiltinDocString (@"
-            Returns the value of an environmental variable.
-            @param env The name of the environmental variable.
-        ")]
+        [BuiltinDocString (
+            "Returns the value of an environmental variable.",
+            "@param env The name of the environmental variable."
+        )]
         private IodineObject GetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -290,11 +284,11 @@ namespace Iodine.Runtime
             return null;
         }
 
-        [BuiltinDocString (@"
-            Sets an environmental variable to a specified value
-            @param env The name of the environmental variable.
-            @param value The value to set the environmental variable.
-        ")]
+        [BuiltinDocString (
+            "Sets an environmental variable to a specified value",
+            "@param env The name of the environmental variable.",
+            "@param value The value to set the environmental variable."
+        )]
         private IodineObject SetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -305,6 +299,12 @@ namespace Iodine.Runtime
             return null;
         }
 
+        [BuiltinDocString (
+            "Spawns a new process.",
+            "@param executable The executable to run",
+            "@param [args] Command line arguments",
+            "@param [wait] Should we wait to exit"
+        )]
         private IodineObject Spawn (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -343,11 +343,13 @@ namespace Iodine.Runtime
 
             return new IodineProc (Process.Start (info));
         }
-
-        /*
-         * Iodine Function: call (program. [arguments, [useShell = false]])
-         * Description: Executes program, waiting for it to exit and returning its exit code
-         */
+         
+        [BuiltinDocString (
+            "Executes program, waiting for it to exit and returning its exit code.",
+            "@param executable The executable to run.",
+            "@param [args] Command line arguments.",
+            "@param [useShell] Should we use a shell."
+        )]
         private IodineObject Call (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -400,12 +402,12 @@ namespace Iodine.Runtime
             return new IodineInteger (proc.ExitCode);
 
         }
-
-        /*
-         * Iodine Function: popen (command, mode)
-         * Description: Executes command, returning a new stream representing the newly
-         * created processes standard input and output
-         */
+            
+        [BuiltinDocString (
+            "Opens up a new process, returning a Proc object.",
+            "@param commmand Command to run.",
+            "@param mode Mode to open up the process in ('r' or 'w')."
+        )]
         private IodineObject Popen (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -476,10 +478,10 @@ namespace Iodine.Runtime
             return proc;
         }
 
-        /**
-         * Iodine Function: system (command)
-         * Description: Runs command with the system shell
-         */
+        [BuiltinDocString (
+            "Executes a command using the default shell.",
+            "@param commmand Command to run."
+        )]
         private IodineObject System (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -517,10 +519,10 @@ namespace Iodine.Runtime
             return new IodineInteger (proc.ExitCode);
         }
 
-        /**
-         * Iodine Function: unlink (file)
-         * Description: Removes file
-         */
+        [BuiltinDocString (
+            "Removes a file from the filesystem.",
+            "@param path The file to delete."
+        )]
         private IodineObject Unlink (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -544,10 +546,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: mkdir (dir)
-         * Description: Creates directory dir
-         */
+        [BuiltinDocString (
+            "Creates a new directory.",
+            "@param path The directory to create."
+        )]
         private IodineObject Mkdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -563,10 +565,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: rmdir (dir)
-         * Description: Removes an empty directory
-         */
+        [BuiltinDocString (
+            "Removes an empty directory.",
+            "@param path The directory to remove."
+        )]
         private IodineObject Rmdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -593,10 +595,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: rmtree (dir)
-         * Description: Removes an directory, deleting all subfiles
-         */
+        [BuiltinDocString (
+            "Removes an directory, deleting all subfiles.",
+            "@param path The directory to remove."
+        )]
         private IodineObject Rmtree (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -649,10 +651,10 @@ namespace Iodine.Runtime
             return true;
         }
 
-        /**
-         * Iodine Function: list (dir)
-         * Description: Returns a list of all files in a directory
-         */
+        [BuiltinDocString (
+            "Returns a list of all subfiles in a directory.",
+            "@param path The directory to list."
+        )]
         private IodineObject List (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {

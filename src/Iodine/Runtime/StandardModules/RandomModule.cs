@@ -51,19 +51,19 @@ namespace Iodine.Runtime
             //SetAttribute ("urandom", new BuiltinMethodCallback (CryptoString, this));
         }
 
-        /**
-         * Iodine Function: rand ()
-         * Description: Returns a random number between 0 and 1
-         */
+        [BuiltinDocString (
+            "Returns a random floating point number between 0 and 1."
+        )]
         private IodineObject Rand (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             return new IodineFloat (rgn.NextDouble ());
         }
 
-        /**
-         * Iodine Function: rand (a, [b])
-         * Description: returns a random integer between 0 and a, or between a and b (if b is supplied)
-         */
+        [BuiltinDocString (
+            "Returns a random integer between 0 and [a], or between [a] and [b] (if [b] is supplied).",
+            "@param a The starting value (Or max value if b is not supplied)",
+            "@param b The upper limit"
+        )]
         private IodineObject RandInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -114,9 +114,11 @@ namespace Iodine.Runtime
             return new IodineString (Convert.ToBase64String (buf).Substring (0, (int)count.Value));
         }
 
-        /**
-         * Iodine Function: choice (iterable)
-         */
+
+        [BuiltinDocString (
+            "Chooses a random item in an iterable sequence.",
+            "@param iterable The iterable to choose from"
+        )]
         private IodineObject Choice (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

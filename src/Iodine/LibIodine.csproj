@@ -232,6 +232,7 @@
     <Compile Include="Compiler\Ast\BigIntegerExpression.cs" />
     <Compile Include="Interop\TypeMappings\BigIntegerTypeMapping.cs" />
     <Compile Include="Runtime\BuiltinDocString.cs" />
+    <Compile Include="Compiler\NamedParameter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

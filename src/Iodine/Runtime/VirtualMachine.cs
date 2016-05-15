@@ -501,6 +501,21 @@ namespace Iodine.Runtime
                     Push (target.GetIndex (this, index));
                     break;
                 }
+            case Opcode.CastLocal:
+                {
+                    IodineTypeDefinition type = Pop () as IodineTypeDefinition;
+                    IodineObject o = Top.LoadLocal (instruction.Argument);
+                    if (type == null) {
+                        RaiseException (new IodineTypeException ("TypeDef"));
+                        break;
+                    }
+                    if (o.InstanceOf (type)) {
+                        Push (o);
+                    } else {
+                        RaiseException (new IodineTypeException (type.Name));
+                    }
+                    break;
+                }
             case Opcode.BinOp:
                 {
                     IodineObject op2 = Pop ();
