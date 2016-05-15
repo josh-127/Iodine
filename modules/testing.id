@@ -289,7 +289,7 @@ class Expect {
     }
 
     func equal(self, value) {
-        test = self.type(obj) == type(value) && self.obj == value;
+        test = type(self.obj) == type(value) && self.obj == value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {}, but got {}!'.format(value, self.obj));
         }
@@ -303,14 +303,14 @@ class Expect {
     }
 
     func _true(self) {
-        test = self.type(obj) == type(true) && self.obj == true;
+        test = type(self.obj) == type(true) && self.obj == true;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be true'.format(self.obj));
         }
     }
 
     func _false(self) {
-        test = self.type(obj) == type(false) && self.obj == false;
+        test = type(self.obj) == type(false) && self.obj == false;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be false'.format(self.obj));
         }
@@ -343,15 +343,15 @@ class Expect {
     }
 
     func a(self, type) {
-        test = Str(self.type(obj)) == Str(type);
+        test = Str(type(self.obj)) == Str(type);
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be a {}, but got {}'
-                .format(self.obj, type, self.type(obj)));
+                .format(self.obj, type, type(self.obj)));
         }
     }
 
     func above(self, value) {
-        test = self.type(obj) == type(value) && self.obj > value;
+        test = type(self.obj) == type(value) && self.obj > value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be greater than {}'
                 .format(self.obj, value));
@@ -359,7 +359,7 @@ class Expect {
     }
 
     func below(self, value) {
-        test = self.type(obj) == type(value) && self.obj < value;
+        test = type(self.obj) == type(value) && self.obj < value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be less than {}'
                 .format(self.obj, value));
@@ -367,7 +367,7 @@ class Expect {
     }
 
     func least(self, value) {
-        test = self.type(obj) == type(value) && self.obj >= value;
+        test = type(self.obj) == type(value) && self.obj >= value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be greater/equal to {}'
                 .format(self.obj, value));
@@ -375,7 +375,7 @@ class Expect {
     }
 
     func most(self, value) {
-        test = self.type(obj) == type(value) && self.obj <= value;
+        test = type(self.obj) == type(value) && self.obj <= value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be less/equal to {}'
                 .format(self.obj, value));
