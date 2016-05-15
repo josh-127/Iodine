@@ -342,11 +342,11 @@ class Expect {
         }
     }
 
-    func a(self, type) {
-        test = Str(type(self.obj)) == Str(type);
+    func a(self, _type) {
+        test = Str(type(self.obj)) == Str(_type);
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be a {}, but got {}'
-                .format(self.obj, type, type(self.obj)));
+                .format(self.obj, _type, type(self.obj)));
         }
     }
 
@@ -382,8 +382,8 @@ class Expect {
         }
     }
 
-    func an(self, type) {
-        type (self.a)
+    func an(self, _type) {
+        self.a (_type)
     }
 
     func _runTest(self, test) {
