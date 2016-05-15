@@ -341,8 +341,8 @@ namespace Iodine.Runtime
             }
 
             IodineObject key = arguments [0];
-            if (Objects.Contains (key)) {
-                Objects.Remove (key);
+            if (Objects.Any (o => o.Equals (key))) {
+                Objects.RemoveAt (Objects.FindIndex (o => o.Equals (key)));
                 return IodineBool.True;
             }
 
@@ -360,10 +360,11 @@ namespace Iodine.Runtime
                 return null;
             }
             IodineObject key = arguments [0];
-            if (Objects.Contains (key))
-                Objects.Remove (key);
-            else
-                vm.RaiseException (new IodineKeyNotFound ());
+            if (Objects.Any (o => o.Equals (key))) {
+                Objects.Remove (Objects.First (o => o.Equals (key)));
+                return null;
+            }
+            vm.RaiseException (new IodineKeyNotFound ());
             return null;
         }
 
@@ -378,10 +379,15 @@ namespace Iodine.Runtime
                 return null;
             }
             IodineInteger index = arguments [0] as IodineInteger;
-            if (index != null)
-                Objects.RemoveAt ((int)index.Value);
-            else
-                vm.RaiseException (new IodineTypeException ("Int"));
+            if (index != null) {
+                if (index.Value < Objects.Count) {
+                    Objects.RemoveAt ((int)index.Value);
+                } else {
+                    vm.RaiseException (new IodineKeyNotFound ());
+                }
+                return null;
+            }
+            vm.RaiseException (new IodineTypeException ("Int"));
             return null;
         }
 
@@ -396,12 +402,9 @@ namespace Iodine.Runtime
                 return null;
             }
             IodineObject key = arguments [0];
-            int hashCode = key.GetHashCode ();
             bool found = false;
             foreach (IodineObject obj in Objects) {
-                if (obj.GetHashCode () == hashCode) {
-                    found = true;
-                }
+                found |= obj.Equals (key);
             }
 
             return IodineBool.Create (found);
@@ -478,11 +481,11 @@ namespace Iodine.Runtime
 
             IodineObject item = args [0];
 
-            if (!Objects.Contains (item)) {
+            if (!Objects.Any (o => o.Equals (item))) {
                 vm.RaiseException (new IodineKeyNotFound ());
                 return null;
             }
-            return new IodineInteger (Objects.IndexOf (item));
+            return new IodineInteger (Objects.FindIndex (o => o.Equals (item)));
         }
 
         /**
@@ -498,11 +501,11 @@ namespace Iodine.Runtime
 
             IodineObject item = args [0];
 
-            if (!Objects.Contains (item)) {
+            if (!Objects.Any (o => o.Equals (item))) {
                 vm.RaiseException (new IodineKeyNotFound ());
                 return null;
             }
-            return new IodineInteger (Objects.LastIndexOf (item));
+            return new IodineInteger (Objects.FindLastIndex (o => o.Equals (item)));
         } 
 
 
@@ -519,10 +522,10 @@ namespace Iodine.Runtime
 
             IodineObject item = args [0];
 
-            if (!Objects.Contains (item)) {
+            if (!Objects.Any (o => o.Equals (item))) {
                 return new IodineInteger (-1);
             }
-            return new IodineInteger (Objects.IndexOf (item));
+            return new IodineInteger (Objects.FindIndex (o => o.Equals (item)));
         }
 
         /**
@@ -538,10 +541,10 @@ namespace Iodine.Runtime
 
             IodineObject item = args [0];
 
-            if (!Objects.Contains (item)) {
+            if (!Objects.Any (o => o.Equals (item))) {
                 return new IodineInteger (-1);
             }
-            return new IodineInteger (Objects.LastIndexOf (item));
+            return new IodineInteger (Objects.FindLastIndex (o => o.Equals (item)));
         } 
 
         public override int GetHashCode ()

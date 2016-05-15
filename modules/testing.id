@@ -33,7 +33,7 @@ class ConciseConsoleFrontend : ConsoleFrontendBase, IFrontend {
 
     func espressoError(self, e) {
         self._print('There was a bug with espresso!');
-        self._print('{}: {}'.format(e.__type__, e.message));
+        self._print('{}: {}'.format(type(e), e.message));
         self._print('{}'.format(e.stackTrace));
         sys.exit(-1);
     }
@@ -47,7 +47,7 @@ class ConsoleFrontend : ConsoleFrontendBase, IFrontend {
     func rootDescribeSummary(self, name, results) {
         self.indent -= 1;
         fails = 0;
-        foreach(test, result in results) {
+        for(test, result in results) {
             if (result == null) {
                 self._print('{} [✓]'.format(test));
             } else {
@@ -65,7 +65,7 @@ class ConsoleFrontend : ConsoleFrontendBase, IFrontend {
 
     func espressoError(self, e) {
         self._print('There was a bug with espresso!');
-        self._print('{}: {}'.format(e.__type__, e.message));
+        self._print('{}: {}'.format(type(e), e.message));
         self._print('{}'.format(e.stackTrace));
         sys.exit(-1);
     }
@@ -88,7 +88,7 @@ class HTMLFrontend : ConsoleFrontendBase, IFrontend {
 
     func espressoError(self, e) {
         self._print('There was a bug with espresso!');
-        self._print('{}: {}'.format(e.__type__, e.message));
+        self._print('{}: {}'.format(type(e), e.message));
         self._print('{}'.format(e.stackTrace));
         sys.exit(-1);
     }
@@ -111,7 +111,7 @@ class HTMLFrontend : ConsoleFrontendBase, IFrontend {
             self.output += '<table class="table"><thead><th>Test</th>';
             self.output += '<th>Result</th></thead>';
             self.output += '<tbody>';
-            foreach (result in results) {
+            for (result in results) {
                 cls = 'success';
                 if (results[result] != null) {
                     cls = 'danger';
@@ -194,7 +194,7 @@ class FrontendManager {
 
 class Test {
     func Test(self, indentLevel) {
-        self.results = {};
+        self.results = Dict();
         self.preTasks = [];
         self.postTasks = [];
         self.indentLevel = indentLevel;
@@ -202,13 +202,13 @@ class Test {
 
     func describe(self, name, block) {
         results = _describe(name, block, self.indentLevel + 1);
-        foreach (key, value in results) {
+        for (key, value in results) {
             self.results['{} {}'.format(name, key)] = results[key];
         }
     }
 
     func it(self, name, block) {
-        foreach (task in self.preTasks) {
+        for (task in self.preTasks) {
             task();
         }
 
@@ -222,7 +222,7 @@ class Test {
 
         self.results[name] = error;
 
-        foreach (task in self.postTasks) {
+        for (task in self.postTasks) {
             task();
         }
     }
@@ -289,7 +289,7 @@ class Expect {
     }
 
     func equal(self, value) {
-        test = self.obj.__type__ == value.__type__ && self.obj == value;
+        test = self.type(obj) == type(value) && self.obj == value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {}, but got {}!'.format(value, self.obj));
         }
@@ -303,14 +303,14 @@ class Expect {
     }
 
     func _true(self) {
-        test = self.obj.__type__ == true.__type__ && self.obj == true;
+        test = self.type(obj) == type(true) && self.obj == true;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be true'.format(self.obj));
         }
     }
 
     func _false(self) {
-        test = self.obj.__type__ == false.__type__ && self.obj == false;
+        test = self.type(obj) == type(false) && self.obj == false;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be false'.format(self.obj));
         }
@@ -324,15 +324,15 @@ class Expect {
     }
 
     func key(self, value) {
-        test = self.obj.__type__ == {}.__type__ && self.obj.contains(value);
+        test = self.obj is Dict && self.obj.contains(value);
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to have key {}'.format(self.obj, value));
         }
     }
 
     func keys(self, *values) {
-        test = self.obj.__type__ == {}.__type__;
-        foreach(value in values) {
+        test = self.obj is Dict;
+        for(value in values) {
             test = test && self.obj.contains(value);
         }
 
@@ -343,15 +343,15 @@ class Expect {
     }
 
     func a(self, type) {
-        test = Str(self.obj.__type__) == Str(type);
+        test = Str(self.type(obj)) == Str(type);
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be a {}, but got {}'
-                .format(self.obj, type, self.obj.__type__));
+                .format(self.obj, type, self.type(obj)));
         }
     }
 
     func above(self, value) {
-        test = self.obj.__type__ == value.__type__ && self.obj > value;
+        test = self.type(obj) == type(value) && self.obj > value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be greater than {}'
                 .format(self.obj, value));
@@ -359,7 +359,7 @@ class Expect {
     }
 
     func below(self, value) {
-        test = self.obj.__type__ == value.__type__ && self.obj < value;
+        test = self.type(obj) == type(value) && self.obj < value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be less than {}'
                 .format(self.obj, value));
@@ -367,7 +367,7 @@ class Expect {
     }
 
     func least(self, value) {
-        test = self.obj.__type__ == value.__type__ && self.obj >= value;
+        test = self.type(obj) == type(value) && self.obj >= value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be greater/equal to {}'
                 .format(self.obj, value));
@@ -375,7 +375,7 @@ class Expect {
     }
 
     func most(self, value) {
-        test = self.obj.__type__ == value.__type__ && self.obj <= value;
+        test = self.type(obj) == type(value) && self.obj <= value;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be less/equal to {}'
                 .format(self.obj, value));
