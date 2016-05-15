@@ -383,7 +383,7 @@ class Expect {
     }
 
     func an(self, type) {
-        self.a(type);
+        type (self.a)
     }
 
     func _runTest(self, test) {
