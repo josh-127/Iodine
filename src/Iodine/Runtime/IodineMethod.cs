@@ -122,6 +122,7 @@ namespace Iodine.Runtime
         public IodineMethod ()
             : base (MethodTypeDef)
         {
+            SetAttribute ("__name__", new IodineString (Name));
             SetAttribute ("__doc__", IodineString.Empty);
         }
 

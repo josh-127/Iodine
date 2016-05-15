@@ -79,6 +79,10 @@ namespace Iodine.Runtime
             value = initialValue;
             stackFrame = frame;
             this.baseMethod = baseMethod;
+
+            SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] arguments) => {
+                return GetIterator (vm);
+            }, this));
         }
 
         public IodineGenerator (StackFrame frame,
@@ -88,8 +92,8 @@ namespace Iodine.Runtime
             : base (TypeDefinition)
         {
             arguments = args;
-            self = baseMethod.Self;
             value = initialValue;
+            self = baseMethod.Self;
             stackFrame = frame;
             this.baseMethod = baseMethod.Method;
 

@@ -303,7 +303,7 @@ describe('Iodine', lambda(test) {
             expect(list[0]).to.equal(1);
             try {
                 expect(list['0']).not().to.equal(1);
-            } except (e as TypeException) {
+            } except (e) {
                 return;
             }
 
