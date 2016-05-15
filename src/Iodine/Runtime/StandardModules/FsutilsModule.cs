@@ -52,8 +52,8 @@ namespace Iodine.Runtime
             SetAttribute ("readbytes", new BuiltinMethodCallback (ReadBytes, this));
             SetAttribute ("readlines", new BuiltinMethodCallback (ReadLines, this));
 
-            SetAttribute ("getCreationTime", new BuiltinMethodCallback (GetModifiedTime, this));
-            SetAttribute ("getModifiedTime", new BuiltinMethodCallback (GetCreationTime, this));
+            SetAttribute ("ctime", new BuiltinMethodCallback (GetCreationTime, this));
+            SetAttribute ("atime", new BuiltinMethodCallback (GetModifiedTime, this));
         }
 
         [BuiltinDocString (

@@ -63,10 +63,10 @@ namespace Iodine.Runtime
             return new IodineTuple (vm.Context.SearchPath.Select (p => new IodineString (p)).ToArray ());
         }
 
-        /**
-         * Iodine Function: exit (code)
-         * Description: Forcefully terminates the current process (Including the Iodine host)
-         */
+        [BuiltinDocString (
+            "Forcefully terminates the current process (Including the Iodine host).",
+            "@param code The exit code."
+        )]
         private IodineObject Exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -85,10 +85,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /**
-         * Iodine Function: getFrame (n)
-         * Description: Gets the nth frame 
-         */
+        [BuiltinDocString (
+            "Returns the nth stack frame.",
+            "@param n Stack frame index, relative to the current frame."
+        )]
         private IodineObject GetFrame (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
