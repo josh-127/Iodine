@@ -92,6 +92,10 @@ namespace Iodine.Runtime
             value = initialValue;
             stackFrame = frame;
             this.baseMethod = baseMethod.Method;
+
+            SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] arguments) => {
+                return GetIterator (vm);
+            }, this));
         }
 
         public override IodineObject GetIterator (VirtualMachine vm)

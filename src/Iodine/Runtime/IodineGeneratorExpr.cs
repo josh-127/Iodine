@@ -44,6 +44,10 @@ namespace Iodine.Runtime
         {
             this.frame = frame.Duplicate (frame);
             Target = target;
+
+            SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
+                return GetIterator (vm);
+            }, this));
         }
 
         public override bool IsCallable ()
