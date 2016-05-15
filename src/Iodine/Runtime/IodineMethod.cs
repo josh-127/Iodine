@@ -51,13 +51,19 @@ namespace Iodine.Runtime
             internal set;
         }
 
+        private string name;
         /// <summary>
         /// The name of the method
         /// </summary>
         /// <value>The name.</value>
         public string Name {
-            get;
-            protected set;
+            get {
+                return name;
+            }
+            protected set {
+                name = value;
+                SetAttribute ("__name__", new IodineString (value));
+            }
         }
 
         /// <summary>
@@ -122,7 +128,6 @@ namespace Iodine.Runtime
         public IodineMethod ()
             : base (MethodTypeDef)
         {
-            SetAttribute ("__name__", new IodineString (Name));
             SetAttribute ("__doc__", IodineString.Empty);
         }
 
@@ -155,7 +160,7 @@ namespace Iodine.Runtime
 
         public override string ToString ()
         {
-            return string.Format ("<Function {0}>", Name);
+            return string.Format ("<Function {0}>", name);
         }
     }
 }
