@@ -249,7 +249,7 @@ describe('Iodine', lambda(test) {
             });
 
             expect(_map).to.be.a('List');
-            expect(_map.contains('a')).not().to.be._true();
+            expect(_map.contains('a')).to.be._false();
         });
 
         test.it('should map using keys and return list', lambda() {

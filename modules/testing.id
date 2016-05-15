@@ -303,14 +303,14 @@ class Expect {
     }
 
     func _true(self) {
-        test = type(self.obj) == type(true) && self.obj == true;
+        test = self.obj == true;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be true'.format(self.obj));
         }
     }
 
     func _false(self) {
-        test = type(self.obj) == type(false) && self.obj == false;
+        test = self.obj == false;
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be false'.format(self.obj));
         }
@@ -342,11 +342,11 @@ class Expect {
         }
     }
 
-    func a(self, type) {
-        test = Str(type(self.obj)) == Str(type);
+    func a(self, _type) {
+        test = Str(type(self.obj)) == Str(_type);
         if (!self._runTest(test)) {
             raise AssertionException('expected {} to be a {}, but got {}'
-                .format(self.obj, type, type(self.obj)));
+                .format(self.obj, _type, type(self.obj)));
         }
     }
 
@@ -382,8 +382,8 @@ class Expect {
         }
     }
 
-    func an(self, type) {
-        self.a(type);
+    func an(self, _type) {
+        self.a (_type)
     }
 
     func _runTest(self, test) {
