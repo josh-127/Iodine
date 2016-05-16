@@ -279,6 +279,8 @@ namespace Iodine.Compiler
         {
             char escape = (char)ReadChar ();
             switch (escape) {
+            case '\'':
+                return '\'';
             case '"':
                 return '"';
             case 'n':

@@ -132,15 +132,12 @@ namespace Iodine.Runtime
             IodineList listVal = obj as IodineList;
 
             if (listVal != null && listVal.Objects.Count == Objects.Count) {
+                bool result = true;
                 for (int i = 0; i < Objects.Count; i++) {
-                    if (!Objects [i].Equals (listVal.Objects [i])) {
-                        return false;
-                    }
+                    result &= Objects [i].Equals (listVal.Objects [i]);
                 }
-
-                return true;
+                return result;
             }
-
             return false;
         }
 
@@ -239,12 +236,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
-            IodineList listVal = right as IodineList;
-            if (listVal == null) {
-                vm.RaiseException (new IodineTypeException ("List"));
-                return null;
-            }
-            return IodineBool.Create (Compare (this, listVal));
+            return IodineBool.Create (Equals (right));
         }
 
         public override IodineObject GetIterator (VirtualMachine vm)
