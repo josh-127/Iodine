@@ -125,10 +125,22 @@ namespace Iodine.Runtime
         /// </summary>
         public readonly Dictionary<string, int> Parameters = new Dictionary<string, int> ();
 
-        public IodineMethod ()
+        protected IodineMethod ()
             : base (MethodTypeDef)
         {
             SetAttribute ("__doc__", IodineString.Empty);
+            SetAttribute ("__invoke__", new BuiltinMethodCallback (invoke, this));
+        }
+
+        /// <summary>
+        /// A small wrapper around IodineObject.Invoke
+        /// </summary>
+        /// <param name="vm">Vm.</param>
+        /// <param name="self">Self.</param>
+        /// <param name="args">Arguments.</param>
+        IodineObject invoke (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        {
+            return Invoke (vm, args);
         }
 
         public override bool IsCallable ()
@@ -136,6 +148,11 @@ namespace Iodine.Runtime
             return true;
         }
 
+        /// <summary>
+        /// Invoke the specified vm and arguments.
+        /// </summary>
+        /// <param name="vm">Vm.</param>
+        /// <param name="arguments">Arguments.</param>
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
             if (Generator) {

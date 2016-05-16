@@ -55,7 +55,7 @@ namespace Iodine.Runtime
             get;
         }
 
-        public BuiltinMethodCallback (IodineMethodDelegate callback, IodineObject self)
+        public BuiltinMethodCallback (IodineMethodDelegate callback, IodineObject self, bool setInvokeAttribute = true)
             : base (InternalMethodTypeDef)
         {
             Self = self;
@@ -68,11 +68,23 @@ namespace Iodine.Runtime
                     SetAttribute ("__doc__", new IodineString (docstr.DocumentationString));
                 }
             }
+
+            // This is needed to prevent a stackoverflow
+            if (setInvokeAttribute) {
+                
+                // Set the invoke attribute so traits can match __invoke__
+                SetAttribute ("__invoke__", new BuiltinMethodCallback (invoke, this, false));
+            }
         }
 
         public override bool IsCallable ()
         {
             return true;
+        }
+
+        IodineObject invoke (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        {
+            return Invoke (vm, args);
         }
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)

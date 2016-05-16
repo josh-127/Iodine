@@ -177,7 +177,7 @@ describe('Iodine', lambda(test) {
         test.it('should be able to iterate through all yielded values', 
             lambda() {
                 _list = [];
-                foreach (i in generatorTest ()) {
+                for (i in generatorTest ()) {
                     _list.append (i);
                 }
                 expect(_list[0]).to.equal(1);
@@ -188,7 +188,7 @@ describe('Iodine', lambda(test) {
 
     test.describe('Dict', lambda(test) {
         test.it('should be created using {}', lambda() {
-            map = {};
+            map = Dict ();
             expect(map).to.be.a('Dict');
         });
 
@@ -248,6 +248,11 @@ describe('Iodine', lambda(test) {
                 return false;
             });
 
+            # Splitty: filter was changed to be a generator in stdlib
+            if (__STDLIB) {
+                _map = List (_map)
+            }
+
             expect(_map).to.be.a('List');
             expect(_map.contains('a')).to.be._false();
         });
@@ -266,6 +271,11 @@ describe('Iodine', lambda(test) {
                 }
                 return 'a' + key;
             });
+
+            # Splitty: filter was changed to be a generator in stdlib
+            if (__STDLIB) {
+                _map = List (_map)
+            }
 
             expect(_map.contains('aa')).to.be._true();
             expect(_map.contains('a')).not().to.be._true();
@@ -395,7 +405,7 @@ describe('Iodine', lambda(test) {
             test.it('should exit a foreach loop', lambda() {
                 list = [1, 2, 3];
                 reachedThree = false;
-                foreach(item in list) {
+                for (item in list) {
                     if (item == 2) {
                         break;
                     } else if (item == 3) {
@@ -433,7 +443,7 @@ describe('Iodine', lambda(test) {
             test.it('should skip an iteration of a foreach loop', lambda() {
                 j = 0;
                 list = [1, 2, 3];
-                foreach (item in list) {
+                for (item in list) {
                     continue;
                     j += 1;
                 }

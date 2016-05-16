@@ -84,10 +84,8 @@ namespace Iodine.Runtime
             Name = name;
 
             SetAttribute ("__doc__", IodineString.Empty);
-
             Attributes ["__name__"] = new IodineString (name);
         }
-
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {

@@ -52,12 +52,18 @@ namespace Iodine.Runtime
             get;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:Iodine.Runtime.IodineBoundMethod"/> class.
+        /// </summary>
+        /// <param name="self">Self.</param>
+        /// <param name="method">Method.</param>
         public IodineBoundMethod (IodineObject self, IodineMethod method)
             : base (InstanceTypeDef)
         {
             Method = method;
-            SetAttribute ("__name__", new IodineString (Method.Name));
+            SetAttribute ("__name__", method.Attributes ["__name__"]);
             SetAttribute ("__doc__", method.Attributes ["__doc__"]);
+            SetAttribute ("__invoke__", method.Attributes ["__invoke__"]);
             Self = self;
         }
 
@@ -75,6 +81,11 @@ namespace Iodine.Runtime
             return true;
         }
 
+        /// <summary>
+        /// Invoke the specified vm and arguments.
+        /// </summary>
+        /// <param name="vm">Vm.</param>
+        /// <param name="arguments">Arguments.</param>
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
             if (Method.Generator) {
