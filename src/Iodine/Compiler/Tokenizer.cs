@@ -182,9 +182,9 @@ namespace Iodine.Compiler
         {
             ReadChar (); // 0
             ReadChar (); // x
-            while (IsHexNumber ((char)PeekChar ()) || ((char)PeekChar () == 'L')) {
+            while (IsHexNumber ((char)PeekChar ())) {
                 accum.Append ((char)ReadChar ());
-                if (((char)PeekChar () == 'L') && IsHexNumber ((char)PeekChar (1))) {
+                if ((char)PeekChar (1) == 'L' && IsHexNumber ((char)PeekChar (1))) {
                     errorLog.Add (Errors.IllegalSyntax, location);
                 }
             }
@@ -192,8 +192,9 @@ namespace Iodine.Compiler
             string val = string.Empty;
             Int64 val64;
             string numstr = accum.ToString ();
-            if (numstr.Length > 1 && numstr [numstr.Length - 1] == 'L') {
-                val = BigInteger.Parse ("0" + numstr.Substring (0, numstr.Length - 1), System.Globalization.NumberStyles.HexNumber).ToString ();
+            var big = (char)PeekChar (0) == 'L';
+            if (big) {
+                val = BigInteger.Parse ("0" + numstr, System.Globalization.NumberStyles.HexNumber).ToString ();
             } else if (Int64.TryParse (numstr, System.Globalization.NumberStyles.HexNumber, null, out val64)) {
                 val = val64.ToString ();
             } else {

@@ -1318,6 +1318,15 @@ namespace Iodine.Compiler
             case TokenClass.IntLiteral:
                 long lval64;
                 BigInteger lvalbig = BigInteger.Zero;
+                if (Match (1, TokenClass.Identifier, "L")) {
+                    if (!BigInteger.TryParse (Current.Value, out lvalbig)) {
+                        errorLog.Add (Errors.IntegerOverBounds, Current.Location);
+                    } else {
+                        ReadToken ();
+                        ReadToken ();
+                        return new BigIntegerExpression (Location, lvalbig);
+                    }
+                }
                 bool big = false;
                 if (!long.TryParse (Current.Value, out lval64)) {
                     if (!BigInteger.TryParse (Current.Value, out lvalbig)) {
