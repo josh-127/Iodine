@@ -1,5 +1,15 @@
 use describe, expect from testing;
 
+func stdlib () {
+    try {
+        if (__STDLIB) {
+            return true
+        }
+        return false
+    } except { }
+    return false
+}
+
 # Class tests
 class A {
     func A(self, x) {
@@ -249,7 +259,7 @@ describe('Iodine', lambda(test) {
             });
 
             # Splitty: filter was changed to be a generator in stdlib
-            if (__STDLIB) {
+            if (stdlib ()) {
                 _map = List (_map)
             }
 
@@ -273,7 +283,7 @@ describe('Iodine', lambda(test) {
             });
 
             # Splitty: filter was changed to be a generator in stdlib
-            if (__STDLIB) {
+            if (stdlib ()) {
                 _map = List (_map)
             }
 
