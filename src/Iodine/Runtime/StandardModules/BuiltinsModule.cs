@@ -67,6 +67,7 @@ namespace Iodine.Runtime
             SetAttribute ("Bool", IodineBool.TypeDefinition);
             SetAttribute ("Tuple", IodineTuple.TypeDefinition);
             SetAttribute ("List", IodineList.TypeDefinition);
+            SetAttribute ("Property", IodineProperty.TypeDefinition);
             SetAttribute ("Object", new BuiltinMethodCallback (Object, null));
             SetAttribute ("Dict", IodineDictionary.TypeDefinition);
             SetAttribute ("repr", new BuiltinMethodCallback (Repr, null));
@@ -103,6 +104,10 @@ namespace Iodine.Runtime
         )]
         private IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return IodineNull.Instance;
+            }
             IodineString source = args [0] as IodineString;
             SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
             return unit.Compile (vm.Context);
@@ -115,9 +120,9 @@ namespace Iodine.Runtime
         )]
         private IodineObject Property (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
-            if (args.Length <= 0) {
+            if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
             IodineObject getter = args [0];
             IodineObject setter = args.Length > 1 ? args [1] : null;
@@ -131,14 +136,14 @@ namespace Iodine.Runtime
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineString path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
+                return IodineNull.Instance;
             }
 
             string name = path.Value;
@@ -164,7 +169,7 @@ namespace Iodine.Runtime
                 IodineTuple names = args [1] as IodineTuple;
                 if (names == null) {
                     vm.RaiseException (new IodineTypeCastException ("Tuple"));
-                    return null;
+                    return IodineNull.Instance;
                 }
                 IodineModule module = null;
 
@@ -192,7 +197,7 @@ namespace Iodine.Runtime
                     }
                 }
             }
-            return null;
+            return IodineNull.Instance;
         }
 
         [BuiltinDocString (
@@ -205,7 +210,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
-                return null;
+                return IodineNull.Instance;
             }
             IodineDictionary hash = args [1] as IodineDictionary;
             Dictionary<string, IodineObject> items = new Dictionary<string, IodineObject> ();
@@ -220,7 +225,7 @@ namespace Iodine.Runtime
                 return args [0].Invoke (newVm, new IodineObject[]{ });
             } catch (UnhandledIodineExceptionException ex) {
                 vm.RaiseException (ex.OriginalException);
-                return null;
+                return IodineNull.Instance;
             }
         }
 
@@ -232,7 +237,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
             IodineInteger ascii = args [0] as IodineInteger;
             return new IodineString (((char)(int)ascii.Value).ToString ());
@@ -246,13 +251,13 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
             IodineString str = args [0] as IodineString;
 
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
+                return IodineNull.Instance;
             }
 
             return new IodineInteger ((int)str.Value [0]);
@@ -286,7 +291,7 @@ namespace Iodine.Runtime
 
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
 
 
@@ -321,7 +326,7 @@ namespace Iodine.Runtime
 
                     if (b == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
-                        return null;
+                        return IodineNull.Instance;
                     }
 
                     accum.Append (lut [b.Value & 0xFF]);
@@ -343,7 +348,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
             return args [0].Len (vm);
         }
@@ -356,21 +361,21 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineString str = args [0] as IodineString;
             IodineDictionary map = null;
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
+                return IodineNull.Instance;
             }
 
             if (args.Length >= 2) {
                 map = args [1] as IodineDictionary;
                 if (map == null) {
                     vm.RaiseException (new IodineTypeException ("Dict"));
-                    return null;
+                    return IodineNull.Instance;
                 }
             }
 
@@ -399,7 +404,7 @@ namespace Iodine.Runtime
                 module = code.Compile (context);
             } catch (SyntaxException ex) {
                 vm.RaiseException (new IodineSyntaxException (ex.ErrorLog));
-                return null;
+                return IodineNull.Instance;
             }
             return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{ });
         }
@@ -412,7 +417,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
             return args [0].TypeDef;
         }
@@ -428,17 +433,17 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
-                return null;
+                return IodineNull.Instance;
             }
             IodineTypeDefinition typedef = args [0] as IodineTypeDefinition;
             if (typedef == null) {
                 vm.RaiseException (new IodineTypeException ("TypeDef"));
-                return null;
+                return IodineNull.Instance;
             }
 
             if (!args [1].InstanceOf (typedef)) {
                 vm.RaiseException (new IodineTypeCastException (typedef.ToString ()));
-                return null;
+                return IodineNull.Instance;
             }
 
             return args [1];
@@ -454,7 +459,7 @@ namespace Iodine.Runtime
             foreach (IodineObject arg in args) {
                 Console.WriteLine (arg.ToString ());
             }
-            return null;
+            return IodineNull.Instance;
         }
 
         [BuiltinDocString (
@@ -490,7 +495,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
             return args [0].Represent (vm);
         }
@@ -506,7 +511,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineList list = new IodineList (new IodineObject[]{ });
@@ -533,7 +538,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineList list = new IodineList (new IodineObject[]{ });
@@ -560,7 +565,7 @@ namespace Iodine.Runtime
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineObject result = args.Length > 2 ? args [1] : null;
@@ -586,7 +591,7 @@ namespace Iodine.Runtime
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineList result = new IodineList (new IodineObject[0]);
@@ -617,7 +622,7 @@ namespace Iodine.Runtime
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineObject initial = args.Length > 1 ? args [1] : new IodineInteger (0);
@@ -641,7 +646,7 @@ namespace Iodine.Runtime
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
 
             IodineObject collection = args [0].GetIterator (vm);
@@ -686,13 +691,13 @@ namespace Iodine.Runtime
             long step = 1;
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
-                return null;
+                return IodineNull.Instance;
             }
             if (args.Length == 1) {
                 IodineInteger stepObj = args [0] as IodineInteger;
                 if (stepObj == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
-                    return null;
+                    return IodineNull.Instance;
                 }
                 end = stepObj.Value;
             } else if (args.Length == 2) {
@@ -700,7 +705,7 @@ namespace Iodine.Runtime
                 IodineInteger endObj = args [1] as IodineInteger;
                 if (startObj == null || endObj == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
-                    return null;
+                    return IodineNull.Instance;
                 }
                 start = startObj.Value;
                 end = endObj.Value;
@@ -710,7 +715,7 @@ namespace Iodine.Runtime
                 IodineInteger stepObj = args [2] as IodineInteger;
                 if (startObj == null || endObj == null || stepObj == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
-                    return null;
+                    return IodineNull.Instance;
                 }
                 start = startObj.Value;
                 end = endObj.Value;
@@ -733,14 +738,14 @@ namespace Iodine.Runtime
         {
             if (args.Length < 2) {
                 vm.RaiseException (new IodineArgumentException (2));
-                return null;
+                return IodineNull.Instance;
             }
             IodineString filePath = args [0] as IodineString;
             IodineString mode = args [1] as IodineString;
 
             if (filePath == null || mode == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
+                return IodineNull.Instance;
             }
 
             bool canRead = false;
@@ -767,7 +772,7 @@ namespace Iodine.Runtime
 
             if (!File.Exists (filePath.Value) && (canRead && !canWrite)) {
                 vm.RaiseException (new IodineIOException ("File does not exist!"));
-                return null;
+                return IodineNull.Instance;
             }
 
             if (append)
@@ -778,7 +783,7 @@ namespace Iodine.Runtime
                 return new IodineStream (File.OpenRead (filePath.Value), canWrite, canRead, binary);
             else if (canWrite)
                 return new IodineStream (File.Open (filePath.Value, FileMode.Create), canWrite, canRead, binary);
-            return null;
+            return IodineNull.Instance;
         }
 
     }

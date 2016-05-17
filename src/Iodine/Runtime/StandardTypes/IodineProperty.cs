@@ -33,12 +33,35 @@ namespace Iodine.Runtime
 {
     public class IodineProperty : IodineObject, IIodineProperty
     {
-        public readonly static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Property");
+        public readonly static IodineTypeDefinition TypeDefinition = new PropertyTypeDef ();
 
         public readonly IodineObject Setter;
         public readonly IodineObject Getter;
 
         private IodineObject self;
+
+        public bool HasSetter {
+            get {
+                return Setter != null;
+            }
+        }
+
+        class PropertyTypeDef : IodineTypeDefinition
+        {
+            public PropertyTypeDef ()
+                : base ("Property")
+            {
+            }
+
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject [] arguments)
+            {
+                if (arguments.Length < 1 || arguments.Length > 2) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return IodineNull.Instance;
+                }
+                return new IodineProperty (arguments [0], arguments.Length == 2 ? arguments [1] : null, null);
+            }
+        }
 
         public IodineProperty (IodineObject getter, IodineObject setter, IodineObject self)
             : base (TypeDefinition)

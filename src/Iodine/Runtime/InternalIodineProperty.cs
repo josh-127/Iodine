@@ -42,6 +42,12 @@ namespace Iodine.Runtime
         private IodineGetter getter;
         private IodineSetter setter;
 
+        public bool HasSetter {
+            get {
+                return setter != null;
+            }
+        }
+
         public InternalIodineProperty (IodineGetter getter, IodineSetter setter)
             : base (IodineProperty.TypeDefinition)
         {

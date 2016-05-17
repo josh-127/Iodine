@@ -38,6 +38,9 @@ namespace Iodine.Runtime
     [IodineBuiltinModule ("datetime")]
     public class DateTimeModule : IodineModule
     {
+        [BuiltinDocString (
+            "Provides information about the current date and time"
+        )]
         public class IodineTimeStamp : IodineObject
         {
             public readonly static IodineTypeDefinition TimeStampTypeDef = new IodineTypeDefinition ("TimeStamp");
@@ -122,7 +125,7 @@ namespace Iodine.Runtime
         }
 
         [BuiltinDocString (
-            "Returns the current time."
+            "Returns the current time"
         )]
         private static IodineObject Now (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {

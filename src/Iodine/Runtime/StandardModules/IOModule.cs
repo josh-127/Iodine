@@ -45,10 +45,10 @@ namespace Iodine.Runtime
                 : base (DirectoryTypeDef)
             {
                 SetAttribute ("separator", new IodineString (Path.DirectorySeparatorChar.ToString ()));
-                SetAttribute ("getFiles", new BuiltinMethodCallback (listFiles, this));
-                SetAttribute ("getDirectories", new BuiltinMethodCallback (listDirectories, this));
+                SetAttribute ("getfiles", new BuiltinMethodCallback (listFiles, this));
+                SetAttribute ("getdirectories", new BuiltinMethodCallback (listDirectories, this));
                 SetAttribute ("remove", new BuiltinMethodCallback (remove, this));
-                SetAttribute ("removeTree", new BuiltinMethodCallback (removeTree, this));
+                SetAttribute ("removetree", new BuiltinMethodCallback (removeTree, this));
                 SetAttribute ("exists", new BuiltinMethodCallback (exists, this));
                 SetAttribute ("create", new BuiltinMethodCallback (create, this));
                 SetAttribute ("copy", new BuiltinMethodCallback (copy, this));
@@ -420,8 +420,8 @@ namespace Iodine.Runtime
             SetAttribute ("mkdir", new BuiltinMethodCallback (mkdir, this));
             SetAttribute ("rmdir", new BuiltinMethodCallback (rmdir, this));
             SetAttribute ("rmtree", new BuiltinMethodCallback (rmtree, this));
-            SetAttribute ("getCreationTime", new BuiltinMethodCallback (getModifiedTime, this));
-            SetAttribute ("getModifiedTime", new BuiltinMethodCallback (getCreationTime, this));
+            SetAttribute ("getCreationTime", new BuiltinMethodCallback (getCreationTime, this));
+            SetAttribute ("getModifiedTime", new BuiltinMethodCallback (getModifiedTime, this));
         }
 
         /**

@@ -114,8 +114,11 @@ namespace Iodine.Runtime
             SetAttribute ("getbytecode", new BuiltinMethodCallback (GetBytecode, this));
             SetAttribute ("hasattribute", new BuiltinMethodCallback (HasAttribute, this));
             SetAttribute ("setattribute", new BuiltinMethodCallback (SetAttribute, this));
-            SetAttribute ("getAttributes", new BuiltinMethodCallback (GetAttributes, this));
+            SetAttribute ("getattribute", new BuiltinMethodCallback (GetAttribute, this));
+            SetAttribute ("getattributes", new BuiltinMethodCallback (GetAttributes, this));
             SetAttribute ("getmembers", new BuiltinMethodCallback (GetAttributes, this));
+            SetAttribute ("getcontracts", new BuiltinMethodCallback (GetInterfaces, this));
+            // kept for compatibility
             SetAttribute ("getinterfaces", new BuiltinMethodCallback (GetInterfaces, this));
             SetAttribute ("loadModule", new BuiltinMethodCallback (LoadModule, this));
             SetAttribute ("isclass", new BuiltinMethodCallback (IsClass, this));
@@ -132,6 +135,12 @@ namespace Iodine.Runtime
          * Iodine Function: hasAttribute (obj, attr)
          * Description: Returns true if obj contains attribute attr
          */
+        [BuiltinDocString (
+            "Checks whether or not an object has a specific attribute",
+            "@param obj The object",
+            "@param attr : Str the attribute",
+            "@returns Bool"
+        )]
         private IodineObject HasAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 2) {
@@ -147,10 +156,39 @@ namespace Iodine.Runtime
             return IodineBool.Create (o1.HasAttribute (str.Value));
         }
 
+        [BuiltinDocString (
+            "Gets a specific attribute of an object",
+            "@param obj The object",
+            "@param attr : Str the attribute",
+            "@returns Object"
+        )]
+        private IodineObject GetAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length < 2) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+            IodineObject o1 = args [0];
+            IodineString str = args [1] as IodineString;
+            if (str == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+            if (!o1.HasAttribute (str.Value)) {
+                return null;
+            }
+            return o1.GetAttribute (str.Value);
+        }
+
         /**
          * Iodine Function: getAttributes (obj)
          * Description: Returns a hashmap containing all attributes found in obj
          */
+        [BuiltinDocString (
+            "Gets all attributes of an object",
+            "@param obj The object",
+            "@returns Dict"
+        )]
         private IodineObject GetAttributes (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -179,6 +217,11 @@ namespace Iodine.Runtime
          * Iodine Function: getInterfaces (obj)
          * Description: Returns a list of all interfaces obj implements
          */
+        [BuiltinDocString (
+            "Gets all contracts of an object",
+            "@param obj The object",
+            "@returns List"
+        )]
         private IodineObject GetInterfaces (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 1) {
@@ -194,10 +237,16 @@ namespace Iodine.Runtime
          * Iodine Function: setAttribute (obj, key, value)
          * Description: Sets obj.key to value
          */
+        [BuiltinDocString (
+            "Sets a specific attribute of an object",
+            "@param obj The object",
+            "@param attr : Str the attribute",
+            "@param value The value"
+        )]
         private IodineObject SetAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length < 3) {
-                vm.RaiseException (new IodineArgumentException (2));
+                vm.RaiseException (new IodineArgumentException (3));
                 return null;
             }
             IodineObject o1 = args [0];
@@ -210,14 +259,28 @@ namespace Iodine.Runtime
             return null;
         }
 
+        [BuiltinDocString (
+            "Loads a module",
+            "@param path : Str The module",
+            "@returns Module"
+        )]
         private IodineObject LoadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
             IodineString pathStr = args [0] as IodineString;
             IodineModule module = vm.Context.LoadModule (pathStr.Value);
             module.Initializer.Invoke (vm, new IodineObject[] { });
             return module;
         }
 
+        [BuiltinDocString (
+            "Compiles source code into a module",
+            "@param source : Str The source code",
+            "@returns Module"
+        )]
         private IodineObject CompileModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             IodineString source = args [0] as IodineString;
@@ -229,6 +292,11 @@ namespace Iodine.Runtime
          * Iodine Function: getBytecode (item)
          * Description: Returns a list of instructions from an iodine method
          */
+        [BuiltinDocString (
+            "Decompiles a function to get its bytecode",
+            "@param callable The function",
+            "@returns List"
+        )]
         private IodineObject GetBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             IodineMethod method = args [0] as IodineMethod;
@@ -250,6 +318,11 @@ namespace Iodine.Runtime
          * Iodine Function: isMethod (item)
          * Description: Returns true if item is an iodine method
          */
+        [BuiltinDocString (
+            "Checks if an object is a method",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsMethod (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -268,6 +341,11 @@ namespace Iodine.Runtime
          * Iodine Function: isGeneratorMethod (item)
          * Description: Returns true if item is an iodine generator
          */
+        [BuiltinDocString (
+            "Checks if an object is a generator",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsGeneratorMethod (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -286,6 +364,11 @@ namespace Iodine.Runtime
          * Iodine Function: isFunction (item)
          * Description: Returns true if item is an iodine function
          */
+        [BuiltinDocString (
+            "Checks if an object is a method, function or closure",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsFunction (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -303,6 +386,11 @@ namespace Iodine.Runtime
          * Iodine Function: isBuiltin (item)
          * Description: Returns true if item is a built in Iodine function
          */
+        [BuiltinDocString (
+            "Checks if an object is a builtin method",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsBuiltin (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -321,6 +409,11 @@ namespace Iodine.Runtime
          * Iodine Function: isClass (item)
          * Description: Returns true if item is an iodine class
          */
+        [BuiltinDocString (
+            "Checks if an object is a class",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsClass (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -339,6 +432,11 @@ namespace Iodine.Runtime
          * Iodine Function: isType (item)
          * Description: Returns true if item is an iodine type
          */
+        [BuiltinDocString (
+            "Checks if an object is a type",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsType (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -357,6 +455,11 @@ namespace Iodine.Runtime
          * Iodine Function: isModule (item)
          * Description: Returns true if item is an Iodine module
          */
+        [BuiltinDocString (
+            "Checks if an object is a module",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
@@ -374,6 +477,11 @@ namespace Iodine.Runtime
          * Iodine Function: isProperty (item)
          * Description: Returns true if item is an Iodine property
          */
+        [BuiltinDocString (
+            "Checks if an object is a method property",
+            "@param obj The object",
+            "@returns Bool"
+        )]
         private IodineObject IsProperty (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length == 0) {
