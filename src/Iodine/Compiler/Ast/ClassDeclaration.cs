@@ -38,6 +38,7 @@ namespace Iodine.Compiler.Ast
         public readonly string Name;
         public readonly string Documentation;
         public readonly List<string> Base;
+        public readonly List<AstNode> Mixins = new List<AstNode> ();
 
         public FunctionDeclaration Constructor {
             get;

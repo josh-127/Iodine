@@ -88,7 +88,8 @@ namespace Iodine.Runtime
         EndWith = 0x31,
         Slice = 0x32,
         BuildGenExpr = 0x33,
-        CastLocal = 0x34
+        CastLocal = 0x34,
+        IncludeMixin = 0x35
     }
 }
 

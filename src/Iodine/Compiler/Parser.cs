@@ -119,6 +119,12 @@ namespace Iodine.Compiler
 
             ClassDeclaration clazz = new ClassDeclaration (Location, name, baseClass, doc);
 
+            if (Accept (TokenClass.Keyword, "use")) {
+                do {
+                    clazz.Mixins.Add (ParseExpression ());
+                } while (Accept (TokenClass.Comma));
+            }
+
             Expect (TokenClass.OpenBrace);
 
             while (!Match (TokenClass.CloseBrace)) {
