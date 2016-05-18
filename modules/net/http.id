@@ -336,7 +336,7 @@ class BaseHttpServer {
 }
 
 
-class SimpleHttpServer : BaseHttpServer {
+class SimpleHttpServer extends BaseHttpServer {
     
     func SimpleHttpServer (self) {
         super ();

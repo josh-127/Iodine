@@ -353,6 +353,8 @@ namespace Iodine.Compiler
             case "with":
             case "global":
             case "extend":
+            case "extends":
+            case "implements":
                 return new Token (TokenClass.Keyword, accum.ToString (), lastDocStr, location);
             case "is":
             case "isnot":

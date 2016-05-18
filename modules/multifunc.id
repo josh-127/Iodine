@@ -9,7 +9,7 @@
  * Overload exception is raised when a suitable overload is not found in a
  * overloaded multifunc
  */
-class OverloadException : Exception {
+class OverloadException extends Exception {
     func OverloadException (self) {
         super ("No suitable overload was found!");
     }   

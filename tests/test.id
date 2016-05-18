@@ -21,7 +21,7 @@ class A {
     }
 }
 
-class B : A {
+class B extends A {
     func B(self) {
         super(2);
     }
@@ -31,7 +31,7 @@ class B : A {
     }
 }
 
-class C : B {
+class C extends B {
     # Empty
 }
 
@@ -41,7 +41,7 @@ class D {
     }
 }
 
-class E : D {
+class E extends D {
     # Empty
 }
 

@@ -27,7 +27,7 @@ class CodeItem {
     }
 }
 
-class FuncItem : CodeItem {
+class FuncItem extends CodeItem {
     func FuncItem (self, name, f) {
         super (DocType.FUNCTION, f.__doc__);
         self.name = name;
@@ -54,7 +54,7 @@ class FuncItem : CodeItem {
     }
 }
 
-class ClassItem : CodeItem {
+class ClassItem extends CodeItem {
     func ClassItem (self, name, c) {
         super (DocType.CLASS, c.__doc__);
         self.name = name;

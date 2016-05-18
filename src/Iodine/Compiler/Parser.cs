@@ -111,7 +111,11 @@ namespace Iodine.Compiler
             string name = Expect (TokenClass.Identifier).Value;
 
             List<string> baseClass = new List<string> ();
-            if (Accept (TokenClass.Colon)) {
+            if (Accept (TokenClass.Keyword, "extends")) {
+                baseClass.Add (ParseClassName ());
+            }
+
+            if (Accept (TokenClass.Keyword, "implements")) {
                 do {
                     baseClass.Add (ParseClassName ());
                 } while (Accept (TokenClass.Comma));

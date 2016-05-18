@@ -7,7 +7,7 @@
 /**
  * Raised when ever malformed JSON is parsed
  */
-class InvalidJsonException : Exception {
+class InvalidJsonException extends Exception {
     func InvalidJsonException (self) {
         super ("Attempted to parse invalid JSON!");
     }
