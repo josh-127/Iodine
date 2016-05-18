@@ -259,13 +259,13 @@ func _describe(name, block, indent) {
     return testObj.results;
 }
 
-class AssertionException : Exception {
+class AssertionException extends Exception {
     func AssertionException(self, message) {
         super(message);
     }
 }
 
-class InvalidTestException : Exception {
+class InvalidTestException extends Exception {
     func InvalidTestException(self, message) {
         super('INVALID TEST - {}'.format(message));
     }
