@@ -391,7 +391,7 @@ namespace Iodine.Runtime
 
         public override bool IsTrue ()
         {
-            return Value != 0;
+            return Value > 0;
         }
 
         public override string ToString ()

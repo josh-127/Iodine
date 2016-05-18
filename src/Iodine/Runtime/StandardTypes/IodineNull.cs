@@ -50,6 +50,11 @@ namespace Iodine.Runtime
 
         }
 
+        public override bool IsTrue ()
+        {
+            return false;
+        }
+
         public override string ToString ()
         {
             return "null";

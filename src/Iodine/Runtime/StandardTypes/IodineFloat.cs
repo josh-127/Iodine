@@ -227,6 +227,11 @@ namespace Iodine.Runtime
             return false;
         }
 
+        public override bool IsTrue ()
+        {
+            return Value > 0.0f;
+        }
+
         public override string ToString ()
         {
             return Value.ToString ();

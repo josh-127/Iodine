@@ -193,6 +193,11 @@ namespace Iodine.Runtime
             return new IodineString (String.Format ("({0})", repr));
         }
 
+        public override bool IsTrue ()
+        {
+            return Objects.Length > 0;
+        }
+
         public override int GetHashCode ()
         {
             return Objects.GetHashCode ();

@@ -537,7 +537,12 @@ namespace Iodine.Runtime
                 return new IodineInteger (-1);
             }
             return new IodineInteger (Objects.FindLastIndex (o => o.Equals (item)));
-        } 
+        }
+
+        public override bool IsTrue ()
+        {
+            return Objects.Count > 0;
+        }
 
         public override int GetHashCode ()
         {
