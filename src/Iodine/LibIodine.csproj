@@ -233,6 +233,9 @@
     <Compile Include="Interop\TypeMappings\BigIntegerTypeMapping.cs" />
     <Compile Include="Runtime\BuiltinDocString.cs" />
     <Compile Include="Compiler\NamedParameter.cs" />
+    <Compile Include="Runtime\IodineMixin.cs" />
+    <Compile Include="Compiler\Ast\MixinDeclaration.cs" />
+    <Compile Include="Compiler\Ast\ExtendStatement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

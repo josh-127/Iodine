@@ -254,6 +254,36 @@ namespace Iodine.Compiler
 
             return trait;
         }
+            
+        /*
+         * mixin <name> {
+         *     ...
+         * }
+         */
+        private AstNode ParseMixin ()
+        {
+            string doc = Expect (TokenClass.Keyword, "mixin").Documentation;
+            string name = Expect (TokenClass.Identifier).Value;
+
+            MixinDeclaration mixin = new MixinDeclaration (Location, name, doc);
+
+            Expect (TokenClass.OpenBrace);
+
+            while (!Match (TokenClass.CloseBrace)) {
+                if (Match (TokenClass.Keyword, "func")) {
+                    FunctionDeclaration func = ParseFunction () as FunctionDeclaration;
+                    mixin.AddMember (func);
+                } else {
+                    errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
+                }
+                while (Accept (TokenClass.SemiColon))
+                    ;
+            }
+
+            Expect (TokenClass.CloseBrace);
+
+            return mixin;
+        }
 
         private string ParseClassName ()
         {
@@ -491,6 +521,10 @@ namespace Iodine.Compiler
                     return ParseContract ();
                 case "trait":
                     return ParseTrait ();
+                case "mixin":
+                    return ParseMixin ();
+                case "extend":
+                    return ParseExtend ();
                 case "func":
                     return ParseFunction ();
                 case "if":
@@ -570,6 +604,34 @@ namespace Iodine.Compiler
 
             Expect (TokenClass.CloseBrace);
             return ret;
+        }
+
+        /*
+         * extend <class> [use <mixin>, ...] { 
+         *      ...
+         * }
+         */
+        private AstNode ParseExtend ()
+        {
+            Expect (TokenClass.Keyword, "extend");
+            AstNode clazz = ParseExpression ();
+
+            ExtendStatement statement = new ExtendStatement (clazz.Location, clazz, "");
+
+            if (Accept (TokenClass.Keyword, "use")) {
+                do {
+                    statement.Mixins.Add (ParseExpression ());
+                } while (Accept (TokenClass.Comma));
+            }
+
+            if (Accept (TokenClass.OpenBrace)) {
+                while (!Match (TokenClass.CloseBrace) & !EndOfStream) {
+                    statement.AddMember (ParseFunction ());
+                }
+                Expect (TokenClass.CloseBrace);
+            }
+
+            return statement;
         }
 
         /*

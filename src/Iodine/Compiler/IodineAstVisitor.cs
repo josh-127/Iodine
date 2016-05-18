@@ -54,6 +54,10 @@ namespace Iodine.Compiler
         {
         }
 
+        public virtual void Accept (ExtendStatement exten)
+        {
+        }
+
         public virtual void Accept (BinaryExpression binop)
         {
         }
@@ -143,6 +147,10 @@ namespace Iodine.Compiler
         }
 
         public virtual void Accept (TraitDeclaration traitDecl)
+        {
+        }
+
+        public virtual void Accept (MixinDeclaration traitDecl)
         {
         }
 

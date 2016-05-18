@@ -309,6 +309,19 @@ namespace Iodine.Compiler
             return trait;
         }
 
+        private IodineMixin CompileMixin (MixinDeclaration mixinDecl)
+        {
+            IodineMixin mixin = new IodineMixin (mixinDecl.Name);
+
+            foreach (AstNode node in mixinDecl.Members) {
+                FunctionDeclaration decl = node as FunctionDeclaration;
+
+                mixin.AddMethod (CompileGlobalMethod (decl));
+            }
+
+            return mixin;
+        }
+            
         private MethodBuilder CompileGlobalMethod (FunctionDeclaration funcDecl)
         {
             Context.SymbolTable.EnterScope ();
@@ -478,6 +491,26 @@ namespace Iodine.Compiler
             }
         }
 
+        public override void Accept (MixinDeclaration mixinDecl)
+        {
+            IodineMixin mixin = CompileMixin (mixinDecl);
+
+            if (!Context.SymbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (mixinDecl.Location,
+                    Opcode.LoadConst,
+                    Context.CurrentModule.DefineConstant (mixin)
+                );
+
+
+                Context.CurrentMethod.EmitInstruction (mixinDecl.Location,
+                    Opcode.StoreLocal,
+                    Context.SymbolTable.AddSymbol (mixinDecl.Name)
+                );
+            } else {
+                Context.CurrentModule.SetAttribute (mixinDecl.Name, mixin);
+            }
+        }
+
         public override void Accept (FunctionDeclaration funcDecl)
         {
             if (!Context.SymbolTable.IsInGlobalScope) {
@@ -540,6 +573,34 @@ namespace Iodine.Compiler
                 Context.CurrentMethod.EmitInstruction (useStmt.Location, Opcode.Pop);
             }
 
+        }
+
+        public override void Accept (ExtendStatement extendStmt)
+        {
+            IodineMixin mixin = new IodineMixin ("__anonymous__");
+            int mixinIndex = Context.CurrentModule.DefineConstant (mixin);
+
+            foreach (AstNode node in extendStmt.Members) {
+                FunctionDeclaration decl = node as FunctionDeclaration;
+                mixin.AddMethod (CompileGlobalMethod (decl));
+            }
+
+            foreach (AstNode node in extendStmt.Mixins) {
+                node.Visit (this);
+                Context.CurrentMethod.EmitInstruction (
+                    extendStmt.Location,
+                    Opcode.IncludeMixin,
+                    mixinIndex
+                );
+            }
+
+            extendStmt.Class.Visit (this);
+
+            Context.CurrentMethod.EmitInstruction (
+                extendStmt.Location,
+                Opcode.ApplyMixin,
+                mixinIndex
+            );
         }
 
         public override void Accept (CodeBlock scope)

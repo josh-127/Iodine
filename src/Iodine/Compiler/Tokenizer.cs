@@ -341,6 +341,7 @@ namespace Iodine.Compiler
             case "raise":
             case "contract":
             case "trait":
+            case "mixin":
             case "given":
             case "case":
             case "yield":
@@ -351,6 +352,7 @@ namespace Iodine.Compiler
             case "var":
             case "with":
             case "global":
+            case "extend":
                 return new Token (TokenClass.Keyword, accum.ToString (), lastDocStr, location);
             case "is":
             case "isnot":
