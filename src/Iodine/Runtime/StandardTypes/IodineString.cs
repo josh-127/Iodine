@@ -688,6 +688,11 @@ namespace Iodine.Runtime
 
             return new IodineString (Value.PadLeft ((int)width.Value, ch));
         }
+
+        public override bool IsTrue ()
+        {
+            return Value.Length > 0;
+        }
     }
 }
 

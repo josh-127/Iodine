@@ -35,6 +35,7 @@ namespace Iodine.Runtime
     public class IodineFloat : IodineObject
     {
         public static readonly IodineTypeDefinition TypeDefinition = new FloatTypeDef ();
+        public static readonly IodineFloat Epsilon = new IodineFloat (double.Epsilon);
 
         class FloatTypeDef : IodineTypeDefinition
         {
@@ -66,7 +67,7 @@ namespace Iodine.Runtime
             IodineFloat floatVal = obj as IodineFloat;
 
             if (floatVal != null) {
-                return floatVal.Value == Value;
+                return Math.Abs (floatVal.Value - Value) < double.Epsilon;
             }
 
             return false;
@@ -140,7 +141,7 @@ namespace Iodine.Runtime
                     "Right hand value expected to be of type Float"));
                 return null;
             }
-            return IodineBool.Create (Value == floatVal);
+            return IodineBool.Create (Math.Abs (Value - floatVal) < double.Epsilon);
         }
 
         public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
@@ -151,7 +152,7 @@ namespace Iodine.Runtime
                     "Right hand value expected to be of type Float"));
                 return null;
             }
-            return IodineBool.Create (Value != floatVal);
+            return IodineBool.Create (Math.Abs (Value - floatVal) > double.Epsilon);
         }
 
 
@@ -224,6 +225,11 @@ namespace Iodine.Runtime
             }
             result = 0;
             return false;
+        }
+
+        public override bool IsTrue ()
+        {
+            return Value > 0.0f;
         }
 
         public override string ToString ()
