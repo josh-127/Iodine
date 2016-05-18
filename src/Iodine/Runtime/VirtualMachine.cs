@@ -787,6 +787,16 @@ namespace Iodine.Runtime
                     Top.DisposableObjects.Pop ().Exit (this);
                     break;
                 }
+            case Opcode.IncludeMixin:
+                {
+                    IodineObject obj = Pop ();
+                    IodineObject type = Top.Module.ConstantPool [instruction.Argument];
+
+                    foreach (KeyValuePair<string, IodineObject> attr in obj.Attributes) {
+                        type.SetAttribute (attr.Key, attr.Value);
+                    }
+                    break;
+                }
             }
 
         }

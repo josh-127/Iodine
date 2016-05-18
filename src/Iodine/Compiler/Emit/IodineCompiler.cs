@@ -198,6 +198,17 @@ namespace Iodine.Compiler
 
             CreateContext (clazz);
 
+            CreateContext (initializer);
+
+            int typeIndex = Context.CurrentModule.DefineConstant (clazz);
+
+            foreach (AstNode mixinName in classDecl.Mixins) {
+                mixinName.Visit (this);
+                Context.CurrentMethod.EmitInstruction (mixinName.Location, Opcode.IncludeMixin, typeIndex);
+            }
+
+            DestroyContext ();
+
             foreach (AstNode member in classDecl.Members) {
                 if (member is FunctionDeclaration) {
                     FunctionDeclaration func = member as FunctionDeclaration;
