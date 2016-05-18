@@ -238,9 +238,8 @@ class Test {
 
 func describe(name, block) {
     results = _describe(name, block, 1);
-    failures = filter(results, lambda(result) => results[result] != null);
-
-    if (len(failures) > 0) {
+    failures = filter(results, lambda(result) => results[result [0]] isnot Null);
+    if (failures isnot Null && len(failures) > 0) {
         print('Tests failed!');
         sys.exit(len(failures));
     }
