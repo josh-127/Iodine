@@ -45,7 +45,7 @@ namespace Iodine.Compiler.Ast
         {
             Condition = condition;
             Expression = expression;
-            ElseExpression = expression; 
+            ElseExpression = elseExpression; 
         }
 
         public override void Visit (AstVisitor visitor)

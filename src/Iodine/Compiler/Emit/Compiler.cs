@@ -1030,18 +1030,25 @@ namespace Iodine.Compiler
         {
             Label elseLabel = Context.CurrentMethod.CreateLabel ();
             Label endLabel = Context.CurrentMethod.CreateLabel ();
+
             ifExpr.Condition.Visit (this);
+
             Context.CurrentMethod.EmitInstruction (ifExpr.Expression.Location,
                 Opcode.JumpIfFalse,
                 elseLabel
             );
+
             ifExpr.Expression.Visit (this);
+
             Context.CurrentMethod.EmitInstruction (ifExpr.ElseExpression.Location,
                 Opcode.Jump,
                 endLabel
             );
+
             Context.CurrentMethod.MarkLabelPosition (elseLabel);
+
             ifExpr.ElseExpression.Visit (this);
+
             Context.CurrentMethod.MarkLabelPosition (endLabel);
         }
 
