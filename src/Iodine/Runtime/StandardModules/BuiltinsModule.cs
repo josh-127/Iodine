@@ -62,6 +62,7 @@ namespace Iodine.Runtime
             SetAttribute ("Int", IodineInteger.TypeDefinition);
             SetAttribute ("BigInt", IodineBigInt.TypeDefinition);
             SetAttribute ("Float", IodineFloat.TypeDefinition);
+            SetAttribute ("File", IodineStream.TypeDefinition);
             SetAttribute ("Str", IodineString.TypeDefinition);
             SetAttribute ("Bytes", IodineBytes.TypeDefinition);
             SetAttribute ("Bool", IodineBool.TypeDefinition);

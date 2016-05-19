@@ -45,6 +45,25 @@ namespace Iodine.Runtime
             public ListTypeDef ()
                 : base ("List")
             {
+                BindAttributes (this);
+            }
+
+
+            public override IodineObject BindAttributes (IodineObject obj)
+            {
+                obj.SetAttribute ("append", new BuiltinMethodCallback (Add, obj));
+                obj.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, obj));
+                obj.SetAttribute ("appendrange", new BuiltinMethodCallback (AddRange, obj));
+                obj.SetAttribute ("discard", new BuiltinMethodCallback (Discard, obj));
+                obj.SetAttribute ("remove", new BuiltinMethodCallback (Remove, obj));
+                obj.SetAttribute ("removeat", new BuiltinMethodCallback (RemoveAt, obj));
+                obj.SetAttribute ("contains", new BuiltinMethodCallback (Contains, obj));
+                obj.SetAttribute ("clear", new BuiltinMethodCallback (Clear, obj));
+                obj.SetAttribute ("index", new BuiltinMethodCallback (Index, obj));
+                obj.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, obj));
+                obj.SetAttribute ("find", new BuiltinMethodCallback (Find, obj));
+                obj.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, obj));
+                return obj;
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
@@ -62,6 +81,289 @@ namespace Iodine.Runtime
                 }
                 return list;
             }
+
+            [BuiltinDocString (
+                "Appends each argument to the end of the list",
+                "@param *args The objects to be appended to the list"
+            )]
+            private IodineObject Add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                foreach (IodineObject obj in arguments) {
+                    thisObj.Add (obj);
+                }
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Iterates through the supplied arguments, adding each item to the end of the list.",
+                "@param iterable The iterable object to be used."
+            )]
+            private IodineObject AddRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                IodineObject collection = arguments [0].GetIterator (vm);
+                collection.IterReset (vm);
+                while (collection.IterMoveNext (vm)) {
+                    IodineObject o = collection.IterGetCurrent (vm);
+                    thisObj.Add (o);
+                }
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Prepends an item to the beginning of the list.",
+                "@param item The item to be inserted into the beginning of the list."
+            )]
+            private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                thisObj.Objects.Insert (0, arguments [0]);
+
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Removes an item from the list, returning true if success, otherwise, false.",
+                "@param item The item to be discarded."
+            )]
+            private IodineObject Discard (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineObject key = arguments [0];
+                if (thisObj.Objects.Any (o => o.Equals (key))) {
+                    thisObj.Objects.RemoveAt (thisObj.Objects.FindIndex (o => o.Equals (key)));
+                    return IodineBool.True;
+                }
+
+                return IodineBool.False;
+            }
+
+            [BuiltinDocString (
+                "Removes an item from the list, raising a KeyNotFound exception if the list does not contain [item].",
+                "@param item The item to be discarded."
+            )]
+            private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                IodineObject key = arguments [0];
+                if (thisObj.Objects.Any (o => o.Equals (key))) {
+                    thisObj.Objects.Remove (thisObj.Objects.First (o => o.Equals (key)));
+                    return null;
+                }
+                vm.RaiseException (new IodineKeyNotFound ());
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Removes an item at a specified index.",
+                "@param index The 0 based index of the item which is to be removed."
+            )]
+            private IodineObject RemoveAt (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                IodineInteger index = arguments [0] as IodineInteger;
+                if (index != null) {
+                    if (index.Value < thisObj.Objects.Count) {
+                        thisObj.Objects.RemoveAt ((int)index.Value);
+                    } else {
+                        vm.RaiseException (new IodineKeyNotFound ());
+                    }
+                    return null;
+                }
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Returns true if the supplied argument can be fund within the list.",
+                "@param item The item to test whether or not this list contains."
+            )]
+            private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                IodineObject key = arguments [0];
+                bool found = false;
+                foreach (IodineObject obj in thisObj.Objects) {
+                    found |= obj.Equals (key);
+                }
+
+                return IodineBool.Create (found);
+            }
+
+            private IodineObject Splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                int start = 0;
+                int end = thisObj.Objects.Count;
+
+                IodineInteger startInt = arguments [0] as IodineInteger;
+                if (startInt == null) {
+                    vm.RaiseException (new IodineTypeException ("Int"));
+                    return null;
+                }
+                start = (int)startInt.Value;
+
+                if (arguments.Length >= 2) {
+                    IodineInteger endInt = arguments [1] as IodineInteger;
+                    if (endInt == null) {
+                        vm.RaiseException (new IodineTypeException ("Int"));
+                        return null;
+                    }
+                    end = (int)endInt.Value;
+                }
+
+                if (start < 0)
+                    start = thisObj.Objects.Count - start;
+                if (end < 0)
+                    end = thisObj.Objects.Count - end;
+
+                IodineList retList = new IodineList (new IodineObject[]{ });
+
+                for (int i = start; i < end; i++) {
+                    if (i < 0 || i > thisObj.Objects.Count) {
+                        vm.RaiseException (new IodineIndexException ());
+                        return null;
+                    }
+                    retList.Add (thisObj.Objects [i]);
+                }
+
+                return retList;
+            }
+
+            [BuiltinDocString (
+                "Clears the list, removing all items from it."
+            )]
+            private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineList thisObj = self as IodineList;
+                thisObj.Objects.Clear ();
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Returns the index of the first occurance of the supplied argument, raising a KeyNotFound exception " +
+                " if the supplied argument cannot be found.",
+                "@param item The whose index will be returned."
+            )]
+            private IodineObject Index (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineList thisObj = self as IodineList;
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineObject item = args [0];
+
+                if (!thisObj.Objects.Any (o => o.Equals (item))) {
+                    vm.RaiseException (new IodineKeyNotFound ());
+                    return null;
+                }
+                return new IodineInteger (thisObj.Objects.FindIndex (o => o.Equals (item)));
+            }
+
+            [BuiltinDocString (
+                "Returns the index of the last occurance of the supplied argument, raising a KeyNotFound exception " +
+                " if the supplied argument cannot be found.",
+                "@param item The whose index will be returned."
+            )]
+            private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineList thisObj = self as IodineList;
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineObject item = args [0];
+
+                if (!thisObj.Objects.Any (o => o.Equals (item))) {
+                    vm.RaiseException (new IodineKeyNotFound ());
+                    return null;
+                }
+                return new IodineInteger (thisObj.Objects.FindLastIndex (o => o.Equals (item)));
+            } 
+
+
+            [BuiltinDocString (
+                "Returns the index of the first occurance of the supplied argument, returning -1 " +
+                " if the supplied argument cannot be found.",
+                "@param item The whose index will be returned."
+            )]
+            private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineList thisObj = self as IodineList;
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineObject item = args [0];
+
+                if (!thisObj.Objects.Any (o => o.Equals (item))) {
+                    return new IodineInteger (-1);
+                }
+                return new IodineInteger (thisObj.Objects.FindIndex (o => o.Equals (item)));
+            }
+
+            [BuiltinDocString (
+                "Returns the index of the last occurance of the supplied argument, returning -1 " +
+                " if the supplied argument cannot be found.",
+                "@param item The whose index will be returned."
+            )]
+            private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineList thisObj = self as IodineList;
+
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineObject item = args [0];
+
+                if (!thisObj.Objects.Any (o => o.Equals (item))) {
+                    return new IodineInteger (-1);
+                }
+                return new IodineInteger (thisObj.Objects.FindLastIndex (o => o.Equals (item)));
+            }
+
         }
 
         class ListIterator : IodineObject
@@ -102,18 +404,6 @@ namespace Iodine.Runtime
         public IodineList (List<IodineObject> list)
             : base (TypeDefinition)
         {
-            SetAttribute ("append", new BuiltinMethodCallback (Add, this));
-            SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, this));
-            SetAttribute ("appendrange", new BuiltinMethodCallback (AddRange, this));
-            SetAttribute ("discard", new BuiltinMethodCallback (Discard, this));
-            SetAttribute ("remove", new BuiltinMethodCallback (Remove, this));
-            SetAttribute ("removeat", new BuiltinMethodCallback (RemoveAt, this));
-            SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
-            SetAttribute ("clear", new BuiltinMethodCallback (Clear, this));
-            SetAttribute ("index", new BuiltinMethodCallback (Index, this));
-            SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, this));
-            SetAttribute ("find", new BuiltinMethodCallback (Find, this));
-            SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, this));
 
             SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject[] args) => {
                 return GetIterator (vm);
@@ -267,276 +557,6 @@ namespace Iodine.Runtime
                 }
             }
             return true;
-        }
-
-        /**
-         * Iodine Method: List.append (self, *items)
-         * Description: Appends each item to the list
-         */
-        private IodineObject Add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            IodineList list = self as IodineList;
-            foreach (IodineObject obj in arguments) {
-                list.Add (obj);
-            }
-            return null;
-        }
-
-        /**
-         * Iodine Method: List.appendRange (self, item)
-         * Description: Iterates through item, appending each item to the list
-         */
-        private IodineObject AddRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            IodineObject collection = arguments [0].GetIterator (vm);
-            collection.IterReset (vm);
-            while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
-                Add (o);
-            }
-            return null;
-        }
-
-        /**
-         * Iodine Method: List.prepend (self, *items)
-         * Description: Prepends each item to the list
-         */
-        private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            Objects.Insert (0, arguments [0]);
-
-            return null;
-        }
-
-        /**
-         * Iodine Method: List.discard (self, item)
-         * Description: Removes item from the list
-         */
-        private IodineObject Discard (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineObject key = arguments [0];
-            if (Objects.Any (o => o.Equals (key))) {
-                Objects.RemoveAt (Objects.FindIndex (o => o.Equals (key)));
-                return IodineBool.True;
-            }
-
-            return IodineBool.False;
-        }
-
-        /**
-         * Iodine Method: List.remove (self, item)
-         * Description: Removes item from the list
-         */
-        private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            IodineObject key = arguments [0];
-            if (Objects.Any (o => o.Equals (key))) {
-                Objects.Remove (Objects.First (o => o.Equals (key)));
-                return null;
-            }
-            vm.RaiseException (new IodineKeyNotFound ());
-            return null;
-        }
-
-        /**
-         * Iodine Method: List.removeAt (self, index)
-         * Description: Removes the item at index
-         */
-        private IodineObject RemoveAt (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            IodineInteger index = arguments [0] as IodineInteger;
-            if (index != null) {
-                if (index.Value < Objects.Count) {
-                    Objects.RemoveAt ((int)index.Value);
-                } else {
-                    vm.RaiseException (new IodineKeyNotFound ());
-                }
-                return null;
-            }
-            vm.RaiseException (new IodineTypeException ("Int"));
-            return null;
-        }
-
-        /**
-         * Iodine Method: List.contains (self, value)
-         * Description: Appends each item to the list
-         */
-        private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            IodineObject key = arguments [0];
-            bool found = false;
-            foreach (IodineObject obj in Objects) {
-                found |= obj.Equals (key);
-            }
-
-            return IodineBool.Create (found);
-        }
-
-        /**
-         * Iodine Method: List.splice (self, start, [end])
-         * Description: Returns a sublist starting at start, and optionally ending at end
-         */
-        private IodineObject Splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            int start = 0;
-            int end = Objects.Count;
-
-            IodineInteger startInt = arguments [0] as IodineInteger;
-            if (startInt == null) {
-                vm.RaiseException (new IodineTypeException ("Int"));
-                return null;
-            }
-            start = (int)startInt.Value;
-
-            if (arguments.Length >= 2) {
-                IodineInteger endInt = arguments [1] as IodineInteger;
-                if (endInt == null) {
-                    vm.RaiseException (new IodineTypeException ("Int"));
-                    return null;
-                }
-                end = (int)endInt.Value;
-            }
-
-            if (start < 0)
-                start = this.Objects.Count - start;
-            if (end < 0)
-                end = this.Objects.Count - end;
-
-            IodineList retList = new IodineList (new IodineObject[]{ });
-
-            for (int i = start; i < end; i++) {
-                if (i < 0 || i > this.Objects.Count) {
-                    vm.RaiseException (new IodineIndexException ());
-                    return null;
-                }
-                retList.Add (Objects [i]);
-            }
-
-            return retList;
-        }
-
-        /**
-         * Iodine Method: List.clear (self)
-         * Description: Clears all items in this list
-         */
-        private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            Objects.Clear ();
-            return null;
-        }
-
-        /**
-         * Iodine Method: List.index (self, i)
-         * Description: Returns the index of item i
-         */
-        private IodineObject Index (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length == 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineObject item = args [0];
-
-            if (!Objects.Any (o => o.Equals (item))) {
-                vm.RaiseException (new IodineKeyNotFound ());
-                return null;
-            }
-            return new IodineInteger (Objects.FindIndex (o => o.Equals (item)));
-        }
-
-        /**
-         * Iodine Method: List.rindex (self, i)
-         * Description: Returns the index of item i
-         */
-        private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length == 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineObject item = args [0];
-
-            if (!Objects.Any (o => o.Equals (item))) {
-                vm.RaiseException (new IodineKeyNotFound ());
-                return null;
-            }
-            return new IodineInteger (Objects.FindLastIndex (o => o.Equals (item)));
-        } 
-
-
-        /**
-         * Iodine Method: List.find (self, i)
-         * Description: Returns the index of item i
-         */
-        private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length == 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineObject item = args [0];
-
-            if (!Objects.Any (o => o.Equals (item))) {
-                return new IodineInteger (-1);
-            }
-            return new IodineInteger (Objects.FindIndex (o => o.Equals (item)));
-        }
-
-        /**
-         * Iodine Method: List.rfind (self, i)
-         * Description: Returns the index of item i
-         */
-        private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length == 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineObject item = args [0];
-
-            if (!Objects.Any (o => o.Equals (item))) {
-                return new IodineInteger (-1);
-            }
-            return new IodineInteger (Objects.FindLastIndex (o => o.Equals (item)));
         }
 
         public override bool IsTrue ()
