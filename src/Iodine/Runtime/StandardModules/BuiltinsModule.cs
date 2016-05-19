@@ -94,6 +94,7 @@ namespace Iodine.Runtime
             SetAttribute ("Null", IodineNull.Instance.TypeDef);
             SetAttribute ("TypeDef", IodineTypeDefinition.TypeDefinition);
             SetAttribute ("__globals__", IodineGlobals.Instance);
+            //IodineString.TypeDefinition.TypeDef.BindAttributes (IodineString.TypeDefinition.TypeDef);
             ExistsInGlobalNamespace = true;
         }
 

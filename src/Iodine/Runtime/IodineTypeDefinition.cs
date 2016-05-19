@@ -97,7 +97,7 @@ namespace Iodine.Runtime
         {
             Name = name;
 
-            Attributes ["__name__"] = new IodineString (name);
+            //Attributes ["__name__"] = new IodineString (name);
         }
             
         public override bool IsCallable ()
@@ -128,7 +128,7 @@ namespace Iodine.Runtime
             self.Base = obj;
         }
 
-        public IodineObject BindAttributes (IodineObject obj)
+        public virtual IodineObject BindAttributes (IodineObject obj)
         {
             foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
                 if (!obj.HasAttribute (kv.Key)) {

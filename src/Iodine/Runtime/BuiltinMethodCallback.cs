@@ -65,7 +65,9 @@ namespace Iodine.Runtime
             foreach (object attr in attributes) {
                 if (attr is BuiltinDocString) {
                     BuiltinDocString docstr = attr as BuiltinDocString;
-                    SetAttribute ("__doc__", new IodineString (docstr.DocumentationString));
+                    SetAttribute ("__doc__", new InternalIodineProperty (vm => {
+                        return new IodineString (docstr.DocumentationString);
+                    }, null));
                 }
             }
 

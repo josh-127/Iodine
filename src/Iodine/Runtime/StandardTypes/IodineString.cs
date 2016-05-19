@@ -44,6 +44,7 @@ namespace Iodine.Runtime
             public StringTypeDef ()
                 : base ("Str")
             {
+                BindAttributes (this);
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
@@ -51,8 +52,487 @@ namespace Iodine.Runtime
                 if (args.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                 }
-
                 return new IodineString (args [0].ToString ());
+            }
+                
+            public override IodineObject BindAttributes (IodineObject obj)
+            {
+                obj.SetAttribute ("lower", new BuiltinMethodCallback (Lower, obj));
+                obj.SetAttribute ("upper", new BuiltinMethodCallback (Upper, obj));
+                obj.SetAttribute ("substr", new BuiltinMethodCallback (Substring, obj));
+                obj.SetAttribute ("index", new BuiltinMethodCallback (IndexOf, obj));
+                obj.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, obj));
+                obj.SetAttribute ("find", new BuiltinMethodCallback (Find, obj));
+                obj.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, obj));
+                obj.SetAttribute ("contains", new BuiltinMethodCallback (Contains, obj));
+                obj.SetAttribute ("replace", new BuiltinMethodCallback (Replace, obj));
+                obj.SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, obj));
+                obj.SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, obj));
+                obj.SetAttribute ("split", new BuiltinMethodCallback (Split, obj));
+                obj.SetAttribute ("join", new BuiltinMethodCallback (Join, obj));
+                obj.SetAttribute ("trim", new BuiltinMethodCallback (Trim, obj));
+                obj.SetAttribute ("format", new BuiltinMethodCallback (Format, obj));
+                obj.SetAttribute ("isalpha", new BuiltinMethodCallback (IsLetter, obj));
+                obj.SetAttribute ("isdigit", new BuiltinMethodCallback (IsDigit, obj));
+                obj.SetAttribute ("isalnum", new BuiltinMethodCallback (IsLetterOrDigit, obj));
+                obj.SetAttribute ("iswhitespace", new BuiltinMethodCallback (IsWhiteSpace, obj));
+                obj.SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, obj));
+                obj.SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, obj));
+                obj.SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, obj));
+                return obj;
+            }
+
+            [BuiltinDocString (
+                "Returns the uppercase representation of this string"
+            )]
+            private IodineObject Upper (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                return new IodineString (thisObj.Value.ToUpper ());
+            }
+
+            [BuiltinDocString (
+                "Returns the lowercase representation of this string"
+            )]
+            private IodineObject Lower (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                return new IodineString (thisObj.Value.ToLower ());
+            }
+                
+            [BuiltinDocString (
+                "Returns a substring contained within this string.",
+                "@param start The starting index.",
+                "@optional end The ending index (Default is the length of the string)",
+                "@returns The substring between start and end"
+            )]
+            private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                int start = 0;
+                int len = 0;
+                IodineInteger startObj = args [0] as IodineInteger;
+                if (startObj == null) {
+                    vm.RaiseException (new IodineTypeException ("Int"));
+                    return null;
+                }
+                start = (int)startObj.Value;
+                if (args.Length == 1) {
+                    len = thisObj.Value.Length;
+                } else {
+                    IodineInteger endObj = args [1] as IodineInteger;
+                    if (endObj == null) {
+                        vm.RaiseException (new IodineTypeException ("Int"));
+                        return null;
+                    }
+                    len = (int)endObj.Value;
+                }
+
+                if (start < thisObj.Value.Length && len <= thisObj.Value.Length) {
+                    return new IodineString (thisObj.Value.Substring (start, len - start));
+                }
+                vm.RaiseException (new IodineIndexException ());
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Returns the index of the first occurance of a string within this string. Raises KeyNotFound exception " +
+                "if the specified substring does not exist.",
+                "@param substring The string to find."
+            )]
+            private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineString ch = args [0] as IodineString;
+
+                if (ch == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+                }
+
+                string val = ch.ToString ();
+
+                if (!thisObj.Value.Contains (val)) {
+                    vm.RaiseException (new IodineKeyNotFound ());
+                    return null;
+                }
+
+                return new IodineInteger (thisObj.Value.IndexOf (val));
+            }
+                
+            [BuiltinDocString (
+                "Returns the index of the last occurance of a string within this string. Raises KeyNotFound exception " +
+                "if the specified substring does not exist.",
+                "@param substring The string to find."
+            )]
+            private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineString ch = args [0] as IodineString;
+
+                if (ch == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+                }
+
+                string val = ch.ToString ();
+
+                if (!thisObj.Value.Contains (val)) {
+                    vm.RaiseException (new IodineKeyNotFound ());
+                    return null;
+                }
+                return new IodineInteger (thisObj.Value.LastIndexOf (val));
+            }
+
+            [BuiltinDocString (
+                "Returns the index of the first occurance of a string within this string. Returns -1 " +
+                "if the specified substring does not exist.",
+                "@param substring The string to find."
+            )]
+            private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineString ch = args [0] as IodineString;
+
+                if (ch == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+                }
+                string val = ch.ToString ();
+
+                if (!thisObj.Value.Contains (val)) {
+                    return new IodineInteger (-1);
+                }
+
+                return new IodineInteger (thisObj.Value.IndexOf (val));
+            }
+
+            [BuiltinDocString (
+                "Returns the index of the last occurance of a string within this string. Returns -1 " +
+                "if the specified substring does not exist.",
+                "@param substring The string to find."
+            )]
+            private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineString ch = args [0] as IodineString;
+
+                if (ch == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+                }
+                string val = ch.ToString ();
+
+                if (!thisObj.Value.Contains (val)) {
+                    return new IodineInteger (-1);
+                }
+                return new IodineInteger (thisObj.Value.LastIndexOf (val));
+            }
+
+            [BuiltinDocString (
+                "Returns true if the string contains the specified value. ",
+                "@param value The value that this string must contain to return true."
+            )]
+            private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                return IodineBool.Create (thisObj.Value.Contains (args [0].ToString ()));
+            }
+
+            [BuiltinDocString (
+                "Returns true if the string starts with the specified value.",
+                "@param value The value that this string must start with to return true."
+            )]
+            private IodineObject StartsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                return IodineBool.Create (thisObj.Value.StartsWith (args [0].ToString ()));
+            }
+                
+            [BuiltinDocString (
+                "Returns true if the string ends with the specified value.",
+                "@param value The value that this string must end with to return true."
+            )]
+            private IodineObject EndsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                return IodineBool.Create (thisObj.Value.EndsWith (args [0].ToString ()));
+            }
+
+            [BuiltinDocString (
+                "Returns a new string where call occurances of [str1] have been replaced with [str2].",
+                "@param str1 The value that will be replaced.",
+                "@param str2 The value to replace [str1] with."
+            )]
+            private IodineObject Replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 2) {
+                    vm.RaiseException (new IodineArgumentException (2));
+                    return null;
+                }
+                IodineString arg1 = args [0] as IodineString;
+                IodineString arg2 = args [1] as IodineString;
+                if (arg1 == null || arg2 == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+                }
+                return new IodineString (thisObj.Value.Replace (arg1.Value, arg2.Value));
+            }
+
+            [BuiltinDocString (
+                "Returns a list containing every substring between [seperator].",
+                "@param seperator The seperator to split this string by."
+            )]
+            private IodineObject Split (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                if (args.Length < 1) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineString ch = args [0] as IodineString;
+                char val;
+                if (ch == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+
+                }
+                val = ch.Value [0];
+
+                IodineList list = new IodineList (new IodineObject[]{ });
+                foreach (string str in thisObj.Value.Split (val)) {
+                    list.Add (new IodineString (str));
+                }
+                return list;
+            }
+
+            [BuiltinDocString (
+                "Returns a string where all leading whitespace characters have been removed."
+            )]
+            private IodineObject Trim (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                return new IodineString (thisObj.Value.Trim ());
+            }
+
+            [BuiltinDocString (
+                "Joins all arguments together, returning a string where this string has been placed between all supplied arguments",
+                "@param *args Arguments to join together using this string as a seperator."
+            )]
+            private IodineObject Join (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                StringBuilder accum = new StringBuilder ();
+                IodineObject collection = args [0].GetIterator (vm);
+                collection.IterReset (vm);
+                string last = "";
+                string sep = "";
+                while (collection.IterMoveNext (vm)) {
+                    IodineObject o = collection.IterGetCurrent (vm);
+                    accum.AppendFormat ("{0}{1}", last, sep);
+                    last = o.ToString (vm).ToString ();
+                    sep = thisObj.Value;
+                }
+                accum.Append (last);
+                return new IodineString (accum.ToString ());
+            }
+
+            /**
+         * Iodine Method: Str.format (self, *args);
+         * Description: Treats the string as a format specifier, applying it to *args
+         */
+            private IodineObject Format (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                string format = thisObj.Value;
+                IodineFormatter formatter = new IodineFormatter ();
+                return new IodineString (formatter.Format (vm, format, args));
+            }
+
+            [BuiltinDocString (
+                "Returns true if all characters in this string are letters."
+            )]
+            private IodineObject IsLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                bool result = thisObj.Value.Length == 0 ? false : true;
+                for (int i = 0; i < thisObj.Value.Length; i++) {
+                    if (!char.IsLetter (thisObj.Value [i])) {
+                        return IodineBool.False;
+                    }
+                }
+                return IodineBool.Create (result);
+            }
+
+            [BuiltinDocString (
+                "Returns true if all characters in this string are digits."
+            )]
+            private IodineObject IsDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                bool result = thisObj.Value.Length == 0 ? false : true;
+                for (int i = 0; i < thisObj.Value.Length; i++) {
+                    if (!char.IsDigit (thisObj.Value [i])) {
+                        return IodineBool.False;
+                    }
+                }
+                return IodineBool.Create (result);
+            }
+                
+            [BuiltinDocString (
+                "Returns true if all characters in this string are letters or digits."
+            )]
+            private IodineObject IsLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                bool result = thisObj.Value.Length == 0 ? false : true;
+                for (int i = 0; i < thisObj.Value.Length; i++) {
+                    if (!char.IsLetterOrDigit (thisObj.Value [i])) {
+                        return IodineBool.False;
+                    }
+                }
+                return IodineBool.Create (result);
+            }
+                
+            [BuiltinDocString (
+                "Returns true if all characters in this string are white space characters."
+            )]
+            private IodineObject IsWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                bool result = thisObj.Value.Length == 0 ? false : true;
+                for (int i = 0; i < thisObj.Value.Length; i++) {
+                    if (!char.IsWhiteSpace (thisObj.Value [i])) {
+                        return IodineBool.False;
+                    }
+                }
+                return IodineBool.Create (result);
+            }
+
+            [BuiltinDocString (
+                "Returns true if all characters in this string are symbols."
+            )]
+            private IodineObject IsSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                bool result = thisObj.Value.Length == 0 ? false : true;
+                for (int i = 0; i < thisObj.Value.Length; i++) {
+                    if (!char.IsSymbol (thisObj.Value [i])) {
+                        return IodineBool.False;
+                    }
+                }
+                return IodineBool.Create (result);
+            }
+
+            [BuiltinDocString (
+                "Returns a string that has been justified by [n] characters to right.", 
+                "@param n How much to justify this string.",
+                "@optional c The string to use as padding (Default is whitespace)."
+            )]
+            private IodineObject PadRight (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+                char ch = ' ';
+
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineInteger width = args [0] as IodineInteger;
+
+                if (width == null) {
+                    vm.RaiseException (new IodineTypeException ("Int"));
+                    return null;
+                }
+
+                if (args.Length > 1) {
+                    IodineString chStr = args [0] as IodineString;
+
+                    if (chStr == null) {
+                        vm.RaiseException (new IodineTypeException ("Str"));
+                        return null;
+                    }
+
+                    ch = chStr.Value [0];
+                }
+
+                return new IodineString (thisObj.Value.PadRight ((int)width.Value, ch));
+            }
+
+            [BuiltinDocString (
+                "Returns a string that has been justified by [n] characters to left.", 
+                "@param n How much to justify this string.",
+                "@optional c The string to use as padding (Default is whitespace)."
+            )]
+            private IodineObject PadLeft (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineString thisObj = self as IodineString;
+
+                char ch = ' ';
+
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                IodineInteger width = args [0] as IodineInteger;
+
+                if (width == null) {
+                    vm.RaiseException (new IodineTypeException ("Int"));
+                    return null;
+                }
+
+                if (args.Length > 1) {
+                    IodineString chStr = args [0] as IodineString;
+
+                    if (chStr == null) {
+                        vm.RaiseException (new IodineTypeException ("Str"));
+                        return null;
+                    }
+
+                    ch = chStr.Value [0];
+                }
+
+                return new IodineString (thisObj.Value.PadLeft ((int)width.Value, ch));
             }
         }
 
@@ -93,32 +573,15 @@ namespace Iodine.Runtime
 
         public string Value { private set; get; }
 
+        private IodineString (string value, bool supressTypeBinding)
+        {
+            Value = value;
+        }
+
         public IodineString (string val)
             : base (TypeDefinition)
         {
             Value = val ?? "";
-            SetAttribute ("lower", new BuiltinMethodCallback (Lower, this));
-            SetAttribute ("upper", new BuiltinMethodCallback (Upper, this));
-            SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
-            SetAttribute ("index", new BuiltinMethodCallback (IndexOf, this));
-            SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, this));
-            SetAttribute ("find", new BuiltinMethodCallback (Find, this));
-            SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, this));
-            SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
-            SetAttribute ("replace", new BuiltinMethodCallback (Replace, this));
-            SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, this));
-            SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, this));
-            SetAttribute ("split", new BuiltinMethodCallback (Split, this));
-            SetAttribute ("join", new BuiltinMethodCallback (Join, this));
-            SetAttribute ("trim", new BuiltinMethodCallback (Trim, this));
-            SetAttribute ("format", new BuiltinMethodCallback (Format, this));
-            SetAttribute ("isalpha", new BuiltinMethodCallback (IsLetter, this));
-            SetAttribute ("isdigit", new BuiltinMethodCallback (IsDigit, this));
-            SetAttribute ("isalnum", new BuiltinMethodCallback (IsLetterOrDigit, this));
-            SetAttribute ("iswhitespace", new BuiltinMethodCallback (IsWhiteSpace, this));
-            SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, this));
-            SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, this));
-            SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, this));
 
             // HACK: Add __iter__ attribute to match Iterable trait
             SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] args) => {
@@ -153,11 +616,6 @@ namespace Iodine.Runtime
             );
         }
 
-        public override IodineObject Compare (VirtualMachine vm, IodineObject obj)
-        {
-            return new IodineInteger (Value.CompareTo (obj.ToString ()));
-        }
-
         private string Substring (int start, int end, int stride, bool defaultStart, bool defaultEnd)
         {
             int actualStart = start >= 0 ? start : Value.Length - (start + 2);
@@ -179,7 +637,7 @@ namespace Iodine.Runtime
                     accum.Append (Value [i]);
                 }
             } else {
-                
+
                 if (defaultStart) {
                     actualStart = Value.Length - 1;
                 }
@@ -194,6 +652,12 @@ namespace Iodine.Runtime
             }
 
             return accum.ToString ();
+        }
+
+
+        public override IodineObject Compare (VirtualMachine vm, IodineObject obj)
+        {
+            return new IodineInteger (Value.CompareTo (obj.ToString ()));
         }
 
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
@@ -261,441 +725,15 @@ namespace Iodine.Runtime
         {
             return new IodineString (String.Format ("\"{0}\"", Value));
         }
-
-        /**
-         * Iodine Method: Str.upper (self);
-         * Description: Returns the uppercase representation of this string
-         */
-        private IodineObject Upper (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            return new IodineString (Value.ToUpper ());
-        }
-
-        /**
-         * Iodine Method: Str.lower (self);
-         * Description: Returns the lowercase representation of this string
-         */
-        private IodineObject Lower (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            return new IodineString (Value.ToLower ());
-        }
-
-        /**
-         * Iodine Method: Str.substr (self, index, [length]);
-         * Description: Returns a substring of this string starting from index
-         */
-        private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            int start = 0;
-            int len = 0;
-            IodineInteger startObj = args [0] as IodineInteger;
-            if (startObj == null) {
-                vm.RaiseException (new IodineTypeException ("Int"));
-                return null;
-            }
-            start = (int)startObj.Value;
-            if (args.Length == 1) {
-                len = this.Value.Length;
-            } else {
-                IodineInteger endObj = args [1] as IodineInteger;
-                if (endObj == null) {
-                    vm.RaiseException (new IodineTypeException ("Int"));
-                    return null;
-                }
-                len = (int)endObj.Value;
-            }
-
-            if (start < Value.Length && len <= Value.Length) {
-                return new IodineString (Value.Substring (start, len - start));
-            }
-            vm.RaiseException (new IodineIndexException ());
-            return null;
-        }
-
-        /**
-         * Iodine Method: Str.index (self, value);
-         * Description: Returns the first positio of value in this string 
-         */
-        private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineString ch = args [0] as IodineString;
-
-            if (ch == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-
-            string val = ch.ToString ();
-
-            if (!Value.Contains (val)) {
-                vm.RaiseException (new IodineKeyNotFound ());
-                return null;
-            }
-
-            return new IodineInteger (Value.IndexOf (val));
-        }
-
-        /**
-         * Iodine Method: Str.rindex (self, value);
-         * Description: Returns the first positio of value in this string 
-         */
-        private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineString ch = args [0] as IodineString;
-
-            if (ch == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-
-            string val = ch.ToString ();
-
-            if (!Value.Contains (val)) {
-                vm.RaiseException (new IodineKeyNotFound ());
-                return null;
-            }
-            return new IodineInteger (Value.LastIndexOf (val));
-        }
-
-        /**
-         * Iodine Method: Str.find (self, value);
-         * Description: Returns the first positio of value in this string 
-         */
-        private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineString ch = args [0] as IodineString;
-
-            if (ch == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-            string val = ch.ToString ();
-
-            if (!Value.Contains (val)) {
-                return new IodineInteger (-1);
-            }
-
-            return new IodineInteger (Value.IndexOf (val));
-        }
-
-        /**
-         * Iodine Method: Str.rfind (self, value);
-         * Description: Returns the first positio of value in this string 
-         */
-        private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineString ch = args [0] as IodineString;
-
-            if (ch == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-            string val = ch.ToString ();
-
-            if (!Value.Contains (val)) {
-                return new IodineInteger (-1);
-            }
-            return new IodineInteger (Value.LastIndexOf (val));
-        }
-
-        /**
-         * Iodine Method: Str.contains (self, value);
-         * Description: Returns true if this string contains value 
-         */
-        private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            return IodineBool.Create (Value.Contains (args [0].ToString ()));
-        }
-
-        /**
-         * Iodine Method: Str.startsWith (self, value);
-         * Description: Returns true if this string starts with value 
-         */
-        private IodineObject StartsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            return IodineBool.Create (Value.StartsWith (args [0].ToString ()));
-        }
-
-        /**
-         * Iodine Method: Str.endsWith (self, value);
-         * Description: Returns true if this string ends with value
-         */
-        private IodineObject EndsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            return IodineBool.Create (Value.EndsWith (args [0].ToString ()));
-        }
-
-        /**
-         * Iodine Method: Str.replace (self, oldValue, newValue);
-         * Description: Replaces all occurances of oldValue with newVale
-         */
-        private IodineObject Replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 2) {
-                vm.RaiseException (new IodineArgumentException (2));
-                return null;
-            }
-            IodineString arg1 = args [0] as IodineString;
-            IodineString arg2 = args [1] as IodineString;
-            if (arg1 == null || arg2 == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-            return new IodineString (Value.Replace (arg1.Value, arg2.Value));
-        }
-
-        /**
-         * Iodine Method: Str.split (self, seperator);
-         * Description: Splits this string by seperator, returning a list of substrings
-         */
-        private IodineObject Split (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineString selfStr = self as IodineString;
-            IodineString ch = args [0] as IodineString;
-            char val;
-            if (ch == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-
-            }
-            val = ch.Value [0];
-
-            IodineList list = new IodineList (new IodineObject[]{ });
-            foreach (string str in selfStr.Value.Split (val)) {
-                list.Add (new IodineString (str));
-            }
-            return list;
-        }
-
-        /**
-         * Iodine Method: Str.trim (self);
-         * Description: Returns this string with all leading and trailing white spaces removed
-         */
-        private IodineObject Trim (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            return new IodineString (Value.Trim ());
-        }
-
-        /**
-         * Iodine Method: Str.join (self, *args);
-         * Description: Combines each item in *args using this string as a seperator
-         */
-        private IodineObject Join (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            StringBuilder accum = new StringBuilder ();
-            IodineObject collection = args [0].GetIterator (vm);
-            collection.IterReset (vm);
-            string last = "";
-            string sep = "";
-            while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
-                accum.AppendFormat ("{0}{1}", last, sep);
-                last = o.ToString (vm).ToString ();
-                sep = Value;
-            }
-            accum.Append (last);
-            return new IodineString (accum.ToString ());
-        }
-
-        /**
-         * Iodine Method: Str.format (self, *args);
-         * Description: Treats the string as a format specifier, applying it to *args
-         */
-        private IodineObject Format (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            string format = this.Value;
-            IodineFormatter formatter = new IodineFormatter ();
-            return new IodineString (formatter.Format (vm, format, args));
-        }
-
-        /**
-         * Iodine Method: Str.isLetter (self);
-         * Description: Returns true if this string is a letter
-         */
-        private IodineObject IsLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            bool result = Value.Length == 0 ? false : true;
-            for (int i = 0; i < Value.Length; i++) {
-                if (!char.IsLetter (Value [i])) {
-                    return IodineBool.False;
-                }
-            }
-            return IodineBool.Create (result);
-        }
-
-        /**
-         * Iodine Method: Str.isDigit (self);
-         * Description: Returns true if this string is a numerical character
-         */
-        private IodineObject IsDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            bool result = Value.Length == 0 ? false : true;
-            for (int i = 0; i < Value.Length; i++) {
-                if (!char.IsDigit (Value [i])) {
-                    return IodineBool.False;
-                }
-            }
-            return IodineBool.Create (result);
-        }
-
-        /**
-         * Iodine Method: Str.isLetterOrDigit (self);
-         * Description: Returns true if this string is a letter or a digit
-         */
-        private IodineObject IsLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            bool result = Value.Length == 0 ? false : true;
-            for (int i = 0; i < Value.Length; i++) {
-                if (!char.IsLetterOrDigit (Value [i])) {
-                    return IodineBool.False;
-                }
-            }
-            return IodineBool.Create (result);
-        }
-
-        /**
-         * Iodine Method: Str.isWhiteSpace (self);
-         * Description: Returns true if this string is a whitespace character
-         */
-        private IodineObject IsWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            bool result = Value.Length == 0 ? false : true;
-            for (int i = 0; i < Value.Length; i++) {
-                if (!char.IsWhiteSpace (Value [i])) {
-                    return IodineBool.False;
-                }
-            }
-            return IodineBool.Create (result);
-        }
-
-        /**
-         * Iodine Method: Str.isSymbol (self);
-         * Description: Returns true if this string is a symbol
-         */
-        private IodineObject IsSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            bool result = Value.Length == 0 ? false : true;
-            for (int i = 0; i < Value.Length; i++) {
-                if (!char.IsSymbol (Value [i])) {
-                    return IodineBool.False;
-                }
-            }
-            return IodineBool.Create (result);
-        }
-
-
-        /**
-         * Iodine Method: Str.padRight (self, amount [, char]);
-         * Description: Returns true if this string is a symbol
-         */
-        private IodineObject PadRight (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            char ch = ' ';
-
-            if (args.Length == 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineInteger width = args [0] as IodineInteger;
-
-            if (width == null) {
-                vm.RaiseException (new IodineTypeException ("Int"));
-                return null;
-            }
-
-            if (args.Length > 1) {
-                IodineString chStr = args [0] as IodineString;
-
-                if (chStr == null) {
-                    vm.RaiseException (new IodineTypeException ("Str"));
-                    return null;
-                }
-
-                ch = chStr.Value [0];
-            }
-
-            return new IodineString (Value.PadRight ((int)width.Value, ch));
-        }
-
-        /**
-         * Iodine Method: Str.padLeft (self, amount [, char]);
-         * Description: Returns true if this string is a symbol
-         */
-        private IodineObject PadLeft (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            char ch = ' ';
-
-            if (args.Length == 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            IodineInteger width = args [0] as IodineInteger;
-
-            if (width == null) {
-                vm.RaiseException (new IodineTypeException ("Int"));
-                return null;
-            }
-
-            if (args.Length > 1) {
-                IodineString chStr = args [0] as IodineString;
-
-                if (chStr == null) {
-                    vm.RaiseException (new IodineTypeException ("Str"));
-                    return null;
-                }
-
-                ch = chStr.Value [0];
-            }
-
-            return new IodineString (Value.PadLeft ((int)width.Value, ch));
-        }
-
+            
         public override bool IsTrue ()
         {
             return Value.Length > 0;
+        }
+
+        internal static IodineString CreateTypelessString (string str)
+        {
+            return new IodineString (str, false);
         }
     }
 }
