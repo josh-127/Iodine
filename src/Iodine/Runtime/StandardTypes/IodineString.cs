@@ -96,7 +96,7 @@ namespace Iodine.Runtime
         public IodineString (string val)
             : base (TypeDefinition)
         {
-            Value = val;
+            Value = val ?? "";
             SetAttribute ("lower", new BuiltinMethodCallback (Lower, this));
             SetAttribute ("upper", new BuiltinMethodCallback (Upper, this));
             SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
@@ -231,6 +231,10 @@ namespace Iodine.Runtime
 
         public override int GetHashCode ()
         {
+            if (Value == null) {
+                Console.WriteLine ("wut");
+                return 0;
+            }
             return Value.GetHashCode ();
         }
 

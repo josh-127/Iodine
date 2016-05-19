@@ -55,12 +55,12 @@ namespace Iodine.Compiler.Ast
             Body = body;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             Initializer.Visit (visitor);
             Condition.Visit (visitor);

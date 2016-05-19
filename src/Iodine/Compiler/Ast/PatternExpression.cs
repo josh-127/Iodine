@@ -52,12 +52,12 @@ namespace Iodine.Compiler.Ast
             Right = right;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             Left.Visit (visitor);
             Right.Visit (visitor);

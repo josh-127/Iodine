@@ -37,7 +37,7 @@ namespace Iodine.Compiler.Ast
     {
         public readonly SourceLocation Location;
 
-        public abstract void Visit (IodineAstVisitor visitor);
+        public abstract void Visit (AstVisitor visitor);
 
         public AstNode (SourceLocation location)
         {
@@ -45,7 +45,7 @@ namespace Iodine.Compiler.Ast
         }
 
 
-        public virtual void VisitChildren (IodineAstVisitor visitor)
+        public virtual void VisitChildren (AstVisitor visitor)
         {
         }
 

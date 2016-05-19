@@ -53,7 +53,7 @@ namespace Iodine.Compiler.Ast
             Right = right;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             AstNode reduced = Reduce ();
 
@@ -64,7 +64,7 @@ namespace Iodine.Compiler.Ast
             }
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             if (Reduce () == this) {
                 Left.Visit (visitor);

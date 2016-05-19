@@ -41,7 +41,7 @@ namespace Iodine.Compiler.Ast
         {
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
@@ -51,7 +51,7 @@ namespace Iodine.Compiler.Ast
             Keywords [kw] = child;
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             foreach (AstNode node in Keywords.Values) {
                 node.Visit (visitor);

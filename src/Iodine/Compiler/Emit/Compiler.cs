@@ -40,7 +40,7 @@ namespace Iodine.Compiler
     /// <summary>
     /// Responsible for compiling an Iodine abstract syntax tree into iodine bytecode. 
     /// </summary>
-    public class IodineCompiler : IodineAstVisitor
+    public class IodineCompiler : AstVisitor
     {
         private static List<IBytecodeOptimization> Optimizations = new List<IBytecodeOptimization> ();
 
@@ -628,10 +628,10 @@ namespace Iodine.Compiler
 
             Context.CurrentMethod.EmitInstruction (switchStmt.GivenValue.Location, Opcode.StoreLocal, temporary);
 
-            IodineLabel endSwitch = Context.CurrentMethod.CreateLabel ();
+            Label endSwitch = Context.CurrentMethod.CreateLabel ();
 
             foreach (WhenStatement caseStmt in switchStmt.WhenStatements) {
-                IodineLabel nextLabel = Context.CurrentMethod.CreateLabel ();
+                Label nextLabel = Context.CurrentMethod.CreateLabel ();
 
                 CreatePatternContext (temporary);
                 caseStmt.Values.Visit (this);
@@ -653,8 +653,8 @@ namespace Iodine.Compiler
 
         public override void Accept (TryExceptStatement tryExcept)
         {
-            IodineLabel exceptLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
+            Label exceptLabel = Context.CurrentMethod.CreateLabel ();
+            Label endLabel = Context.CurrentMethod.CreateLabel ();
 
             Context.CurrentMethod.EmitInstruction (tryExcept.Location, Opcode.PushExceptionHandler, exceptLabel);
 
@@ -703,8 +703,8 @@ namespace Iodine.Compiler
 
         public override void Accept (IfStatement ifStmt)
         {
-            IodineLabel elseLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
+            Label elseLabel = Context.CurrentMethod.CreateLabel ();
+            Label endLabel = Context.CurrentMethod.CreateLabel ();
             ifStmt.Condition.Visit (this);
             Context.CurrentMethod.EmitInstruction (ifStmt.Body.Location, Opcode.JumpIfFalse, elseLabel);
             ifStmt.Body.Visit (this);
@@ -723,8 +723,8 @@ namespace Iodine.Compiler
 
         public override void Accept (WhileStatement whileStmt)
         {
-            IodineLabel whileLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel breakLabel = Context.CurrentMethod.CreateLabel ();
+            Label whileLabel = Context.CurrentMethod.CreateLabel ();
+            Label breakLabel = Context.CurrentMethod.CreateLabel ();
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (whileLabel);
@@ -749,8 +749,8 @@ namespace Iodine.Compiler
 
         public override void Accept (DoStatement doStmt)
         {
-            IodineLabel doLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel breakLabel = Context.CurrentMethod.CreateLabel ();
+            Label doLabel = Context.CurrentMethod.CreateLabel ();
+            Label breakLabel = Context.CurrentMethod.CreateLabel ();
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (doLabel);
@@ -772,9 +772,9 @@ namespace Iodine.Compiler
 
         public override void Accept (ForStatement forStmt)
         {
-            IodineLabel forLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel breakLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel skipAfterThought = Context.CurrentMethod.CreateLabel ();
+            Label forLabel = Context.CurrentMethod.CreateLabel ();
+            Label breakLabel = Context.CurrentMethod.CreateLabel ();
+            Label skipAfterThought = Context.CurrentMethod.CreateLabel ();
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (forLabel);
@@ -801,8 +801,8 @@ namespace Iodine.Compiler
 
         public override void Accept (ForeachStatement foreachStmt)
         {
-            IodineLabel foreachLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel breakLabel = Context.CurrentMethod.CreateLabel ();
+            Label foreachLabel = Context.CurrentMethod.CreateLabel ();
+            Label breakLabel = Context.CurrentMethod.CreateLabel ();
             int tmp = Context.CurrentMethod.CreateTemporary (); 
 
             Context.BreakLabels.Push (breakLabel);
@@ -1028,8 +1028,8 @@ namespace Iodine.Compiler
 
         public override void Accept (TernaryExpression ifExpr)
         {
-            IodineLabel elseLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
+            Label elseLabel = Context.CurrentMethod.CreateLabel ();
+            Label endLabel = Context.CurrentMethod.CreateLabel ();
             ifExpr.Condition.Visit (this);
             Context.CurrentMethod.EmitInstruction (ifExpr.Expression.Location,
                 Opcode.JumpIfFalse,
@@ -1171,9 +1171,9 @@ namespace Iodine.Compiler
                 return;
             }
 
-            IodineLabel shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
+            Label shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
+            Label shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
+            Label endLabel = Context.CurrentMethod.CreateLabel ();
             binop.Left.Visit (this);
 
             /*
@@ -1348,9 +1348,9 @@ namespace Iodine.Compiler
 
             Context.SymbolTable.EnterScope ();
 
-            IodineLabel foreachLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel breakLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel predicateSkip = Context.CurrentMethod.CreateLabel ();
+            Label foreachLabel = Context.CurrentMethod.CreateLabel ();
+            Label breakLabel = Context.CurrentMethod.CreateLabel ();
+            Label predicateSkip = Context.CurrentMethod.CreateLabel ();
 
             int tmp = Context.CurrentMethod.CreateTemporary (); 
 
@@ -1410,9 +1410,9 @@ namespace Iodine.Compiler
 
         public override void Accept (ListCompExpression list)
         {
-            IodineLabel foreachLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel breakLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel predicateSkip = Context.CurrentMethod.CreateLabel ();
+            Label foreachLabel = Context.CurrentMethod.CreateLabel ();
+            Label breakLabel = Context.CurrentMethod.CreateLabel ();
+            Label predicateSkip = Context.CurrentMethod.CreateLabel ();
             int tmp = Context.CurrentMethod.CreateTemporary (); 
             int set = Context.CurrentMethod.CreateTemporary ();
 
@@ -1476,8 +1476,8 @@ namespace Iodine.Compiler
         public override void Accept (TupleExpression tuple)
         {
             if (Context.IsPatternExpression) {
-                IodineLabel startLabel = Context.CurrentMethod.CreateLabel ();
-                IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
+                Label startLabel = Context.CurrentMethod.CreateLabel ();
+                Label endLabel = Context.CurrentMethod.CreateLabel ();
                 int item = Context.CurrentMethod.CreateTemporary ();
 
                 int prevTemporary = Context.PatternTemporary;
@@ -1533,8 +1533,8 @@ namespace Iodine.Compiler
             int temporary = Context.CurrentMethod.CreateTemporary ();
             Context.CurrentMethod.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
 
-            IodineLabel nextLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
+            Label nextLabel = Context.CurrentMethod.CreateLabel ();
+            Label endLabel = Context.CurrentMethod.CreateLabel ();
 
             for (int i = 0; i < match.MatchCases.Count; i++) {
                 if (i > 0) {
@@ -1573,9 +1573,9 @@ namespace Iodine.Compiler
 
         public override void Accept (PatternExpression expression)
         {
-            IodineLabel shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
-            IodineLabel endLabel = Context.CurrentMethod.CreateLabel ();
+            Label shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
+            Label shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
+            Label endLabel = Context.CurrentMethod.CreateLabel ();
             expression.Left.Visit (this);
 
             /*

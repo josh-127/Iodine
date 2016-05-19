@@ -66,12 +66,12 @@ namespace Iodine.Compiler.Ast
             Step = step ?? new IntegerExpression (location, 1);
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             Step.Visit (visitor);
             Stop.Visit (visitor);

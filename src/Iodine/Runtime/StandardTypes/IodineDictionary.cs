@@ -68,44 +68,40 @@ namespace Iodine.Runtime
         {
             private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("DictIterator");
 
-            private int iterIndex = 0;
-            private ObjectDictionary dict;
+            private IEnumerator<KeyValuePair<IodineObject, IodineObject>> enumerator;
 
-            public DictIterator (ObjectDictionary dict)
+            public DictIterator (Dictionary<IodineObject, IodineObject> dict)
                 : base (TypeDefinition)
             {
-                this.dict = dict;
+                enumerator = dict.GetEnumerator ();
             }
 
             public override IodineObject IterGetCurrent (VirtualMachine vm)
             {
-                IodineObject key = dict.Get (iterIndex - 1);
-                return new IodineTuple (new IodineObject[] {
-                    key,
-                    dict.Get (key)
+                KeyValuePair<IodineObject, IodineObject> current = enumerator.Current;
+
+                return new IodineTuple (new IodineObject [] {
+                    current.Key,
+                    current.Value
                 });
             }
 
             public override bool IterMoveNext (VirtualMachine vm)
             {
-                if (iterIndex >= dict.Count) {
-                    return false;
-                }
-                iterIndex++;
-                return true;
+                return enumerator.MoveNext ();
             }
 
             public override void IterReset (VirtualMachine vm)
             {
-                iterIndex = 0;
+                enumerator.Reset ();
             }
         }
 
-        protected readonly ObjectDictionary dict = new ObjectDictionary ();
+        protected readonly Dictionary<IodineObject, IodineObject> dict = new Dictionary<IodineObject, IodineObject> ();
 
         public IEnumerable<IodineObject> Keys {
             get {
-                return dict.GetKeys ();
+                return dict.Keys;
             }
         }
 
@@ -130,12 +126,12 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            return dict.Get (key);
+            return dict [key];
         }
 
         public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
         {
-            dict.Set (key, value);
+            dict [key] = value;
         }
 
         public override bool Equals (IodineObject obj)
@@ -159,6 +155,11 @@ namespace Iodine.Runtime
             return IodineBool.Create (CompareTo (hash));
         }
        
+        public override int GetHashCode ()
+        {
+            return dict.GetHashCode ();
+        }
+
         public override IodineObject GetIterator (VirtualMachine vm)
         {
             return new DictIterator (dict);
@@ -171,7 +172,7 @@ namespace Iodine.Runtime
         /// <param name="val">Value.</param>
         public void Set (IodineObject key, IodineObject val)
         {
-            dict.Set (key, val);
+            dict [key] = val;
         }
 
         /// <summary>
@@ -180,7 +181,7 @@ namespace Iodine.Runtime
         /// <param name="key">Key.</param>
         public IodineObject Get (IodineObject key)
         {
-            return dict.Get (key);
+            return dict [key];
         }
 
         /// <summary>
@@ -194,11 +195,11 @@ namespace Iodine.Runtime
                 return false;
             }
 
-            foreach (IodineObject key in dict.GetKeys ()) {
+            foreach (IodineObject key in dict.Keys) {
                 if (!hash.dict.ContainsKey (key)) {
                     return false;
                 }
-                if (!hash.dict.Get (key).Equals (dict.Get (key))) {
+                if (!hash.dict [key].Equals (dict [key])) {
                     return false;
                 }
             }
@@ -247,7 +248,7 @@ namespace Iodine.Runtime
             if (arguments.Length >= 2) {
                 IodineObject key = arguments [0];
                 IodineObject val = arguments [1];
-                dict.Set (key, val);
+                dict [key] = val;
                 return null;
             }
             vm.RaiseException (new IodineArgumentException (2));
@@ -266,14 +267,14 @@ namespace Iodine.Runtime
             } else if (arguments.Length == 1) {
                 IodineObject key = arguments [0];
                 if (dict.ContainsKey (key)) {
-                    return dict.Get (key);
+                    return dict [key];
                 }
                 vm.RaiseException (new IodineKeyNotFound ());
                 return null;
             } else {
                 IodineObject key = arguments [0];
                 if (dict.ContainsKey (key)) {
-                    return dict.Get (key);
+                    return dict [key];
                 }
                 return arguments [1];
             }

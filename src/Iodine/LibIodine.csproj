@@ -147,16 +147,13 @@
     <Compile Include="Runtime\StandardModules\FsutilsModule.cs" />
     <Compile Include="Runtime\IodineContract.cs" />
     <Compile Include="Runtime\IodineTrait.cs" />
-    <Compile Include="Compiler\Emit\IodineCompiler.cs" />
     <Compile Include="Runtime\IodineClass.cs" />
     <Compile Include="Runtime\IodineClosure.cs" />
     <Compile Include="Runtime\IodineGenerator.cs" />
     <Compile Include="Runtime\IodineEnum.cs" />
-    <Compile Include="Compiler\Emit\IodineLabel.cs" />
     <Compile Include="Runtime\IodineBoundMethod.cs" />
     <Compile Include="Compiler\Emit\ClassBuilder.cs" />
     <Compile Include="Runtime\StandardTypes\IodineStackFrameWrapper.cs" />
-    <Compile Include="Util\ObjectDictionary.cs" />
     <Compile Include="Util\LinkedStack.cs" />
     <Compile Include="Runtime\StandardTypes\IodineDictionary.cs" />
     <Compile Include="Compiler\SemanticAnalyser.cs" />
@@ -214,7 +211,6 @@
     <Compile Include="Compiler\CompilationUnit.cs" />
     <Compile Include="Compiler\BinaryOperation.cs" />
     <Compile Include="Compiler\EndOfFileException.cs" />
-    <Compile Include="Compiler\IodineAstVisitor.cs" />
     <Compile Include="Compiler\Parser.cs" />
     <Compile Include="Compiler\Token.cs" />
     <Compile Include="Compiler\UnaryOperation.cs" />
@@ -236,6 +232,9 @@
     <Compile Include="Runtime\IodineMixin.cs" />
     <Compile Include="Compiler\Ast\MixinDeclaration.cs" />
     <Compile Include="Compiler\Ast\ExtendStatement.cs" />
+    <Compile Include="Compiler\AstVisitor.cs" />
+    <Compile Include="Compiler\Emit\Label.cs" />
+    <Compile Include="Compiler\Emit\Compiler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

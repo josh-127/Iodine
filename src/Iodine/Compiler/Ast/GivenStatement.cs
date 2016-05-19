@@ -59,12 +59,12 @@ namespace Iodine.Compiler.Ast
             WhenStatements.Add (statement);
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             GivenValue.Visit (visitor);
             WhenStatements.ForEach (p => p.Visit (visitor));

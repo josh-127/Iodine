@@ -48,12 +48,12 @@ namespace Iodine.Compiler.Ast
             ElseExpression = expression; 
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             Condition.Visit (visitor);
             Expression.Visit (visitor);

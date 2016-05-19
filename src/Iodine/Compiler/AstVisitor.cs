@@ -36,7 +36,7 @@ namespace Iodine.Compiler
     /// Abstract class for implementing a visitor pattern to walk an Iodine abstract syntax
     /// tree.
     /// </summary>
-    public abstract class IodineAstVisitor
+    public abstract class AstVisitor
     {
         public virtual void Accept (CompilationUnit ast)
         {

@@ -64,12 +64,12 @@ namespace Iodine.Compiler.Ast
             IsStatement = isStatement;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             if (Pattern != null) {
                 Pattern.Visit (visitor);

@@ -59,8 +59,8 @@ namespace Iodine.Compiler
             get;
         }
 
-        public readonly Stack<IodineLabel> BreakLabels = new Stack<IodineLabel> ();
-        public readonly Stack<IodineLabel> ContinueLabels = new Stack<IodineLabel> ();
+        public readonly Stack<Label> BreakLabels = new Stack<Label> ();
+        public readonly Stack<Label> ContinueLabels = new Stack<Label> ();
         public readonly int PatternTemporary = 0;
 
         public readonly bool IsPatternExpression = false;

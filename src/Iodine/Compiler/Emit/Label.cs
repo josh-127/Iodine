@@ -33,12 +33,12 @@ namespace Iodine.Compiler
     /// <summary>
     /// Represents a location in an Iodine method which can be jumped too
     /// </summary>
-    public class IodineLabel
+    public class Label
     {
         public int _Position;
         public int _LabelID;
 
-        public IodineLabel (int labelID)
+        public Label (int labelID)
         {
             _LabelID = labelID;
             _Position = 0;

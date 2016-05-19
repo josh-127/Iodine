@@ -234,9 +234,17 @@ namespace Iodine.Runtime
             return null;
         }
 
+        public override bool Equals (object obj)
+        {
+            if (obj is IodineObject) {
+                return Equals ((IodineObject)obj);
+            }
+            return false;
+        }
+
         public virtual bool Equals (IodineObject obj)
         {
-            return Equals ((object)obj);
+            return obj == this;
         }
 
         /// <summary>
