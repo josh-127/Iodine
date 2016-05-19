@@ -226,10 +226,15 @@ namespace Iodine.Runtime
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
             IodineList list = new IodineList (Objects.ToArray ());
-            right.IterReset (vm);
-            while (right.IterMoveNext (vm)) {
-                IodineObject o = right.IterGetCurrent (vm);
-                list.Add (o);
+            try {
+                var iter = right.GetIterator (vm);
+                iter.IterReset (vm);
+                while (iter.IterMoveNext (vm)) {
+                    IodineObject o = iter.IterGetCurrent (vm);
+                    list.Add (o);
+                }
+            } catch {
+                list.Add (right);
             }
             return list;
         }
@@ -283,7 +288,7 @@ namespace Iodine.Runtime
             foreach (IodineObject obj in arguments) {
                 list.Add (obj);
             }
-            return null;
+            return this;
         }
 
         /**
@@ -302,7 +307,7 @@ namespace Iodine.Runtime
                 IodineObject o = collection.IterGetCurrent (vm);
                 Add (o);
             }
-            return null;
+            return this;
         }
 
         /**
@@ -318,7 +323,7 @@ namespace Iodine.Runtime
 
             Objects.Insert (0, arguments [0]);
 
-            return null;
+            return this;
         }
 
         /**
@@ -354,7 +359,7 @@ namespace Iodine.Runtime
             IodineObject key = arguments [0];
             if (Objects.Any (o => o.Equals (key))) {
                 Objects.Remove (Objects.First (o => o.Equals (key)));
-                return null;
+                return this;
             }
             vm.RaiseException (new IodineKeyNotFound ());
             return null;
@@ -377,7 +382,7 @@ namespace Iodine.Runtime
                 } else {
                     vm.RaiseException (new IodineKeyNotFound ());
                 }
-                return null;
+                return this;
             }
             vm.RaiseException (new IodineTypeException ("Int"));
             return null;

@@ -37,7 +37,7 @@ namespace Iodine.Runtime
     public class IodineString : IodineObject
     {
         public static readonly IodineTypeDefinition TypeDefinition = new StringTypeDef ();
-        public static readonly IodineString Empty = new IodineString ("");
+        public static readonly IodineString Empty = new IodineString (string.Empty);
 
         class StringTypeDef : IodineTypeDefinition
         {
