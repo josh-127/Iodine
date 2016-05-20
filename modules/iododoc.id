@@ -1,5 +1,5 @@
 /**
- * Module for creating documentation from live iodine objects
+ * Module for creating documentation from iodine objects
  * @author GruntTheDivine
  */
  
@@ -10,7 +10,7 @@ contract DocumentationFormatter {
     func formatDoc (documentation);
 }
 
-enum DocType {
+enum ElementType {
     FUNCTION = 0,
     CLASS = 1,
     CONTRACT = 2,
@@ -19,77 +19,98 @@ enum DocType {
     MODULE = 5,
 }
 
-class CodeItem {
-    func CodeItem (self, doctype, str) {
-        self.doctype = doctype;
+class Element {
+    func Element (self, ElementType, str) {
+        self.ElementType = ElementType;
         self.str = str;
         self.description = "";
-    }
-}
-
-class FuncItem extends CodeItem {
-    func FuncItem (self, name, f) {
-        super (DocType.FUNCTION, f.__doc__);
-        self.name = name;
         self.params = [];
-        self.parseDocumentation (f.__doc__);
     }
     
     func parseDocumentation (self, docstr) {
-        buf = StringBuffer ();
-        for (str in docstr.split ('\n')) {
-           if (str.startswith ("@param ")) {
-               name = str.substr (str.find (" ") + 1);
-               if (!name.contains (" ")) {
-                   raise Exception ("Invalid param str!");
-               }
-               description = name.substr (name.find (" "));
-               name = name.substr (0, name.find (" "));
-               self.params.append (FuncParam (name, description));
-           } else {
-               buf.append (str);
-           }
-        }
-        self.description = Str (buf);
+        _parseDoc (self, docstr.split ('\n'));
     }
 }
 
-class ClassItem extends CodeItem {
-    func ClassItem (self, name, c) {
-        super (DocType.CLASS, c.__doc__);
+class FuncElement extends Element {
+    func FuncElement (self, name, item) {
+        super (ElementType.FUNCTION, item.__doc__);
+        self.name = name;
+        self.params = [];
+        self.parseDocumentation (item.__doc__);
+    }
+}
+
+class ClassElement extends Element {
+    func ClassElement (self, name, c) {
+        super (ElementType.CLASS, c.__doc__);
         self.name = name;
         self.params = [];
         self.parseDocumentation (c.__doc__);
-    }
-    
-    func parseDocumentation (self, docstr) {
-        buf = StringBuffer ();
-        for (str in docstr.split ('\n')) {
-           if (str.startswith ("@param ")) {
-               name = str.substr (str.find (" ") + 1);
-               if (!name.contains (" ")) {
-                   raise Exception ("Invalid param str!");
-               }
-               description = name.substr (name.find (" "));
-               name = name.substr (0, name.find (" "));
-               self.params.append (FuncParam (name, description));
-           } else {
-               buf.append (str);
-           }
-        }
-        self.description = Str (buf);
+        self.items = [];
+        _compileAttributes (self.items, inspect.getmembers (c));
     }
 }
 
-class FuncParam {
-    func FuncParam (self, name, description) {
+class ParamTag {
+    func ParamTag (self, name, type, description, optional, kwarg) {
         self.name = name;
+        self.type = type;
         self.description = description;
+        self.optional = optional;
+        self.kwarg = kwarg;
     }
     
     func __str__ (self) {
         return self.name;
     }
+}
+
+func _parseDoc (obj, docLines) {
+    description = StringBuffer ();
+    for (str in docLines) {
+        if (str.startswith ("@param")) {
+            obj.params.append (_parseParamTag (str, false, false));
+        }
+        else if (str.startswith ("@optional")) {
+            obj.params.append (_parseParamTag (str, true, false));
+        }
+        else if (str.startswith ("@kwarg")) {
+            obj.params.append (_parseParamTag (str, false, true));
+        }
+        else {
+            description.append (str);
+        }
+    }
+    
+    obj.description = Str (description);
+}
+
+func _parseParamTag (line, optional, kwarg) {
+    tokens = line.split (' ');
+    
+    if (len (line) > 2) {
+        name = tokens [1];
+        type = null;
+        description = null;
+        
+        if (tokens [2] == ":") {
+            type = tokens [3];
+            description = " ".join (tokens [4::1]);
+        } else if (tokens [2].startswith (":")) {
+            type = tokens [2].substr (1);
+            description = " ".join (tokens [3::1]);
+        } else if (name.contains (":")) {
+            name = tokens [1].substr (0, name.find (":"));
+            type = tokens [1].substr (tokens [1].find (":") + 1);
+            description = " ".join (tokens [2::1]);
+        } else {
+            description = " ".join (tokens [2::1]);
+        }
+        
+        return ParamTag (name, type, description, optional, kwarg);
+    }
+    raise Exception ("Invalid param tag");
 }
 
 class HtmlFormatter {
@@ -110,20 +131,20 @@ class HtmlFormatter {
     }
     
     func formatItem (self, item, output) {
-        given (item.doctype) {
-            when DocType.FUNCTION {
+        given (item.ElementType) {
+            when ElementType.FUNCTION {
                 self.formatFunc (item, output);
             }
-            when DocType.CLASS {
+            when ElementType.CLASS {
                 self.formatClass (item, output);
             }
-            when DocType.Contract {
+            when ElementType.Contract {
                 
             }
-            when DocType.TRAIT {
+            when ElementType.TRAIT {
                 
             }
-            when DocType.MODULE {
+            when ElementType.MODULE {
                 
             }
         }
@@ -133,7 +154,7 @@ class HtmlFormatter {
         output.append ("<strong><code>#{doc.name}</code></strong> (");
         output.append (", ".join (doc.params));
         output.append (")<br>\n");
-        output.append ("<p style='margin-left:50px'>\n");
+        output.append ("<div style='position: relative; padding-left:50px;'>\n");
         output.append (doc.description);
         output.append ("<br>\n");
         output.append ("<table>");
@@ -144,14 +165,15 @@ class HtmlFormatter {
             output.append ("</tr></br>");
         }
         output.append ("</table>");
-        output.append ("</p>");
+        output.append ("</div>");
+        output.append ("<br/>");
     }
     
     func formatClass (self, doc, output) {
         output.append ("class <strong><code>#{doc.name}</code></strong> (");
         output.append (", ".join (doc.params));
         output.append (")<br>\n");
-        output.append ("<p style='margin-left:50px'>\n");
+        output.append ("<div style='position: relative; padding-left:50px;'>\n");
         output.append (doc.description);
         output.append ("<br>\n");
         output.append ("<table>");
@@ -161,40 +183,42 @@ class HtmlFormatter {
             output.append ("<td>#{param.description}</td>\n");
             output.append ("</tr></br>");
         }
-        output.append ("</table>");
-        output.append ("</p>");
+
+        
+        output.append ("</table><br>");
+                
+        for (item in doc.items) {
+            self.formatItem (item, output);
+        }
+        
+        output.append ("</div>");
+        output.append ("<br/>");
     }
     
     func formatContract (self, doc, output) {
         
-    }
-    
-    func getIdentStr (self, additional) {
-        buf = StringBuffer ();
-        for (i in 0 .. (self.indentLevel + additional) * 2) {
-            buf.append ("&nbsp;");
-        }
-        return Str (buf);
     }
 }
 
 func compiledoc (obj, *args) {
     items = [];
     
-    for (name, attr in inspect.getmembers (obj)) {
-        
-        if (inspect.hasattribute (attr, "__doc__")) {
-            if (inspect.ismethod (attr) || inspect.isbuiltin (attr)) {
-                items.append (FuncItem (name, attr));
-            }
-            
-            if (inspect.istype (attr)) {
-                items.append (ClassItem (name, attr));
-            }
-        }
-    }
+    _compileAttributes (items, inspect.getmembers (obj));
+    
     items = sort (items, lambda (p) => p.name);
     
     return items;
 }
 
+func _compileAttributes (items, attrs) {
+    for (name, attr in attrs) {
+        if (inspect.hasattribute (attr, "__doc__")) {
+            if (inspect.ismethod (attr) || inspect.isbuiltin (attr)) {
+                items.append (FuncElement (name, attr));
+            }
+            if (inspect.istype (attr)) {
+                items.append (ClassElement (name, attr));
+            }
+        }
+    }
+}
