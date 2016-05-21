@@ -234,17 +234,9 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public override bool Equals (object obj)
-        {
-            if (obj is IodineObject) {
-                return Equals ((IodineObject)obj);
-            }
-            return false;
-        }
-
         public virtual bool Equals (IodineObject obj)
         {
-            return obj == this;
+            return Equals ((object)obj);
         }
 
         /// <summary>
@@ -420,7 +412,7 @@ namespace Iodine.Runtime
             return null;
         }
 
-       /*
+        /*
         * ! unary prefix operator
         */
         public virtual IodineObject LogicalNot (VirtualMachine vm)
@@ -722,4 +714,3 @@ namespace Iodine.Runtime
         }
     }
 }
-
