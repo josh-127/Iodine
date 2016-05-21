@@ -44,6 +44,11 @@ namespace Iodine.Runtime
                 : base ("Dict")
             {
                 BindAttributes (this);
+
+                SetDocumentation (
+                    "A dictionary containing a list of unique keys and an associated value",
+                    "@optional values An iterable collection of tuples to initialize the dictionary with"
+                );
             }
 
 

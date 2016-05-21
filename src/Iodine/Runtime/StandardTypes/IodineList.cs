@@ -46,6 +46,10 @@ namespace Iodine.Runtime
                 : base ("List")
             {
                 BindAttributes (this);
+
+                SetDocumentation (
+                    "A mutable sequence of objects"
+                );
             }
 
 
