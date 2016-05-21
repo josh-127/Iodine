@@ -48,6 +48,7 @@ namespace Iodine.Runtime
             SetAttribute ("invoke", new BuiltinMethodCallback (Invoke, null));
             SetAttribute ("require", new BuiltinMethodCallback (Require, null));
             SetAttribute ("compile", new BuiltinMethodCallback (Compile, null));
+            SetAttribute ("loadmodule", new BuiltinMethodCallback (LoadModule, null));
             SetAttribute ("chr", new BuiltinMethodCallback (Chr, null));
             SetAttribute ("ord", new BuiltinMethodCallback (Ord, null));
             SetAttribute ("len", new BuiltinMethodCallback (Len, null));
@@ -100,7 +101,7 @@ namespace Iodine.Runtime
         }
 
         [BuiltinDocString (
-            "Compiles a string of iodine code, returning a callable",
+            "Compiles a string of iodine code, returning a callable ",
             "object.",
             "@param source The source code to compile."
         )]
@@ -113,6 +114,21 @@ namespace Iodine.Runtime
             IodineString source = args [0] as IodineString;
             SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
             return unit.Compile (vm.Context);
+        }
+
+        [BuiltinDocString (
+            "Loads an iodine module.",
+            "@param name The name of the module to load."
+        )]
+        private IodineObject LoadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return IodineNull.Instance;
+            }
+            IodineString source = args [0] as IodineString;
+
+            return vm.LoadModule (source.ToString ());
         }
 
         [BuiltinDocString (
@@ -727,12 +743,12 @@ namespace Iodine.Runtime
         }
 
         [BuiltinDocString (
-            "Opens up a file using the specified mode, returning a new stream object.",
-            "@list Supported modes",
-            "@item r - Read",
-            "@item w - Write",
-            "@item a - Append",
-            "@item b - Binary ",
+            "Opens up a file using the specified mode, returning a new stream object.<br>",
+            "<strong>Supported modes</strong><br>",
+            "<li> r - Read",
+            "<li> w - Write",
+            "<li> a - Append",
+            "<li> b - Binary ",
             "@param file The filename",
             "@param mode The mode."
         )]

@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using Iodine.Compiler;
 
@@ -120,6 +121,7 @@ namespace Iodine.Runtime
             SetAttribute ("getcontracts", new BuiltinMethodCallback (GetInterfaces, this));
             // kept for compatibility
             SetAttribute ("getinterfaces", new BuiltinMethodCallback (GetInterfaces, this));
+            SetAttribute ("getargspec", new BuiltinMethodCallback (GetArgSpec, this));
             SetAttribute ("loadModule", new BuiltinMethodCallback (LoadModule, this));
             SetAttribute ("isclass", new BuiltinMethodCallback (IsClass, this));
             SetAttribute ("istype", new BuiltinMethodCallback (IsType, this));
@@ -279,6 +281,11 @@ namespace Iodine.Runtime
         )]
         private IodineObject GetBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
             IodineMethod method = args [0] as IodineMethod;
 
             if (method == null && args [0] is IodineClosure) {
@@ -292,6 +299,39 @@ namespace Iodine.Runtime
             }
 
             return ret;
+        }
+
+        [BuiltinDocString (
+            "Returns a tuple containing the names of all function parameters"
+        )]
+        private IodineObject GetArgSpec (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineMethod method = args [0] as IodineMethod;
+
+            if (method == null && args [0] is IodineClosure) {
+                method = ((IodineClosure)args [0]).Target;
+            }
+
+            if (method == null) {
+                vm.RaiseException (new IodineTypeException ("Function"));
+                return null;
+            }
+
+            IodineObject[] items = new IodineObject[method.ParameterCount];
+
+            var names = method.Parameters.Keys.ToList ();
+            names.Sort ((a, b) => method.Parameters [a].CompareTo (method.Parameters [b]));
+
+            for (int i = 0; i < method.ParameterCount; i++) {
+                items [i] = new IodineString (names [i]);
+            }
+
+            return new IodineTuple (items);
         }
 
         [BuiltinDocString (
