@@ -75,7 +75,7 @@ func _parseDoc (obj, docLines) {
         else if (str.startswith ("@optional")) {
             obj.params.append (_parseParamTag (str, true, false));
         }
-        else if (str.startswith ("@kwarg")) {
+        else if (str.startswith ("@kwparam")) {
             obj.params.append (_parseParamTag (str, false, true));
         }
         else {
@@ -120,12 +120,6 @@ class HtmlFormatter {
     
     func format (self, items, output) {
         for (item in items) {
-            output.append ("[#{item.name}](##{item.name}) "); 
-        }
-        
-        output.append ("\n\n");
-        
-        for (item in items) {
             self.formatItem (item, output);
         }
     }
@@ -158,6 +152,9 @@ class HtmlFormatter {
         output.append (doc.description);
         output.append ("<br>\n");
         output.append ("<table>");
+        if (len (doc.params) > 0) {
+            output.append ("<th>Parameters</th>");
+        }
         for (param in doc.params) {
             output.append ("<tr>");
             output.append ("<td><code>#{param.name}</code></td>");
@@ -176,6 +173,9 @@ class HtmlFormatter {
         output.append ("<div style='position: relative; padding-left:50px;'>\n");
         output.append (doc.description);
         output.append ("<br>\n");
+        if (len (doc.params) > 0) {
+            output.append ("<b>Parameters</b>");
+        }
         output.append ("<table>");
         for (param in doc.params) {
             output.append ("<tr>");
