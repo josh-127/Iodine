@@ -99,7 +99,7 @@ namespace Iodine.Runtime
                 foreach (IodineObject obj in arguments) {
                     thisObj.Add (obj);
                 }
-                return this;
+                return thisObj;
             }
 
             [BuiltinDocString (
@@ -119,7 +119,7 @@ namespace Iodine.Runtime
                     IodineObject o = collection.IterGetCurrent (vm);
                     thisObj.Add (o);
                 }
-                return this;
+                return thisObj;
             }
 
             [BuiltinDocString (
@@ -134,7 +134,7 @@ namespace Iodine.Runtime
                     return null;
                 }
                 thisObj.Objects.Insert (0, arguments [0]);
-                return this;
+                return thisObj;
             }
 
             [BuiltinDocString (
