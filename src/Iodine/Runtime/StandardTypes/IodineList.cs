@@ -52,7 +52,6 @@ namespace Iodine.Runtime
                 );
             }
 
-
             public override IodineObject BindAttributes (IodineObject obj)
             {
                 obj.SetAttribute ("append", new BuiltinMethodCallback (Add, obj));
