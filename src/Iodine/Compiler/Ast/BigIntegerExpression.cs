@@ -42,7 +42,7 @@ namespace Iodine.Compiler.Ast
             Value = value;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }

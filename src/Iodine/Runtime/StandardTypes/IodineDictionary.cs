@@ -43,6 +43,24 @@ namespace Iodine.Runtime
             public MapTypeDef ()
                 : base ("Dict")
             {
+                BindAttributes (this);
+
+                SetDocumentation (
+                    "A dictionary containing a list of unique keys and an associated value",
+                    "@optional values An iterable collection of tuples to initialize the dictionary with"
+                );
+            }
+
+
+            public override IodineObject BindAttributes (IodineObject obj)
+            {
+                obj.SetAttribute ("contains", new BuiltinMethodCallback (Contains, obj));
+                obj.SetAttribute ("getSize", new BuiltinMethodCallback (GetSize, obj));
+                obj.SetAttribute ("clear", new BuiltinMethodCallback (Clear, obj));
+                obj.SetAttribute ("set", new BuiltinMethodCallback (Set, obj));
+                obj.SetAttribute ("get", new BuiltinMethodCallback (Get, obj));
+                obj.SetAttribute ("remove", new BuiltinMethodCallback (Remove, obj));
+                return obj;
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
@@ -62,62 +80,146 @@ namespace Iodine.Runtime
                 }
                 return new IodineDictionary ();
             }
+
+            [BuiltinDocString (
+                "Tests to see if the dictionary contains a key, returning true if it does.",
+                "@param key The key to test if this dictionary contains."
+            )] 
+            private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineDictionary thisObj = self as IodineDictionary;
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+                return IodineBool.Create (thisObj.dict.ContainsKey (args [0]));
+            }
+
+            private IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineDictionary thisObj = self as IodineDictionary;
+                return new IodineInteger (thisObj.dict.Count);
+            }
+
+            [BuiltinDocString (
+                "Clears the dictionary, removing all items."
+            )]
+            private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineDictionary thisObj = self as IodineDictionary;
+                thisObj.dict.Clear ();
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Sets a key to a specified value, if the key does not exist, it will be created.",
+                "@param key The key of the specified value",
+                "@param value The value associated with [key]"
+            )]
+            private IodineObject Set (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineDictionary thisObj = self as IodineDictionary;
+                if (arguments.Length >= 2) {
+                    IodineObject key = arguments [0];
+                    IodineObject val = arguments [1];
+                    thisObj.dict [key] = val;
+                    return null;
+                }
+                vm.RaiseException (new IodineArgumentException (2));
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Returns the value specified by [key], raising a KeyNotFound exception if the given key does not exist.",
+                "@param key The key whose value will be returned."
+            )]
+            private IodineObject Get (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineDictionary thisObj = self as IodineDictionary;
+                if (arguments.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                } else if (arguments.Length == 1) {
+                    IodineObject key = arguments [0];
+                    if (thisObj.dict.ContainsKey (key)) {
+                        return thisObj.dict [key];
+                    }
+                    vm.RaiseException (new IodineKeyNotFound ());
+                    return null;
+                } else {
+                    IodineObject key = arguments [0];
+                    if (thisObj.dict.ContainsKey (key)) {
+                        return thisObj.dict [key];
+                    }
+                    return arguments [1];
+                }
+            }
+
+            [BuiltinDocString (
+                "Removes a specified entry from the dictionary, raising a KeyNotFound exception if the given key does not exist.",
+                "@param key The key which is to be removed."
+            )]
+            private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            {
+                IodineDictionary thisObj = self as IodineDictionary;
+                if (arguments.Length >= 1) {
+                    IodineObject key = arguments [0];
+                    if (!thisObj.dict.ContainsKey (key)) {
+                        vm.RaiseException (new IodineKeyNotFound ());
+                        return null;
+                    }
+                    thisObj.dict.Remove (key);
+                    return null;
+                }
+                vm.RaiseException (new IodineArgumentException (2));
+                return null;
+            }
         }
 
         class DictIterator : IodineObject
         {
             private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("DictIterator");
 
-            private int iterIndex = 0;
-            private ObjectDictionary dict;
+            private IEnumerator<KeyValuePair<IodineObject, IodineObject>> enumerator;
 
-            public DictIterator (ObjectDictionary dict)
+            public DictIterator (Dictionary<IodineObject, IodineObject> dict)
                 : base (TypeDefinition)
             {
-                this.dict = dict;
+                enumerator = dict.GetEnumerator ();
             }
 
             public override IodineObject IterGetCurrent (VirtualMachine vm)
             {
-                IodineObject key = dict.Get (iterIndex - 1);
-                return new IodineTuple (new IodineObject[] {
-                    key,
-                    dict.Get (key)
+                KeyValuePair<IodineObject, IodineObject> current = enumerator.Current;
+
+                return new IodineTuple (new IodineObject [] {
+                    current.Key,
+                    current.Value
                 });
             }
 
             public override bool IterMoveNext (VirtualMachine vm)
             {
-                if (iterIndex >= dict.Count) {
-                    return false;
-                }
-                iterIndex++;
-                return true;
+                return enumerator.MoveNext ();
             }
 
             public override void IterReset (VirtualMachine vm)
             {
-                iterIndex = 0;
+                enumerator.Reset ();
             }
         }
 
-        protected readonly ObjectDictionary dict = new ObjectDictionary ();
+        protected readonly Dictionary<IodineObject, IodineObject> dict = new Dictionary<IodineObject, IodineObject> ();
 
         public IEnumerable<IodineObject> Keys {
             get {
-                return dict.GetKeys ();
+                return dict.Keys;
             }
         }
 
         public IodineDictionary ()
             : base (TypeDefinition)
         {
-            SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
-            SetAttribute ("getSize", new BuiltinMethodCallback (GetSize, this));
-            SetAttribute ("clear", new BuiltinMethodCallback (Clear, this));
-            SetAttribute ("set", new BuiltinMethodCallback (Set, this));
-            SetAttribute ("get", new BuiltinMethodCallback (Get, this));
-            SetAttribute ("remove", new BuiltinMethodCallback (Remove, this));
             SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] args) => {
                 return GetIterator (vm);
             }, this));
@@ -130,12 +232,12 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            return dict.Get (key);
+            return dict [key];
         }
 
         public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
         {
-            dict.Set (key, value);
+            dict [key] = value;
         }
 
         public override bool Equals (IodineObject obj)
@@ -159,6 +261,11 @@ namespace Iodine.Runtime
             return IodineBool.Create (CompareTo (hash));
         }
        
+        public override int GetHashCode ()
+        {
+            return dict.GetHashCode ();
+        }
+
         public override IodineObject GetIterator (VirtualMachine vm)
         {
             return new DictIterator (dict);
@@ -171,7 +278,7 @@ namespace Iodine.Runtime
         /// <param name="val">Value.</param>
         public void Set (IodineObject key, IodineObject val)
         {
-            dict.Set (key, val);
+            dict [key] = val;
         }
 
         /// <summary>
@@ -180,7 +287,7 @@ namespace Iodine.Runtime
         /// <param name="key">Key.</param>
         public IodineObject Get (IodineObject key)
         {
-            return dict.Get (key);
+            return dict [key];
         }
 
         /// <summary>
@@ -194,108 +301,16 @@ namespace Iodine.Runtime
                 return false;
             }
 
-            foreach (IodineObject key in dict.GetKeys ()) {
+            foreach (IodineObject key in dict.Keys) {
                 if (!hash.dict.ContainsKey (key)) {
                     return false;
                 }
-                if (!hash.dict.Get (key).Equals (dict.Get (key))) {
+                if (!hash.dict [key].Equals (dict [key])) {
                     return false;
                 }
             }
             return true;
         }
 
-        /**
-         * Iodine Function: contains (self, key)
-         * Description: Returns true if this dictionary contains key
-         */
-        private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-            return IodineBool.Create (dict.ContainsKey (args [0]));
-        }
-
-        /**
-         * == DEPRECATED ==
-         * Iodine Function: getSize (self)
-         * Description: Returns the size of this dictionary
-         */
-        private IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            return new IodineInteger (dict.Count);
-        }
-
-        /**
-         * Iodine Function: clear (self)
-         * Description: Clears the dictionary
-         */
-        private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            dict.Clear ();
-            return null;
-        }
-
-        /**
-         * Iodine Function: set (self, key, value)
-         * Description: Sets a specified key to value, if it does not exists it will be created
-         */
-        private IodineObject Set (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length >= 2) {
-                IodineObject key = arguments [0];
-                IodineObject val = arguments [1];
-                dict.Set (key, val);
-                return null;
-            }
-            vm.RaiseException (new IodineArgumentException (2));
-            return null;
-        }
-
-        /**
-         * Iodine Function: get (self, key, [default])
-         * Description: Returns a value specified by key
-         */
-        private IodineObject Get (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            } else if (arguments.Length == 1) {
-                IodineObject key = arguments [0];
-                if (dict.ContainsKey (key)) {
-                    return dict.Get (key);
-                }
-                vm.RaiseException (new IodineKeyNotFound ());
-                return null;
-            } else {
-                IodineObject key = arguments [0];
-                if (dict.ContainsKey (key)) {
-                    return dict.Get (key);
-                }
-                return arguments [1];
-            }
-        }
-
-        /**
-         * Iodine Function: remove (self, key)
-         * Description: Removes a specified entry from the dictionary
-         */
-        private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
-        {
-            if (arguments.Length >= 1) {
-                IodineObject key = arguments [0];
-                if (!dict.ContainsKey (key)) {
-                    vm.RaiseException (new IodineKeyNotFound ());
-                    return null;
-                }
-                dict.Remove (key);
-                return null;
-            }
-            vm.RaiseException (new IodineArgumentException (2));
-            return null;
-        }
     }
 }

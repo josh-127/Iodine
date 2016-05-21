@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using Iodine.Compiler;
 
@@ -120,6 +121,7 @@ namespace Iodine.Runtime
             SetAttribute ("getcontracts", new BuiltinMethodCallback (GetInterfaces, this));
             // kept for compatibility
             SetAttribute ("getinterfaces", new BuiltinMethodCallback (GetInterfaces, this));
+            SetAttribute ("getargspec", new BuiltinMethodCallback (GetArgSpec, this));
             SetAttribute ("loadModule", new BuiltinMethodCallback (LoadModule, this));
             SetAttribute ("isclass", new BuiltinMethodCallback (IsClass, this));
             SetAttribute ("istype", new BuiltinMethodCallback (IsType, this));
@@ -131,10 +133,6 @@ namespace Iodine.Runtime
             SetAttribute ("isproperty", new BuiltinMethodCallback (IsProperty, this));
         }
 
-        /**
-         * Iodine Function: hasAttribute (obj, attr)
-         * Description: Returns true if obj contains attribute attr
-         */
         [BuiltinDocString (
             "Checks whether or not an object has a specific attribute",
             "@param obj The object",
@@ -180,10 +178,6 @@ namespace Iodine.Runtime
             return o1.GetAttribute (str.Value);
         }
 
-        /**
-         * Iodine Function: getAttributes (obj)
-         * Description: Returns a hashmap containing all attributes found in obj
-         */
         [BuiltinDocString (
             "Gets all attributes of an object",
             "@param obj The object",
@@ -213,10 +207,6 @@ namespace Iodine.Runtime
             return map;
         }
 
-        /**
-         * Iodine Function: getInterfaces (obj)
-         * Description: Returns a list of all interfaces obj implements
-         */
         [BuiltinDocString (
             "Gets all contracts of an object",
             "@param obj The object",
@@ -233,10 +223,6 @@ namespace Iodine.Runtime
             return list;
         }
 
-        /**
-         * Iodine Function: setAttribute (obj, key, value)
-         * Description: Sets obj.key to value
-         */
         [BuiltinDocString (
             "Sets a specific attribute of an object",
             "@param obj The object",
@@ -288,10 +274,6 @@ namespace Iodine.Runtime
             return unit.Compile (vm.Context);
         }
 
-        /**
-         * Iodine Function: getBytecode (item)
-         * Description: Returns a list of instructions from an iodine method
-         */
         [BuiltinDocString (
             "Decompiles a function to get its bytecode",
             "@param callable The function",
@@ -299,6 +281,11 @@ namespace Iodine.Runtime
         )]
         private IodineObject GetBytecode (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
             IodineMethod method = args [0] as IodineMethod;
 
             if (method == null && args [0] is IodineClosure) {
@@ -314,10 +301,39 @@ namespace Iodine.Runtime
             return ret;
         }
 
-        /**
-         * Iodine Function: isMethod (item)
-         * Description: Returns true if item is an iodine method
-         */
+        [BuiltinDocString (
+            "Returns a tuple containing the names of all function parameters"
+        )]
+        private IodineObject GetArgSpec (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            IodineMethod method = args [0] as IodineMethod;
+
+            if (method == null && args [0] is IodineClosure) {
+                method = ((IodineClosure)args [0]).Target;
+            }
+
+            if (method == null) {
+                vm.RaiseException (new IodineTypeException ("Function"));
+                return null;
+            }
+
+            IodineObject[] items = new IodineObject[method.ParameterCount];
+
+            var names = method.Parameters.Keys.ToList ();
+            names.Sort ((a, b) => method.Parameters [a].CompareTo (method.Parameters [b]));
+
+            for (int i = 0; i < method.ParameterCount; i++) {
+                items [i] = new IodineString (names [i]);
+            }
+
+            return new IodineTuple (items);
+        }
+
         [BuiltinDocString (
             "Checks if an object is a method",
             "@param obj The object",
@@ -337,10 +353,6 @@ namespace Iodine.Runtime
             return IodineBool.Create (isMethod);
         }
 
-        /**
-         * Iodine Function: isGeneratorMethod (item)
-         * Description: Returns true if item is an iodine generator
-         */
         [BuiltinDocString (
             "Checks if an object is a generator",
             "@param obj The object",
@@ -360,10 +372,6 @@ namespace Iodine.Runtime
             return IodineBool.Create (isGenerator);
         }
 
-        /**
-         * Iodine Function: isFunction (item)
-         * Description: Returns true if item is an iodine function
-         */
         [BuiltinDocString (
             "Checks if an object is a method, function or closure",
             "@param obj The object",
@@ -382,10 +390,6 @@ namespace Iodine.Runtime
             return IodineBool.Create (isFunction);
         }
 
-        /**
-         * Iodine Function: isBuiltin (item)
-         * Description: Returns true if item is a built in Iodine function
-         */
         [BuiltinDocString (
             "Checks if an object is a builtin method",
             "@param obj The object",
@@ -405,10 +409,6 @@ namespace Iodine.Runtime
             return IodineBool.Create (isBuiltin);
         }
 
-        /**
-         * Iodine Function: isClass (item)
-         * Description: Returns true if item is an iodine class
-         */
         [BuiltinDocString (
             "Checks if an object is a class",
             "@param obj The object",
@@ -428,10 +428,6 @@ namespace Iodine.Runtime
             return IodineBool.Create (isClass);
         }
 
-        /**
-         * Iodine Function: isType (item)
-         * Description: Returns true if item is an iodine type
-         */
         [BuiltinDocString (
             "Checks if an object is a type",
             "@param obj The object",
@@ -451,10 +447,6 @@ namespace Iodine.Runtime
             return IodineBool.Create (isType);
         }
 
-        /**
-         * Iodine Function: isModule (item)
-         * Description: Returns true if item is an Iodine module
-         */
         [BuiltinDocString (
             "Checks if an object is a module",
             "@param obj The object",
@@ -473,10 +465,6 @@ namespace Iodine.Runtime
             return IodineBool.Create (isModule);
         }
 
-        /**
-         * Iodine Function: isProperty (item)
-         * Description: Returns true if item is an Iodine property
-         */
         [BuiltinDocString (
             "Checks if an object is a method property",
             "@param obj The object",

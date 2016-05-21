@@ -41,22 +41,68 @@ namespace Iodine.Runtime
             public StringBuilderTypeDef ()
                 : base ("StringBuffer")
             {
+                BindAttributes (this);
+                SetDocumentation (
+                    "A mutable string of UTF-16 characters"
+                );
+            }
+
+            public override IodineObject BindAttributes (IodineObject obj)
+            {
+                obj.SetAttribute ("clear", new BuiltinMethodCallback (Clear, obj));
+                obj.SetAttribute ("append", new BuiltinMethodCallback (Append, obj));
+                obj.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, obj));
+                return obj;
+
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
             {
                 return new IodineStringBuilder ();
             }
+
+            [BuiltinDocString (
+                "Appends each argument to the end of the string buffer.",
+                "@param *args Each item to append to the end of the buffer."
+            )]
+            private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineStringBuilder thisObj = self as IodineStringBuilder;
+                foreach (IodineObject obj in args) {
+                    thisObj.Buffer.Append (obj.ToString (vm));
+                }
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Prepends text to the beginning of the string buffer.",
+                "@param item The item to append."
+            )]
+            private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineStringBuilder thisObj = self as IodineStringBuilder;
+                foreach (IodineObject obj in args) {
+                    thisObj.Buffer.Insert (0, obj.ToString (vm));
+                }
+                return null;
+            }
+
+            [BuiltinDocString (
+                "Clears the string buffer."
+            )]
+            private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                IodineStringBuilder thisObj = self as IodineStringBuilder;
+                thisObj.Buffer.Clear ();
+                return null;
+            }
         }
 
-        private StringBuilder buffer = new StringBuilder ();
+        public readonly StringBuilder Buffer = new StringBuilder ();
 
         public IodineStringBuilder ()
             : base (TypeDefinition)
         {
-            SetAttribute ("clear", new BuiltinMethodCallback (Clear, null));
-            SetAttribute ("append", new BuiltinMethodCallback (Append, null));
-            SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, null));
         }
 
         public override bool Equals (IodineObject obj)
@@ -72,53 +118,19 @@ namespace Iodine.Runtime
 
         public override string ToString ()
         {
-            return buffer.ToString ();
+            return Buffer.ToString ();
         }
 
         public override IodineObject Len (VirtualMachine vm)
         {
-            return new IodineInteger (buffer.Length);
+            return new IodineInteger (Buffer.Length);
         }
 
         public override IodineObject ToString (VirtualMachine vm)
         {
-            return new IodineString (buffer.ToString ());
+            return new IodineString (Buffer.ToString ());
         }
 
-        /**
-         * Iodine Method: StringBuffer.append (self, *args);
-         * Description: Appends each item in *args to the string buffer
-         */
-        private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            foreach (IodineObject obj in args) {
-                buffer.Append (obj.ToString (vm));
-            }
-            return null;
-        }
-
-
-        /**
-         * Iodine Method: StringBuffer.prepend (self, *args);
-         * Description: Appends each item in *args to the string buffer
-         */
-        private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            foreach (IodineObject obj in args) {
-                buffer.Insert (0, obj.ToString (vm));
-            }
-            return null;
-        }
-
-        /**
-         * Iodine Method: StringBuffer.clear (self)
-         * Description: Clears the string buffer
-         */
-        private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            buffer.Clear ();
-            return null;
-        }
     }
 }
 

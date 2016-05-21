@@ -72,6 +72,7 @@ namespace Iodine
                 } catch (UnhandledIodineExceptionException ex) {
                     Console.Error.WriteLine ("*** {0}", ex.OriginalException.GetAttribute ("message"));
                     ex.PrintStack ();
+                    context.VirtualMachine.Top = null;
                     Console.Error.WriteLine ();
                 } catch (ModuleNotFoundException ex) {
                     Console.Error.WriteLine (ex.ToString ());

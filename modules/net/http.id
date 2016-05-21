@@ -1,3 +1,4 @@
+use regex;
 use net.socket;
 
 _statusCodes = {
@@ -321,10 +322,10 @@ class BaseHttpServer {
         
         headers ["Content-Length"] = Str (len (content));
         
-        for (key in headers) {
+        for (key, value in headers) {
             stream.write (key);
             stream.write (": ");
-            stream.write (headers [key]);
+            stream.write (value);
             stream.write ("\r\n");
         }
         
@@ -336,7 +337,7 @@ class BaseHttpServer {
 }
 
 
-class SimpleHttpServer : BaseHttpServer {
+class SimpleHttpServer extends BaseHttpServer {
     
     func SimpleHttpServer (self) {
         super ();
@@ -359,10 +360,12 @@ class SimpleHttpServer : BaseHttpServer {
     }
     
     func handleRequest (self, response, request) {
-        if (self._routes.contains (request.url)) {
-            self._routes [request.url] (response, request);
-        } else {
-            self.notFoundHandler (response, request);
+        for (pattern, handler in self._routes) {
+            if (regex.ismatch (request.url, pattern)) {
+                handler (response, request);
+                return;
+            }
         }
+        self.notFoundHandler (response, request);
     }
 }

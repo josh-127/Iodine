@@ -401,7 +401,7 @@ namespace Iodine.Runtime
 
         public override int GetHashCode ()
         {
-            return Value.GetHashCode ();
+            return (int) Value;
         }
     }
 }

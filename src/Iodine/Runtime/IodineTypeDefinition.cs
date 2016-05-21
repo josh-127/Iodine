@@ -97,9 +97,16 @@ namespace Iodine.Runtime
         {
             Name = name;
 
-            Attributes ["__name__"] = new IodineString (name);
+            //Attributes ["__name__"] = new IodineString (name);
         }
-            
+
+        public void SetDocumentation (params string[] args)
+        {
+            Attributes ["__doc__"] = new InternalIodineProperty (vm => {
+                return new IodineString (string.Join ("\n", args));
+            }, null);
+        }
+
         public override bool IsCallable ()
         {
             return true;
@@ -128,7 +135,7 @@ namespace Iodine.Runtime
             self.Base = obj;
         }
 
-        public IodineObject BindAttributes (IodineObject obj)
+        public virtual IodineObject BindAttributes (IodineObject obj)
         {
             foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
                 if (!obj.HasAttribute (kv.Key)) {

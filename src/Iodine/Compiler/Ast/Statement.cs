@@ -39,7 +39,7 @@ namespace Iodine.Compiler.Ast
         {
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }

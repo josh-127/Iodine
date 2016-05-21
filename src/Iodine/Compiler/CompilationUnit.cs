@@ -46,12 +46,12 @@ namespace Iodine.Compiler
             children.Add (child);
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             children.ForEach (p => p.Visit (visitor));
         }

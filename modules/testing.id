@@ -8,7 +8,7 @@
 use sys;
 use inspect;
 
-class ConciseConsoleFrontend : ConsoleFrontendBase, IFrontend {
+class ConciseConsoleFrontend extends ConsoleFrontendBase implements IFrontend {
     func rootDescribeSummary(self, name, results) {
         self.indent -= 1;
         fails = 0;
@@ -43,7 +43,7 @@ class ConciseConsoleFrontend : ConsoleFrontendBase, IFrontend {
     }
 }
 
-class ConsoleFrontend : ConsoleFrontendBase, IFrontend {
+class ConsoleFrontend extends ConsoleFrontendBase implements IFrontend {
     func rootDescribeSummary(self, name, results) {
         self.indent -= 1;
         fails = 0;
@@ -76,7 +76,7 @@ class ConsoleFrontend : ConsoleFrontendBase, IFrontend {
     }
 }
 
-class HTMLFrontend : ConsoleFrontendBase, IFrontend {
+class HTMLFrontend extends ConsoleFrontendBase implements IFrontend {
     func HTMLFrontend(self) {
         super();
         self.output = '';
@@ -259,13 +259,13 @@ func _describe(name, block, indent) {
     return testObj.results;
 }
 
-class AssertionException : Exception {
+class AssertionException extends Exception {
     func AssertionException(self, message) {
         super(message);
     }
 }
 
-class InvalidTestException : Exception {
+class InvalidTestException extends Exception {
     func InvalidTestException(self, message) {
         super('INVALID TEST - {}'.format(message));
     }

@@ -89,7 +89,8 @@ namespace Iodine.Runtime
         Slice = 0x32,
         BuildGenExpr = 0x33,
         CastLocal = 0x34,
-        IncludeMixin = 0x35
+        IncludeMixin = 0x35,
+        ApplyMixin = 0x36
     }
 }
 

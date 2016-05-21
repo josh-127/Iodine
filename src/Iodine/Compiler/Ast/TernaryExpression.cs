@@ -45,15 +45,15 @@ namespace Iodine.Compiler.Ast
         {
             Condition = condition;
             Expression = expression;
-            ElseExpression = expression; 
+            ElseExpression = elseExpression; 
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             Condition.Visit (visitor);
             Expression.Visit (visitor);

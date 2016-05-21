@@ -48,6 +48,7 @@ namespace Iodine.Runtime
             SetAttribute ("invoke", new BuiltinMethodCallback (Invoke, null));
             SetAttribute ("require", new BuiltinMethodCallback (Require, null));
             SetAttribute ("compile", new BuiltinMethodCallback (Compile, null));
+            SetAttribute ("loadmodule", new BuiltinMethodCallback (LoadModule, null));
             SetAttribute ("chr", new BuiltinMethodCallback (Chr, null));
             SetAttribute ("ord", new BuiltinMethodCallback (Ord, null));
             SetAttribute ("len", new BuiltinMethodCallback (Len, null));
@@ -62,6 +63,7 @@ namespace Iodine.Runtime
             SetAttribute ("Int", IodineInteger.TypeDefinition);
             SetAttribute ("BigInt", IodineBigInt.TypeDefinition);
             SetAttribute ("Float", IodineFloat.TypeDefinition);
+            SetAttribute ("File", IodineStream.TypeDefinition);
             SetAttribute ("Str", IodineString.TypeDefinition);
             SetAttribute ("Bytes", IodineBytes.TypeDefinition);
             SetAttribute ("Bool", IodineBool.TypeDefinition);
@@ -90,15 +92,17 @@ namespace Iodine.Runtime
             SetAttribute ("AttributeNotFoundException", IodineAttributeNotFoundException.TypeDefinition);
             SetAttribute ("SyntaxException", IodineSyntaxException.TypeDefinition);
             SetAttribute ("NotSupportedException", IodineNotSupportedException.TypeDefinition);
+            SetAttribute ("ModuleNotFoundException", IodineModuleNotFoundException.TypeDefinition);
             SetAttribute ("StringBuffer", IodineStringBuilder.TypeDefinition);
             SetAttribute ("Null", IodineNull.Instance.TypeDef);
             SetAttribute ("TypeDef", IodineTypeDefinition.TypeDefinition);
             SetAttribute ("__globals__", IodineGlobals.Instance);
+            //IodineString.TypeDefinition.TypeDef.BindAttributes (IodineString.TypeDefinition.TypeDef);
             ExistsInGlobalNamespace = true;
         }
 
         [BuiltinDocString (
-            "Compiles a string of iodine code, returning a callable",
+            "Compiles a string of iodine code, returning a callable ",
             "object.",
             "@param source The source code to compile."
         )]
@@ -111,6 +115,26 @@ namespace Iodine.Runtime
             IodineString source = args [0] as IodineString;
             SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
             return unit.Compile (vm.Context);
+        }
+
+        [BuiltinDocString (
+            "Loads an iodine module.",
+            "@param name The name of the module to load."
+        )]
+        private IodineObject LoadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return IodineNull.Instance;
+            }
+            IodineString source = args [0] as IodineString;
+
+            try {
+                return vm.LoadModule (source.ToString ());
+            } catch (ModuleNotFoundException ex) {
+                vm.RaiseException (new IodineModuleNotFoundException (ex.Name));
+                return null;
+            }
         }
 
         [BuiltinDocString (
@@ -725,12 +749,12 @@ namespace Iodine.Runtime
         }
 
         [BuiltinDocString (
-            "Opens up a file using the specified mode, returning a new stream object.",
-            "@list Supported modes",
-            "@item r - Read",
-            "@item w - Write",
-            "@item a - Append",
-            "@item b - Binary ",
+            "Opens up a file using the specified mode, returning a new stream object.<br>",
+            "<strong>Supported modes</strong><br>",
+            "<li> r - Read",
+            "<li> w - Write",
+            "<li> a - Append",
+            "<li> b - Binary ",
             "@param file The filename",
             "@param mode The mode."
         )]

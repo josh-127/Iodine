@@ -38,7 +38,7 @@ namespace Iodine.Compiler
         private static int nextLabelID = 0;
         private int nextTemporary = 2048;
         private MethodBuilder parent;
-        private Dictionary<int, IodineLabel> labelReferences = new Dictionary<int, IodineLabel> ();
+        private Dictionary<int, Label> labelReferences = new Dictionary<int, Label> ();
         protected List<Instruction> instructions = new List<Instruction> ();
 
         public MethodBuilder (IodineModule module,
@@ -78,7 +78,7 @@ namespace Iodine.Compiler
             instructions.Add (new Instruction (null, opcode, arg));
         }
 
-        public void EmitInstruction (Opcode opcode, IodineLabel label)
+        public void EmitInstruction (Opcode opcode, Label label)
         {
             labelReferences [instructions.Count] = label;
             instructions.Add (new Instruction (null, opcode, 0));
@@ -94,7 +94,7 @@ namespace Iodine.Compiler
             instructions.Add (new Instruction (loc, opcode, arg));
         }
 
-        public void EmitInstruction (SourceLocation loc, Opcode opcode, IodineLabel label)
+        public void EmitInstruction (SourceLocation loc, Opcode opcode, Label label)
         {
             labelReferences [instructions.Count] = label;
             instructions.Add (new Instruction (loc, opcode, 0));
@@ -108,12 +108,12 @@ namespace Iodine.Compiler
             return nextTemporary++;
         }
 
-        public IodineLabel CreateLabel ()
+        public Label CreateLabel ()
         {
-            return new IodineLabel (nextLabelID++);
+            return new Label (nextLabelID++);
         }
 
-        public void MarkLabelPosition (IodineLabel label)
+        public void MarkLabelPosition (Label label)
         {
             label._Position = instructions.Count;
         }

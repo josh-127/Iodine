@@ -44,12 +44,12 @@ namespace Iodine.Compiler.Ast
             Arguments = argumentList;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             Arguments.VisitChildren (visitor);
         }

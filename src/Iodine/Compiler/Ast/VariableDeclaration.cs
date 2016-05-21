@@ -45,12 +45,12 @@ namespace Iodine.Compiler.Ast
             Global = global;
         }
 
-        public override void Visit (IodineAstVisitor visitor)
+        public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
         }
 
-        public override void VisitChildren (IodineAstVisitor visitor)
+        public override void VisitChildren (AstVisitor visitor)
         {
             if (Value != null) {
                 Value.Visit (visitor);

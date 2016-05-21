@@ -111,7 +111,11 @@ namespace Iodine.Compiler
             string name = Expect (TokenClass.Identifier).Value;
 
             List<string> baseClass = new List<string> ();
-            if (Accept (TokenClass.Colon)) {
+            if (Accept (TokenClass.Keyword, "extends")) {
+                baseClass.Add (ParseClassName ());
+            }
+
+            if (Accept (TokenClass.Keyword, "implements")) {
                 do {
                     baseClass.Add (ParseClassName ());
                 } while (Accept (TokenClass.Comma));
@@ -254,6 +258,36 @@ namespace Iodine.Compiler
 
             return trait;
         }
+            
+        /*
+         * mixin <name> {
+         *     ...
+         * }
+         */
+        private AstNode ParseMixin ()
+        {
+            string doc = Expect (TokenClass.Keyword, "mixin").Documentation;
+            string name = Expect (TokenClass.Identifier).Value;
+
+            MixinDeclaration mixin = new MixinDeclaration (Location, name, doc);
+
+            Expect (TokenClass.OpenBrace);
+
+            while (!Match (TokenClass.CloseBrace)) {
+                if (Match (TokenClass.Keyword, "func")) {
+                    FunctionDeclaration func = ParseFunction () as FunctionDeclaration;
+                    mixin.AddMember (func);
+                } else {
+                    errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
+                }
+                while (Accept (TokenClass.SemiColon))
+                    ;
+            }
+
+            Expect (TokenClass.CloseBrace);
+
+            return mixin;
+        }
 
         private string ParseClassName ()
         {
@@ -272,36 +306,13 @@ namespace Iodine.Compiler
         private AstNode ParseFunction (bool prototype = false, ClassDeclaration cdecl = null)
         {
             string doc = Current.Documentation;
+
             if (Accept (TokenClass.Operator, "@")) {
-                /*
-                 * Function decorators in the form of 
-                 * @myDecorator
-                 * func foo () {
-                 * }
-                 * are merely syntatic sugar for
-                 * func foo () {
-                 * }
-                 * foo = myDecorator (foo)
-                 */
-                AstNode expr = ParseExpression (); // Decorator expression 
-                /* This is the original function which is to be decorated */
-                FunctionDeclaration idecl = ParseFunction (prototype, cdecl) as FunctionDeclaration;
-                /* We must construct an arglist which will be passed to the decorator */
-                ArgumentList args = new ArgumentList (Location);
-                args.AddArgument (new NameExpression (Location, idecl.Name));
-                /*
-                 * Since two values can not be returned, we must return a single node containing both
-                 * the function declaration and call to the decorator 
-                 */
-                StatementList nodes = new StatementList (Location);
-                nodes.AddStatement (idecl);
-                nodes.AddStatement (new Expression (Location, new BinaryExpression (Location,
-                    BinaryOperation.Assign,
-                    new NameExpression (Location, idecl.Name),
-                    new CallExpression (Location, expr, args)))
-                );
-                return nodes;
+                AstNode decorator = ParseExpression (); 
+                FunctionDeclaration originalFunc = ParseFunction (prototype, cdecl) as FunctionDeclaration;
+                return new DecoratedFunction (decorator.Location, decorator, originalFunc);
             }
+
             Expect (TokenClass.Keyword, "func");
 
             bool isInstanceMethod;
@@ -491,6 +502,10 @@ namespace Iodine.Compiler
                     return ParseContract ();
                 case "trait":
                     return ParseTrait ();
+                case "mixin":
+                    return ParseMixin ();
+                case "extend":
+                    return ParseExtend ();
                 case "func":
                     return ParseFunction ();
                 case "if":
@@ -570,6 +585,34 @@ namespace Iodine.Compiler
 
             Expect (TokenClass.CloseBrace);
             return ret;
+        }
+
+        /*
+         * extend <class> [use <mixin>, ...] { 
+         *      ...
+         * }
+         */
+        private AstNode ParseExtend ()
+        {
+            Expect (TokenClass.Keyword, "extend");
+            AstNode clazz = ParseExpression ();
+
+            ExtendStatement statement = new ExtendStatement (clazz.Location, clazz, "");
+
+            if (Accept (TokenClass.Keyword, "use")) {
+                do {
+                    statement.Mixins.Add (ParseExpression ());
+                } while (Accept (TokenClass.Comma));
+            }
+
+            if (Accept (TokenClass.OpenBrace)) {
+                while (!Match (TokenClass.CloseBrace) & !EndOfStream) {
+                    statement.AddMember (ParseFunction ());
+                }
+                Expect (TokenClass.CloseBrace);
+            }
+
+            return statement;
         }
 
         /*

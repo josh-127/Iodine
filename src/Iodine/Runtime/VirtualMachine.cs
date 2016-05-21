@@ -797,6 +797,16 @@ namespace Iodine.Runtime
                     }
                     break;
                 }
+            case Opcode.ApplyMixin:
+                {
+                    IodineObject type = Pop ();
+                    IodineMixin mixin = Top.Module.ConstantPool [instruction.Argument] as IodineMixin;
+
+                    foreach (KeyValuePair<string, IodineObject> attr in mixin.Attributes) {
+                        type.SetAttribute (attr.Key, attr.Value);
+                    }
+                    break;
+                }
             }
 
         }

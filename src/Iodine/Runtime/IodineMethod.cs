@@ -52,6 +52,7 @@ namespace Iodine.Runtime
         }
 
         private string name;
+
         /// <summary>
         /// The name of the method
         /// </summary>

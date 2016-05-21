@@ -1,4 +1,4 @@
-/**
+﻿/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -28,55 +28,25 @@
 **/
 
 using System;
+using System.Collections.Generic;
 
-namespace Iodine.Compiler.Ast
+namespace Iodine.Runtime
 {
-    public class SliceExpression : AstNode
+    public class IodineMixin : IodineTypeDefinition
     {
-        public AstNode Target {
-            private set;
-            get;
-        }
-
-        public AstNode Start {
-            private set;
-            get;
-        }
-
-        public AstNode Stop {
-            private set;
-            get;
-        }
-
-        public AstNode Step {
-            private set;
-            get;
-        }
-
-        public SliceExpression (SourceLocation location,
-            AstNode lvalue,
-            AstNode start,
-            AstNode stop,
-            AstNode step
-        ) : base (location)
+        public IodineMixin (string name)
+            : base (name)
         {
-            Target = lvalue;
-            Start = start ?? new NullExpression (location);
-            Stop = stop ?? new NullExpression (location);
-            Step = step ?? new IntegerExpression (location, 1);
         }
 
-        public override void Visit (AstVisitor visitor)
+        public void AddMethod (IodineMethod method)
         {
-            visitor.Accept (this);
+            Attributes [method.Name] = method;
         }
 
-        public override void VisitChildren (AstVisitor visitor)
+        public override string ToString ()
         {
-            Step.Visit (visitor);
-            Stop.Visit (visitor);
-            Start.Visit (visitor);
-            Target.Visit (visitor);
+            return string.Format ("<Mixin {0}>", Name);
         }
     }
 }

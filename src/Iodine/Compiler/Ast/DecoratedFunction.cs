@@ -1,4 +1,4 @@
-/**
+﻿/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -28,42 +28,20 @@
 **/
 
 using System;
+using System.Diagnostics;
 
 namespace Iodine.Compiler.Ast
 {
-    public class SliceExpression : AstNode
+    public class DecoratedFunction : AstNode
     {
-        public AstNode Target {
-            private set;
-            get;
-        }
+        public AstNode Decorator;
+        public FunctionDeclaration Function;
 
-        public AstNode Start {
-            private set;
-            get;
-        }
-
-        public AstNode Stop {
-            private set;
-            get;
-        }
-
-        public AstNode Step {
-            private set;
-            get;
-        }
-
-        public SliceExpression (SourceLocation location,
-            AstNode lvalue,
-            AstNode start,
-            AstNode stop,
-            AstNode step
-        ) : base (location)
+        public DecoratedFunction (SourceLocation location, AstNode decorator, FunctionDeclaration decl)
+            : base (location)
         {
-            Target = lvalue;
-            Start = start ?? new NullExpression (location);
-            Stop = stop ?? new NullExpression (location);
-            Step = step ?? new IntegerExpression (location, 1);
+            Decorator = decorator;
+            Function = decl;
         }
 
         public override void Visit (AstVisitor visitor)
@@ -73,10 +51,8 @@ namespace Iodine.Compiler.Ast
 
         public override void VisitChildren (AstVisitor visitor)
         {
-            Step.Visit (visitor);
-            Stop.Visit (visitor);
-            Start.Visit (visitor);
-            Target.Visit (visitor);
+            Decorator.Visit (visitor);
+            Function.Visit (visitor);
         }
     }
 }

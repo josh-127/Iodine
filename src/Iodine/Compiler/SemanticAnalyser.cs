@@ -32,7 +32,7 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-    internal class SemanticAnalyser : IodineAstVisitor
+    internal class SemanticAnalyser : AstVisitor
     {
         private ErrorSink errorLog;
         private SymbolTable symbolTable = new SymbolTable ();
