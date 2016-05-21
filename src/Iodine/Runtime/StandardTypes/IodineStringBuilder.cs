@@ -44,6 +44,10 @@ namespace Iodine.Runtime
                 SetAttribute ("clear", new BuiltinMethodCallback (Clear, null));
                 SetAttribute ("append", new BuiltinMethodCallback (Append, null));
                 SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, null));
+
+                SetDocumentation (
+                    "A mutable string of UTF-16 characters"
+                );
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)

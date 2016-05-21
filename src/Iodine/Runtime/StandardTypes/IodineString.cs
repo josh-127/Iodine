@@ -45,6 +45,9 @@ namespace Iodine.Runtime
                 : base ("Str")
             {
                 BindAttributes (this);
+                SetDocumentation (
+                    "An immutable string of UTF-16 characters"
+                );
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)

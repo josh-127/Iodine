@@ -99,7 +99,14 @@ namespace Iodine.Runtime
 
             //Attributes ["__name__"] = new IodineString (name);
         }
-            
+
+        public void SetDocumentation (params string[] args)
+        {
+            Attributes ["__doc__"] = new InternalIodineProperty (vm => {
+                return new IodineString (string.Join ("\n", args));
+            }, null);
+        }
+
         public override bool IsCallable ()
         {
             return true;
