@@ -43,16 +43,6 @@ namespace Iodine.Runtime
             Value = val;
         }
 
-        public override bool Equals (object obj)
-        {
-            return Equals (obj as IodineObject);
-        }
-
-        public override bool Equals (IodineObject obj)
-        {
-            return obj is IodineName && Value == obj.ToString ();
-        }
-
         public override string ToString ()
         {
             return Value;

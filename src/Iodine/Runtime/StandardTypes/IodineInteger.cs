@@ -84,12 +84,6 @@ namespace Iodine.Runtime
             Value = val;
         }
 
-
-        public override bool Equals (object obj)
-        {
-            return Equals (obj as IodineObject);
-        }
-
         public override bool Equals (IodineObject obj)
         {
             IodineInteger intVal = obj as IodineInteger;
