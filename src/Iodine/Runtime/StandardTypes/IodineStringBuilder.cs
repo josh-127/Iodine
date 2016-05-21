@@ -41,13 +41,19 @@ namespace Iodine.Runtime
             public StringBuilderTypeDef ()
                 : base ("StringBuffer")
             {
-                SetAttribute ("clear", new BuiltinMethodCallback (Clear, null));
-                SetAttribute ("append", new BuiltinMethodCallback (Append, null));
-                SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, null));
-
+                BindAttributes (this);
                 SetDocumentation (
                     "A mutable string of UTF-16 characters"
                 );
+            }
+
+            public override IodineObject BindAttributes (IodineObject obj)
+            {
+                obj.SetAttribute ("clear", new BuiltinMethodCallback (Clear, obj));
+                obj.SetAttribute ("append", new BuiltinMethodCallback (Append, obj));
+                obj.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, obj));
+                return obj;
+
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)

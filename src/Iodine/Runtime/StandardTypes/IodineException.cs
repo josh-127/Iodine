@@ -119,6 +119,33 @@ namespace Iodine.Runtime
         }
     }
 
+    public class IodineModuleNotFoundException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new ModuleNotFoundExceptionTypeDef ();
+
+        class ModuleNotFoundExceptionTypeDef : IodineTypeDefinition
+        {
+            public ModuleNotFoundExceptionTypeDef ()
+                : base ("ModuleNotFoundException ")
+            {
+            }
+
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
+                return new IodineTypeException (args [0].ToString ());
+            }
+        }
+
+        public IodineModuleNotFoundException (string expectedType)
+            : base (TypeDefinition, "Could not load module '{0}'", expectedType)
+        {
+            Base = new IodineException ();
+        }
+    }
+
     public class IodineTypeCastException : IodineException
     {
         public static new readonly IodineTypeDefinition TypeDefinition = new TypeCastExceptionTypeDef ();

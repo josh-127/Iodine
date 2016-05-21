@@ -92,6 +92,7 @@ namespace Iodine.Runtime
             SetAttribute ("AttributeNotFoundException", IodineAttributeNotFoundException.TypeDefinition);
             SetAttribute ("SyntaxException", IodineSyntaxException.TypeDefinition);
             SetAttribute ("NotSupportedException", IodineNotSupportedException.TypeDefinition);
+            SetAttribute ("ModuleNotFoundException", IodineModuleNotFoundException.TypeDefinition);
             SetAttribute ("StringBuffer", IodineStringBuilder.TypeDefinition);
             SetAttribute ("Null", IodineNull.Instance.TypeDef);
             SetAttribute ("TypeDef", IodineTypeDefinition.TypeDefinition);
@@ -128,7 +129,12 @@ namespace Iodine.Runtime
             }
             IodineString source = args [0] as IodineString;
 
-            return vm.LoadModule (source.ToString ());
+            try {
+                return vm.LoadModule (source.ToString ());
+            } catch (ModuleNotFoundException ex) {
+                vm.RaiseException (new IodineModuleNotFoundException (ex.Name));
+                return null;
+            }
         }
 
         [BuiltinDocString (
