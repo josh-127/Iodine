@@ -58,31 +58,31 @@ namespace Iodine.Runtime
                 return new IodineString (args [0].ToString ());
             }
                 
-            public override IodineObject BindAttributes (IodineObject obj)
+            public override IodineObject BindAttributes (IodineObject newStr)
             {
-                obj.SetAttribute ("lower", new BuiltinMethodCallback (Lower, obj));
-                obj.SetAttribute ("upper", new BuiltinMethodCallback (Upper, obj));
-                obj.SetAttribute ("substr", new BuiltinMethodCallback (Substring, obj));
-                obj.SetAttribute ("index", new BuiltinMethodCallback (IndexOf, obj));
-                obj.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, obj));
-                obj.SetAttribute ("find", new BuiltinMethodCallback (Find, obj));
-                obj.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, obj));
-                obj.SetAttribute ("contains", new BuiltinMethodCallback (Contains, obj));
-                obj.SetAttribute ("replace", new BuiltinMethodCallback (Replace, obj));
-                obj.SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, obj));
-                obj.SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, obj));
-                obj.SetAttribute ("split", new BuiltinMethodCallback (Split, obj));
-                obj.SetAttribute ("join", new BuiltinMethodCallback (Join, obj));
-                obj.SetAttribute ("trim", new BuiltinMethodCallback (Trim, obj));
-                obj.SetAttribute ("format", new BuiltinMethodCallback (Format, obj));
-                obj.SetAttribute ("isalpha", new BuiltinMethodCallback (IsLetter, obj));
-                obj.SetAttribute ("isdigit", new BuiltinMethodCallback (IsDigit, obj));
-                obj.SetAttribute ("isalnum", new BuiltinMethodCallback (IsLetterOrDigit, obj));
-                obj.SetAttribute ("iswhitespace", new BuiltinMethodCallback (IsWhiteSpace, obj));
-                obj.SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, obj));
-                obj.SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, obj));
-                obj.SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, obj));
-                return obj;
+                newStr.SetAttribute ("lower", new BuiltinMethodCallback (Lower, newStr));
+                newStr.SetAttribute ("upper", new BuiltinMethodCallback (Upper, newStr));
+                newStr.SetAttribute ("substr", new BuiltinMethodCallback (Substring, newStr));
+                newStr.SetAttribute ("index", new BuiltinMethodCallback (IndexOf, newStr));
+                newStr.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, newStr));
+                newStr.SetAttribute ("find", new BuiltinMethodCallback (Find, newStr));
+                newStr.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, newStr));
+                newStr.SetAttribute ("contains", new BuiltinMethodCallback (Contains, newStr));
+                newStr.SetAttribute ("replace", new BuiltinMethodCallback (Replace, newStr));
+                newStr.SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, newStr));
+                newStr.SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, newStr));
+                newStr.SetAttribute ("split", new BuiltinMethodCallback (Split, newStr));
+                newStr.SetAttribute ("join", new BuiltinMethodCallback (Join, newStr));
+                newStr.SetAttribute ("trim", new BuiltinMethodCallback (Trim, newStr));
+                newStr.SetAttribute ("format", new BuiltinMethodCallback (Format, newStr));
+                newStr.SetAttribute ("isalpha", new BuiltinMethodCallback (IsLetter, newStr));
+                newStr.SetAttribute ("isdigit", new BuiltinMethodCallback (IsDigit, newStr));
+                newStr.SetAttribute ("isalnum", new BuiltinMethodCallback (IsLetterOrDigit, newStr));
+                newStr.SetAttribute ("iswhitespace", new BuiltinMethodCallback (IsWhiteSpace, newStr));
+                newStr.SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, newStr));
+                newStr.SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, newStr));
+                newStr.SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, newStr));
+                return newStr;
             }
 
             [BuiltinDocString (

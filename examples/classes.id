@@ -2,6 +2,7 @@
 # instantiating a class.
 
 # Class definition
+
 class Dog {
 
     # This is the constructor, instance variables should
@@ -23,7 +24,7 @@ class Dog {
 }
 
 # This class derives dog
-class BigDog : Dog {
+class BigDog extends Dog {
     func BigDog (self) {
         super ("Big Dog");	# In order to inherit everything from dog, we must
 				# explicitly invoke its constructor

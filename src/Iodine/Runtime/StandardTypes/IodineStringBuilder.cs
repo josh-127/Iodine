@@ -47,12 +47,12 @@ namespace Iodine.Runtime
                 );
             }
 
-            public override IodineObject BindAttributes (IodineObject obj)
+            public override IodineObject BindAttributes (IodineObject newStrBuf)
             {
-                obj.SetAttribute ("clear", new BuiltinMethodCallback (Clear, obj));
-                obj.SetAttribute ("append", new BuiltinMethodCallback (Append, obj));
-                obj.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, obj));
-                return obj;
+                newStrBuf.SetAttribute ("clear", new BuiltinMethodCallback (Clear, newStrBuf));
+                newStrBuf.SetAttribute ("append", new BuiltinMethodCallback (Append, newStrBuf));
+                newStrBuf.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, newStrBuf));
+                return newStrBuf;
 
             }
 
