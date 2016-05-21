@@ -97,7 +97,7 @@ namespace Iodine.Runtime
         {
             Name = name;
 
-            //Attributes ["__name__"] = new IodineString (name);
+            Attributes ["__name__"] = new IodineString (name);
         }
 
         public void SetDocumentation (params string[] args)
