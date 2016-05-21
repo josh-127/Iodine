@@ -62,7 +62,7 @@ namespace Iodine.Runtime
             Value = val;
         }
 
-        public override bool Equals (object obj)
+        public override bool Equals (IodineObject obj)
         {
             IodineFloat floatVal = obj as IodineFloat;
 

@@ -84,7 +84,7 @@ namespace Iodine.Runtime
         {
             BigInteger intVal;
 
-            if (!ConvertToBigInt (obj, out intVal)) {
+            if (ConvertToBigInt (obj, out intVal)) {
                 return intVal == Value;
             }
 
