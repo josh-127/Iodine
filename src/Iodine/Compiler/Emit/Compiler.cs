@@ -336,6 +336,8 @@ namespace Iodine.Compiler
 
 
             methodBuilder.SetAttribute ("__doc__", new IodineString (funcDecl.Documentation));
+            methodBuilder.SetAttribute ("__name__", new IodineString (funcDecl.Name));
+            methodBuilder.SetAttribute ("__module__", new IodineString (Context.CurrentModule.Name));
 
             CreateContext (methodBuilder);
 
@@ -518,6 +520,22 @@ namespace Iodine.Compiler
             } else {
                 Context.CurrentModule.SetAttribute (funcDecl.Name, CompileGlobalMethod (funcDecl));
             }
+        }
+
+        public override void Accept (DecoratedFunction funcDecl)
+        {
+            IodineMethod method = CompileGlobalMethod (funcDecl.Function);
+            Context.CurrentMethod.EmitInstruction (
+                funcDecl.Decorator.Location,
+                Opcode.LoadConst,
+                Context.CurrentModule.DefineConstant (method)
+            );
+            funcDecl.Decorator.Visit (this);
+            Context.CurrentMethod.EmitInstruction (Opcode.Invoke, 1);
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.StoreGlobal,
+                Context.CurrentModule.DefineConstant (new IodineName (funcDecl.Function.Name))
+            );
         }
 
         #endregion

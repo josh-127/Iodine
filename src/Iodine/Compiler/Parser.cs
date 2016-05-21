@@ -306,36 +306,13 @@ namespace Iodine.Compiler
         private AstNode ParseFunction (bool prototype = false, ClassDeclaration cdecl = null)
         {
             string doc = Current.Documentation;
+
             if (Accept (TokenClass.Operator, "@")) {
-                /*
-                 * Function decorators in the form of 
-                 * @myDecorator
-                 * func foo () {
-                 * }
-                 * are merely syntatic sugar for
-                 * func foo () {
-                 * }
-                 * foo = myDecorator (foo)
-                 */
-                AstNode expr = ParseExpression (); // Decorator expression 
-                /* This is the original function which is to be decorated */
-                FunctionDeclaration idecl = ParseFunction (prototype, cdecl) as FunctionDeclaration;
-                /* We must construct an arglist which will be passed to the decorator */
-                ArgumentList args = new ArgumentList (Location);
-                args.AddArgument (new NameExpression (Location, idecl.Name));
-                /*
-                 * Since two values can not be returned, we must return a single node containing both
-                 * the function declaration and call to the decorator 
-                 */
-                StatementList nodes = new StatementList (Location);
-                nodes.AddStatement (idecl);
-                nodes.AddStatement (new Expression (Location, new BinaryExpression (Location,
-                    BinaryOperation.Assign,
-                    new NameExpression (Location, idecl.Name),
-                    new CallExpression (Location, expr, args)))
-                );
-                return nodes;
+                AstNode decorator = ParseExpression (); 
+                FunctionDeclaration originalFunc = ParseFunction (prototype, cdecl) as FunctionDeclaration;
+                return new DecoratedFunction (decorator.Location, decorator, originalFunc);
             }
+
             Expect (TokenClass.Keyword, "func");
 
             bool isInstanceMethod;

@@ -235,6 +235,7 @@
     <Compile Include="Compiler\AstVisitor.cs" />
     <Compile Include="Compiler\Emit\Label.cs" />
     <Compile Include="Compiler\Emit\Compiler.cs" />
+    <Compile Include="Compiler\Ast\DecoratedFunction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

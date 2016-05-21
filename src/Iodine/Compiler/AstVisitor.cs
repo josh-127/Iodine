@@ -130,6 +130,10 @@ namespace Iodine.Compiler
         {
         }
 
+        public virtual void Accept (DecoratedFunction funcDecl)
+        {
+        }
+
         public virtual void Accept (CodeBlock scope)
         {
         }
