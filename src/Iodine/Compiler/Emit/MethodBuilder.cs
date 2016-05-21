@@ -68,6 +68,11 @@ namespace Iodine.Compiler
             this.parent = parent;
         }
 
+        public override bool Equals (object obj)
+        {
+            return obj == this;
+        }
+
         public void EmitInstruction (Opcode opcode)
         {
             instructions.Add (new Instruction (null, opcode));

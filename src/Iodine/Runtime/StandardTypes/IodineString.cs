@@ -592,6 +592,11 @@ namespace Iodine.Runtime
             }, this));
         }
 
+        public override bool Equals (object obj)
+        {
+            return Equals (obj as IodineObject);
+        }
+
         public override bool Equals (IodineObject obj)
         {
             IodineString strVal = obj as IodineString;
