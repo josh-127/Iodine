@@ -235,8 +235,8 @@
     <Compile Include="Compiler\Emit\Label.cs" />
     <Compile Include="Compiler\Emit\Compiler.cs" />
     <Compile Include="Compiler\Ast\DecoratedFunction.cs" />
-    <Compile Include="Runtime\IodineName.cs" />
     <Compile Include="Util\ObjectDictionary.cs" />
+    <Compile Include="Runtime\IodineName.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

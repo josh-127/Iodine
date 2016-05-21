@@ -100,7 +100,7 @@ namespace Iodine.Runtime
                 foreach (IodineObject obj in arguments) {
                     thisObj.Add (obj);
                 }
-                return null;
+                return this;
             }
 
             [BuiltinDocString (
@@ -120,7 +120,7 @@ namespace Iodine.Runtime
                     IodineObject o = collection.IterGetCurrent (vm);
                     thisObj.Add (o);
                 }
-                return null;
+                return this;
             }
 
             [BuiltinDocString (
@@ -134,10 +134,8 @@ namespace Iodine.Runtime
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
                 }
-
                 thisObj.Objects.Insert (0, arguments [0]);
-
-                return null;
+                return this;
             }
 
             [BuiltinDocString (
@@ -175,7 +173,7 @@ namespace Iodine.Runtime
                 IodineObject key = arguments [0];
                 if (thisObj.Objects.Any (o => o.Equals (key))) {
                     thisObj.Objects.Remove (thisObj.Objects.First (o => o.Equals (key)));
-                    return null;
+                    return this;
                 }
                 vm.RaiseException (new IodineKeyNotFound ());
                 return null;
@@ -198,8 +196,9 @@ namespace Iodine.Runtime
                         thisObj.Objects.RemoveAt ((int)index.Value);
                     } else {
                         vm.RaiseException (new IodineKeyNotFound ());
+                        return null;
                     }
-                    return null;
+                    return this;
                 }
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return null;
@@ -277,7 +276,7 @@ namespace Iodine.Runtime
             {
                 IodineList thisObj = self as IodineList;
                 thisObj.Objects.Clear ();
-                return null;
+                return this;
             }
 
             [BuiltinDocString (
