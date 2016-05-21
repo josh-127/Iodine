@@ -172,7 +172,7 @@ namespace Iodine.Runtime
                 IodineObject key = arguments [0];
                 if (thisObj.Objects.Any (o => o.Equals (key))) {
                     thisObj.Objects.Remove (thisObj.Objects.First (o => o.Equals (key)));
-                    return this;
+                    return thisObj;
                 }
                 vm.RaiseException (new IodineKeyNotFound ());
                 return null;
@@ -197,7 +197,7 @@ namespace Iodine.Runtime
                         vm.RaiseException (new IodineKeyNotFound ());
                         return null;
                     }
-                    return this;
+                    return thisObj;
                 }
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return null;
@@ -275,7 +275,7 @@ namespace Iodine.Runtime
             {
                 IodineList thisObj = self as IodineList;
                 thisObj.Objects.Clear ();
-                return this;
+                return thisObj;
             }
 
             [BuiltinDocString (
