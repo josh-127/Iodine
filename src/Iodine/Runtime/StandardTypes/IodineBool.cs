@@ -63,7 +63,7 @@ namespace Iodine.Runtime
             this.Value = val;
         }
 
-        public override bool Equals (object obj)
+        public override bool Equals (IodineObject obj)
         {
             IodineBool boolVal = obj as IodineBool;
 

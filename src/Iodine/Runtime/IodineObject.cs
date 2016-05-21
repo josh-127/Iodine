@@ -236,7 +236,7 @@ namespace Iodine.Runtime
 
         public virtual bool Equals (IodineObject obj)
         {
-            return Equals ((object)obj);
+            return obj == this;
         }
 
         /// <summary>

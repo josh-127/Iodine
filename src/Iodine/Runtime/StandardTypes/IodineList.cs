@@ -424,11 +424,12 @@ namespace Iodine.Runtime
             IodineList listVal = obj as IodineList;
 
             if (listVal != null && listVal.Objects.Count == Objects.Count) {
-                bool result = true;
                 for (int i = 0; i < Objects.Count; i++) {
-                    result &= Objects [i].Equals (listVal.Objects [i]);
+                    if (!Objects [i].Equals (listVal.Objects [i])) {
+                        return false;
+                    }
                 }
-                return result;
+                return true;
             }
             return false;
         }

@@ -245,7 +245,20 @@ namespace Iodine.Runtime
             IodineDictionary map = obj as IodineDictionary;
 
             if (map != null) {
-                return CompareTo (map);
+                if (map.dict.Count != this.dict.Count) {
+                    return false;
+                }
+
+                foreach (IodineObject key in dict.Keys) {
+                    if (!map.dict.ContainsKey (key)) {
+                        return false;
+                    }
+                    IodineObject dictKey = map.dict [key] as IodineObject;
+                    if (!dictKey.Equals ((IodineObject)dict [key])) {
+                        return false;
+                    }
+                }
+                return true;
             }
 
             return false;
@@ -258,7 +271,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineTypeException ("HashMap"));
                 return null;
             }
-            return IodineBool.Create (CompareTo (hash));
+            return IodineBool.Create (Equals (hash));
         }
 
         public override int GetHashCode ()
@@ -289,28 +302,5 @@ namespace Iodine.Runtime
         {
             return dict [key] as IodineObject;
         }
-
-        /// <summary>
-        /// Compares two iodine dictionaries
-        /// </summary>
-        /// <returns><c>true</c>, if they are equal, <c>false</c> otherwise.</returns>
-        /// <param name="hash">Dictionary</param>
-        private bool CompareTo (IodineDictionary hash)
-        {
-            if (hash.dict.Count != this.dict.Count) {
-                return false;
-            }
-
-            foreach (IodineObject key in dict.Keys) {
-                if (!hash.dict.ContainsKey (key)) {
-                    return false;
-                }
-                if (!hash.dict [key].Equals (dict [key])) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
     }
 }
