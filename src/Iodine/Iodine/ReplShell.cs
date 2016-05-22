@@ -38,6 +38,25 @@ namespace Iodine
 {
     public sealed class ReplShell
     {
+        class QuitObject : IodineObject
+        {
+            public QuitObject ()
+                : base (new IodineTypeDefinition ("QuitObject"))
+            {
+            }
+
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+            {
+                Environment.Exit (0);
+                return null;
+            }
+
+            public override IodineObject ToString (VirtualMachine vm)
+            {
+                return new IodineString ("Use quit() or Ctrl-C to exit");
+            }
+        }
+
         public ReplShell (IodineContext context)
         {
         }
@@ -51,11 +70,7 @@ namespace Iodine
             IodineContext context = new IodineContext ();
             context.ShouldOptimize = false;
 
-            context.Globals ["quit"] = new BuiltinMethodCallback (
-                ((VirtualMachine vm, IodineObject self, IodineObject[] arguments) => {
-                Environment.Exit (0);
-                    return null;
-            }), null);
+            context.Globals ["quit"] = new QuitObject ();
 
             while (true) {
                 Console.Write (">>> ");
