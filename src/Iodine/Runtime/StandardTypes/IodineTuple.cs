@@ -103,13 +103,14 @@ namespace Iodine.Runtime
         public override bool Equals (IodineObject obj)
         {
             IodineTuple tupleVal = obj as IodineTuple;
-
+            Console.WriteLine (Objects.Length);
             if (tupleVal != null && tupleVal.Objects.Length == Objects.Length) {
-                bool result = true;
                 for (int i = 0; i < Objects.Length; i++) {
-                    result &= Objects [i].Equals (tupleVal.Objects [i]);
+                    if (!Objects [i].Equals (tupleVal.Objects [i])) {
+                        return false;
+                    }
                 }
-                return result;
+                return true;
             }
             return false;
         }
@@ -200,7 +201,15 @@ namespace Iodine.Runtime
 
         public override int GetHashCode ()
         {
-            return Objects.GetHashCode ();
+            int accum = 17;
+            unchecked {
+                foreach (IodineObject obj in Objects) {
+                    if (obj != null) {
+                        accum += 529 * obj.GetHashCode ();
+                    }
+                }
+            }
+            return accum;
         }
     }
 }
