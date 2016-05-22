@@ -117,7 +117,7 @@
 						</dict>
 					</dict>
 					<key>match</key>
-					<string>^(?:\s|\*)+(@[a-z]+)(\s*([*a-zA-Z]+)\s*(:(\s*[a-zA-Z]+)?)?)?(\s*(?:.*$))?</string>
+					<string>^(?:\s|\*)+(@[a-z]+)(\s*([*/a-zA-Z]+)\s*(:(\s*[a-zA-Z]+)?)?)?(\s*(?:.*$))?</string>
 				</dict>
 			</array>
 		</dict>
