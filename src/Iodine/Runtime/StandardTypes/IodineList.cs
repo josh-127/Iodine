@@ -52,21 +52,21 @@ namespace Iodine.Runtime
                 );
             }
 
-            public override IodineObject BindAttributes (IodineObject obj)
+            public override IodineObject BindAttributes (IodineObject newList)
             {
-                obj.SetAttribute ("append", new BuiltinMethodCallback (Add, obj));
-                obj.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, obj));
-                obj.SetAttribute ("appendrange", new BuiltinMethodCallback (AddRange, obj));
-                obj.SetAttribute ("discard", new BuiltinMethodCallback (Discard, obj));
-                obj.SetAttribute ("remove", new BuiltinMethodCallback (Remove, obj));
-                obj.SetAttribute ("removeat", new BuiltinMethodCallback (RemoveAt, obj));
-                obj.SetAttribute ("contains", new BuiltinMethodCallback (Contains, obj));
-                obj.SetAttribute ("clear", new BuiltinMethodCallback (Clear, obj));
-                obj.SetAttribute ("index", new BuiltinMethodCallback (Index, obj));
-                obj.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, obj));
-                obj.SetAttribute ("find", new BuiltinMethodCallback (Find, obj));
-                obj.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, obj));
-                return obj;
+                newList.SetAttribute ("append", new BuiltinMethodCallback (Add, newList));
+                newList.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, newList));
+                newList.SetAttribute ("appendrange", new BuiltinMethodCallback (AddRange, newList));
+                newList.SetAttribute ("discard", new BuiltinMethodCallback (Discard, newList));
+                newList.SetAttribute ("remove", new BuiltinMethodCallback (Remove, newList));
+                newList.SetAttribute ("removeat", new BuiltinMethodCallback (RemoveAt, newList));
+                newList.SetAttribute ("contains", new BuiltinMethodCallback (Contains, newList));
+                newList.SetAttribute ("clear", new BuiltinMethodCallback (Clear, newList));
+                newList.SetAttribute ("index", new BuiltinMethodCallback (Index, newList));
+                newList.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, newList));
+                newList.SetAttribute ("find", new BuiltinMethodCallback (Find, newList));
+                newList.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, newList));
+                return newList;
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
@@ -424,11 +424,12 @@ namespace Iodine.Runtime
             IodineList listVal = obj as IodineList;
 
             if (listVal != null && listVal.Objects.Count == Objects.Count) {
-                bool result = true;
                 for (int i = 0; i < Objects.Count; i++) {
-                    result &= Objects [i].Equals (listVal.Objects [i]);
+                    if (!Objects [i].Equals (listVal.Objects [i])) {
+                        return false;
+                    }
                 }
-                return result;
+                return true;
             }
             return false;
         }

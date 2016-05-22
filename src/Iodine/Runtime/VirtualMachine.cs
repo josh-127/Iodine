@@ -232,7 +232,7 @@ namespace Iodine.Runtime
                     instruction.Location.Line != top.Location.Line) {
                     Trace (TraceType.Line, top, instruction.Location);
                 }
-                ExecuteInstruction ();
+                EvalInstruction ();
                 top.Location = currentLocation;
             }
                 
@@ -359,7 +359,7 @@ namespace Iodine.Runtime
         #if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
         #endif
-        private void ExecuteInstruction ()
+        private void EvalInstruction ()
         {
             if (instruction.Location != null) {
                 currentLocation = instruction.Location;

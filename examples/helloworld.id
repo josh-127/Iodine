@@ -1,17 +1,13 @@
 
-# Iodine expressions are allowed outside functions, however
-# statements are not. With this in mind, a file just containing
-# print ("Hello, World!") is valid Iodine code and will work as
-# expected. However, since statements are not allowed outside 
-# of functions, function calls should be reserved inside the 
-# program's entry point (Which is func main)
 
-#
-# Command line arguments can be received by declaring this as
-# func main (args) {
-#   
-# }
+print ("Hello, World!") # This will get called first
 
-func main () {
-    print ("Hello, World!");
+/*
+ * It is worth noting that while iodine code outside of any function bodies will
+ * be executed on startup, the function main is also invoked on startup and 
+ * receives any command line arguments passed to it
+ */
+ 
+func main (args) {
+    print ("Goodbye, world!") # This will get called last
 }

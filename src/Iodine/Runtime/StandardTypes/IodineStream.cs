@@ -43,23 +43,24 @@ namespace Iodine.Runtime
 
         public static readonly IodineTypeDefinition TypeDefinition = new IodineFileTypeDef ();
 
-        class IodineFileTypeDef : IodineTypeDefinition {
+        class IodineFileTypeDef : IodineTypeDefinition
+        {
             public IodineFileTypeDef () 
                 : base ("File")
             {
                 BindAttributes (this);
             }
 
-            public override IodineObject BindAttributes (IodineObject obj)
+            public override IodineObject BindAttributes (IodineObject newFile)
             {
-                obj.SetAttribute ("write", new BuiltinMethodCallback (Write, this));
-                obj.SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, this));
-                obj.SetAttribute ("read", new BuiltinMethodCallback (Read, this));
-                obj.SetAttribute ("readln", new BuiltinMethodCallback (Readln, this));
-                obj.SetAttribute ("close", new BuiltinMethodCallback (Close, this));
-                obj.SetAttribute ("flush", new BuiltinMethodCallback (Flush, this));
-                obj.SetAttribute ("readall", new BuiltinMethodCallback (ReadAll, this));
-                return obj;
+                newFile.SetAttribute ("write", new BuiltinMethodCallback (Write, newFile));
+                newFile.SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, newFile));
+                newFile.SetAttribute ("read", new BuiltinMethodCallback (Read, newFile));
+                newFile.SetAttribute ("readln", new BuiltinMethodCallback (Readln, newFile));
+                newFile.SetAttribute ("close", new BuiltinMethodCallback (Close, newFile));
+                newFile.SetAttribute ("flush", new BuiltinMethodCallback (Flush, newFile));
+                newFile.SetAttribute ("readall", new BuiltinMethodCallback (ReadAll, newFile));
+                return newFile;
             }
 
             [BuiltinDocString (

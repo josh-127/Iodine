@@ -90,10 +90,11 @@ namespace Iodine.Runtime
             IodineBigInt bigVal = obj as IodineBigInt;
 
             if (intVal != null) {
-                if (bigVal != null) {
-                    return bigVal.Value == Value;
-                }
                 return intVal.Value == Value;
+            }
+
+            if (bigVal != null) {
+                return bigVal.Value == Value;
             }
 
             return false;
