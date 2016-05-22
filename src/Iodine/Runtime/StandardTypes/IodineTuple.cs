@@ -100,7 +100,7 @@ namespace Iodine.Runtime
             }, this));
         }
 
-        public override bool Equals (object obj)
+        public override bool Equals (IodineObject obj)
         {
             IodineTuple tupleVal = obj as IodineTuple;
 
