@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-#if COMPILE_EXTRAS
 
 using System;
 using System.Net;
@@ -358,6 +357,3 @@ namespace Iodine.Modules.Extras
         }
     }
 }
-
-
-#endif

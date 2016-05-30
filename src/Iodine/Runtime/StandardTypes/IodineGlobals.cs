@@ -46,12 +46,12 @@ namespace Iodine.Runtime
 
             public override void SetAttribute (VirtualMachine vm, string name, IodineObject value)
             {
-                vm.Globals [name] = value;
+                vm.Context.Globals [name] = value;
             }
 
             public override IodineObject GetAttribute (VirtualMachine vm, string name)
             {
-                return vm.Globals [name];
+                return vm.Context.Globals [name];
             }
 
         }
@@ -68,7 +68,7 @@ namespace Iodine.Runtime
             IodineDictionary dict = obj as IodineDictionary;
             if (dict != null) {
                 foreach (IodineObject key in dict.Keys) {
-                    vm.Globals [key.ToString ()] = dict.Get (key);
+                    vm.Context.Globals [key.ToString ()] = dict.Get (key);
                 }
             }
             return null;
@@ -77,7 +77,7 @@ namespace Iodine.Runtime
         public IodineObject Get (VirtualMachine vm)
         {
             IodineDictionary ret = new IodineDictionary ();
-            foreach (KeyValuePair<string, IodineObject> kv in vm.Globals) {
+            foreach (KeyValuePair<string, IodineObject> kv in vm.Context.Globals) {
                 ret.Set (new IodineString (kv.Key), kv.Value);
             }
             return ret;

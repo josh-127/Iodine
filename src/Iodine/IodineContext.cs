@@ -32,6 +32,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
+using Iodine.Util;
 using Iodine.Runtime;
 using Iodine.Interop;
 
@@ -46,17 +47,24 @@ namespace Iodine.Compiler
     {
         public readonly ErrorSink ErrorLog;
         public readonly VirtualMachine VirtualMachine;
+
         public readonly IodineConfiguration Configuration;
         // Virtual machine configuration
         public readonly TypeRegistry TypeRegistry = new TypeRegistry ();
         // Type registry for .NET interops
+
         /*
          * Where we can search for modules
          */
         public readonly List<string> SearchPath = new List<string> ();
 
         // Globals
-        public readonly Dictionary<string, IodineObject> Globals = new Dictionary<string, IodineObject> ();
+        public readonly AttributeDictionary Globals = new AttributeDictionary ();
+
+        /// <summary>
+        /// Local variables created from a read-evaluate-print-loop
+        /// </summary>
+        public readonly AttributeDictionary InteractiveLocals = new AttributeDictionary ();
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> can use the 
@@ -139,7 +147,7 @@ namespace Iodine.Compiler
         {
             Configuration = config;
             ErrorLog = new ErrorSink ();
-            VirtualMachine = new VirtualMachine (this, Globals);
+            VirtualMachine = new VirtualMachine (this);
 
             var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
             foreach (IodineModule module in modules) {
@@ -147,7 +155,6 @@ namespace Iodine.Compiler
                     Globals [value.Key] = value.Value;
                 }
             }
-
         }
 
         /// <summary>

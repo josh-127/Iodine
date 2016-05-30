@@ -294,7 +294,7 @@ namespace Iodine.Runtime
 
             IodineList ret = new IodineList (new IodineObject[] { });
 
-            foreach (Instruction ins in method.Body) {
+            foreach (Instruction ins in method.Bytecode.Instructions) {
                 ret.Add (new IodineInstruction (method, ins));
             }
 
@@ -324,8 +324,7 @@ namespace Iodine.Runtime
 
             IodineObject[] items = new IodineObject[method.ParameterCount];
 
-            var names = method.Parameters.Keys.ToList ();
-            names.Sort ((a, b) => method.Parameters [a].CompareTo (method.Parameters [b]));
+            var names = method.Parameters;
 
             for (int i = 0; i < method.ParameterCount; i++) {
                 items [i] = new IodineString (names [i]);

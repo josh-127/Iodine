@@ -374,7 +374,9 @@ namespace Iodine.Runtime
             Console.WriteLine ("Stack trace:");
             Console.WriteLine ("------------");
             while (top != null) {
-                Console.WriteLine (" at {0} (Module: {1}, Line: {2})", top.Method.Name, top.Module.Name,
+                Console.WriteLine (" at {0} (Module: {1}, Line: {2})",
+                    top.Method != null ? top.Method.Name : "__main__",
+                    top.Module.Name,
                     top.Location != null ?
                     top.Location.Line + 1 : 
                     0);

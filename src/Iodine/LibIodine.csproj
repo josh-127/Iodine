@@ -104,13 +104,10 @@
     <Compile Include="Compiler\Emit\IBytecodeOptimization.cs" />
     <Compile Include="Compiler\Emit\Optimizations\ControlFlowOptimization.cs" />
     <Compile Include="Compiler\Emit\Optimizations\InstructionOptimization.cs" />
-    <Compile Include="Compiler\Emit\MethodBuilder.cs" />
     <Compile Include="Compiler\Emit\ModuleBuilder.cs" />
     <Compile Include="Compiler\Emit\EmitContext.cs" />
     <Compile Include="Runtime\IodineModule.cs" />
     <Compile Include="Runtime\IodineMethod.cs" />
-    <Compile Include="Runtime\StandardModules\RandomModule.cs" />
-    <Compile Include="Runtime\StandardModules\IOModule.cs" />
     <Compile Include="Runtime\StandardModules\RegexModule.cs" />
     <Compile Include="Runtime\StandardModules\HashModule.cs" />
     <Compile Include="Runtime\StandardModules\ThreadingModule.cs" />
@@ -151,7 +148,6 @@
     <Compile Include="Runtime\IodineGenerator.cs" />
     <Compile Include="Runtime\IodineEnum.cs" />
     <Compile Include="Runtime\IodineBoundMethod.cs" />
-    <Compile Include="Compiler\Emit\ClassBuilder.cs" />
     <Compile Include="Runtime\StandardTypes\IodineStackFrameWrapper.cs" />
     <Compile Include="Util\LinkedStack.cs" />
     <Compile Include="Runtime\StandardTypes\IodineDictionary.cs" />
@@ -237,6 +233,11 @@
     <Compile Include="Compiler\Ast\DecoratedFunction.cs" />
     <Compile Include="Util\ObjectDictionary.cs" />
     <Compile Include="Runtime\IodineName.cs" />
+    <Compile Include="Compiler\Emit\MethodBuilder.cs" />
+    <Compile Include="Runtime\CodeObject.cs" />
+    <Compile Include="Compiler\Emit\BytecodeFile.cs" />
+    <Compile Include="Compiler\Ast\Function.cs" />
+    <Compile Include="Runtime\StandardModules\InspectModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

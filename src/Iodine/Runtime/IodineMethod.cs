@@ -29,27 +29,30 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+    [Flags]
+    public enum MethodFlags
+    {
+        AcceptsVarArgs = 0x01,
+        AcceptsKwargs = 0x02,
+        HasDefaultParameters = 0x04,
+        HasTypedParameters = 0x08
+    }
+
     /// <summary>
     /// Abstract class representing an IodineMethod containing Iodine bytecode. This 
     /// is the only class that is directly invokable by the virtual machine
     /// </summary>
-    public abstract class IodineMethod : IodineObject
+    public class IodineMethod : IodineObject
     {
         private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
 
-        /// <summary>
-        /// Gets the bytecode which defines this method
-        /// </summary>
-        /// <value>The body.</value>
-        public Instruction[] Body {
-            get;
-            internal set;
-        }
+        public readonly CodeObject Bytecode;
 
         private string name;
 
@@ -71,66 +74,90 @@ namespace Iodine.Runtime
         /// How many parameters the method can receive
         /// </summary>
         /// <value>The parameter count.</value>
-        public int ParameterCount {
-            get;
-            protected set;
-        }
+        public readonly int ParameterCount;
 
         /// <summary>
         /// Does this method accept variable arguments?
         /// </summary>
         /// <value><c>true</c> if variadic; otherwise, <c>false</c>.</value>
-        public bool Variadic {
-            get;
-            protected set;
-        }
+        public readonly bool Variadic;
 
         /// <summary>
         /// Does this method accept keyword arguments?
         /// </summary>
         /// <value><c>true</c> if accepts keyword arguments; otherwise, <c>false</c>.</value>
-        public bool AcceptsKeywordArgs {
-            get;
-            protected set;
-        }
+        public readonly bool AcceptsKeywordArgs;
+
+        /// <summary>
+        /// Does this method have default values
+        /// </summary>
+        public readonly bool HasDefaultValues;
+
+        public readonly int DefaultValuesStartIndex;
 
         /// <summary>
         /// Does this method have a chance of yielding to the caller?
         /// </summary>
         /// <value><c>true</c> if generator; otherwise, <c>false</c>.</value>
-        public bool Generator {
-            get;
-            set;
-        }
+        public readonly bool Generator;
 
         /// <summary>
         /// Module in which this method was defined in
         /// </summary>
         /// <value>The module.</value>
-        public IodineModule Module {
-            get;
-            protected set;
-        }
+        public readonly IodineModule Module;
 
-        /// <summary>
-        /// Is this an instance method
-        /// </summary>
-        /// <value><c>true</c> if instance method; otherwise, <c>false</c>.</value>
-        public bool InstanceMethod {
-            get;
-            protected set;
-        }
 
         /// <summary>
         /// Maps each parameter to a local variable index, used by the virtual machine
         /// </summary>
-        public readonly Dictionary<string, int> Parameters = new Dictionary<string, int> ();
+        public readonly List<string> Parameters = new List<string> ();
+        public readonly IodineObject[] DefaultValues;
 
-        protected IodineMethod ()
+        public readonly string VarargsParameter;
+        public readonly string KwargsParameter;
+
+        public IodineMethod (
+            IodineModule module,
+            IodineString name,
+            CodeObject bytecode,
+            IodineTuple parameters,
+            MethodFlags flags,
+            IodineObject[] defaultValues,
+            int defaultStart = 0
+        )
             : base (MethodTypeDef)
         {
+            Module = module;
+            SetParameters (parameters);
+            Bytecode = bytecode;
+            ParameterCount = Parameters.Count;
+            Variadic = (flags & MethodFlags.AcceptsVarArgs) != 0;
+            AcceptsKeywordArgs = (flags & MethodFlags.AcceptsKwargs) != 0;
+            HasDefaultValues = (flags & MethodFlags.HasDefaultParameters) != 0;
+            DefaultValuesStartIndex = defaultStart;
+            DefaultValues = defaultValues;
+            Name = name.ToString ();
             SetAttribute ("__doc__", IodineString.Empty);
             SetAttribute ("__invoke__", new BuiltinMethodCallback (invoke, this));
+
+            if (AcceptsKeywordArgs) {
+                KwargsParameter = Parameters.Last ();
+
+                if (Variadic) {
+                    VarargsParameter = Parameters [Parameters.Count - 2];
+                }
+            } else if (Variadic) {
+                VarargsParameter = Parameters.Last ();
+            }
+        }
+
+
+        private void SetParameters (IodineTuple tuple)
+        {
+            for (int i = 0; i < tuple.Objects.Length; i++) {
+                Parameters.Add (tuple.Objects [i].ToString ());
+            }
         }
 
         /// <summary>
@@ -156,24 +183,21 @@ namespace Iodine.Runtime
         /// <param name="arguments">Arguments.</param>
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            if (Generator) {
-                /*
-                 * If this method happens to be a generator method (Which just means it has
-                 * a yield statement in it), we will attempt to invoke it in the VM and check
-                 * if the method yielded or not. If the method did yield, we must return a 
-                 * generator so the caller can iterate over any other items which this method
-                 * may yield. If the method did not yield, we just return the original value
-                 * returned
-                 */
-                StackFrame frame = new StackFrame (this, vm.Top.Arguments, vm.Top, null);
-                IodineObject initialValue = vm.InvokeMethod (this, frame, null, arguments);
+            /*
+             * If this method happens to be a generator method (Which just means it has
+             * a yield statement in it), we will attempt to invoke it in the VM and check
+             * if the method yielded or not. If the method did yield, we must return a 
+             * generator so the caller can iterate over any other items which this method
+             * may yield. If the method did not yield, we just return the original value
+             * returned
+             */
+            StackFrame frame = new StackFrame (this.Module, this, vm.Top.Arguments, vm.Top, null);
+            IodineObject initialValue = vm.InvokeMethod (this, frame, null, arguments);
 
-                if (frame.Yielded) {
-                    return new IodineGenerator (frame, this, arguments, initialValue);
-                }
-                return initialValue;
+            if (frame.Yielded) {
+                return new IodineGenerator (frame, this, arguments, initialValue);
             }
-            return vm.InvokeMethod (this, null, arguments);
+            return initialValue;
         }
 
         public override string ToString ()

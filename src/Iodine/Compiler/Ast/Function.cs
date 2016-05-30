@@ -1,4 +1,4 @@
-/**
+﻿/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -28,55 +28,64 @@
 **/
 
 using System;
-using System.Text;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-    public class ClassDeclaration : AstNode
+    public abstract class Function : AstNode
     {
-        public readonly string Name;
-        public readonly string Documentation;
-        public readonly List<AstNode> Interfaces = new List<AstNode> ();
-        public readonly List<AstNode> Mixins = new List<AstNode> ();
+        public readonly StatementList Body;
 
-        public AstNode BaseClass {
+        public string Name {
+            internal set;
             get;
-            set;
         }
 
-        public FunctionDeclaration Constructor {
+        public string Documentation {
+            protected set;
             get;
-            set;
         }
 
-        public readonly List<AstNode> Members = new List<AstNode> ();
-
-        public ClassDeclaration (SourceLocation location,
-            string name,
-            string doc) : base (location)
-        {
-            Name = name;
-            Documentation = doc;
-            FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, false, new List<NamedParameter> (), "");
-            dummyCtor.Body.AddStatement (new SuperCallStatement (location, this, new ArgumentList (location)));
-            Constructor = dummyCtor;
+        public List<NamedParameter> Parameters { 
+            protected set;
+            get; 
         }
 
-        public void Add (AstNode item)
-        {
-            Members.Add (item);
+        public bool InstanceMethod {
+            protected set;
+            get;
         }
 
-        public override void Visit (AstVisitor visitor)
+        public bool Variadic {
+            protected set;
+            get;
+        }
+
+        public bool AcceptsKeywordArgs {
+            protected set;
+            get; 
+        }
+
+        public bool HasDefaultValues {
+            protected set;
+            get;
+        }
+
+        public Function (SourceLocation location)
+            : base (location)
         {
-            visitor.Accept (this);
+            Body = new StatementList (location);
+        }
+
+        public void AddStatement (AstNode statement)
+        {
+            Body.AddStatement (statement);
         }
 
         public override void VisitChildren (AstVisitor visitor)
         {
-            Constructor.Visit (visitor);
-            Members.ForEach (p => p.Visit (visitor));
+            Body.VisitChildren (visitor);
         }
     }
 }
+

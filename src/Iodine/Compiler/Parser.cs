@@ -100,7 +100,7 @@ namespace Iodine.Compiler
         #region Declarations
 
         /*
-         * class <name> [: <baseclass> [, <interfaces>, ...]] {
+         * class <name> [extends <baseclass> [implements <interfaces>, ...]] {
          * 
          * }
          */
@@ -110,18 +110,17 @@ namespace Iodine.Compiler
 
             string name = Expect (TokenClass.Identifier).Value;
 
-            List<string> baseClass = new List<string> ();
+            ClassDeclaration clazz = new ClassDeclaration (Location, name, doc);
+
             if (Accept (TokenClass.Keyword, "extends")) {
-                baseClass.Add (ParseClassName ());
+                clazz.BaseClass = ParseExpression ();
             }
 
             if (Accept (TokenClass.Keyword, "implements")) {
                 do {
-                    baseClass.Add (ParseClassName ());
+                    clazz.Interfaces.Add (ParseExpression ());
                 } while (Accept (TokenClass.Comma));
             }
-
-            ClassDeclaration clazz = new ClassDeclaration (Location, name, baseClass, doc);
 
             if (Accept (TokenClass.Keyword, "use")) {
                 do {
@@ -318,13 +317,15 @@ namespace Iodine.Compiler
             bool isInstanceMethod;
             bool isVariadic;
             bool hasKeywordArgs;
+            bool hasDefaultVals;
 
             Token ident = Expect (TokenClass.Identifier);
 
             List<NamedParameter> parameters = ParseFuncParameters (
               out isInstanceMethod,
               out isVariadic,
-              out hasKeywordArgs
+              out hasKeywordArgs,
+              out hasDefaultVals
             );
 
             FunctionDeclaration decl = new FunctionDeclaration (Location, ident != null ?
@@ -332,6 +333,7 @@ namespace Iodine.Compiler
                 isInstanceMethod,
                 isVariadic,
                 hasKeywordArgs,
+                hasDefaultVals,
                 parameters,
                 doc
             );
@@ -342,19 +344,19 @@ namespace Iodine.Compiler
                     decl.AddStatement (new ReturnStatement (Location, ParseExpression ()));
                 } else {
                     Expect (TokenClass.OpenBrace);
-                    CodeBlock scope = new CodeBlock (Location);
+                    StatementList scope = new StatementList (Location);
 
                     if (Match (TokenClass.Keyword, "super")) {
-                        scope.Add (ParseSuperCall (cdecl));
-                    } else if (cdecl != null && cdecl.Name == decl.Name && cdecl.Base.Count > 0) {
+                        scope.AddStatement (ParseSuperCall (cdecl));
+                    } else if (cdecl != null && cdecl.Name == decl.Name) {
                         /*
                          * If this is infact a constructor and no super call is provided, we must implicitly call super ()
                          */
-                        scope.Add (new SuperCallStatement (decl.Location, cdecl, new ArgumentList (decl.Location)));
+                        scope.AddStatement (new SuperCallStatement (decl.Location, cdecl, new ArgumentList (decl.Location)));
                     }
 
                     while (!Match (TokenClass.CloseBrace)) {
-                        scope.Add (ParseStatement ());
+                        scope.AddStatement (ParseStatement ());
                     }
 
                     decl.AddStatement (scope);
@@ -367,11 +369,13 @@ namespace Iodine.Compiler
         private List<NamedParameter> ParseFuncParameters (
             out bool isInstanceMethod,
             out bool isVariadic,
-            out bool hasKeywordArgs)
+            out bool hasKeywordArgs,
+            out bool hasDefaultValues)
         {
             isVariadic = false;
             hasKeywordArgs = false;
             isInstanceMethod = false;
+            hasDefaultValues = false;
             List<NamedParameter> ret = new List<NamedParameter> ();
             Expect (TokenClass.OpenParan);
             if (Accept (TokenClass.Keyword, "self")) {
@@ -403,12 +407,20 @@ namespace Iodine.Compiler
                     Token param = Expect (TokenClass.Identifier);
 
                     AstNode type = null;
+                    AstNode value = null;
 
                     if (Accept (TokenClass.Colon)) {
                         type = ParseExpression ();
                     }
 
-                    ret.Add (new NamedParameter (param.Value, type));
+                    if (Accept (TokenClass.Operator, "=")) {
+                        value = ParseExpression ();
+                        hasDefaultValues = true;
+                    } else if (hasDefaultValues) {
+                        //TODO: create error
+                    }
+
+                    ret.Add (new NamedParameter (param.Value, type, value));
                 }
                 if (!Accept (TokenClass.Comma)) {
                     break;
@@ -512,6 +524,8 @@ namespace Iodine.Compiler
                     return ParseIf ();
                 case "given":
                     return ParseGiven ();
+                case "for":
+                    return ParseFor ();
                 case "foreach":
                     return ParseForeach ();
                 case "with":
@@ -540,20 +554,7 @@ namespace Iodine.Compiler
                     return new ContinueStatement (Location);
                 case "super":
                     errorLog.Add (Errors.SuperCalledAfter, Location);
-                    return ParseSuperCall (new ClassDeclaration (Location, "", null, null));
-                }
-
-                /*
-                 * HACK: In order to make semicolons optional, there has to be a way distinguish between the
-                 * for statement and for used in a generator expression. This can be accomplished by checking
-                 * to see if there is a parenthesis after the for
-                 */
-                if (Match (TokenClass.Keyword, "for")) {
-                    bool isExpression = PeekToken () == null || PeekToken (1).Class != TokenClass.OpenParan;
-
-                    if (!isExpression) {
-                        return ParseFor ();
-                    }
+                    return ParseSuperCall (new ClassDeclaration (Location, "", null));
                 }
             }
 
@@ -1522,18 +1523,21 @@ namespace Iodine.Compiler
             bool isInstanceMethod;
             bool isVariadic;
             bool acceptsKwargs;
+            bool hasDefaultVals;
 
             List<NamedParameter> parameters = ParseFuncParameters (
                 out isInstanceMethod,
                 out isVariadic,
-                out acceptsKwargs
+                out acceptsKwargs,
+                out hasDefaultVals
             );
 
             LambdaExpression decl = new LambdaExpression (
                 Location, 
                 isInstanceMethod, 
                 isVariadic, 
-                acceptsKwargs, 
+                acceptsKwargs,
+                hasDefaultVals,
                 parameters
             );
 

@@ -90,7 +90,13 @@ namespace Iodine.Runtime
         BuildGenExpr = 0x33,
         CastLocal = 0x34,
         IncludeMixin = 0x35,
-        ApplyMixin = 0x36
+        ApplyMixin = 0x36,
+        BuildFunction = 0x37,
+        BuildClass = 0x39,
+        BuildEnum = 0x3A,
+        BuildContract = 0x3B,
+        BuildMixin = 0x3C,
+        BuildTrait = 0x3D
     }
 }
 

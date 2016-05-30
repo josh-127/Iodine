@@ -52,6 +52,9 @@ namespace Iodine.Runtime
             SetAttribute ("chr", new BuiltinMethodCallback (Chr, null));
             SetAttribute ("ord", new BuiltinMethodCallback (Ord, null));
             SetAttribute ("len", new BuiltinMethodCallback (Len, null));
+            SetAttribute ("id", new BuiltinMethodCallback (GetId, null));
+            SetAttribute ("locals", new BuiltinMethodCallback (Locals, null));
+            SetAttribute ("globals", new BuiltinMethodCallback (Globals, null));
             SetAttribute ("hex", new BuiltinMethodCallback (Hex, null));
             SetAttribute ("property", new BuiltinMethodCallback (Property, null));
             SetAttribute ("eval", new BuiltinMethodCallback (Eval, null));
@@ -203,7 +206,7 @@ namespace Iodine.Runtime
                     module = vm.LoadModule (name);
                     VirtualMachine.ModuleCache [fullPath] = module;
                     if (module.Initializer != null) {
-                        module.Initializer.Invoke (vm, new IodineObject[] { });
+                        module.Invoke (vm, new IodineObject[] { });
                     }
                 }
 
@@ -237,13 +240,15 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
             IodineDictionary hash = args [1] as IodineDictionary;
-            Dictionary<string, IodineObject> items = new Dictionary<string, IodineObject> ();
+            IodineContext context = new IodineContext ();
+
+            context.Globals.Clear ();
 
             foreach (IodineObject key in hash.Keys) {
-                items [key.ToString ()] = hash.Get (key);
+                context.Globals [key.ToString ()] = hash.Get (key);
             }
 
-            VirtualMachine newVm = new VirtualMachine (vm.Context, items);
+            VirtualMachine newVm = new VirtualMachine (context);
 
             try {
                 return args [0].Invoke (newVm, new IodineObject[]{ });
@@ -251,6 +256,22 @@ namespace Iodine.Runtime
                 vm.RaiseException (ex.OriginalException);
                 return IodineNull.Instance;
             }
+        }
+
+        [BuiltinDocString (
+            "Returns a dictionary of all local variables."
+        )]
+        private IodineObject Locals (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            return new IodineDictionary (vm.Top.Locals);
+        }
+
+        [BuiltinDocString (
+            "Returns a dictionary of all global variables."
+        )]
+        private IodineObject Globals (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            return new IodineDictionary (vm.Top.Module.Attributes);
         }
 
         [BuiltinDocString (
@@ -361,6 +382,18 @@ namespace Iodine.Runtime
             return new IodineString (accum.ToString ());
         }
 
+        [BuiltinDocString (
+            "Returns a unique identifier for the supplied argument. ",
+            "@param obj The object whose unique identifier will be returned."
+        )]
+        private IodineObject GetId (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length <= 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return IodineNull.Instance;
+            }
+            return new IodineInteger (args [0].Id);
+        }
 
         [BuiltinDocString (
             "Returns the length of the specified object. ",
@@ -410,18 +443,19 @@ namespace Iodine.Runtime
         {
             VirtualMachine vm = host;
 
-            if (dict != null) {
-                vm = new VirtualMachine (host.Context, new Dictionary<string, IodineObject> ());
+            IodineContext context = host.Context;
 
-                foreach (string glob in host.Globals.Keys) {
-                    vm.Globals [glob] = host.Globals [glob];
-                }
+            if (dict != null) {
+                context = new IodineContext ();
+                context.Globals.Clear ();
+
+                vm = new VirtualMachine (host.Context);
 
                 foreach (IodineObject key in dict.Keys) {
-                    vm.SetGlobal (key.ToString (), dict.Get (key));
+                    context.Globals [key.ToString ()] = dict.Get (key);
                 }
             }
-            IodineContext context = new IodineContext ();
+
             SourceUnit code = SourceUnit.CreateFromSource (source);
             IodineModule module = null;
             try {
@@ -430,7 +464,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineSyntaxException (ex.ErrorLog));
                 return IodineNull.Instance;
             }
-            return vm.InvokeMethod (module.Initializer, null, new IodineObject[]{ });
+            return module.Invoke (vm, new IodineObject[] { });
         }
 
         [BuiltinDocString (

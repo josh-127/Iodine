@@ -60,6 +60,7 @@ namespace Iodine.Compiler
 
         private SymbolTable symbolTable;
         private CompilationUnit root;
+        private int _nextTemporary = 2048;
 
         private IodineCompiler (SymbolTable symbolTable, CompilationUnit root)
         {
@@ -85,56 +86,36 @@ namespace Iodine.Compiler
 
             root.Visit (this);
 
-            moduleBuilder.Initializer.FinalizeLabels ();
-
-            if (context.ShouldOptimize) {
-                OptimizeObject (moduleBuilder);
-            }
+            moduleBuilder.Initializer.Finalize ();
 
             DestroyContext ();
 
             return moduleBuilder;
         }
 
-        private void OptimizeObject (IodineObject obj)
+        private void OptimizeObject (CodeBuilder code)
         {
-            foreach (IodineObject attr in obj.Attributes.Values) {
-                if (attr is MethodBuilder) {
-                    MethodBuilder method = attr as MethodBuilder;
-                    foreach (IBytecodeOptimization opt in Optimizations) {
-                        opt.PerformOptimization (method);
-                    }
-                }
+            foreach (IBytecodeOptimization opt in Optimizations) {
+                opt.PerformOptimization (code);
             }
         }
 
-        private void CreateContext ()
+        private void CreateContext (bool isInClassBody = false)
         {
             emitContexts.Push (new EmitContext (Context.SymbolTable,
                 Context.CurrentModule,
                 Context.CurrentMethod,
                 Context.IsInClass,
-                Context.CurrentClass
+                isInClassBody
             ));
         }
 
-        private void CreateContext (ClassBuilder clazz)
-        {
-            emitContexts.Push (new EmitContext (Context.SymbolTable,
-                Context.CurrentModule,
-                Context.CurrentMethod,
-                true,
-                clazz
-            ));
-        }
-
-        private void CreateContext (MethodBuilder methodBuilder)
+        private void CreateContext (CodeBuilder methodBuilder)
         {
             emitContexts.Push (new EmitContext (Context.SymbolTable,
                 Context.CurrentModule,
                 methodBuilder,
-                Context.IsInClass,
-                Context.CurrentClass
+                Context.IsInClass
             ));
         }
 
@@ -144,7 +125,7 @@ namespace Iodine.Compiler
                 Context.CurrentModule,
                 Context.CurrentMethod,
                 Context.IsInClass,
-                Context.CurrentClass,
+                false,
                 true,
                 temporary
             ));
@@ -155,6 +136,21 @@ namespace Iodine.Compiler
             emitContexts.Pop ();
         }
 
+        private int CreateTemporary ()
+        {
+            return Context.CurrentModule.DefineConstant (
+                new IodineName ("$tmp" + (_nextTemporary++).ToString ())
+            );
+        }
+
+        private int CreateName (string name)
+        {
+            int i= Context.CurrentModule.DefineConstant (
+                new IodineName (name)
+            );
+            return i;
+        }
+
         public override void Accept (CompilationUnit ast)
         {
             ast.VisitChildren (this);
@@ -162,380 +158,303 @@ namespace Iodine.Compiler
 
         #region Declarations
 
-        public ClassBuilder CompileClass (ClassDeclaration classDecl)
+        private void CompileClass (ClassDeclaration classDecl)
         {
-            MethodBuilder constructor = CompileGlobalMethod (classDecl.Constructor);
-            if (classDecl.Constructor.Body.Statements.Count == 0) {
-                if (classDecl.Base.Count > 0) {
-                    foreach (string subclass in classDecl.Base) {
-                        string[] contract = subclass.Split ('.');
-                        constructor.EmitInstruction (classDecl.Location,
-                            Opcode.LoadGlobal,
-                            Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
-                        );
-                        for (int j = 1; j < contract.Length; j++) {
-                            constructor.EmitInstruction (classDecl.Location,
-                                Opcode.LoadAttribute,
-                                Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
-                            );
-                        }
-                        constructor.EmitInstruction (classDecl.Location, Opcode.InvokeSuper, 0);
-                    }
-                }
-            }
+            Context.SymbolTable.AddSymbol (classDecl.Name);
 
-            MethodBuilder initializer = new MethodBuilder (Context.CurrentModule,
-                "__init__",
-                false,
-                0,
-                false,
-                false
-            );
-
-            ClassBuilder clazz = new ClassBuilder (classDecl.Name, initializer, constructor, Context.CurrentClass);
-
-            clazz.SetAttribute ("__doc__", new IodineString (classDecl.Documentation));
-
-            CreateContext (clazz);
-
-            CreateContext (initializer);
-
-            int typeIndex = Context.CurrentModule.DefineConstant (clazz);
-
-            foreach (AstNode mixinName in classDecl.Mixins) {
-                mixinName.Visit (this);
-                Context.CurrentMethod.EmitInstruction (mixinName.Location, Opcode.IncludeMixin, typeIndex);
-            }
-
-            DestroyContext ();
+            CreateContext (true);
 
             foreach (AstNode member in classDecl.Members) {
+                member.Visit (this);
+            }
+
+            DestroyContext ();
+
+            foreach (AstNode contract in classDecl.Interfaces) {
+                contract.Visit (this);
+            }
+
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildTuple, classDecl.Interfaces.Count);
+
+            if (classDecl.BaseClass != null) {
+                classDecl.BaseClass.Visit (this);
+            } else {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadNull);
+            }
+
+            CompileMethod (classDecl.Constructor);
+
+            Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (classDecl.Name));
+
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildClass, classDecl.Members.Count);
+
+        }
+
+        private void CompileContract (ContractDeclaration contractDecl)
+        {
+            Context.SymbolTable.AddSymbol (contractDecl.Name);
+
+            foreach (AstNode member in contractDecl.Members) {
                 if (member is FunctionDeclaration) {
-                    FunctionDeclaration func = member as FunctionDeclaration;
-
-                    if (func.Name == "__init__") {
-                        CreateContext (initializer);
-                        func.Body.Visit (this);
-                        DestroyContext ();
-                    } else if (func.InstanceMethod) {
-                        clazz.AddInstanceMethod (CompileGlobalMethod (func));
-                    } else {
-                        clazz.SetAttribute (func.Name, CompileGlobalMethod (func));
-                    }
-                } else if (member is ClassDeclaration) {
-                    ClassDeclaration subclass = member as ClassDeclaration;
-                    clazz.SetAttribute (subclass.Name, CompileClass (subclass));
-                } else if (member is EnumDeclaration) {
-                    EnumDeclaration enumeration = member as EnumDeclaration;
-                    clazz.SetAttribute (enumeration.Name, CompileEnum (enumeration));
-                } else if (member is Expression) {
-
-                    BinaryExpression expr = ((Expression)member).Child as BinaryExpression;
-
-                    NameExpression name = expr.Left as NameExpression;
-
-                    CreateContext (initializer);
-
-                    expr.Right.Visit (this);
-
-                    LoadAssociatedClass ();
-
-                    initializer.EmitInstruction (classDecl.Location,
-                        Opcode.StoreAttribute,
-                        Context.CurrentModule.DefineConstant (new IodineName (name.Value))
-                    );
-
-                    DestroyContext ();
-                } else {
-                    member.Visit (this);
+                    FunctionDeclaration funcDecl = member as FunctionDeclaration;
+                    CompileMethod (funcDecl);
                 }
             }
 
-            DestroyContext ();
+            Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (contractDecl.Name));
 
-            initializer.FinalizeLabels ();
-            constructor.FinalizeLabels ();
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildContract, contractDecl.Members.Count);
 
-            return clazz;
-        }
-
-        private IodineEnum CompileEnum (EnumDeclaration enumDecl)
-        {
-            IodineEnum ienum = new IodineEnum (enumDecl.Name);
-            foreach (string name in enumDecl.Items.Keys) {
-                ienum.AddItem (name, enumDecl.Items [name]);
-            }
-
-            ienum.SetAttribute ("__doc__", new IodineString (enumDecl.Documentation));
-
-            return ienum;
-        }
-
-        private IodineContract CompileContract (ContractDeclaration contractDecl)
-        {
-            IodineContract contract = new IodineContract (contractDecl.Name);
-            foreach (AstNode node in contractDecl.Members) {
-                FunctionDeclaration decl = node as FunctionDeclaration;
-                contract.AddMethod (new MethodBuilder (Context.CurrentModule,
-                    decl.Name,
-                    decl.InstanceMethod,
-                    decl.Parameters.Count,
-                    decl.Variadic,
-                    decl.AcceptsKeywordArgs
-                ));
-            }
-
-            contract.SetAttribute ("__doc__", new IodineString (contractDecl.Documentation));
-
-            return contract;
-        }
-
-        private IodineTrait CompileTrait (TraitDeclaration traitDecl)
-        {
-            IodineTrait trait = new IodineTrait (traitDecl.Name);
-            foreach (AstNode node in traitDecl.Members) {
-                FunctionDeclaration decl = node as FunctionDeclaration;
-                trait.AddMethod (new MethodBuilder (Context.CurrentModule,
-                    decl.Name,
-                    decl.InstanceMethod,
-                    decl.Parameters.Count,
-                    decl.Variadic,
-                    decl.AcceptsKeywordArgs
-                ));
-            }
-
-            trait.SetAttribute ("__doc__", new IodineString (traitDecl.Documentation));
-
-            return trait;
-        }
-
-        private IodineMixin CompileMixin (MixinDeclaration mixinDecl)
-        {
-            IodineMixin mixin = new IodineMixin (mixinDecl.Name);
-
-            foreach (AstNode node in mixinDecl.Members) {
-                FunctionDeclaration decl = node as FunctionDeclaration;
-
-                mixin.AddMethod (CompileGlobalMethod (decl));
-            }
-
-            return mixin;
         }
             
-        private MethodBuilder CompileGlobalMethod (FunctionDeclaration funcDecl)
+        private void CompileTrait (TraitDeclaration traitDecl)
         {
-            Context.SymbolTable.EnterScope ();
+            Context.SymbolTable.AddSymbol (traitDecl.Name);
 
-            MethodBuilder methodBuilder = new MethodBuilder (Context.CurrentModule,
-                funcDecl.Name,
-                funcDecl.InstanceMethod,
-                funcDecl.Parameters.Count,
-                funcDecl.Variadic,
-                funcDecl.AcceptsKeywordArgs
-            );
-
-
-            methodBuilder.SetAttribute ("__doc__", new IodineString (funcDecl.Documentation));
-            methodBuilder.SetAttribute ("__name__", new IodineString (funcDecl.Name));
-            methodBuilder.SetAttribute ("__module__", new IodineString (Context.CurrentModule.Name));
-
-            CreateContext (methodBuilder);
-
-            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-                int symbolIndex = Context.SymbolTable.AddSymbol (funcDecl.Parameters [i].Name);
-                methodBuilder.Parameters [funcDecl.Parameters [i].Name] = symbolIndex;
-
-                if (funcDecl.Parameters [i].HasType) {
-                    funcDecl.Parameters [i].Type.Visit (this);
-                    Context.CurrentMethod.EmitInstruction (Opcode.CastLocal, symbolIndex);
+            foreach (AstNode member in traitDecl.Members) {
+                if (member is FunctionDeclaration) {
+                    FunctionDeclaration funcDecl = member as FunctionDeclaration;
+                    CompileMethod (funcDecl);
                 }
             }
-                
-            funcDecl.VisitChildren (this);
 
-            DestroyContext ();
+            Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (traitDecl.Name));
 
-            methodBuilder.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildTrait, traitDecl.Members.Count);
 
-            methodBuilder.FinalizeLabels ();
-
-            Context.SymbolTable.ExitScope ();
-
-            return methodBuilder;
         }
 
-        private void CompileLocalMethod (FunctionDeclaration funcDecl)
+        private void CompileMixin (MixinDeclaration mixinDecl)
         {
-            int index = Context.SymbolTable.AddSymbol (funcDecl.Name);
+            Context.SymbolTable.AddSymbol (mixinDecl.Name);
 
-            Context.SymbolTable.EnterScope ();
-
-            MethodBuilder anonMethod = new MethodBuilder (Context.CurrentMethod,
-                Context.CurrentModule,
-                null,
-                funcDecl.InstanceMethod,
-                funcDecl.Parameters.Count,
-                funcDecl.Variadic,
-                funcDecl.AcceptsKeywordArgs
-            );
-
-            anonMethod.SetAttribute ("__doc__", new IodineString (funcDecl.Documentation));
-
-            CreateContext (anonMethod);
-
-            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-                int symbolIndex = Context.SymbolTable.AddSymbol (funcDecl.Parameters [i].Name);
-                anonMethod.Parameters [funcDecl.Parameters [i].Name] = symbolIndex;
-
-                if (funcDecl.Parameters [i].HasType) {
-                    funcDecl.Parameters [i].Type.Visit (this);
-                    Context.CurrentMethod.EmitInstruction (Opcode.CastLocal, symbolIndex);
+            foreach (AstNode member in mixinDecl.Members) {
+                if (member is FunctionDeclaration) {
+                    FunctionDeclaration funcDecl = member as FunctionDeclaration;
+                    CompileMethod (funcDecl);
+                    Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (funcDecl.Name));
                 }
             }
 
-            funcDecl.VisitChildren (this);
+            Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (mixinDecl.Name));
 
-            anonMethod.EmitInstruction (funcDecl.Location, Opcode.LoadNull);
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildClass, mixinDecl.Members.Count);
 
-            anonMethod.FinalizeLabels ();
+        }
 
-            DestroyContext ();
+        private void CompileEnum (EnumDeclaration enumDecl)
+        {
+            Context.SymbolTable.AddSymbol (enumDecl.Name);
 
-            Context.CurrentMethod.EmitInstruction (funcDecl.Location,
+            foreach (KeyValuePair<string, int> key in enumDecl.Items) {
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadConst,
+                    CreateName (key.Key)
+                );
+
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadConst, 
+                    Context.CurrentModule.DefineConstant (new IodineInteger (key.Value))
+                );
+
+            }
+
+            Context.CurrentMethod.EmitInstruction (
                 Opcode.LoadConst,
-                Context.CurrentModule.DefineConstant (anonMethod)
+                CreateName (enumDecl.Name)
             );
 
-            Context.CurrentMethod.EmitInstruction (funcDecl.Location, Opcode.BuildClosure);
-            Context.CurrentMethod.EmitInstruction (funcDecl.Location,
-                Opcode.StoreLocal,
-                index
-            );
-
-            Context.SymbolTable.ExitScope ();
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildEnum, enumDecl.Items.Count);
         }
-            
+
+        private void CompileMethod (Function funcDecl)
+        {
+            Context.SymbolTable.AddSymbol (funcDecl.Name);
+
+            Context.SymbolTable.EnterScope ();
+
+            CodeBuilder bytecode = new CodeBuilder ();
+
+            CreateContext (bytecode);
+
+            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
+                Context.SymbolTable.AddSymbol (funcDecl.Parameters [i].Name);
+
+                if (funcDecl.Parameters [i].HasType) {
+                    funcDecl.Parameters [i].Type.Visit (this);
+                    Context.CurrentMethod.EmitInstruction (Opcode.CastLocal, CreateName (funcDecl.Parameters [i].Name));
+                }
+            }
+
+            funcDecl.VisitChildren (this);
+
+            DestroyContext ();
+
+            bytecode.Finalize ();
+
+            MethodFlags flags = new MethodFlags ();
+
+            if (funcDecl.AcceptsKeywordArgs) {
+                flags |= MethodFlags.AcceptsKwargs;
+            }
+
+            if (funcDecl.Variadic) {
+                flags |= MethodFlags.AcceptsVarArgs;
+            }
+
+            if (funcDecl.HasDefaultValues) {
+                flags |= MethodFlags.HasDefaultParameters;
+
+                int startingIndex = funcDecl.Parameters.FindIndex (p => p.HasDefaultValue);
+                int defaultParamCount = 0;
+
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadConst,
+                    Context.CurrentModule.DefineConstant (new IodineInteger (startingIndex))
+                );
+
+                for (int i = 0; i < funcDecl.Parameters.Count; i++) {
+                    if (funcDecl.Parameters [i].HasDefaultValue) {
+                        funcDecl.Parameters [i].DefaultValue.Visit (this);
+                        defaultParamCount++;
+                    }
+                }
+
+                Context.CurrentMethod.EmitInstruction (Opcode.BuildTuple, defaultParamCount);
+            }
+
+            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadConst,
+                    Context.CurrentModule.DefineConstant (new IodineString (funcDecl.Parameters [i].Name))
+                );
+            }
+
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildTuple, funcDecl.Parameters.Count);
+
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.LoadConst,
+                Context.CurrentModule.DefineConstant (bytecode)
+            );
+
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.LoadConst,
+                Context.CurrentModule.DefineConstant (new IodineString (funcDecl.Name))
+            );
+
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildFunction, (int)flags);
+
+            symbolTable.ExitScope ();
+        }
+
         public override void Accept (ClassDeclaration classDecl)
         {
-            ClassBuilder clazz = CompileClass (classDecl);
-        
-            if (Context.SymbolTable.IsInGlobalScope) {
-                Context.CurrentModule.SetAttribute (classDecl.Name, clazz);
+            CompileClass (classDecl);
+
+            if (Context.IsInClassBody) {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (classDecl.Name));
+            } else if (symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreGlobal, CreateName (classDecl.Name));
             } else {
-                Context.CurrentMethod.EmitInstruction (classDecl.Location,
-                    Opcode.LoadConst,
-                    Context.CurrentModule.DefineConstant (clazz)
-                );
-
-                Context.CurrentMethod.EmitInstruction (classDecl.Location,
-                    Opcode.StoreLocal,
-                    Context.SymbolTable.AddSymbol (clazz.Name)
-                );
-            }
-        }
-
-        public override void Accept (EnumDeclaration enumDecl)
-        {
-            IodineEnum ienum = CompileEnum (enumDecl);
-
-            if (!Context.SymbolTable.IsInGlobalScope) {
-                Context.CurrentMethod.EmitInstruction (enumDecl.Location,
-                    Opcode.LoadConst,
-                    Context.CurrentModule.DefineConstant (ienum)
-                );
-
-                Context.CurrentMethod.EmitInstruction (enumDecl.Location,
-                    Opcode.StoreLocal,
-                    Context.SymbolTable.AddSymbol (enumDecl.Name)
-                );
-            } else {
-                Context.CurrentModule.SetAttribute (enumDecl.Name, ienum);
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, CreateName (classDecl.Name));
             }
         }
 
         public override void Accept (ContractDeclaration contractDecl)
         {
-            IodineContract contract = CompileContract (contractDecl);
+            CompileContract (contractDecl);
 
-            if (!Context.SymbolTable.IsInGlobalScope) {
-                Context.CurrentMethod.EmitInstruction (contractDecl.Location,
-                    Opcode.LoadConst,
-                    Context.CurrentModule.DefineConstant (contract)
-                );
-
-
-                Context.CurrentMethod.EmitInstruction (contractDecl.Location,
-                    Opcode.StoreLocal,
-                    Context.SymbolTable.AddSymbol (contractDecl.Name)
-                );
+            if (Context.IsInClassBody) {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (contractDecl.Name));
+            } else if (symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreGlobal, CreateName (contractDecl.Name));
             } else {
-                Context.CurrentModule.SetAttribute (contractDecl.Name, contract);
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, CreateName (contractDecl.Name));
             }
         }
 
         public override void Accept (TraitDeclaration traitDecl)
         {
-            IodineTrait trait = CompileTrait (traitDecl);
+            CompileTrait (traitDecl);
 
-            if (!Context.SymbolTable.IsInGlobalScope) {
-                Context.CurrentMethod.EmitInstruction (traitDecl.Location,
-                    Opcode.LoadConst,
-                    Context.CurrentModule.DefineConstant (trait)
-                );
-
-
-                Context.CurrentMethod.EmitInstruction (traitDecl.Location,
-                    Opcode.StoreLocal,
-                    Context.SymbolTable.AddSymbol (traitDecl.Name)
-                );
+            if (Context.IsInClassBody) {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (traitDecl.Name));
+            } else if (symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreGlobal, CreateName (traitDecl.Name));
             } else {
-                Context.CurrentModule.SetAttribute (traitDecl.Name, trait);
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, CreateName (traitDecl.Name));
             }
         }
 
         public override void Accept (MixinDeclaration mixinDecl)
         {
-            IodineMixin mixin = CompileMixin (mixinDecl);
+            CompileMixin (mixinDecl);
 
-            if (!Context.SymbolTable.IsInGlobalScope) {
-                Context.CurrentMethod.EmitInstruction (mixinDecl.Location,
-                    Opcode.LoadConst,
-                    Context.CurrentModule.DefineConstant (mixin)
-                );
-
-
-                Context.CurrentMethod.EmitInstruction (mixinDecl.Location,
-                    Opcode.StoreLocal,
-                    Context.SymbolTable.AddSymbol (mixinDecl.Name)
-                );
+            if (Context.IsInClassBody) {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (mixinDecl.Name));
+            } else if (symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreGlobal, CreateName (mixinDecl.Name));
             } else {
-                Context.CurrentModule.SetAttribute (mixinDecl.Name, mixin);
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, CreateName (mixinDecl.Name));
+            }
+        }
+
+        public override void Accept (EnumDeclaration enumDecl)
+        {
+            CompileEnum (enumDecl);
+
+            if (Context.IsInClassBody) {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (enumDecl.Name));
+            } else if (symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreGlobal, CreateName (enumDecl.Name));
+            } else {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, CreateName (enumDecl.Name));
             }
         }
 
         public override void Accept (FunctionDeclaration funcDecl)
         {
-            if (!Context.SymbolTable.IsInGlobalScope) {
-                CompileLocalMethod (funcDecl);
+            CompileMethod (funcDecl);
+
+            if (Context.IsInClassBody) {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (funcDecl.Name));
+            } else if (symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreGlobal, CreateName (funcDecl.Name));
             } else {
-                Context.CurrentModule.SetAttribute (funcDecl.Name, CompileGlobalMethod (funcDecl));
+                Context.CurrentMethod.EmitInstruction (funcDecl.Location, Opcode.BuildClosure);
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, CreateName (funcDecl.Name));
             }
         }
 
         public override void Accept (DecoratedFunction funcDecl)
         {
-            IodineMethod method = CompileGlobalMethod (funcDecl.Function);
-            Context.CurrentMethod.EmitInstruction (
-                funcDecl.Decorator.Location,
-                Opcode.LoadConst,
-                Context.CurrentModule.DefineConstant (method)
-            );
+            CompileMethod (funcDecl.Function);
+
+            if (!(Context.IsInClassBody || symbolTable.IsInGlobalScope)) {
+                Context.CurrentMethod.EmitInstruction (Opcode.BuildClosure);
+            }
             funcDecl.Decorator.Visit (this);
             Context.CurrentMethod.EmitInstruction (Opcode.Invoke, 1);
-            Context.CurrentMethod.EmitInstruction (
-                Opcode.StoreGlobal,
-                Context.CurrentModule.DefineConstant (new IodineName (funcDecl.Function.Name))
-            );
+
+            if (Context.IsInClassBody) {
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (funcDecl.Function.Name));
+            } else if (symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreGlobal, CreateName (funcDecl.Function.Name));
+            } else {
+                Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, CreateName (funcDecl.Function.Name));
+            }
+        }
+
+        public override void Accept (CodeBlock scope)
+        {
+            Context.SymbolTable.EnterScope ();
+            scope.VisitChildren (this);
+            Context.SymbolTable.ExitScope ();
+        }
+
+        public override void Accept (StatementList stmtList)
+        {
+            stmtList.VisitChildren (this);
         }
 
         #endregion
@@ -545,8 +464,8 @@ namespace Iodine.Compiler
         public override void Accept (UseStatement useStmt)
         {
             string import = !useStmt.Relative ? useStmt.Module : Path.Combine (
-                                Path.GetDirectoryName (useStmt.Location.File),
-                                useStmt.Module);
+                Path.GetDirectoryName (useStmt.Location.File),
+                useStmt.Module);
             /*
              * Implementation detail: The use statement in all reality is simply an 
              * alias for the function require (); Here we translate the use statement
@@ -565,7 +484,8 @@ namespace Iodine.Compiler
             } else {
                 IodineObject[] items = new IodineObject [useStmt.Imports.Count];
 
-                Context.CurrentModule.Initializer.EmitInstruction (useStmt.Location,
+                Context.CurrentModule.Initializer.EmitInstruction (
+                    useStmt.Location,
                     Opcode.LoadConst,
                     Context.CurrentModule.DefineConstant (new IodineString (import))
                 );
@@ -580,8 +500,10 @@ namespace Iodine.Compiler
                     }
                     Context.CurrentMethod.EmitInstruction (useStmt.Location, Opcode.BuildTuple, items.Length);
                 }
-                Context.CurrentMethod.EmitInstruction (useStmt.Location, Opcode.LoadGlobal,
-                    Context.CurrentModule.DefineConstant (new IodineName ("require"))
+                Context.CurrentMethod.EmitInstruction (
+                    useStmt.Location,
+                    Opcode.LoadGlobal,
+                    CreateName ("require")
                 );
 
                 Context.CurrentMethod.EmitInstruction (useStmt.Location, Opcode.Invoke,
@@ -595,42 +517,29 @@ namespace Iodine.Compiler
 
         public override void Accept (ExtendStatement extendStmt)
         {
-            IodineMixin mixin = new IodineMixin ("__anonymous__");
-            int mixinIndex = Context.CurrentModule.DefineConstant (mixin);
+            extendStmt.Class.Visit (this);
 
-            foreach (AstNode node in extendStmt.Members) {
-                FunctionDeclaration decl = node as FunctionDeclaration;
-                mixin.AddMethod (CompileGlobalMethod (decl));
+            foreach (AstNode member in extendStmt.Members) {
+                if (member is FunctionDeclaration) {
+                    FunctionDeclaration funcDecl = member as FunctionDeclaration;
+                    CompileMethod (funcDecl);
+                    Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (funcDecl.Name));
+                }
             }
+
+            Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName ("__anonymous__"));
+
+            Context.CurrentMethod.EmitInstruction (Opcode.BuildMixin, extendStmt.Members.Count);
+
+            Context.CurrentMethod.EmitInstruction (extendStmt.Location, Opcode.IncludeMixin);
 
             foreach (AstNode node in extendStmt.Mixins) {
                 node.Visit (this);
                 Context.CurrentMethod.EmitInstruction (
                     extendStmt.Location,
-                    Opcode.IncludeMixin,
-                    mixinIndex
+                    Opcode.IncludeMixin
                 );
             }
-
-            extendStmt.Class.Visit (this);
-
-            Context.CurrentMethod.EmitInstruction (
-                extendStmt.Location,
-                Opcode.ApplyMixin,
-                mixinIndex
-            );
-        }
-
-        public override void Accept (CodeBlock scope)
-        {
-            Context.SymbolTable.EnterScope ();
-            scope.VisitChildren (this);
-            Context.SymbolTable.ExitScope ();
-        }
-
-        public override void Accept (StatementList stmtList)
-        {
-            stmtList.VisitChildren (this);
         }
 
         public override void Accept (Statement stmt)
@@ -642,9 +551,13 @@ namespace Iodine.Compiler
         {
             switchStmt.GivenValue.Visit (this);
 
-            int temporary = Context.CurrentMethod.CreateTemporary ();
+            int temporary = CreateTemporary ();
 
-            Context.CurrentMethod.EmitInstruction (switchStmt.GivenValue.Location, Opcode.StoreLocal, temporary);
+            Context.CurrentMethod.EmitInstruction (
+                switchStmt.GivenValue.Location,
+                Opcode.StoreLocal,
+                temporary
+            );
 
             Label endSwitch = Context.CurrentMethod.CreateLabel ();
 
@@ -653,6 +566,7 @@ namespace Iodine.Compiler
 
                 CreatePatternContext (temporary);
                 caseStmt.Values.Visit (this);
+
                 DestroyContext ();
 
                 Context.CurrentMethod.EmitInstruction (caseStmt.Values.Location, Opcode.JumpIfFalse, nextLabel);
@@ -692,10 +606,11 @@ namespace Iodine.Compiler
             }
 
             if (tryExcept.ExceptionIdentifier != null) {
+                Context.SymbolTable.AddSymbol (tryExcept.ExceptionIdentifier);
                 Context.CurrentMethod.EmitInstruction (tryExcept.ExceptBody.Location, Opcode.LoadException);
                 Context.CurrentMethod.EmitInstruction (tryExcept.ExceptBody.Location,
                     Opcode.StoreLocal,
-                    Context.SymbolTable.AddSymbol (tryExcept.ExceptionIdentifier)
+                    CreateName (tryExcept.ExceptionIdentifier)
                 );
             }
 
@@ -821,7 +736,7 @@ namespace Iodine.Compiler
         {
             Label foreachLabel = Context.CurrentMethod.CreateLabel ();
             Label breakLabel = Context.CurrentMethod.CreateLabel ();
-            int tmp = Context.CurrentMethod.CreateTemporary (); 
+            int tmp = CreateTemporary (); 
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (foreachLabel);
@@ -832,7 +747,11 @@ namespace Iodine.Compiler
 
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.GetIter);
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.Dup);
-            Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.StoreLocal, tmp);
+            Context.CurrentMethod.EmitInstruction (
+                foreachStmt.Iterator.Location,
+                Opcode.StoreLocal,
+                tmp
+            );
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterReset);
             Context.CurrentMethod.MarkLabelPosition (foreachLabel);
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
@@ -845,12 +764,14 @@ namespace Iodine.Compiler
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterGetNext);
 
             if (foreachStmt.Items.Count == 1) {
+                Context.SymbolTable.AddSymbol (foreachStmt.Items [0]);
+
                 Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location,
                     Opcode.StoreLocal,
-                    Context.SymbolTable.AddSymbol (foreachStmt.Items [0])
+                    CreateName (foreachStmt.Items [0])
                 );
             } else {
-                
+
                 CompileForeachWithAutounpack (foreachStmt.Items);
             }
 
@@ -867,7 +788,7 @@ namespace Iodine.Compiler
 
         private void CompileForeachWithAutounpack (List<string> identifiers)
         {
-            int local = Context.CurrentMethod.CreateTemporary ();
+            int local = CreateTemporary ();
 
             Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, local);
 
@@ -884,14 +805,14 @@ namespace Iodine.Compiler
 
                 Context.CurrentMethod.EmitInstruction (Opcode.LoadIndex);
 
-                int localIndex = symbolTable.IsSymbolDefined (ident) ?
-                    symbolTable.GetSymbolIndex (ident) :
+                if (!symbolTable.IsSymbolDefined (ident)) {
                     symbolTable.AddSymbol (ident);
+                }
+
                 Context.CurrentMethod.EmitInstruction (
                     Opcode.StoreLocal,
-                    localIndex
+                    CreateName (ident)
                 );
-
             }
         }
 
@@ -910,7 +831,7 @@ namespace Iodine.Compiler
         public override void Accept (YieldStatement yieldStmt)
         {
             yieldStmt.VisitChildren (this);
-            Context.CurrentMethod.Generator = true;
+            //Context.CurrentMethod.Generator = true;
             Context.CurrentMethod.EmitInstruction (yieldStmt.Location, Opcode.Yield);
         }
 
@@ -932,40 +853,10 @@ namespace Iodine.Compiler
 
         public override void Accept (SuperCallStatement super)
         {
-            string[] subclass = super.Parent.Base [0].Split ('.');
-            super.Arguments.Visit (this);
-
-            Context.CurrentMethod.EmitInstruction (super.Location,
-                Opcode.LoadGlobal,
-                Context.CurrentModule.DefineConstant (new IodineName (subclass [0]))
-            );
-
-            for (int i = 1; i < subclass.Length; i++) {
-                Context.CurrentMethod.EmitInstruction (super.Location,
-                    Opcode.LoadAttribute,
-                    Context.CurrentModule.DefineConstant (new IodineName (subclass [0]))
-                );
-            }
-
-            Context.CurrentMethod.EmitInstruction (super.Location,
-                Opcode.InvokeSuper,
-                super.Arguments.Arguments.Count
-            );
-
-            for (int i = 1; i < super.Parent.Base.Count; i++) {
-                string[] contract = super.Parent.Base [i].Split ('.');
-                Context.CurrentMethod.EmitInstruction (super.Location,
-                    Opcode.LoadGlobal,
-                    Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
-                );
-
-                for (int j = 1; j < contract.Length; j++) {
-                    Context.CurrentMethod.EmitInstruction (super.Location,
-                        Opcode.LoadAttribute,
-                        Context.CurrentModule.DefineConstant (new IodineName (contract [0]))
-                    );
-                }
-                Context.CurrentMethod.EmitInstruction (super.Location, Opcode.InvokeSuper, 0);
+            if (super.Parent.BaseClass != null) {
+                super.VisitChildren (this);
+                super.Parent.BaseClass.Visit (this);
+                Context.CurrentMethod.EmitInstruction (Opcode.InvokeSuper, super.Arguments.Arguments.Count);
             }
         }
 
@@ -980,25 +871,25 @@ namespace Iodine.Compiler
                     if (symbolTable.IsGlobal (ident) || assignStmt.Global) {
                         Context.CurrentMethod.EmitInstruction (
                             Opcode.StoreGlobal,
-                            Context.CurrentModule.DefineConstant (new IodineName (ident))
+                            CreateName (ident)
                         );
                     } else {
-                        int localIndex = symbolTable.IsSymbolDefined (ident) ?
-                            symbolTable.GetSymbolIndex (ident) :
+                        if (!symbolTable.IsSymbolDefined (ident)) {
                             symbolTable.AddSymbol (ident);
+                        }
+
                         Context.CurrentMethod.EmitInstruction (
                             Opcode.StoreLocal,
-                            localIndex
+                            CreateName (ident)
                         );
                     }
                 }
             }
         }
 
-
         private void CompileAssignWithAutoUnpack (AssignStatement assignStmt)
         {
-            int tmp = Context.CurrentMethod.CreateTemporary ();
+            int tmp = CreateTemporary ();
 
             assignStmt.Expressions [0].Visit (this);
 
@@ -1020,15 +911,15 @@ namespace Iodine.Compiler
                 if (symbolTable.IsGlobal (ident) || assignStmt.Global) {
                     Context.CurrentMethod.EmitInstruction (
                         Opcode.StoreGlobal,
-                        Context.CurrentModule.DefineConstant (new IodineName (ident))
+                        CreateName (ident)
                     );
                 } else {
-                    int localIndex = symbolTable.IsSymbolDefined (ident) ?
-                        symbolTable.GetSymbolIndex (ident) :
+                    if (!symbolTable.IsSymbolDefined (ident)) {
                         symbolTable.AddSymbol (ident);
+                    }
                     Context.CurrentMethod.EmitInstruction (
                         Opcode.StoreLocal,
-                        localIndex
+                        CreateName (ident)
                     );
                 }
             }
@@ -1044,72 +935,13 @@ namespace Iodine.Compiler
 
         #region Expressions
 
-        public override void Accept (TernaryExpression ifExpr)
-        {
-            Label elseLabel = Context.CurrentMethod.CreateLabel ();
-            Label endLabel = Context.CurrentMethod.CreateLabel ();
-
-            ifExpr.Condition.Visit (this);
-
-            Context.CurrentMethod.EmitInstruction (ifExpr.Expression.Location,
-                Opcode.JumpIfFalse,
-                elseLabel
-            );
-
-            ifExpr.Expression.Visit (this);
-
-            Context.CurrentMethod.EmitInstruction (ifExpr.ElseExpression.Location,
-                Opcode.Jump,
-                endLabel
-            );
-
-            Context.CurrentMethod.MarkLabelPosition (elseLabel);
-
-            ifExpr.ElseExpression.Visit (this);
-
-            Context.CurrentMethod.MarkLabelPosition (endLabel);
-        }
-
         public override void Accept (LambdaExpression lambda)
         {
-            Context.SymbolTable.EnterScope ();
+            CompileMethod (lambda);
 
-            MethodBuilder anonMethod = new MethodBuilder (Context.CurrentMethod,
-                Context.CurrentModule,
-                null,
-                lambda.InstanceMethod, 
-                lambda.Parameters.Count,
-                lambda.Variadic,
-                lambda.AcceptsKeywordArguments
-            );
-
-            CreateContext (anonMethod);
-
-            for (int i = 0; i < lambda.Parameters.Count; i++) {
-                int symbolIndex = Context.SymbolTable.AddSymbol (lambda.Parameters [i].Name);
-                anonMethod.Parameters [lambda.Parameters [i].Name] = symbolIndex;
-
-                if (lambda.Parameters [i].HasType) {
-                    lambda.Parameters [i].Type.Visit (this);
-                    Context.CurrentMethod.EmitInstruction (Opcode.CastLocal, symbolIndex);
-                }
+            if (!symbolTable.IsInGlobalScope) {
+                Context.CurrentMethod.EmitInstruction (Opcode.BuildClosure);
             }
-
-            lambda.VisitChildren (this);
-
-            DestroyContext ();
-
-            anonMethod.EmitInstruction (lambda.Location, Opcode.LoadNull);
-            anonMethod.FinalizeLabels ();
-
-            Context.CurrentMethod.EmitInstruction (lambda.Location,
-                Opcode.LoadConst,
-                Context.CurrentModule.DefineConstant (anonMethod)
-            );
-
-            Context.CurrentMethod.EmitInstruction (lambda.Location, Opcode.BuildClosure);
-
-            Context.SymbolTable.ExitScope ();
         }
 
         public override void Accept (BinaryExpression binop)
@@ -1118,17 +950,17 @@ namespace Iodine.Compiler
                 binop.Right.Visit (this);
                 if (binop.Left is NameExpression) {
                     NameExpression ident = (NameExpression)binop.Left;
-
-                    if (!Context.SymbolTable.IsGlobal (ident.Value) || !Context.SymbolTable.IsSymbolDefined (ident.Value)) {
+                    bool isGlobal = Context.SymbolTable.IsInGlobalScope || Context.SymbolTable.IsGlobal (ident.Value);
+                    if (!isGlobal) {
 
                         if (!Context.SymbolTable.IsSymbolDefined (ident.Value)) {
                             Context.SymbolTable.AddSymbol (ident.Value);
                         }
-                        int sym = Context.SymbolTable.GetSymbolIndex (ident.Value);
+                        int sym = CreateName (ident.Value);
                         Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.StoreLocal, sym);
                         Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadLocal, sym);
                     } else {
-                        int globalIndex = Context.CurrentModule.DefineConstant (new IodineName (ident.Value));
+                        int globalIndex = CreateName (ident.Value);
                         Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.StoreGlobal, globalIndex);
                         Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalIndex);
                     }
@@ -1241,23 +1073,27 @@ namespace Iodine.Compiler
             call.Arguments.Visit (this);
             call.Target.Visit (this);
             if (call.Arguments.Packed) {
-                Context.CurrentMethod.EmitInstruction (call.Target.Location, 
+                Context.CurrentMethod.EmitInstruction (
+                    call.Target.Location, 
                     Opcode.InvokeVar, 
                     call.Arguments.Arguments.Count - 1
                 );
             } else {
-                Context.CurrentMethod.EmitInstruction (call.Target.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    call.Target.Location,
                     Opcode.Invoke, 
                     call.Arguments.Arguments.Count
                 );
             }
 
             if (Context.IsPatternExpression) {
-                Context.CurrentMethod.EmitInstruction (call.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    call.Location,
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (call.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    call.Location,
                     Opcode.BinOp,
                     (int)BinaryOperation.Equals
                 );
@@ -1274,7 +1110,8 @@ namespace Iodine.Compiler
             foreach (KeyValuePair<string, AstNode> kv in kwargs.Keywords) {
                 string kw = kv.Key;
                 AstNode val = kv.Value;
-                Context.CurrentMethod.EmitInstruction (kwargs.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    kwargs.Location,
                     Opcode.LoadConst,
                     Context.CurrentModule.DefineConstant (new IodineString (kw))
                 );
@@ -1284,7 +1121,7 @@ namespace Iodine.Compiler
             Context.CurrentMethod.EmitInstruction (kwargs.Location, Opcode.BuildList, kwargs.Keywords.Count);
             Context.CurrentMethod.EmitInstruction (kwargs.Location,
                 Opcode.LoadGlobal,
-                Context.CurrentModule.DefineConstant (new IodineName ("Dict"))
+                CreateName ("Dict")
             );
             Context.CurrentMethod.EmitInstruction (kwargs.Location, Opcode.Invoke, 1);
         }
@@ -1317,7 +1154,6 @@ namespace Iodine.Compiler
                     Opcode.LoadAttribute,
                     Context.CurrentModule.DefineConstant (new IodineName (getAttr.Field))
                 );
-
             }
         }
 
@@ -1326,14 +1162,16 @@ namespace Iodine.Compiler
             getAttr.Target.Visit (this);
             Context.CurrentMethod.EmitInstruction (getAttr.Location,
                 Opcode.LoadAttributeOrNull,
-                Context.CurrentModule.DefineConstant (new IodineName (getAttr.Field))
+                CreateName (getAttr.Field)
             );
 
             if (Context.IsPatternExpression) {
-                Context.CurrentMethod.EmitInstruction (getAttr.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    getAttr.Location,
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
+
                 Context.CurrentMethod.EmitInstruction (getAttr.Location,
                     Opcode.BinOp,
                     (int)BinaryOperation.Equals
@@ -1354,20 +1192,11 @@ namespace Iodine.Compiler
             slice.VisitChildren (this);
 
             Context.CurrentMethod.EmitInstruction (slice.Location, Opcode.Slice);
-
         }
 
         public override void Accept (GeneratorExpression genExpr)
         {
-
-            MethodBuilder anonMethod = new MethodBuilder (Context.CurrentMethod,
-                Context.CurrentModule,
-                null,
-                false,
-                0,
-                false,
-                false
-            );
+            CodeBuilder anonMethod = new CodeBuilder ();
 
             CreateContext (anonMethod);
 
@@ -1377,7 +1206,7 @@ namespace Iodine.Compiler
             Label breakLabel = Context.CurrentMethod.CreateLabel ();
             Label predicateSkip = Context.CurrentMethod.CreateLabel ();
 
-            int tmp = Context.CurrentMethod.CreateTemporary (); 
+            int tmp = CreateTemporary (); 
 
             genExpr.Iterator.Visit (this);
 
@@ -1396,9 +1225,10 @@ namespace Iodine.Compiler
 
             Context.CurrentMethod.EmitInstruction (genExpr.Iterator.Location, Opcode.LoadLocal, tmp);
             Context.CurrentMethod.EmitInstruction (genExpr.Iterator.Location, Opcode.IterGetNext);
+            Context.SymbolTable.AddSymbol (genExpr.Identifier);
             Context.CurrentMethod.EmitInstruction (genExpr.Iterator.Location,
                 Opcode.StoreLocal,
-                Context.SymbolTable.AddSymbol (genExpr.Identifier)
+                CreateName (genExpr.Identifier)
             );
 
             if (genExpr.Predicate != null) {
@@ -1421,11 +1251,12 @@ namespace Iodine.Compiler
 
             Context.SymbolTable.ExitScope ();
 
-            anonMethod.FinalizeLabels ();
+            anonMethod.Finalize ();
 
             DestroyContext ();
 
-            Context.CurrentMethod.EmitInstruction (genExpr.Location,
+            Context.CurrentMethod.EmitInstruction (
+                genExpr.Location,
                 Opcode.LoadConst,
                 Context.CurrentModule.DefineConstant (anonMethod)
             );
@@ -1438,8 +1269,9 @@ namespace Iodine.Compiler
             Label foreachLabel = Context.CurrentMethod.CreateLabel ();
             Label breakLabel = Context.CurrentMethod.CreateLabel ();
             Label predicateSkip = Context.CurrentMethod.CreateLabel ();
-            int tmp = Context.CurrentMethod.CreateTemporary (); 
-            int set = Context.CurrentMethod.CreateTemporary ();
+
+            int tmp = CreateTemporary (); 
+            int set = CreateTemporary ();
 
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.BuildList, 0);
 
@@ -1456,16 +1288,21 @@ namespace Iodine.Compiler
             Context.CurrentMethod.MarkLabelPosition (foreachLabel);
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, tmp);
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.IterMoveNext);
-            Context.CurrentMethod.EmitInstruction (list.Iterator.Location,
+            Context.CurrentMethod.EmitInstruction (
+                list.Iterator.Location,
                 Opcode.JumpIfFalse,
                 breakLabel
             );
 
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.LoadLocal, tmp);
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.IterGetNext);
-            Context.CurrentMethod.EmitInstruction (list.Iterator.Location,
+
+            Context.SymbolTable.AddSymbol (list.Identifier);
+
+            Context.CurrentMethod.EmitInstruction (
+                list.Iterator.Location,
                 Opcode.StoreLocal,
-                Context.SymbolTable.AddSymbol (list.Identifier)
+                CreateName (list.Identifier)
             );
 
             if (list.Predicate != null) {
@@ -1482,6 +1319,7 @@ namespace Iodine.Compiler
             );
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.Invoke, 1);
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.Pop);
+
             if (list.Predicate != null) {
                 Context.CurrentMethod.MarkLabelPosition (predicateSkip);
             }
@@ -1503,7 +1341,7 @@ namespace Iodine.Compiler
             if (Context.IsPatternExpression) {
                 Label startLabel = Context.CurrentMethod.CreateLabel ();
                 Label endLabel = Context.CurrentMethod.CreateLabel ();
-                int item = Context.CurrentMethod.CreateTemporary ();
+                int item = CreateTemporary ();
 
                 int prevTemporary = Context.PatternTemporary;
 
@@ -1547,6 +1385,7 @@ namespace Iodine.Compiler
             Context.CurrentMethod.EmitInstruction (hash.Location, Opcode.BuildHash, hash.Items.Count / 2);
         }
 
+
         #endregion
 
         #region PatternExpression
@@ -1555,7 +1394,7 @@ namespace Iodine.Compiler
         {
             AstNode value = match.Expression;
             value.Visit (this);
-            int temporary = Context.CurrentMethod.CreateTemporary ();
+            int temporary = CreateTemporary ();
             Context.CurrentMethod.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
 
             Label nextLabel = Context.CurrentMethod.CreateLabel ();
@@ -1636,6 +1475,7 @@ namespace Iodine.Compiler
             Context.CurrentMethod.MarkLabelPosition (endLabel);
         }
 
+ 
         #endregion
 
         #region Terminals
@@ -1646,14 +1486,19 @@ namespace Iodine.Compiler
                 if (ident.Value == "_") {
                     Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadTrue);
                 } else {
+
+                    Context.SymbolTable.AddSymbol (ident.Value);
+
                     Context.CurrentMethod.EmitInstruction (ident.Location,
                         Opcode.LoadLocal,
                         Context.PatternTemporary
                     );
+
                     Context.CurrentMethod.EmitInstruction (ident.Location,
                         Opcode.StoreLocal,
-                        Context.SymbolTable.AddSymbol (ident.Value)
+                        CreateName (ident.Value)
                     );
+
                     Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadTrue);
                 }
                 return;
@@ -1661,24 +1506,30 @@ namespace Iodine.Compiler
 
             if (Context.SymbolTable.IsSymbolDefined (ident.Value)) {
                 if (!Context.SymbolTable.IsGlobal (ident.Value)) {
-                    int sym = Context.SymbolTable.GetSymbolIndex (ident.Value);
-                    Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadLocal, sym);
+                    Context.CurrentMethod.EmitInstruction (
+                        ident.Location,
+                        Opcode.LoadLocal, 
+                        CreateName (ident.Value)
+                    );
                 } else {
-                    Context.CurrentMethod.EmitInstruction (ident.Location,
+                    Context.CurrentMethod.EmitInstruction (
+                        ident.Location,
                         Opcode.LoadGlobal,
-                        Context.CurrentModule.DefineConstant (new IodineName (ident.Value))
+                        CreateName (ident.Value)
                     );
                 }
             } else if (Context.IsInClass && ExistsInOuterClass (ident.Value)) {
                 LoadAssociatedClass (ident.Value);
-                Context.CurrentMethod.EmitInstruction (ident.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    ident.Location,
                     Opcode.LoadAttribute,
-                    Context.CurrentModule.DefineConstant (new IodineName (ident.Value))
+                    CreateName (ident.Value)
                 );
             } else {
-                Context.CurrentMethod.EmitInstruction (ident.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    ident.Location,
                     Opcode.LoadGlobal,
-                    Context.CurrentModule.DefineConstant (new IodineName (ident.Value))
+                    CreateName (ident.Value)
                 );
             }
 
@@ -1686,14 +1537,6 @@ namespace Iodine.Compiler
 
         private bool ExistsInOuterClass (string name)
         {
-            ClassBuilder current = Context.CurrentClass;
-
-            while (current != null) {
-                if (current.HasAttribute (name)) {
-                    return true;
-                }
-                current = current.ParentClass;
-            }
 
             return false;
         }
@@ -1704,33 +1547,6 @@ namespace Iodine.Compiler
          */
         private void LoadAssociatedClass (string item = null)
         {
-            ClassBuilder current = Context.CurrentClass;
-            List<string> names = new List<string> ();
-            bool reachedClass = (item == null);
-
-            while (current != null) {
-                if (!reachedClass && current.HasAttribute (item)) {
-                    reachedClass = true;
-                }
-
-                if (reachedClass) {
-                    names.Add (current.Name);
-                }
-
-                current = current.ParentClass;
-            }
-
-            names.Reverse ();
-
-            Context.CurrentMethod.EmitInstruction (Opcode.LoadGlobal,
-                Context.CurrentModule.DefineConstant (new IodineName (names [0]))
-            );
-
-            for (int i = 1; i < names.Count; i++) {
-                Context.CurrentMethod.EmitInstruction (Opcode.LoadAttribute,
-                    Context.CurrentModule.DefineConstant (new IodineName (names [i]))
-                );
-            }
         }
 
         public override void Accept (IntegerExpression integer)
@@ -1741,11 +1557,13 @@ namespace Iodine.Compiler
             );
 
             if (Context.IsPatternExpression) {
-                Context.CurrentMethod.EmitInstruction (integer.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    integer.Location,
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (integer.Location,
+                Context.CurrentMethod.EmitInstruction (
+                    integer.Location,
                     Opcode.BinOp,
                     (int)BinaryOperation.Equals
                 );
@@ -1877,7 +1695,6 @@ namespace Iodine.Compiler
                 );
             }
         }
-
         #endregion
     }
 }

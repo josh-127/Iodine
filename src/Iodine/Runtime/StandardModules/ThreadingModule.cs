@@ -56,7 +56,7 @@ namespace Iodine.Runtime
                         return null;
                     }
                     IodineObject func = args [0];
-                    VirtualMachine newVm = new VirtualMachine (vm.Context, vm.Globals);
+                    VirtualMachine newVm = new VirtualMachine (vm.Context);
 
                     Thread t = new Thread (() => {
                         try {

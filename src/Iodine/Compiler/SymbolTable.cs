@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler
@@ -37,23 +38,37 @@ namespace Iodine.Compiler
     /// </summary>
     public class SymbolTable
     {
+        class Symbol 
+        {
+            public readonly string Name;
+            public readonly int Index;
+            public readonly bool IsArgument;
+
+            public Symbol (string name, int index, bool isArg = false)
+            {
+                Name = name;
+                Index = index;
+                IsArgument = isArg;
+            }
+        }
+
         class Scope
         {
-            private Dictionary<string, int> symbols = new Dictionary<string, int> ();
+            private List<Symbol> symbols = new List<Symbol> ();
 
             public int GetSymbol (string name)
             {
-                return symbols [name];
+                return symbols.Where (p => p.Name == name).FirstOrDefault ().Index;
             }
 
             public bool FindSymbol (string name)
             {
-                return symbols.ContainsKey (name);
+                return symbols.Where (p => p.Name == name).FirstOrDefault () != null;
             }
 
-            public void AddSymbol (string name, int index)
+            public void AddSymbol (string name, int index, bool isArg = false)
             {
-                symbols [name] = index;
+                symbols.Add (new Symbol (name, index, isArg));
             }
         }
 
@@ -93,7 +108,7 @@ namespace Iodine.Compiler
                     return false;
                 }
             }
-            return true;
+            return globalScope.FindSymbol (name);
         }
 
         public int GetSymbolIndex (string name)
@@ -116,7 +131,7 @@ namespace Iodine.Compiler
             return false;
         }
 
-        public int AddSymbol (string name)
+        public int AddSymbol (string name, bool isArgument = false)
         {
             scopes.Peek ().AddSymbol (name, nextIndex);
             nextIndex++;

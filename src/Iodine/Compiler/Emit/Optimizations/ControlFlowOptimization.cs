@@ -54,7 +54,7 @@ namespace Iodine.Compiler
             }
         }
 
-        public void PerformOptimization (MethodBuilder method)
+        public void PerformOptimization (CodeObject method)
         {
             List <ReachableRegion> regions = new List<ReachableRegion> ();
             int reachableSize = 0;
@@ -62,10 +62,10 @@ namespace Iodine.Compiler
             foreach (ReachableRegion region in regions) {
                 reachableSize += region.Size + 1;
             }
-            Instruction[] oldInstructions = method.Body;
-            Instruction[] newInstructions = new Instruction[method.Body.Length];
+            Instruction[] oldInstructions = method.Instructions;
+            Instruction[] newInstructions = new Instruction[method.Instructions.Length];
             int next = 0;
-            for (int i = 0; i < method.Body.Length; i++) {
+            for (int i = 0; i < method.Instructions.Length; i++) {
                 if (IsReachable (regions, i)) {
                     newInstructions [next++] = oldInstructions [i];
                 } else {
@@ -74,17 +74,17 @@ namespace Iodine.Compiler
                 }
             }
 
-            method.Body = newInstructions;
+            method.Instructions = newInstructions;
         }
 
-        private void FindRegion (MethodBuilder method, List<ReachableRegion> regions, int start)
+        private void FindRegion (CodeObject method, List<ReachableRegion> regions, int start)
         {
             if (IsReachable (regions, start)) {
                 return;
             }
 
-            for (int i = start; i < method.Body.Length; i++) {
-                Instruction ins = method.Body [i];
+            for (int i = start; i < method.Instructions.Length; i++) {
+                Instruction ins = method.Instructions [i];
 
                 if (ins.OperationCode == Opcode.Jump) {
                     regions.Add (new ReachableRegion (start, i));
@@ -102,7 +102,7 @@ namespace Iodine.Compiler
                     return;
                 }
             }
-            regions.Add (new ReachableRegion (start, method.Body.Length));
+            regions.Add (new ReachableRegion (start, method.Instructions.Length));
         }
 
         private void ShiftLabels (int start, Instruction[] instructions)

@@ -34,6 +34,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using Iodine.Compiler;
 using Iodine.Compiler.Ast;
+using Iodine.Util;
 
 namespace Iodine.Runtime
 {
@@ -64,11 +65,11 @@ namespace Iodine.Runtime
             }
         }
             
-        private IodineMethod initializer;
+        private CodeObject initializer;
 
         private List<IodineObject> constantPool = new List<IodineObject> ();
 
-        public IodineMethod Initializer {
+        public CodeObject Initializer {
             protected set {
                 initializer = value;
                 SetAttribute ("__init__", value);
@@ -89,7 +90,10 @@ namespace Iodine.Runtime
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            return Initializer.Invoke (vm, arguments);
+            vm.NewFrame (new StackFrame (this, null, new IodineObject[] { }, null, null, Attributes));
+            IodineObject retObj = vm.EvalCode (Initializer);
+            vm.EndFrame ();
+            return retObj;
         }
 
         public override string ToString ()

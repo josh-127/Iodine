@@ -225,6 +225,14 @@ namespace Iodine.Runtime
             }, this));
         }
 
+        public IodineDictionary (AttributeDictionary dict)
+            : this ()
+        {
+            foreach (KeyValuePair<string, IodineObject> kv in dict) {
+                this.dict [new IodineString (kv.Key)] = kv.Value;
+            }
+        }
+
         public override IodineObject Len (VirtualMachine vm)
         {
             return new IodineInteger (dict.Count);

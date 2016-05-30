@@ -92,15 +92,15 @@ namespace Iodine
             options.Options.ForEach (p => ParseOption (context, p));
 
             SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
-
+            IodineModule module = code.Compile (context);
+            context.Invoke (module, new IodineObject[] { });
+            if (module.HasAttribute ("main")) {
+                context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
+                    options.IodineArguments
+                });
+            }
             try {
-                IodineModule module = code.Compile (context);
-                context.Invoke (module, new IodineObject[] { });
-                if (module.HasAttribute ("main")) {
-                    context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
-                        options.IodineArguments
-                    });
-                }
+      
             } catch (UnhandledIodineExceptionException ex) {
                 Console.Error.WriteLine ("An unhandled {0} has occured!",
                     ex.OriginalException.TypeDef.Name);

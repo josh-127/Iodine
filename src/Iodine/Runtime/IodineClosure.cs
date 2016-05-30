@@ -56,20 +56,13 @@ namespace Iodine.Runtime
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            if (Target.Generator) {
-                StackFrame newFrame = frame.Duplicate (frame);
-                IodineObject initialValue = vm.InvokeMethod (Target, newFrame, frame.Self, arguments);
+            StackFrame newFrame = frame.Duplicate (vm.Top);
+            IodineObject initialValue = vm.InvokeMethod (Target, newFrame, frame.Self, arguments);
 
-                if (newFrame.Yielded) {
-                    return new IodineGenerator (newFrame, Target, arguments, initialValue);
-                }
-                return initialValue;
+            if (newFrame.Yielded) {
+                return new IodineGenerator (newFrame, Target, arguments, initialValue);
             }
-
-            return vm.InvokeMethod (Target,
-                frame.Duplicate (vm.Top),
-                frame.Self, arguments
-            );
+            return initialValue;
         }
 
         public override string ToString ()

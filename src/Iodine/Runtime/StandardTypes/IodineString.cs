@@ -673,6 +673,11 @@ namespace Iodine.Runtime
             return new IodineString (Value + str.Value);
         }
 
+        public override bool Equals (object obj)
+        {
+            return Equals (obj as IodineObject);
+        }
+
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
             IodineString str = right as IodineString;
@@ -699,7 +704,6 @@ namespace Iodine.Runtime
         public override int GetHashCode ()
         {
             if (Value == null) {
-                Console.WriteLine ("wut");
                 return 0;
             }
             return Value.GetHashCode ();

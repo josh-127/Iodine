@@ -40,9 +40,6 @@ func tracer_start () {
     trace.items = List ();
 }
 
-trace.parent = null;
-trace.items = null;
-
 /**
  * Records function calls if tracer_start was called.
  */
@@ -61,6 +58,9 @@ func trace (f) {
     }
     return wrapper;
 }
+
+trace.items = null;
+trace.parent = null;
 
 /**
  * Generates a rich overview of function calls recorded

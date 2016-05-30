@@ -99,46 +99,66 @@ namespace Iodine.Runtime
         /// </summary>
         /// <value>The module.</value>
         public IodineModule Module {
+            get;
+            set;
+        }
+
+        public AttributeDictionary Locals {
             get {
-                return Method.Module;
+                return locals;
             }
         }
 
         private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();
-        private Dictionary<int, IodineObject> locals;
-        private Dictionary<int, IodineObject> parentLocals = null;
+        private AttributeDictionary locals;
+        private AttributeDictionary arguments = new AttributeDictionary ();
+        private AttributeDictionary parentLocals = null;
 
-        public StackFrame (IodineMethod method,
+        public StackFrame (
+            IodineModule module,
+            IodineMethod method,
             IodineObject[] arguments,
             StackFrame parent,
             IodineObject self)
         {
-            locals = new Dictionary<int, IodineObject> ();
+            locals = new AttributeDictionary ();
             parentLocals = locals;
             Method = method;
+            Module = module;
             Self = self;
             Arguments = arguments;
             Parent = parent;
         }
 
-        public StackFrame (IodineMethod method,
+        public StackFrame (
+            IodineModule module,
+            IodineMethod method,
             IodineObject[] arguments,
             StackFrame parent,
             IodineObject self,
-            Dictionary<int, IodineObject> locals) : this (method, arguments, parent, self)
+            AttributeDictionary locals) : this (module, method, arguments, parent, self)
         {
             parentLocals = locals;
-            this.locals = new Dictionary<int, IodineObject> ();
+            this.locals = new AttributeDictionary ();
 
-            foreach (int key in locals.Keys) {
-                this.locals.Add (key, locals [key]);
+            foreach (KeyValuePair<string, IodineObject> kv in locals) {
+                this.locals.Add (kv.Key, kv.Value);
             }
         }
 
         #if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
         #endif
-        internal void StoreLocal (int index, IodineObject obj)
+        internal void StoreLocalExplicit (string index, IodineObject obj)
+        {
+            arguments [index] = obj;
+            locals [index] = obj;
+        }
+
+        #if DOTNET_45
+        [MethodImpl (MethodImplOptions.AggressiveInlining)]
+        #endif
+        internal void StoreLocal (string index, IodineObject obj)
         {
             if (parentLocals.ContainsKey (index)) {
                 parentLocals [index] = obj;
@@ -149,7 +169,7 @@ namespace Iodine.Runtime
         #if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
         #endif
-        internal IodineObject LoadLocal (int index)
+        internal IodineObject LoadLocal (string index)
         {
             return locals [index];
         }
@@ -175,13 +195,13 @@ namespace Iodine.Runtime
         #endif
         internal StackFrame Duplicate (StackFrame top)
         {
-            Dictionary<int, IodineObject> oldLocals = new Dictionary<int, IodineObject> ();
+            AttributeDictionary oldLocals = new AttributeDictionary ();
 
-            foreach (int key in locals.Keys) {
-                oldLocals [key] = locals [key];
+            foreach (KeyValuePair<string, IodineObject> kv in locals) {
+                oldLocals.Add (kv.Key, kv.Value);
             }
 
-            return new StackFrame (Method, Arguments, top, Self, locals);
+            return new StackFrame (Module, Method, Arguments, top, Self, locals);
         }
     }
 }

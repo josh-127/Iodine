@@ -93,9 +93,9 @@ namespace Iodine.Runtime
         {
             //vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
             try {
-                //vm.Stack.EndFrame ();
                 IodineObject obj = Callback.Invoke (vm, Self, arguments);
                 return obj;
+                //vm.Stack.EndFrame ();
             } catch (RuntimeException ex) {
                 throw ex;
             } catch (SyntaxException ex) {

@@ -78,9 +78,8 @@ namespace Iodine.Runtime
                     }
 
                     bool match = method.AcceptsKeywordArgs == objMethod.AcceptsKeywordArgs
-                        && method.Variadic == objMethod.Variadic
-                        && method.ParameterCount == objMethod.ParameterCount
-                        && method.InstanceMethod == objMethod.InstanceMethod;
+                                 && method.Variadic == objMethod.Variadic
+                                 && method.ParameterCount == objMethod.ParameterCount;
 
                     if (!match) {
                         return false;

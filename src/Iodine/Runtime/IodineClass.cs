@@ -39,11 +39,23 @@ namespace Iodine.Runtime
     {
         private bool initializerInvoked = false;
 
-        public IodineMethod Initializer { internal set; get; }
+        public CodeObject Initializer { internal set; get; }
 
         public IodineMethod Constructor { private set; get; }
 
-        public IodineClass (string name, IodineMethod initializer, IodineMethod constructor)
+        public IodineTypeDefinition BaseClass {
+            set {
+                Attributes ["__base__"] = value;
+            }
+            get {
+                if (!Attributes.ContainsKey ("__base__")) {
+                    return null;
+                }
+                return Attributes ["__base__"] as IodineTypeDefinition;
+            }
+        }
+
+        public IodineClass (string name, CodeObject initializer, IodineMethod constructor)
             : base (name)
         {
             Constructor = constructor;
@@ -55,7 +67,6 @@ namespace Iodine.Runtime
         {
             if (!initializerInvoked) {
                 initializerInvoked = true;
-                Initializer.Invoke (vm, new IodineObject[] { });
             }
             return base.GetAttribute (vm, name);
         }
@@ -64,7 +75,6 @@ namespace Iodine.Runtime
         {
             if (!initializerInvoked) {
                 initializerInvoked = true;
-                Initializer.Invoke (vm, new IodineObject[] { });
             }
             base.SetAttribute (vm, name, value);
         }
@@ -78,10 +88,14 @@ namespace Iodine.Runtime
         {
             if (!initializerInvoked) {
                 initializerInvoked = true;
-                Initializer.Invoke (vm, new IodineObject[] { });
+                //Initializer.Invoke (vm, new IodineObject[] { });
             }
             IodineObject obj = new IodineObject (this);
             BindAttributes (obj);
+
+            if (BaseClass != null) {
+                //BaseClass.Inherit (vm, obj, new IodineObject[] { });
+            }
             vm.InvokeMethod (Constructor, obj, arguments);
             return obj;
         }

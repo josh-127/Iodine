@@ -35,11 +35,11 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("GenExpr");
 
-        public readonly IodineMethod Target;
+        public readonly CodeObject Target;
         private StackFrame frame;
         private IodineObject value;
 
-        public IodineGeneratorExpr (StackFrame frame, IodineMethod target)
+        public IodineGeneratorExpr (StackFrame frame, CodeObject target)
             : base (TypeDefinition)
         {
             this.frame = frame.Duplicate (frame);
@@ -66,8 +66,9 @@ namespace Iodine.Runtime
                 return false;
             }
 
-            value = vm.InvokeMethod (Target, frame, frame.Self, new IodineObject[] {});
-
+            vm.NewFrame (frame);
+            value = vm.EvalCode (Target);
+            vm.EndFrame ();
             return frame.Yielded;
         }
 

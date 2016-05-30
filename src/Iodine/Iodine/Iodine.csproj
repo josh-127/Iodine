@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <Commandlineparameters>/home/grunt/Iodine/bin/std/unittests.id</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
@@ -29,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>../tests/test.id</Commandlineparameters>
+    <Commandlineparameters>/home/grunt/Iodine/bin/std/unittests.id</Commandlineparameters>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

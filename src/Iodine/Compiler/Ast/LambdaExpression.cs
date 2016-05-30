@@ -32,44 +32,26 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-    public class LambdaExpression : AstNode
+    public class LambdaExpression : Function
     {
-        public IList<NamedParameter> Parameters { private set; get; }
-
-        public bool InstanceMethod { private set; get; }
-
-        public bool Variadic { private set; get; }
-
-        public bool AcceptsKeywordArguments { private set; get; }
-
-        private List<AstNode> body = new List<AstNode> ();
-
         public LambdaExpression (SourceLocation location,
             bool isInstanceMethod,
             bool variadic,
             bool acceptsKeywordArguments,
-            IList<NamedParameter> parameters)
+            bool hasDefaultVals,
+            List<NamedParameter> parameters)
             : base (location)
         {
             Parameters = parameters;
             InstanceMethod = isInstanceMethod;
             Variadic = variadic;
-            AcceptsKeywordArguments = acceptsKeywordArguments;
-        }
-
-        public void AddStatement (AstNode statement)
-        {
-            body.Add (statement);
+            AcceptsKeywordArgs = acceptsKeywordArguments;
+            HasDefaultValues = hasDefaultVals;
         }
 
         public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
-        }
-
-        public override void VisitChildren (AstVisitor visitor)
-        {
-            body.ForEach (p => p.Visit (visitor));
         }
     }
 }

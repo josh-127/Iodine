@@ -73,9 +73,10 @@ namespace Iodine.Compiler
                 symbolTable.AddSymbol (param.Name);
             }
 
+            decl.VisitChildren (this);
+
             symbolTable.ExitScope ();
 
-            decl.VisitChildren (this);
         }
 
         public override void Accept (CodeBlock scope)

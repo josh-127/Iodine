@@ -76,24 +76,9 @@ namespace Iodine.Runtime
 
         public StackFrame Top;
 
-        public readonly Dictionary<string, IodineObject> Globals;
-
         public VirtualMachine (IodineContext context)
-            : this (context, new Dictionary<string, IodineObject> ())
-        {
-            Globals = new Dictionary<string, IodineObject> ();
-            var modules = BuiltInModules.Modules.Values.Where (p => p.ExistsInGlobalNamespace);
-            foreach (IodineModule module in modules) {
-                foreach (KeyValuePair<string, IodineObject> value in module.Attributes) {
-                    Globals [value.Key] = value.Value;
-                }
-            }
-        }
-
-        public VirtualMachine (IodineContext context, Dictionary<string, IodineObject> globals)
         {
             Context = context;
-            Globals = globals;
             context.ResolveModule += (name) => {
                 if (BuiltInModules.Modules.ContainsKey (name)) {
                     return BuiltInModules.Modules [name];
@@ -112,7 +97,7 @@ namespace Iodine.Runtime
             StackFrame top = Top;
             while (top != null) {
                 accum.AppendFormat (" at {0} (Module: {1}, Line: {2})\n",
-                    top.Method.Name,
+                    top.Method != null ? top.Method.Name : "",
                     top.Module.Name,
                     top.Location.Line + 1
                 );
@@ -166,8 +151,11 @@ namespace Iodine.Runtime
             IodineObject self,
             IodineObject[] arguments)
         {
-            int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1 :
-                method.ParameterCount;
+            int requiredArgs = method.AcceptsKeywordArgs ? method.ParameterCount - 1
+                : method.ParameterCount;
+
+            requiredArgs -= method.DefaultValues.Length;
+
             if ((method.Variadic && arguments.Length + 1 < requiredArgs) ||
                 (!method.Variadic && arguments.Length < requiredArgs)) {
                 RaiseException (new IodineArgumentException (method.ParameterCount));
@@ -184,11 +172,11 @@ namespace Iodine.Runtime
          */
         private IodineObject Invoke (IodineMethod method, IodineObject[] arguments)
         {
-            if (method.Body.Length > 0) {
-                currentLocation = method.Body [0].Location;
+            if (method.Bytecode.Instructions.Length > 0) {
+                currentLocation = method.Bytecode.Instructions [0].Location;
             }
 
-            int insCount = method.Body.Length;
+            int insCount = method.Bytecode.Instructions.Length;
             int prevStackSize = stackSize;
             int i = 0;
             lastObject = null;
@@ -196,48 +184,38 @@ namespace Iodine.Runtime
             /*
              * Store function arguments into their respective local variable slots
              */
-            foreach (string param in method.Parameters.Keys) {
-                if (method.Variadic && (method.AcceptsKeywordArgs 
-                    ? i == method.Parameters.Keys.Count - 2 
-                    :i == method.Parameters.Keys.Count - 1)) {
+            foreach (string param in method.Parameters) {
+                if (param == method.VarargsParameter) {
                     // Variable list arguments
                     IodineObject[] tupleItems = new IodineObject[arguments.Length - i];
                     Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
-                    Top.StoreLocal (method.Parameters [param], new IodineTuple (tupleItems));
+                    Top.StoreLocalExplicit (param, new IodineTuple (tupleItems));
 
-                } else if (i == method.Parameters.Keys.Count - 1 && method.AcceptsKeywordArgs) {
+                } else if (param == method.KwargsParameter) {
                     /*
                      * At the moment, keyword arguments are passed to the function as an IodineHashMap,
                      */
                     if (i < arguments.Length && arguments [i] is IodineDictionary) {
-                        Top.StoreLocal (method.Parameters [param], arguments [i]);
+                        Top.StoreLocalExplicit (param, arguments [i]);
                     } else {
-                        Top.StoreLocal (method.Parameters [param], new IodineDictionary ());
+                        Top.StoreLocalExplicit (param, new IodineDictionary ());
                     }
                 } else {
-                    Top.StoreLocal (method.Parameters [param], arguments [i++]);
+                    if (arguments.Length <= i && method.HasDefaultValues) {
+                        Top.StoreLocalExplicit (param, method.DefaultValues [i - method.DefaultValuesStartIndex]);
+                    } else {
+                        Top.StoreLocalExplicit (param, arguments [i++]);
+                    }
                 }
             }
-            StackFrame top = Top;
 
+            StackFrame top = Top;
+            top.Module = method.Module;
             if (traceCallback != null) {
                 Trace (TraceType.Function, top, currentLocation);
             }
 
-            top.Location = currentLocation;
-            while (top.InstructionPointer < insCount && !top.AbortExecution && !Top.Yielded) {
-                instruction = method.Body [Top.InstructionPointer++];
-                if (traceCallback != null && 
-                    instruction.Location != null &&
-                    instruction.Location.Line != top.Location.Line) {
-                    Trace (TraceType.Line, top, instruction.Location);
-                }
-                EvalInstruction ();
-                top.Location = currentLocation;
-            }
-                
-
-            IodineObject retVal = lastObject ?? IodineNull.Instance;
+            IodineObject retVal = EvalCode (method.Bytecode);
            
             if (top.Yielded) {
                 top.Pop ();
@@ -264,6 +242,24 @@ namespace Iodine.Runtime
             EndFrame ();
 
             return retVal;
+        }
+
+        public IodineObject EvalCode (CodeObject bytecode)
+        {
+            int insCount = bytecode.Instructions.Length;
+            StackFrame top = Top;
+            top.Location = currentLocation;
+            while (top.InstructionPointer < insCount && !top.AbortExecution && !top.Yielded) {
+                instruction = bytecode.Instructions [top.InstructionPointer++];
+                if (traceCallback != null && 
+                    instruction.Location != null &&
+                    instruction.Location.Line != top.Location.Line) {
+                    Trace (TraceType.Line, top, instruction.Location);
+                }
+                EvalInstruction ();
+                top.Location = currentLocation;
+            }
+            return lastObject ?? IodineNull.Instance;
         }
 
         /// <summary>
@@ -410,26 +406,20 @@ namespace Iodine.Runtime
                 }
             case Opcode.StoreLocal:
                 {
-                    Top.StoreLocal (instruction.Argument, Pop ());
+                    string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
+                    Top.StoreLocal (name, Pop ());
                     break;
                 }
             case Opcode.LoadLocal:
                 {
-                    Push (Top.LoadLocal (instruction.Argument));
+                    string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
+                    Push (Top.LoadLocal (name));
                     break;
                 }
             case Opcode.StoreGlobal:
                 {
                     string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
-                    if (Globals.ContainsKey (name) || Top.Module.IsAnonymous) {
-                        if (Globals.ContainsKey (name) && Globals [name] is IIodineProperty) {
-                            ((IIodineProperty)Globals [name]).Set (this, Pop ());
-                        } else {
-                            Globals [name] = Pop ();
-                        }
-                    } else {
-                        Top.Module.SetAttribute (this, name, Pop ());
-                    }
+                    Top.Module.SetAttribute (this, name, Pop ());
                     break;
                 }
             case Opcode.LoadGlobal:
@@ -437,12 +427,6 @@ namespace Iodine.Runtime
                     string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
                     if (Top.Module.Attributes.ContainsKey (name)) {
                         Push (Top.Module.GetAttribute (this, name));
-                    } else if (Globals.ContainsKey (name)) {
-                        if (Globals.ContainsKey (name) && Globals [name] is IIodineProperty) {
-                            Push (((IIodineProperty)Globals [name]).Get (this));
-                        } else {
-                            Push (Globals [name]);
-                        }
                     } else {
                         RaiseException (new IodineAttributeNotFoundException (name));
                     }
@@ -504,7 +488,8 @@ namespace Iodine.Runtime
             case Opcode.CastLocal:
                 {
                     IodineTypeDefinition type = Pop () as IodineTypeDefinition;
-                    IodineObject o = Top.LoadLocal (instruction.Argument);
+                    string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
+                    IodineObject o = Top.LoadLocal (name);
                     if (type == null) {
                         RaiseException (new IodineTypeException ("TypeDef"));
                         break;
@@ -560,11 +545,12 @@ namespace Iodine.Runtime
                 }
             case Opcode.InvokeSuper:
                 {
-                    IodineTypeDefinition target = (IodineTypeDefinition)Pop ();
+                    IodineTypeDefinition target = Pop () as IodineTypeDefinition;
                     IodineObject[] arguments = new IodineObject[instruction.Argument];
                     for (int i = 1; i <= instruction.Argument; i++) {
                         arguments [instruction.Argument - i] = Pop ();
                     }
+
                     target.Inherit (this, Top.Self, arguments);
                     break;
                 }
@@ -595,6 +581,94 @@ namespace Iodine.Runtime
             case Opcode.Jump:
                 {
                     Top.InstructionPointer = instruction.Argument;
+                    break;
+                }
+            case Opcode.BuildClass:
+                {
+                    IodineName name = Pop () as IodineName;
+                    IodineMethod constructor = Pop () as IodineMethod;
+                    //CodeObject initializer = Pop as CodeObject;
+                    IodineTypeDefinition baseClass = Pop () as IodineTypeDefinition;
+                    IodineTuple interfaces = Pop () as IodineTuple;
+                    IodineClass clazz = new IodineClass (name.ToString (), new CodeObject (), constructor);
+
+                    if (baseClass != null) {
+                        clazz.BaseClass = baseClass;
+                        baseClass.BindAttributes (clazz);
+                    }
+
+                    for (int i = 0; i < instruction.Argument; i++) {
+                        IodineObject val = Pop ();
+                        IodineObject key = Pop ();
+
+                        clazz.Attributes [val.ToString ()] = key;
+                    }
+
+                    foreach (IodineObject obj in interfaces.Objects) {
+                        IodineContract contract = obj as IodineContract;
+                        if (!contract.InstanceOf (clazz)) {
+                            //RaiseException (new IodineTypeException (contract.Name));
+                            break;
+                        }
+                    }
+
+                    Push (clazz);
+                    break;
+                }
+            case Opcode.BuildMixin:
+                {
+                    IodineName name = Pop () as IodineName;
+
+                    IodineMixin mixin = new IodineMixin (name.ToString ());
+
+                    for (int i = 0; i < instruction.Argument; i++) {
+                        IodineObject val = Pop ();
+                        IodineObject key = Pop ();
+
+                        mixin.Attributes [val.ToString ()] = key;
+                    }
+
+                    Push (mixin);
+                    break;
+                }
+            case Opcode.BuildEnum:
+                {
+                    IodineName name = Pop () as IodineName;
+
+                    IodineEnum ienum = new IodineEnum (name.ToString ());
+                    for (int i = 0; i < instruction.Argument; i++) {
+                        IodineInteger val = Pop () as IodineInteger;
+                        IodineName key = Pop () as IodineName;
+                        ienum.AddItem (key.ToString (), (int)val.Value);
+                    }
+
+                    Push (ienum);
+                    break;
+                }
+            case Opcode.BuildContract:
+                {
+                    IodineName name = Pop () as IodineName;
+
+                    IodineContract contract = new IodineContract (name.ToString ());
+                    for (int i = 0; i < instruction.Argument; i++) {
+                        IodineMethod val = Pop () as IodineMethod;
+                        contract.AddMethod (val);
+                    }
+
+                    Push (contract);
+                    break;
+                }
+            case Opcode.BuildTrait:
+                {
+                    IodineName name = Pop () as IodineName;
+
+                    IodineTrait trait = new IodineTrait (name.ToString ());
+                    for (int i = 0; i < instruction.Argument; i++) {
+                        IodineMethod val = Pop () as IodineMethod;
+                        trait.AddMethod (val);
+                    }
+
+                    Push (trait);
                     break;
                 }
             case Opcode.BuildHash:
@@ -628,14 +702,15 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildClosure:
                 {
-                    IodineMethod method = Pop () as IodineMethod;
+                    IodineObject obj = Pop ();
+                    IodineMethod method = obj as IodineMethod;
                     Push (new IodineClosure (Top, method));
                     break;
                 }
 
             case Opcode.BuildGenExpr:
                 {
-                    IodineMethod method = Pop () as IodineMethod;
+                    CodeObject method = Pop () as CodeObject;
                     Push (new IodineGeneratorExpr (Top, method));
                     break;
                 }
@@ -790,7 +865,7 @@ namespace Iodine.Runtime
             case Opcode.IncludeMixin:
                 {
                     IodineObject obj = Pop ();
-                    IodineObject type = Top.Module.ConstantPool [instruction.Argument];
+                    IodineObject type = Pop ();
 
                     foreach (KeyValuePair<string, IodineObject> attr in obj.Attributes) {
                         type.SetAttribute (attr.Key, attr.Value);
@@ -805,6 +880,37 @@ namespace Iodine.Runtime
                     foreach (KeyValuePair<string, IodineObject> attr in mixin.Attributes) {
                         type.SetAttribute (attr.Key, attr.Value);
                     }
+                    break;
+                }
+            case Opcode.BuildFunction:
+                {
+                    MethodFlags flags = (MethodFlags)instruction.Argument;
+
+                    IodineString name = Pop () as IodineString;
+                    CodeObject bytecode = Pop () as CodeObject;
+                    IodineTuple parameters = Pop () as IodineTuple;
+                    IodineObject[] defaultValues = new IodineObject[] { };
+                    int defaultValuesStart = 0;
+
+                    if (flags.HasFlag (MethodFlags.HasDefaultParameters)) {
+                        IodineTuple defaultValuesTuple = Pop () as IodineTuple;
+                        IodineInteger startInt = Pop () as IodineInteger;
+                        defaultValues = defaultValuesTuple.Objects;
+                        defaultValuesStart = (int)startInt.Value;
+                    }
+
+                    IodineMethod method = new IodineMethod (
+                        Top.Module,
+                        name,
+                        bytecode,
+                        parameters,
+                        flags,
+                        defaultValues,
+                        defaultValuesStart
+                    );
+
+                    Push (method);
+
                     break;
                 }
             }
@@ -841,7 +947,7 @@ namespace Iodine.Runtime
         #if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
         #endif
-        private void NewFrame (StackFrame frame)
+        public void NewFrame (StackFrame frame)
         {
             frameCount++;
             stackSize++;
@@ -856,7 +962,7 @@ namespace Iodine.Runtime
         {
             frameCount++;
             stackSize++;
-            Top = new StackFrame (method, args, Top, self);
+            Top = new StackFrame (method.Module, method, args, Top, self);
             frames.Push (Top);
         }
 
@@ -892,11 +998,7 @@ namespace Iodine.Runtime
         /// <param name="val">Value.</param>
         public void SetGlobal (string name, IodineObject val)
         {
-            if (Top.Module.IsAnonymous) {
-                Globals [name] = val;
-            } else {
-                Top.Module.SetAttribute (name, val);
-            }
+            Top.Module.SetAttribute (name, val);
         }
     }
 }

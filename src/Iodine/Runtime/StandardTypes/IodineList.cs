@@ -54,6 +54,7 @@ namespace Iodine.Runtime
 
             public override IodineObject BindAttributes (IodineObject newList)
             {
+                base.BindAttributes (newList);
                 newList.SetAttribute ("append", new BuiltinMethodCallback (Add, newList));
                 newList.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, newList));
                 newList.SetAttribute ("appendrange", new BuiltinMethodCallback (AddRange, newList));

@@ -34,7 +34,7 @@ namespace Iodine.Compiler
 {
     public interface IBytecodeOptimization
     {
-        void PerformOptimization (MethodBuilder method);
+        void PerformOptimization (CodeObject method);
     }
 }
 

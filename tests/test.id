@@ -543,7 +543,6 @@ describe('Iodine', lambda(test) {
             expect(list2[1]).to.be._true();
         });
     });
-
     test.describe('pattern matching', lambda(test) {
         test.it('match 2 should yield 9', lambda() {
             x = 2;

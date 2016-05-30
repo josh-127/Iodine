@@ -41,14 +41,23 @@ namespace Iodine.Runtime
     public class IodineObject
     {
         public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
+        private static long _nextID = 0x00;
 
-        public readonly AttributeDictionary Attributes = new AttributeDictionary ();
+        public AttributeDictionary Attributes {
+            get;
+            internal set;
+        }
 
         /// <summary>
         /// Gets or sets the base class
         /// </summary>
         /// <value>The base.</value>
         public IodineObject Base { set; get; }
+
+        /// <summary>
+        /// Unique identifier
+        /// </summary>
+        public readonly long Id;
 
         /// <summary>
         /// A list of contracts this object implements
@@ -60,17 +69,29 @@ namespace Iodine.Runtime
             get;
         }
 
+        public IodineObject Super {
+            set {
+                Attributes ["__super__"] = value;
+            }
+            get {
+                return Attributes ["__super__"];
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Iodine.Runtime.IodineObject"/> class.
         /// </summary>
         /// <param name="typeDef">Type of this object.</param>
         public IodineObject (IodineTypeDefinition typeDef)
         {
+            Attributes = new AttributeDictionary ();
             SetType (typeDef);
+            Id = _nextID++;
         }
 
         protected IodineObject ()
         {
+            Attributes = new AttributeDictionary ();
         }
 
         /// <summary>
@@ -109,11 +130,8 @@ namespace Iodine.Runtime
         {
             if (value is IodineMethod) {
                 IodineMethod method = (IodineMethod)value;
-                if (method.InstanceMethod) {
-                    Attributes [name] = new IodineBoundMethod (this, method);
-                } else {
-                    Attributes [name] = value;
-                }
+                Attributes [name] = new IodineBoundMethod (this, method);
+
             } else if (value is BuiltinMethodCallback) {
                 BuiltinMethodCallback callback = (BuiltinMethodCallback)value;
                 callback.Self = this;

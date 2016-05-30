@@ -8,6 +8,36 @@
 use sys;
 use inspect;
 
+class ConsoleFrontendBase {
+    func ConsoleFrontendBase(self) {
+        self.indent = 0;
+    }
+
+    func _print(self, message) {
+        indentation = '';
+        for (i = 0; i < self.indent; i += 1) {
+            indentation += '    ';
+        }
+
+        print('{}{}'.format(indentation, message));
+    }
+
+    func _printIndent(self) {
+        indentation = '';
+        for (i = 0; i < self.indent; i += 1) {
+            indentation += '    ';
+        }
+
+        stdout.write(indentation);
+    }
+}
+
+contract IFrontend {
+    func rootDescribeSummary(self, name, results);
+    func espressoError(self, e);
+    func blockBegin(self, name);
+}
+
 class ConciseConsoleFrontend extends ConsoleFrontendBase implements IFrontend {
     func rootDescribeSummary(self, name, results) {
         self.indent -= 1;
@@ -135,35 +165,7 @@ class HTMLFrontend extends ConsoleFrontendBase implements IFrontend {
     }
 }
 
-class ConsoleFrontendBase {
-    func ConsoleFrontendBase(self) {
-        self.indent = 0;
-    }
 
-    func _print(self, message) {
-        indentation = '';
-        for (i = 0; i < self.indent; i += 1) {
-            indentation += '    ';
-        }
-
-        print('{}{}'.format(indentation, message));
-    }
-
-    func _printIndent(self) {
-        indentation = '';
-        for (i = 0; i < self.indent; i += 1) {
-            indentation += '    ';
-        }
-
-        stdout.write(indentation);
-    }
-}
-
-contract IFrontend {
-    func rootDescribeSummary(self, name, results);
-    func espressoError(self, e);
-    func blockBegin(self, name);
-}
 
 class FrontendManager {
     func _get() {

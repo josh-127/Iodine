@@ -91,7 +91,7 @@ namespace Iodine.Interop
             Type type = typeof(T);
             ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
             typeRegistry.AddTypeMapping (type, wrapper, null);
-            Context.VirtualMachine.Globals [name] = wrapper;
+            Context.Globals [name] = wrapper;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Iodine.Interop
             Type type = typeof(T);
             ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
             typeRegistry.AddTypeMapping (type, wrapper, null);
-            Context.VirtualMachine.Globals [name] = wrapper;
+            Context.Globals [name] = wrapper;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Iodine.Interop
         {
             ClassWrapper wrapper = ClassWrapper.CreateFromType (typeRegistry, type, name);
             typeRegistry.AddTypeMapping (type, wrapper, null);
-            Context.VirtualMachine.Globals [name] = wrapper;
+            Context.Globals [name] = wrapper;
         }
 
         /// <summary>
@@ -248,8 +248,8 @@ namespace Iodine.Interop
         private dynamic GetMember (string name)
         {
             IodineObject obj = null;
-            if (Context.VirtualMachine.Globals.ContainsKey (name)) {
-                obj = Context.VirtualMachine.Globals [name];
+            if (Context.Globals.ContainsKey (name)) {
+                obj = Context.Globals [name];
             }
             return IodineDynamicObject.Create (obj, Context.VirtualMachine, typeRegistry);
         }
@@ -257,7 +257,7 @@ namespace Iodine.Interop
         private void SetMember (string name, dynamic value)
         {
             IodineObject obj = typeRegistry.ConvertToIodineObject ((object)value);
-            Context.VirtualMachine.Globals [name] = obj;
+            Context.Globals [name] = obj;
         }
     }
 }

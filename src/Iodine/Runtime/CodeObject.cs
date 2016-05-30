@@ -1,4 +1,4 @@
-/**
+﻿/**
   * Copyright (c) 2015, GruntTheDivine All rights reserved.
 
   * Redistribution and use in source and binary forms, with or without modification,
@@ -29,26 +29,19 @@
 
 using System;
 using System.Collections.Generic;
-using Iodine.Runtime;
 
-namespace Iodine.Compiler
+namespace Iodine.Runtime
 {
-    /// <summary>
-    /// Utility for creating Iodine Classes
-    /// </summary>
-    public class ClassBuilder : IodineClass
+    public class CodeObject : IodineObject
     {
-        public readonly ClassBuilder ParentClass;
-
-        public ClassBuilder (string name, IodineMethod initializer, IodineMethod constructor, ClassBuilder parent = null)
-            : base (name, initializer, constructor)
-        {
-            ParentClass = parent;
+        public Instruction[] Instructions {
+            internal set;
+            get;
         }
 
-        public void AddInstanceMethod (IodineMethod method)
+        public CodeObject ()
+            : base (new IodineTypeDefinition ("Code"))
         {
-            SetAttribute (method.Name, method);
         }
     }
 }

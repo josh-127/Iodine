@@ -446,7 +446,9 @@ namespace Iodine.Runtime
             if (isWindows) {
                 return new IodineSubprocess (Popen_Win32 (command.Value, read, write), read, write);
             } else {
-                return new IodineSubprocess (Popen_Unix (command.Value, read, write), read, write);
+                Process proc = Popen_Unix (command.Value, read, write);
+                proc.Start ();
+                return new IodineSubprocess (proc, read, write);
             }
 
         }

@@ -32,31 +32,15 @@ using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
-    public class FunctionDeclaration : AstNode
+    public class FunctionDeclaration : Function
     {
-        public string Name {
-            internal set;
-            get;
-        }
-
-        public readonly string Documentation;
-
-        public IList<NamedParameter> Parameters { private set; get; }
-
-        public bool InstanceMethod { private set; get; }
-
-        public bool Variadic { private set; get; }
-
-        public bool AcceptsKeywordArgs { private set; get; }
-
-        public readonly StatementList Body;
-
         public FunctionDeclaration (SourceLocation location,
             string name,
             bool isInstanceMethod,
             bool isVariadic,
             bool hasKeywordArgs,
-            IList<NamedParameter> parameters,
+            bool hasDefaultVals,
+            List<NamedParameter> parameters,
             string doc
         ) : base (location)
         {
@@ -66,22 +50,12 @@ namespace Iodine.Compiler.Ast
             InstanceMethod = isInstanceMethod;
             Variadic = isVariadic;
             AcceptsKeywordArgs = hasKeywordArgs;
-            Body = new StatementList (location);
-        }
-
-        public void AddStatement (AstNode statement)
-        {
-            Body.AddStatement (statement);
+            HasDefaultValues = hasDefaultVals;
         }
 
         public override void Visit (AstVisitor visitor)
         {
             visitor.Accept (this);
-        }
-
-        public override void VisitChildren (AstVisitor visitor)
-        {
-            Body.VisitChildren (visitor);
         }
     }
 }
