@@ -18,6 +18,9 @@ bld/
 *.usertasks
 *.mdb
 
+# Iodine bytecode cache
+.iodine_cache
+
 # Allow the Debug source directory
 !src/Iodine/Runtime/Debug
 # @SplittyDev's personal files
