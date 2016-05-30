@@ -34,6 +34,44 @@ namespace Iodine.Util
 {
     public sealed class AttributeDictionary : Dictionary<string, IodineObject>
     {
+        class AttribDictWrapper : ObjectDictionary
+        {
+            private AttributeDictionary dictionary;
+
+            public override object this[object index] {
+                get {
+                    return dictionary[index.ToString ()];
+                }
+                set {
+                    dictionary[index.ToString ()] = value as IodineObject;
+                }
+            }
+
+            public AttribDictWrapper (AttributeDictionary dict)
+            {
+                dictionary = dict;
+            }
+
+            public override void Add (object key, object value)
+            {
+                dictionary.Add (key.ToString (), value as IodineObject);
+            }
+
+            public override bool ContainsKey (object key)
+            {
+                return dictionary.ContainsKey (key.ToString ());
+            }
+
+            public override bool ContainsValue (object value)
+            {
+                return dictionary.ContainsValue (value as IodineObject);
+            }
+        }
+
+        public IodineDictionary ToIodineDictionary ()
+        {
+            return new IodineDictionary (new AttribDictWrapper (this));
+        }
     }
 }
 

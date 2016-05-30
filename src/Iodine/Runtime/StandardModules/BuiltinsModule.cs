@@ -188,7 +188,7 @@ namespace Iodine.Runtime
                     VirtualMachine.ModuleCache [fullPath] = module;
 
                     if (module.Initializer != null) {
-                        module.Initializer.Invoke (vm, new IodineObject[] { });
+                        module.Invoke (vm, new IodineObject[] { });
                     }
                 }
             } else {
@@ -263,7 +263,7 @@ namespace Iodine.Runtime
         )]
         private IodineObject Locals (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
-            return new IodineDictionary (vm.Top.Locals);
+            return vm.Top.Locals.ToIodineDictionary ();
         }
 
         [BuiltinDocString (
@@ -271,7 +271,7 @@ namespace Iodine.Runtime
         )]
         private IodineObject Globals (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
-            return new IodineDictionary (vm.Top.Module.Attributes);
+            return vm.Top.Module.Attributes.ToIodineDictionary ();
         }
 
         [BuiltinDocString (

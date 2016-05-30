@@ -885,7 +885,7 @@ namespace Iodine.Compiler
 
             SourceLocation location = Location;
 
-            while (!Match (TokenClass.Operator, "=")) {
+            while (!Match (TokenClass.Operator, "=") && !EndOfStream) {
                 Token ident = Expect (TokenClass.Identifier);
                 identifiers.Add (ident.Value);
 
@@ -1067,8 +1067,12 @@ namespace Iodine.Compiler
                     continue;
                 case "..":
                     Accept (TokenClass.Operator);
-                    expr = new BinaryExpression (Location, BinaryOperation.HalfRange, expr,
-                        ParseBoolOr ());
+                    expr = new BinaryExpression (
+                        Location,
+                        BinaryOperation.HalfRange,
+                        expr,
+                        ParseBoolOr ()
+                    );
                     continue;
                 default:
                     break;
@@ -1360,8 +1364,10 @@ namespace Iodine.Compiler
         private AstNode ParseTerm ()
         {
             if (Current == null) {
-                return null;
+                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+                throw new EndOfFileException ();
             }
+
             switch (Current.Class) {
             case TokenClass.Identifier:
                 return new NameExpression (Location, ReadToken ().Value);
@@ -1720,6 +1726,7 @@ namespace Iodine.Compiler
                     accum += str [pos++];
                 }
             }
+
             StringExpression ret = new StringExpression (loc, accum);
 
             foreach (string name in subExpressions) {
@@ -1761,7 +1768,8 @@ namespace Iodine.Compiler
 
         public bool Match (TokenClass clazz1, TokenClass clazz2)
         {
-            return PeekToken () != null && PeekToken ().Class == clazz1 &&
+            return PeekToken () != null &&
+                PeekToken ().Class == clazz1 &&
                 PeekToken (1) != null &&
                 PeekToken (1).Class == clazz2;
         }
@@ -1775,7 +1783,7 @@ namespace Iodine.Compiler
 
         public bool Match (int lookahead, TokenClass clazz)
         {
-            return PeekToken (lookahead) != null && PeekToken (lookahead).Class == clazz;
+            return PeekToken (lookahead) != null &&PeekToken (lookahead).Class == clazz;
         }
 
         public bool Match (int lookahead, TokenClass clazz, string val)
@@ -1815,33 +1823,39 @@ namespace Iodine.Compiler
         public Token Expect (TokenClass clazz)
         {
             Token ret = null;
+
             if (Accept (clazz, ref ret)) {
                 return ret;
             }
+
             Token offender = ReadToken ();
+
             if (offender != null) {
-                errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+                errorLog.Add (Errors.UnexpectedToken, offender.Location, offender.Value);
                 throw new SyntaxException (errorLog);
-            } else {
-                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
-                throw new EndOfFileException ();
-            };
+            }
+
+            errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+            throw new EndOfFileException ();
         }
 
         public Token Expect (TokenClass clazz, string val)
         {
             Token ret = PeekToken ();
+
             if (Accept (clazz, val)) {
                 return ret;
             }
+
             Token offender = ReadToken ();
+
             if (offender != null) {
-                errorLog.Add (Errors.UnexpectedToken, offender.Location, Token.ClassToString (clazz));
+                errorLog.Add (Errors.UnexpectedToken, offender.Location, offender.Value);
                 throw new SyntaxException (errorLog);
-            } else {
-                errorLog.Add (Errors.UnexpectedEndOfFile, Location);
-                throw new EndOfFileException ();
             }
+
+            errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+            throw new EndOfFileException ();
         }
 
         public void MakeError ()
@@ -1850,7 +1864,13 @@ namespace Iodine.Compiler
                 errorLog.Add (Errors.UnexpectedEndOfFile, Location);
                 throw new EndOfFileException ();
             }
-            errorLog.Add (Errors.UnexpectedToken, PeekToken ().Location, ReadToken ().ToString ());
+
+            errorLog.Add (
+                Errors.UnexpectedToken,
+                PeekToken ().Location,
+                ReadToken ().Value
+            );
+
             throw new SyntaxException (errorLog);
         }
 

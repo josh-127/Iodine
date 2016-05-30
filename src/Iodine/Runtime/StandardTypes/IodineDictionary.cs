@@ -209,7 +209,7 @@ namespace Iodine.Runtime
             }
         }
 
-        protected readonly ObjectDictionary dict = new ObjectDictionary ();
+        private ObjectDictionary dict;
 
         public IEnumerable<IodineObject> Keys {
             get {
@@ -218,8 +218,14 @@ namespace Iodine.Runtime
         }
 
         public IodineDictionary ()
+            : this (new ObjectDictionary ())
+        {
+        }
+
+        public IodineDictionary (ObjectDictionary dict)
             : base (TypeDefinition)
         {
+            this.dict = dict;
             SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] args) => {
                 return GetIterator (vm);
             }, this));
@@ -240,6 +246,10 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
+            if (!dict.ContainsKey (key)) {
+                vm.RaiseException (new IodineKeyNotFound ());
+                return null;
+            }
             return dict [key] as IodineObject;
         }
 
@@ -257,11 +267,11 @@ namespace Iodine.Runtime
                     return false;
                 }
 
-                foreach (IodineObject key in dict.Keys) {
-                    if (!map.dict.ContainsKey (key)) {
+                foreach (IodineObject key in map.Keys) {
+                    if (!map.ContainsKey (key)) {
                         return false;
                     }
-                    IodineObject dictKey = map.dict [key] as IodineObject;
+                    IodineObject dictKey = map.Get (key) as IodineObject;
                     if (!dictKey.Equals ((IodineObject)dict [key])) {
                         return false;
                     }
@@ -309,6 +319,16 @@ namespace Iodine.Runtime
         public IodineObject Get (IodineObject key)
         {
             return dict [key] as IodineObject;
+        }
+
+        /// <summary>
+        /// Determines whether or not this dictionary contains the specific key
+        /// </summary>
+        /// <returns><c>true</c>, if key was containsed, <c>false</c> otherwise.</returns>
+        /// <param name="key">Key.</param>
+        public bool ContainsKey (IodineObject key)
+        {
+            return dict.ContainsKey (key);
         }
     }
 }

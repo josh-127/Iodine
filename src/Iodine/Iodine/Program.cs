@@ -91,16 +91,16 @@ namespace Iodine
 
             options.Options.ForEach (p => ParseOption (context, p));
 
-            SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
-            IodineModule module = code.Compile (context);
-            context.Invoke (module, new IodineObject[] { });
-            if (module.HasAttribute ("main")) {
-                context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
-                    options.IodineArguments
-                });
-            }
             try {
-      
+                SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
+                IodineModule module = code.Compile (context);
+                context.Invoke (module, new IodineObject[] { });
+                if (module.HasAttribute ("main")) {
+                    context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
+                        options.IodineArguments
+                    });
+                }
+
             } catch (UnhandledIodineExceptionException ex) {
                 Console.Error.WriteLine ("An unhandled {0} has occured!",
                     ex.OriginalException.TypeDef.Name);
@@ -111,7 +111,7 @@ namespace Iodine
                 Console.Error.WriteLine ();
                 Panic ("Program terminated.");
             } catch (SyntaxException ex) {
-                DisplayErrors (ex.ErrorLog);
+                DisplayErrors (ex.ErrorLog, options.FileName);
                 Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
             } catch (ModuleNotFoundException ex) {
                 Console.Error.WriteLine (ex.ToString ());
@@ -192,8 +192,10 @@ namespace Iodine
             Environment.Exit (0);
         }
 
-        private static void DisplayErrors (ErrorSink errorLog)
+        private static void DisplayErrors (ErrorSink errorLog, string filePath)
         {
+            string[] lines = File.ReadAllLines (filePath);
+
             foreach (Error err in errorLog) {
                 SourceLocation loc = err.Location;
                 Console.Error.WriteLine ("{0} ({1}:{2}) error ID{3:d4}: {4}",
@@ -203,6 +205,11 @@ namespace Iodine
                     (int)err.ErrorID,
                     err.Text
                 );
+
+                string source = lines [loc.Line];
+
+                Console.Error.WriteLine ("    {0}", source);
+                Console.Error.WriteLine ("    {0}", "^".PadLeft (loc.Column));
             }
         }
 

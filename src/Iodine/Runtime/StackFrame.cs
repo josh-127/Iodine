@@ -138,12 +138,20 @@ namespace Iodine.Runtime
             IodineObject self,
             AttributeDictionary locals) : this (module, method, arguments, parent, self)
         {
-            parentLocals = locals;
-            this.locals = new AttributeDictionary ();
+            this.locals = locals;
+        }
 
-            foreach (KeyValuePair<string, IodineObject> kv in locals) {
-                this.locals.Add (kv.Key, kv.Value);
-            }
+        private StackFrame (
+            IodineModule module,
+            IodineMethod method,
+            IodineObject[] arguments,
+            StackFrame parent,
+            IodineObject self,
+            AttributeDictionary locals,
+            AttributeDictionary parentLocals) : this (module, method, arguments, parent, self)
+        {
+            this.parentLocals = parentLocals;
+            this.locals = locals;
         }
 
         #if DOTNET_45
@@ -201,7 +209,7 @@ namespace Iodine.Runtime
                 oldLocals.Add (kv.Key, kv.Value);
             }
 
-            return new StackFrame (Module, Method, Arguments, top, Self, locals);
+            return new StackFrame (Module, Method, Arguments, top, Self, oldLocals, locals);
         }
     }
 }
