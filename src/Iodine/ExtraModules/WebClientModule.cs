@@ -31,6 +31,7 @@
 
 using System;
 using System.Net;
+using System.Collections.Specialized;
 using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
@@ -38,6 +39,21 @@ namespace Iodine.Modules.Extras
     [IodineBuiltinModule ("net/webclient")]
     internal class WebClientModule : IodineModule
     {
+        public class CookieAwareWebClient : WebClient
+        {
+            public CookieContainer CookieContainer { get; set; } = new CookieContainer ();
+
+            protected override WebRequest GetWebRequest (Uri uri)
+            {
+                WebRequest request = base.GetWebRequest (uri);
+                if (request is HttpWebRequest)
+                {
+                    (request as HttpWebRequest).CookieContainer = CookieContainer;
+                }
+                return request;
+            }
+        }
+
         public class IodineWebClient : IodineObject
         {
             private static IodineTypeDefinition WebClientTypeDef = new IodineTypeDefinition ("WebClient");
@@ -47,16 +63,17 @@ namespace Iodine.Modules.Extras
             public IodineWebClient ()
                 : base (WebClientTypeDef)
             {
-                SetAttribute ("downloadString", new BuiltinMethodCallback (downloadString, this));
-                SetAttribute ("downloadRaw", new BuiltinMethodCallback (downloadRaw, this));
-                SetAttribute ("downloadFile", new BuiltinMethodCallback (downloadFile, this));
-                SetAttribute ("uploadFile", new BuiltinMethodCallback (uploadFile, this));
+                SetAttribute ("downloadstr", new BuiltinMethodCallback (DownloadString, this));
+                SetAttribute ("downloadraw", new BuiltinMethodCallback (DownloadRaw, this));
+                SetAttribute ("downloadfile", new BuiltinMethodCallback (DownloadFile, this));
+                SetAttribute ("uploadfile", new BuiltinMethodCallback (UploadFile, this));
+                SetAttribute ("uploadvalues", new BuiltinMethodCallback (UploadValues, this));
                 WebProxy proxy = new WebProxy ();
-                client = new WebClient ();
+                client = new CookieAwareWebClient ();
                 client.Proxy = proxy;
             }
 
-            private IodineObject downloadString (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject DownloadString (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
                 IodineString uri = args [0] as IodineString;
@@ -70,7 +87,7 @@ namespace Iodine.Modules.Extras
                 return new IodineString (data);
             }
 
-            private IodineObject downloadRaw (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject DownloadRaw (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
                 IodineString uri = args [0] as IodineString;
@@ -84,7 +101,7 @@ namespace Iodine.Modules.Extras
                 return new IodineBytes (data);
             }
 
-            private IodineObject downloadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject DownloadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
                 IodineString uri = args [0] as IodineString;
@@ -99,13 +116,29 @@ namespace Iodine.Modules.Extras
 
             }
 
-            private IodineObject uploadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject UploadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
                 IodineString uri = args [0] as IodineString;
                 IodineString file = args [1] as IodineString;
-                client.UploadFile (uri.ToString (), file.ToString ());
-                return null;
+                byte[] result = client.UploadFile (uri.ToString (), file.ToString ());
+                return new IodineBytes (result);
+            }
+
+            private IodineObject UploadValues (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+                IodineString uri = args [0] as IodineString;
+                IodineDictionary dict = args [1] as IodineDictionary;
+
+                NameValueCollection nv = new NameValueCollection ();
+
+                foreach (IodineObject key in dict.Keys) {
+                    nv [key.ToString ()] = dict.Get (key).ToString ();
+                }
+
+                byte[] result = client.UploadValues (uri.ToString (), nv);
+                return new IodineBytes (result);
             }
         }
 

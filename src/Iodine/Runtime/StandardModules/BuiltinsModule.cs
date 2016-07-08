@@ -180,10 +180,10 @@ namespace Iodine.Runtime
                 // use <module>
                 if (VirtualMachine.ModuleCache.ContainsKey (fullPath)) {
                     IodineModule module = VirtualMachine.ModuleCache [fullPath];
-                    vm.SetGlobal (Path.GetFileNameWithoutExtension (fullPath), module);
+                    vm.Top.StoreLocal (Path.GetFileNameWithoutExtension (fullPath), module);
                 } else {
                     IodineModule module = vm.LoadModule (name);
-                    vm.SetGlobal (Path.GetFileNameWithoutExtension (fullPath), module);
+                    vm.Top.StoreLocal (Path.GetFileNameWithoutExtension (fullPath), module);
 
                     VirtualMachine.ModuleCache [fullPath] = module;
 
@@ -210,17 +210,18 @@ namespace Iodine.Runtime
                     }
                 }
 
-                vm.SetGlobal (Path.GetFileNameWithoutExtension (fullPath), module);
+                vm.Top.StoreLocal (Path.GetFileNameWithoutExtension (fullPath), module);
                 
                 if (names.Objects.Length > 0) {
                     foreach (IodineObject item in names.Objects) {
-                        vm.SetGlobal (item.ToString (),
+                        vm.Top.StoreLocal (
+                            item.ToString (),
                             module.GetAttribute (item.ToString ())
                         );
                     }
                 } else {
                     foreach (KeyValuePair<string, IodineObject> kv in module.Attributes) {
-                        vm.SetGlobal (kv.Key, kv.Value);
+                        vm.Top.StoreLocal (kv.Key, kv.Value);
                     }
                 }
             }
