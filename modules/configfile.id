@@ -64,7 +64,7 @@ class ConfigFile {
      */
     func open (file) {
         with (fd = open (file, "r")) {
-            source = fd.readAll ();
+            source = fd.readall ();
             return ConfigFile.parse (source);
         }
     }
