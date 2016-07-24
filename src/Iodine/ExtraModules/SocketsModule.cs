@@ -92,18 +92,18 @@ namespace Iodine.Modules.Extras
             {
                 Socket = sock;
                 SetAttribute ("connect", new BuiltinMethodCallback (connect, this));
-                SetAttribute ("connectSsl", new BuiltinMethodCallback (connectSsl, this));
+                SetAttribute ("connectssl", new BuiltinMethodCallback (connectSsl, this));
                 SetAttribute ("send", new BuiltinMethodCallback (send, this));
                 SetAttribute ("bind", new BuiltinMethodCallback (bind, this));
                 SetAttribute ("accept", new BuiltinMethodCallback (accept, this));
-                SetAttribute ("acceptSsl", new BuiltinMethodCallback (acceptSsl, this));
+                SetAttribute ("acceptssl", new BuiltinMethodCallback (acceptSsl, this));
                 SetAttribute ("listen", new BuiltinMethodCallback (listen, this));
                 SetAttribute ("receive", new BuiltinMethodCallback (receive, this));
-                SetAttribute ("getBytesAvailable", new BuiltinMethodCallback (getBytesAvailable, this));
-                SetAttribute ("getStream", new BuiltinMethodCallback (getStream, this));
+                SetAttribute ("getbytesavail", new BuiltinMethodCallback (getBytesAvailable, this));
+                SetAttribute ("getstream", new BuiltinMethodCallback (getStream, this));
                 SetAttribute ("close", new BuiltinMethodCallback (close, this));
-                SetAttribute ("setHost", new BuiltinMethodCallback (setHost, this));
-                SetAttribute ("isConnected", new BuiltinMethodCallback (connected, this));
+                SetAttribute ("sethost", new BuiltinMethodCallback (setHost, this));
+                SetAttribute ("isconnected", new BuiltinMethodCallback (connected, this));
                 host = string.Empty;
             }
 
