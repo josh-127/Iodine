@@ -10,7 +10,7 @@ use regex;
  */
 class ConfigFile {
     func ConfigFile (self) {
-        self.sections = HashMap ();
+        self.sections = {};
     }
 
     /**
@@ -29,7 +29,7 @@ class ConfigFile {
      * @param values A list of values for this section
      */
     func addSection (self, name, values) {
-        self.sections [name] = typecast (HashMap, values);  
+        self.sections [name] = typecast (Dict, values);  
     }
 
     /**
@@ -80,7 +80,7 @@ class ConfigFile {
         for (section in regex.find (source, "(?ms)^\\[[^]\n]+](?:(?!^\\[[^]\n]+]).)*")) {
             name = regex.find (section.value, "\\[[^\\(]*\\]").value;
             name = name.replace ("[", "").replace ("]", "");
-            dict = HashMap ();
+            dict = {};
             for (m in regex.find (section.value, "(?ms)^([^=;\r\n]+)=([^;\r\n]*)")) {
                 kv = m.value;
                 key = kv.substr (0, kv.indexOf ("=")).trim ();
