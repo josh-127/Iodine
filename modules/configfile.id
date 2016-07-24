@@ -19,7 +19,7 @@ class ConfigFile {
      * @returns True if the configuration file contains the specified section,
      *          otherwise false
      */
-    func hasSection (self, name) {
+    func hassection (self, name) {
         return self.sections.contains (name);
     }
 
@@ -28,7 +28,7 @@ class ConfigFile {
      * @param name The name of the file
      * @param values A list of values for this section
      */
-    func addSection (self, name, values) {
+    func addsection (self, name, values) {
         self.sections [name] = typecast (Dict, values);  
     }
 
@@ -37,7 +37,7 @@ class ConfigFile {
      * @param name The name of the section
      * @returns A hashmap containing all the values of this section
      */
-    func getSection (self, name) {
+    func getsection (self, name) {
         return self.sections [name];
     }
 
@@ -83,11 +83,11 @@ class ConfigFile {
             dict = {};
             for (m in regex.find (section.value, "(?ms)^([^=;\r\n]+)=([^;\r\n]*)")) {
                 kv = m.value;
-                key = kv.substr (0, kv.indexOf ("=")).trim ();
-                value = kv.substr (kv.indexOf ("=") + 1).trim ();
+                key = kv.substr (0, kv.index ("=")).trim ();
+                value = kv.substr (kv.index ("=") + 1).trim ();
                 dict [key] = value;
             }
-            file.addSection (name, dict);
+            file.addsection (name, dict);
         }
         return file;
 
