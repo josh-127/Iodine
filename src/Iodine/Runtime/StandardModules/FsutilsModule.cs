@@ -44,7 +44,7 @@ namespace Iodine.Runtime
             : base ("fsutils")
         {
             SetAttribute ("copy", new BuiltinMethodCallback (Copy, this));
-            SetAttribute ("copytree", new BuiltinMethodCallback (Exists, this));
+            SetAttribute ("copytree", new BuiltinMethodCallback (Copytree, this));
             SetAttribute ("exists", new BuiltinMethodCallback (Exists, this));
             SetAttribute ("isdir", new BuiltinMethodCallback (IsDir, this));
             SetAttribute ("isfile", new BuiltinMethodCallback (IsFile, this));
