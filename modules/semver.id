@@ -38,7 +38,8 @@ class SemanticVersion {
     
     func _parseVersionString (self) {
         ver = self.versionString;
-        if (self.versionString.startsWith ("v")) {
+        
+        if (self.versionString.startswith ("v")) {
             ver = self.versionString.substr (1);
         }
         
@@ -187,11 +188,11 @@ class SemanticVersion {
             return true;
         }
         
-        if (requestedVersion.startsWith ("~")) {
+        if (requestedVersion.startswith ("~")) {
             return self._isTildeMatch (requestedVersion);
         }
         
-        if (requestedVersion.startsWith ("^")) {
+        if (requestedVersion.startswith ("^")) {
             return self._isCaretMatch (requestedVersion);
         }
         
@@ -203,16 +204,16 @@ class SemanticVersion {
         conds = List ();
         
         for (v in reqVer) {
-            if (v.startsWith (">=")) {
+            if (v.startswith (">=")) {
                 conds.append (self.isGTE (v.substr (2)));
             }
-            else if (v.startsWith (">")) {
+            else if (v.startswith (">")) {
                 conds.append (self.isGreaterThan (v.substr (1)));
             }
-            else if (v.startsWith ("<=")) {
+            else if (v.startswith ("<=")) {
                 conds.append (self.isLTE (v.substr (2)));
             }
-            else if (v.startsWith ("<")) {
+            else if (v.startswith ("<")) {
                 conds.append (self.isLessThan (v.substr (1)));
             }
             else {
