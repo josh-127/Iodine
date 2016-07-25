@@ -208,6 +208,34 @@ class ArgumentParser {
                     def.setValueList (lst)
                 }
             }
+
+            # Positional argument
+            else if (def.isPositional ()) {
+
+            }
+        }
+
+        # Gets the nth parameter that is not an argument (For positional arguments)
+        func getNthParam (n) {
+            pos = 0
+            for (i = 0; i < len (args) && pos != n; i += 1) {
+                if (!self.isArgument (args [i])) {
+                    pos += 1
+                }
+            }
+
+            if (pos < len (args)) {
+                return args [pos]
+            }
+            return null # Not found
+        }
+
+        # Set any positional arguments (If any)
+        for (i = 0; i < len (self.defs); i += 1) {
+            def = self.defs [i]
+            if (def.isPositional ()) {
+                def.setValue (getNthParam (i))
+            }
         }
 
         # Iterate through the argument definitions
@@ -249,7 +277,7 @@ class ArgumentParser {
     }
 
     func isArgument (self, key) {
-        return key.startsWith ("--") || key.startsWith ("-")
+        return key.startswith ("--") || key.startswith ("-")
     }
 
     func tryGetDefinition (self, key) {
@@ -276,7 +304,7 @@ class ArgumentDefinition {
         self.help           = null
         self.def            = null # default
         self.optional       = true
-        self.positional     = false
+        self.positional     = !name.startswith ("-")
         self.required       = false
         self.type           = Str
         self.metavar        = "Str"
