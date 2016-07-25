@@ -296,7 +296,8 @@ func _dump (item) {
         return "[{}]".format (",".join (items));
     } else if (item is Dict) {
         items = map (item, lambda (x) {
-           return _dump (x) + " : " + _dump (item [x]);
+            key, value = x
+           return _dump (key) + " : " + _dump (value);
         });
         return "{" + ",".join (items) + "}";
     } else if (item is Int) {
