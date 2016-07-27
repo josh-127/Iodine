@@ -70,7 +70,15 @@ class EventEmitter {
     func emit (self, event, *args) {
         if (self.dict.contains (event)) {
             for (callback in self.dict [event]) {
-                callback (*args);
+                try {
+                    callback (*args);
+                } except (e) {
+                    if (event != "exception" && self.dict.contains ("exception")) {
+                        self.emit ("exception", e);
+                    } else {
+                        raise e;
+                    }
+                }
             }
         }
     }
