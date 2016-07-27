@@ -49,6 +49,7 @@ namespace Iodine.Runtime
             SetAttribute ("require", new BuiltinMethodCallback (Require, null));
             SetAttribute ("compile", new BuiltinMethodCallback (Compile, null));
             SetAttribute ("loadmodule", new BuiltinMethodCallback (LoadModule, null));
+            SetAttribute ("reload", new BuiltinMethodCallback (Reload, null));
             SetAttribute ("chr", new BuiltinMethodCallback (Chr, null));
             SetAttribute ("ord", new BuiltinMethodCallback (Ord, null));
             SetAttribute ("len", new BuiltinMethodCallback (Len, null));
@@ -118,6 +119,27 @@ namespace Iodine.Runtime
             IodineString source = args [0] as IodineString;
             SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
             return unit.Compile (vm.Context);
+        }
+
+        [BuiltinDocString (
+            "Reloads an iodine module.",
+            "@param module The module to reload."
+        )]
+        private IodineObject Reload (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return IodineNull.Instance;
+            }
+
+            IodineModule module = args [0] as IodineModule;
+
+            if (module == null) {
+                vm.RaiseException (new IodineTypeException ("Module"));
+                return IodineNull.Instance;
+            }
+
+            return vm.LoadModule (module.Location, false);
         }
 
         [BuiltinDocString (

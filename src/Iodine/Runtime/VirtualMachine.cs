@@ -982,9 +982,9 @@ namespace Iodine.Runtime
             return ret;
         }
 
-        public IodineModule LoadModule (string name)
+        public IodineModule LoadModule (string name, bool useCache = true)
         {
-            IodineModule module = Context.LoadModule (name);
+            IodineModule module = Context.LoadModule (name, useCache);
             if (module == null) {
                 throw new ModuleNotFoundException (name, Context.SearchPath);
             }

@@ -187,9 +187,10 @@ namespace Iodine.Compiler
         /// </summary>
         /// <returns>A compiled Iodine module.</returns>
         /// <param name="name">The module's name.</param>
-        public IodineModule LoadModule (string name)
+        /// <param name="useCached">Whether or not this should load modules that have been cached.</param>
+        public IodineModule LoadModule (string name, bool useCached = true)
         {
-            if (moduleCache.ContainsKey (name)) {
+            if (moduleCache.ContainsKey (name) && useCached) {
                 return moduleCache [name];
             }
 
@@ -227,6 +228,7 @@ namespace Iodine.Compiler
         private IodineModule LoadIodineModule (string name)
         {
             string modulePath = FindModuleSource (name);
+
             if (modulePath != null) {
                 SourceUnit source = SourceUnit.CreateFromFile (modulePath);
                 return source.Compile (this);

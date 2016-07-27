@@ -128,6 +128,7 @@ namespace Iodine.Runtime
             IodineObject collection = args [0].GetIterator (vm);
             int count = 0;
             collection.IterReset (vm);
+
             while (collection.IterMoveNext (vm)) {
                 collection.IterGetCurrent (vm);
                 count++;

@@ -237,7 +237,7 @@
     <Compile Include="Runtime\CodeObject.cs" />
     <Compile Include="Compiler\Emit\BytecodeFile.cs" />
     <Compile Include="Compiler\Ast\Function.cs" />
-    <Compile Include="Runtime\StandardModules\InspectModule.cs" />
+    <Compile Include="Runtime\StandardModules\RandomModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

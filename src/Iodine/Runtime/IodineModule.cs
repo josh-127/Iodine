@@ -59,6 +59,16 @@ namespace Iodine.Runtime
             get;
         }
 
+        /// <summary>
+        /// Path to the original file name of this module, this will be null for internal or
+        /// anonymous modules
+        /// </summary>
+        /// <value>The module path.</value>
+        public string Location {
+            private set;
+            get;
+        }
+
         internal virtual IList<IodineObject> ConstantPool {
             get {
                 return this.constantPool;
@@ -79,11 +89,11 @@ namespace Iodine.Runtime
             }
         }
 
-        public IodineModule (string name)
+        public IodineModule (string name, string location = null)
             : base (ModuleTypeDef)
         {
             Name = name;
-
+            Location = location;
             SetAttribute ("__doc__", IodineString.Empty);
             Attributes ["__name__"] = new IodineString (name);
         }

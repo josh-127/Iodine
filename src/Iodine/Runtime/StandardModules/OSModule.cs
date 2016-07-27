@@ -77,6 +77,8 @@ namespace Iodine.Runtime
                 SetAttribute ("write", new BuiltinMethodCallback (Write, this));
                 SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, this));
                 SetAttribute ("readln", new BuiltinMethodCallback (Readln, this));
+                SetAttribute ("alive", new BuiltinMethodCallback (Alive, this));
+                SetAttribute ("empty", new BuiltinMethodCallback (Empty, this));
             }
 
             public override void Exit (VirtualMachine vm)
@@ -184,6 +186,16 @@ namespace Iodine.Runtime
             private void StdinWriteString (VirtualMachine vm, string str)
             {
                 Value.StandardInput.Write (str);
+            }
+
+            private IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                return IodineBool.Create (Value.HasExited);
+            }
+
+            private IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                return IodineBool.Create (Value.StandardOutput.Peek () < 0);
             }
         }
 

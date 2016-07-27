@@ -18,7 +18,10 @@ class EventEmitter {
      * @param callback The event handler
      */
     func on (self, event, callback) {
-        self.dict [event] = callback;
+        if (!self.dict.contains (event)) {
+            self.dict [event] = []
+        } 
+        self.dict [event].append (callback);
     }
 
     /**
@@ -28,10 +31,23 @@ class EventEmitter {
      * @param callback The event handler
      */
     func once (self, event, callback) {
-        self.dict [event] = lambda (*args) {
+        if (!self.dict.contains (event)) {
+            self.dict [event] = [];
+        }
+
+        func inner (*args) {
             callback (*args);
-            self.dict.remove (event);
-        };
+            innerId = id (inner);
+
+            for (callback in dict[event]) {
+                if (id (callback) == id (inner)) {
+                    dict[event].remove (callback)
+                    return null;
+                }
+            }
+        }
+
+        self.dict [event].append (inner);
     }
 
     /**
@@ -39,7 +55,10 @@ class EventEmitter {
      * @param callback The event handler to remove
      */
     func remove (self, callback) {
-        self.dict.remove (callback);
+        
+        for (key, value in self.dict) {
+            value.discard (callback)
+        }   
     }
 
     /**
@@ -50,7 +69,9 @@ class EventEmitter {
      */
     func emit (self, event, *args) {
         if (self.dict.contains (event)) {
-            self.dict [event] (*args);
+            for (callback in self.dict [event]) {
+                callback (*args);
+            }
         }
     }
 }

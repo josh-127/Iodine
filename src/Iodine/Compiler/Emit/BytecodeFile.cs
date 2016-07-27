@@ -76,7 +76,7 @@ namespace Iodine.Compiler
 
             string name = binaryReader.ReadString ();
 
-            ModuleBuilder builder = new ModuleBuilder (name);
+            ModuleBuilder builder = new ModuleBuilder (name, fileName);
 
             binaryReader.ReadByte ();
 

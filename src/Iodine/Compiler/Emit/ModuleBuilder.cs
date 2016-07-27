@@ -38,8 +38,8 @@ namespace Iodine.Compiler
             get;
         }
 
-        public ModuleBuilder (string name)
-            : base (name)
+        public ModuleBuilder (string name, string location)
+            : base (name, location)
         {
             Initializer = new CodeBuilder ();
             base.Initializer = Initializer;

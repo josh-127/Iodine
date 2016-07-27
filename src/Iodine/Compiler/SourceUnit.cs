@@ -103,7 +103,7 @@ namespace Iodine.Compiler
 
             IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);
 
-            IodineModule module = compiler.Compile (moduleName);
+            IodineModule module = compiler.Compile (moduleName, Path);
 
             if (Path == null) {
                 foreach (KeyValuePair <string, IodineObject> kv in module.Attributes) {
