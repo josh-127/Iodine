@@ -242,7 +242,7 @@ class BaseHttpServer {
     }
     
     func _acceptConnection (self, client) {
-        stream = client.getStream ();
+        stream = client.getstream ();
         
         req = stream.readln ();
         headers = {};
@@ -257,7 +257,7 @@ class BaseHttpServer {
             if (len (field) == 2) {
                 headers [field [0].trim ()]= field [1].trim ();
             }
-        } while (client.getBytesAvailable () > 0);
+        } while (client.available () > 0);
         
         self._serveRequest (stream, req, headers);
         stream.close ();
@@ -363,9 +363,10 @@ class SimpleHttpServer extends BaseHttpServer {
         for (pattern, handler in self._routes) {
             if (regex.ismatch (request.url, pattern)) {
                 handler (response, request);
-                return;
+                return true;
             }
         }
         self.notFoundHandler (response, request);
+        return false;
     }
 }

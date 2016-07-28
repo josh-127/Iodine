@@ -99,7 +99,7 @@ namespace Iodine.Modules.Extras
                 SetAttribute ("acceptssl", new BuiltinMethodCallback (acceptSsl, this));
                 SetAttribute ("listen", new BuiltinMethodCallback (listen, this));
                 SetAttribute ("receive", new BuiltinMethodCallback (receive, this));
-                SetAttribute ("getbytesavail", new BuiltinMethodCallback (getBytesAvailable, this));
+                SetAttribute ("available", new BuiltinMethodCallback (getBytesAvailable, this));
                 SetAttribute ("getstream", new BuiltinMethodCallback (getStream, this));
                 SetAttribute ("close", new BuiltinMethodCallback (close, this));
                 SetAttribute ("sethost", new BuiltinMethodCallback (setHost, this));
