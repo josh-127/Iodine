@@ -51,7 +51,8 @@ namespace Iodine.Compiler
         UnexpectedEndOfFile = 0x0F,
         IntegerOverBounds = 0x10,
         RecordCantHaveVargs = 0x11,
-        RecordCantHaveKwargs = 0x12
+        RecordCantHaveKwargs = 0x12,
+        RecordCantHaveSelf = 0x13,
     }
 
     public sealed class Error
@@ -76,7 +77,8 @@ namespace Iodine.Compiler
             "Unexpected end of file",
             "Integer value exceeds the maximum bounds of a 64 bit integer",
             "Record cannot have variable length arguments!",
-            "Record cannot have keyword aguments!"
+            "Record cannot have keyword aguments!",
+            "Self keyword invalid in record field list!"
         };
 
         public readonly string Text;

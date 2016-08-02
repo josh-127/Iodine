@@ -129,6 +129,10 @@ namespace Iodine.Compiler
                     out hasDefaultVals
                 );
 
+                if (isInstanceMethod) {
+                    errorLog.Add (Errors.RecordCantHaveSelf, Location);
+                }
+
                 if (isVariadic) {
                     errorLog.Add (Errors.RecordCantHaveVargs, Location);
                 }

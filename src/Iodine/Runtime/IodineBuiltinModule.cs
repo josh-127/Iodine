@@ -39,7 +39,13 @@ namespace Iodine.Runtime
 
         public IodineBuiltinModule (string moduleName, bool existsInGlobalNamespace = false)
         {
-            Name = moduleName;
+            /*
+             * HACK: So, / is used internally for module names 
+             * IE: net/ssl translates to net.io in Iodine
+             * This is *not* cross platform, so we must replace / with the native
+             * path separator
+             */
+            Name = moduleName.Replace ('/', System.IO.Path.PathSeparator);
             Global = existsInGlobalNamespace;
         }
     }
