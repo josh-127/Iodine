@@ -103,6 +103,10 @@ namespace Iodine.Compiler
          * class <name> [extends <baseclass> [implements <interfaces>, ...]] {
          * 
          * }
+         * 
+         * OR
+         * 
+         * class <name> (parameters, ...) [extends <baseclass> [implements <interfaces>, ...]]
          */
         private AstNode ParseClass ()
         {
@@ -111,6 +115,30 @@ namespace Iodine.Compiler
             string name = Expect (TokenClass.Identifier).Value;
 
             ClassDeclaration clazz = new ClassDeclaration (Location, name, doc);
+
+            if (Match (TokenClass.OpenParan)) {
+                bool isInstanceMethod;
+                bool isVariadic;
+                bool hasKeywordArgs;
+                bool hasDefaultVals;
+
+                List<NamedParameter> parameters = ParseFuncParameters (
+                    out isInstanceMethod,
+                    out isVariadic,
+                    out hasKeywordArgs,
+                    out hasDefaultVals
+                );
+
+                if (isVariadic) {
+                    errorLog.Add (Errors.RecordCantHaveVargs, Location);
+                }
+
+                if (hasKeywordArgs) {
+                    errorLog.Add (Errors.RecordCantHaveKwargs, Location);
+                }
+
+                clazz = new ClassDeclaration (Location, name, doc, parameters);
+            }
 
             if (Accept (TokenClass.Keyword, "extends")) {
                 clazz.BaseClass = ParseExpression ();
@@ -128,33 +156,33 @@ namespace Iodine.Compiler
                 } while (Accept (TokenClass.Comma));
             }
 
-            Expect (TokenClass.OpenBrace);
-
-            while (!Match (TokenClass.CloseBrace)) {
-                if (Match (TokenClass.Keyword, "func") || Match (TokenClass.Operator,
+            if (Accept (TokenClass.OpenBrace)) {
+                while (!Match (TokenClass.CloseBrace)) {
+                    if (Match (TokenClass.Keyword, "func") || Match (TokenClass.Operator,
                         "@")) {
-                    AstNode node = ParseFunction (false, clazz);
-                    if (node is FunctionDeclaration) {
-                        FunctionDeclaration func = node as FunctionDeclaration;
-                        if (func == null) {
-                            clazz.Add (node);
-                        } else if (func.Name == name) {
-                            clazz.Constructor = func;
+                        AstNode node = ParseFunction (false, clazz);
+                        if (node is FunctionDeclaration) {
+                            FunctionDeclaration func = node as FunctionDeclaration;
+                            if (func == null) {
+                                clazz.Add (node);
+                            } else if (func.Name == name) {
+                                clazz.Constructor = func;
+                            } else {
+                                clazz.Add (func);
+                            }
                         } else {
-                            clazz.Add (func);
+                            StatementList list = node as StatementList;
+                            clazz.Add (list.Statements [0]);
+                            clazz.Add (list.Statements [1]);
                         }
                     } else {
-                        StatementList list = node as StatementList;
-                        clazz.Add (list.Statements [0]);
-                        clazz.Add (list.Statements [1]);
+                        clazz.Add (ParseStatement ());
                     }
-                } else {
-                    clazz.Add (ParseStatement ());
                 }
+
+                Expect (TokenClass.CloseBrace);
+
             }
-
-            Expect (TokenClass.CloseBrace);
-
             return clazz;
         }
 

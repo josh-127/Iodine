@@ -40,11 +40,20 @@ namespace Iodine.Compiler.Ast
         public readonly List<AstNode> Interfaces = new List<AstNode> ();
         public readonly List<AstNode> Mixins = new List<AstNode> ();
 
+        /// <summary>
+        /// Expression that when evaluates to this class's base class
+        /// </summary>
+        /// <value>The base class.</value>
         public AstNode BaseClass {
             get;
             set;
         }
 
+        /// <summary>
+        /// Function which will act as the classes constructor (Note: By default this is 
+        /// just an empty function)
+        /// </summary>
+        /// <value>The constructor.</value>
         public FunctionDeclaration Constructor {
             get;
             set;
@@ -58,9 +67,69 @@ namespace Iodine.Compiler.Ast
         {
             Name = name;
             Documentation = doc;
-            FunctionDeclaration dummyCtor = new FunctionDeclaration (location, name, true, false, false, false, new List<NamedParameter> (), "");
-            dummyCtor.Body.AddStatement (new SuperCallStatement (location, this, new ArgumentList (location)));
-            Constructor = dummyCtor;
+
+            /*
+             * Create an empty constructor that will call the class's super constructor
+             */
+
+            FunctionDeclaration emptyCtor = new FunctionDeclaration (
+                location,
+                name,
+                true,
+                false,
+                false,
+                false,
+                new List<NamedParameter> (),
+                doc
+            );
+
+            /*
+             * This is important for insuring that the super class is properly initialized
+             */
+            emptyCtor.Body.AddStatement (new SuperCallStatement (location, this, new ArgumentList (location)));
+
+            Constructor = emptyCtor;
+        }
+
+        public ClassDeclaration (SourceLocation location,
+            string name,
+            string doc,
+            List<NamedParameter> parameters)
+            : base (location)
+        {
+            Name = name;
+            Documentation = doc;
+
+            FunctionDeclaration recordCtor = new FunctionDeclaration (
+                location,
+                name,
+                true,
+                false,
+                false,
+                true,
+                parameters,
+                doc
+            );
+
+            recordCtor.Body.AddStatement (new SuperCallStatement (location, this, new ArgumentList (location)));
+
+            foreach (NamedParameter parameter in parameters) {
+                recordCtor.Body.AddStatement (
+                    new Expression (
+                        location,
+                        new BinaryExpression (location,
+                            BinaryOperation.Assign,
+                            new MemberExpression (location,
+                                new SelfExpression (location),
+                                parameter.Name
+                            ),
+                            new NameExpression (location, parameter.Name)
+                        )
+                    )
+                );
+            }
+
+            Constructor = recordCtor;
         }
 
         public void Add (AstNode item)

@@ -49,7 +49,9 @@ namespace Iodine.Compiler
         ExpectedIdentifier = 0x0D,
         IllegalInterfaceDeclaration = 0x0E,
         UnexpectedEndOfFile = 0x0F,
-        IntegerOverBounds = 0x10
+        IntegerOverBounds = 0x10,
+        RecordCantHaveVargs = 0x11,
+        RecordCantHaveKwargs = 0x12
     }
 
     public sealed class Error
@@ -72,7 +74,9 @@ namespace Iodine.Compiler
             "Illegal identifier",
             "Interface declaration may only contain function prototypes",
             "Unexpected end of file",
-            "Integer value exceeds the maximum bounds of a 64 bit integer"
+            "Integer value exceeds the maximum bounds of a 64 bit integer",
+            "Record cannot have variable length arguments!",
+            "Record cannot have keyword aguments!"
         };
 
         public readonly string Text;
