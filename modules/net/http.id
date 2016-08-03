@@ -1,4 +1,5 @@
 use regex;
+use threading;
 use net.socket;
 
 _statusCodes = {
@@ -237,31 +238,36 @@ class BaseHttpServer {
         
         while (true) {
             client = self.sock.accept ();
-            self._acceptConnection (client);
+            threading.Thread (lambda () => self._acceptConnection (client)).start ();
         }
     }
     
     func _acceptConnection (self, client) {
-        stream = client.getstream ();
+        try {
+            stream = client.getstream ();
         
-        req = stream.readln ();
-        headers = {};
-        do {
-            val = stream.readln ().trim ();
+            req = stream.readln ();
+            headers = {};
+            do {
+                val = stream.readln ().trim ();
+                
+                if (val.trim () == "") {
+                    break;
+                }
             
-            if (val.trim () == "") {
-                break;
-            }
-            
-            field = val.split (':');
-            if (len (field) == 2) {
-                headers [field [0].trim ()]= field [1].trim ();
-            }
-        } while (client.available () > 0);
+                field = val.split (':');
+                if (len (field) == 2) {
+                    headers [field [0].trim ()]= field [1].trim ();
+                }
+            } while (client.available () > 0);
         
-        self._serveRequest (stream, req, headers);
-        stream.close ();
-        client.close ();
+            self._serveRequest (stream, req, headers);
+            stream.close ();
+            client.close ();
+        } except (ex) {
+            stream.close ();
+            client.close ();
+        }
     }
     
     func _serveRequest (self, client, request, headers) {
