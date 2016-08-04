@@ -45,7 +45,7 @@ namespace Iodine.Runtime
              * This is *not* cross platform, so we must replace / with the native
              * path separator
              */
-            Name = moduleName.Replace ('/', System.IO.Path.PathSeparator);
+            Name = moduleName; //moduleName.Replace ('/', System.IO.Path.PathSeparator);
             Global = existsInGlobalNamespace;
         }
     }

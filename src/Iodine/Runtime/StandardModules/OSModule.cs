@@ -93,35 +93,6 @@ namespace Iodine.Runtime
                 }
             }
 
-            public override IodineObject RightShift (VirtualMachine vm, IodineObject right)
-            {
-                IodineStream stream = right as IodineStream;
-
-                if (stream == null) {
-                    vm.RaiseException (new IodineTypeException ("Stream"));
-                    return null;
-                }
-
-                Value.OutputDataReceived += (object sender, DataReceivedEventArgs e) => {
-                    stream.File.Write (Encoding.ASCII.GetBytes (e.Data), 0, e.Data.Length);
-                };
-
-                Value.Start ();
-
-                Value.WaitForExit ();
-                return null;
-            }
-
-            public override IodineObject LeftShift (VirtualMachine vm, IodineObject right)
-            {
-                if (right is IodineStream) {
-                    StdinWriteFile (vm, right as IodineStream);
-                } else if (right is IodineString) {
-                    StdinWriteString (vm, ((IodineString)right).Value);
-                }
-                return null;
-            }
-
             /**
              * Iodine Method: subprocess.write (self, *args)
              * Description: Writes each string passed in *args to the process's standard input stream

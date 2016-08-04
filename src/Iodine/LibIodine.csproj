@@ -116,7 +116,6 @@
     <Compile Include="Runtime\StandardModules\SysModule.cs" />
     <Compile Include="Runtime\StandardModules\MathModule.cs" />
     <Compile Include="Runtime\StandardModules\StructModule.cs" />
-    <Compile Include="Runtime\StandardModules\ReflectionModule.cs" />
     <Compile Include="Runtime\StandardTypes\IodineInteger.cs" />
     <Compile Include="Runtime\StandardTypes\IodineBool.cs" />
     <Compile Include="Runtime\StandardTypes\IodineString.cs" />
@@ -238,6 +237,7 @@
     <Compile Include="Compiler\Emit\BytecodeFile.cs" />
     <Compile Include="Compiler\Ast\Function.cs" />
     <Compile Include="Runtime\StandardModules\RandomModule.cs" />
+    <Compile Include="Runtime\StandardModules\InspectModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

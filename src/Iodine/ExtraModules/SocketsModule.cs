@@ -42,7 +42,7 @@ namespace Iodine.Modules.Extras
     [IodineBuiltinModule ("net/socket")]
     internal class SocketModule : IodineModule
     {
-        public class IodineProtocolType : IodineObject
+        class IodineProtocolType : IodineObject
         {
             private static IodineTypeDefinition SocketProtocalTypeTypeDef = new IodineTypeDefinition ("Socket");
 
@@ -55,7 +55,7 @@ namespace Iodine.Modules.Extras
             }
         }
 
-        public class IodineSocketType : IodineObject
+        class IodineSocketType : IodineObject
         {
             private static IodineTypeDefinition SocketTypeTypeDef = new IodineTypeDefinition ("Socket");
 
@@ -68,7 +68,7 @@ namespace Iodine.Modules.Extras
             }
         }
 
-        public class IodineSocketException : IodineException
+        class IodineSocketException : IodineException
         {
             
         }
@@ -80,7 +80,6 @@ namespace Iodine.Modules.Extras
             public Socket Socket { private set; get; }
 
             private System.IO.Stream stream;
-            private string host;
 
             private static bool ValidateServerCertificate (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
             {
@@ -91,20 +90,16 @@ namespace Iodine.Modules.Extras
                 : base (SocketTypeDef)
             {
                 Socket = sock;
-                SetAttribute ("connect", new BuiltinMethodCallback (connect, this));
-                SetAttribute ("connectssl", new BuiltinMethodCallback (connectSsl, this));
-                SetAttribute ("send", new BuiltinMethodCallback (send, this));
-                SetAttribute ("bind", new BuiltinMethodCallback (bind, this));
-                SetAttribute ("accept", new BuiltinMethodCallback (accept, this));
-                SetAttribute ("acceptssl", new BuiltinMethodCallback (acceptSsl, this));
-                SetAttribute ("listen", new BuiltinMethodCallback (listen, this));
-                SetAttribute ("receive", new BuiltinMethodCallback (receive, this));
-                SetAttribute ("available", new BuiltinMethodCallback (getBytesAvailable, this));
-                SetAttribute ("getstream", new BuiltinMethodCallback (getStream, this));
-                SetAttribute ("close", new BuiltinMethodCallback (close, this));
-                SetAttribute ("sethost", new BuiltinMethodCallback (setHost, this));
-                SetAttribute ("isconnected", new BuiltinMethodCallback (connected, this));
-                host = string.Empty;
+                SetAttribute ("connect", new BuiltinMethodCallback (Connect, this));
+                SetAttribute ("send", new BuiltinMethodCallback (Send, this));
+                SetAttribute ("bind", new BuiltinMethodCallback (Bind, this));
+                SetAttribute ("accept", new BuiltinMethodCallback (Accept, this));
+                SetAttribute ("listen", new BuiltinMethodCallback (Listen, this));
+                SetAttribute ("receive", new BuiltinMethodCallback (Receive, this));
+                SetAttribute ("available", new BuiltinMethodCallback (GetBytesAvailable, this));
+                SetAttribute ("getstream", new BuiltinMethodCallback (GetStream, this));
+                SetAttribute ("close", new BuiltinMethodCallback (Close, this));
+                SetAttribute ("connected", new BuiltinMethodCallback (Connected, this));
             }
 
             public IodineSocket (SocketType sockType, ProtocolType protoType)
@@ -112,41 +107,32 @@ namespace Iodine.Modules.Extras
             {
             }
 
-            private IodineObject connected (VirtualMachine vm, IodineObject self, IodineObject[] args)
+
+            public override void Exit (VirtualMachine vm)
+            {
+                Socket.Shutdown (SocketShutdown.Both);
+                Socket.Close ();
+            }
+
+            private IodineObject Connected (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 try {
                     var result = !((Socket.Poll (1000, SelectMode.SelectRead)
-                                 && (Socket.Available == 0)) || !Socket.Connected);
+                        && (Socket.Available == 0)) || !Socket.Connected);
                     return IodineBool.Create (result);
                 } catch {
                     return IodineBool.False;
                 }
             }
 
-            private IodineObject setHost (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                if (args.Length <= 0) {
-                    vm.RaiseException (new IodineArgumentException (1));
-                    return null;
-                }
-                IodineString hostObj = args [0] as IodineString;
-
-                if (hostObj == null) {
-                    vm.RaiseException (new IodineTypeException ("Str"));
-                }
-
-                host = hostObj.ToString ();
-                return null;
-            }
-
-            private IodineObject close (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject Close (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 Socket.Shutdown (SocketShutdown.Both);
                 Socket.Close ();
                 return null;
             }
 
-            private IodineObject bind (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject Bind (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 if (args.Length < 2) {
                     vm.RaiseException (new IodineArgumentException (2));
@@ -165,13 +151,16 @@ namespace Iodine.Modules.Extras
                 }
 
                 IPAddress ipAddr;
+
                 int port = (int)portObj.Value;
                 EndPoint endPoint = null;
+
                 if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
                     endPoint = new IPEndPoint (DnsLookUp (ipAddrStr.ToString ()), port);
                 } else {
                     endPoint = new IPEndPoint (ipAddr, port);
                 }
+
                 try {
                     Socket.Bind (endPoint);
                 } catch {
@@ -181,7 +170,7 @@ namespace Iodine.Modules.Extras
                 return null;
             }
 
-            private IodineObject listen (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject Listen (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 IodineInteger backlogObj = args [0] as IodineInteger;
                 try {
@@ -194,23 +183,14 @@ namespace Iodine.Modules.Extras
                 return null;
             }
 
-            private IodineSocket accept (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineSocket Accept (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 IodineSocket sock = new IodineSocket (Socket.Accept ());
                 sock.stream = new NetworkStream (sock.Socket);
                 return sock;
             }
 
-            private IodineSocket acceptSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                IodineSocket sock = new IodineSocket (this.Socket.Accept ());
-                sock.stream = new SslStream (new NetworkStream (Socket), false, ValidateServerCertificate, null);
-                // I have no idea what I'm doing lol
-                ((SslStream)sock.stream).AuthenticateAsClient (host);
-                return sock;
-            }
-
-            private IodineObject connect (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject Connect (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 IodineString ipAddrStr = args [0] as IodineString;
                 IodineInteger portObj = args [1] as IodineInteger;
@@ -235,55 +215,17 @@ namespace Iodine.Modules.Extras
                 return null;
             }
 
-            private IodineObject connectSsl (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                IodineString ipAddrStr = args [0] as IodineString;
-                IodineInteger portObj = args [1] as IodineInteger;
-                IPAddress ipAddr;
-                int port = (int)portObj.Value;
-
-                EndPoint endPoint = null;
-                if (!IPAddress.TryParse (ipAddrStr.ToString (), out ipAddr)) {
-                    endPoint = new IPEndPoint (DnsLookUp (ipAddrStr.ToString ()), port);
-                } else {
-                    endPoint = new IPEndPoint (ipAddr, port);
-                }
-
-                try {
-                    Socket.Connect (endPoint);
-                } catch {
-                    vm.RaiseException ("Could not connect to socket!");
-                    return null;
-                }
-
-                try {
-                    stream = new SslStream (new NetworkStream (Socket), false, ValidateServerCertificate, null);
-                } catch (Exception e) {
-                    vm.RaiseException (e.Message);
-                    return null;
-                }
-
-                try {
-                    ((SslStream)stream).AuthenticateAsClient (host);
-                } catch (Exception e) {
-                    vm.RaiseException (e.Message);
-                    return null;
-                }
-
-                return null;
-            }
-
-            private IodineObject getStream (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject GetStream (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 return new IodineStream (stream, true, true);
             }
 
-            private IodineObject getBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject GetBytesAvailable (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 return new IodineInteger (Socket.Available);
             }
 
-            private IodineObject send (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject Send (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 foreach (IodineObject obj in args) {
                     if (obj is IodineInteger) {
@@ -298,7 +240,7 @@ namespace Iodine.Modules.Extras
                 return null;
             }
 
-            private IodineObject receive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject Receive (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 IodineInteger n = args [0] as IodineInteger;
                 StringBuilder accum = new StringBuilder ();
@@ -310,7 +252,7 @@ namespace Iodine.Modules.Extras
                 return new IodineString (accum.ToString ());
             }
 
-            private IodineObject readLine (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            private IodineObject ReadLine (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 StringBuilder accum = new StringBuilder ();
                 int b = stream.ReadByte ();

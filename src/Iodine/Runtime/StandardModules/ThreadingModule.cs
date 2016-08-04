@@ -204,7 +204,7 @@ namespace Iodine.Runtime
                 this.semaphore = semaphore;
                 SetAttribute ("aquire", new BuiltinMethodCallback (Acquire, this));
                 SetAttribute ("release", new BuiltinMethodCallback (Release, this));
-                SetAttribute ("isLocked", new BuiltinMethodCallback (IsLocked, this));
+                SetAttribute ("locked", new BuiltinMethodCallback (IsLocked, this));
             }
 
             /**
