@@ -1,0 +1,131 @@
+/**
+ * Iodine logging module
+ * @author GruntTheDivine
+ * @module logging
+ */
+
+use datetime;
+use threading;
+
+enum LogLevel {
+    NONE = 0,
+    DEBUG = 10,
+    INFO = 20,
+    WARNING = 30,
+    ERROR = 40,
+    CRITICAL = 50
+}
+
+trait LoggerImpl {
+    func setLevel (self, logLevel);
+    func getLevel (self);
+    func log (self, logLevel, *args);
+}
+
+
+/** 
+ * Default logging implementation
+ */
+class IodineDefaultLogger {
+
+    func IodineDefaultLogger (self) {
+        self.setLevel (LogLevel.NONE);
+        self._formatStr = "[{3:d2}/{4:d2}/{5:d2} {0:d2}:{1:d2}:{2:d2}]: {6}  {7}"
+    }
+
+    func log (self, logLevel, *args) {
+
+        prefixes = {
+            LogLevel.DEBUG :    "DEBUG   ",
+            LogLevel.INFO :     "INFO    ",
+            LogLevel.WARNING :  "WARN    ",
+            LogLevel.ERROR :    "ERROR   ", 
+            LogLevel.CRITICAL : "CRITICAL"  
+        };
+        if (logLevel > self._logLevel) {
+            time = datetime.now ();
+            print (self._formatStr.format (*args));
+        }
+    }
+
+    func setLevel (self, logLevel) {
+        self._logLevel = logLevel;
+    }
+
+    func getLevel (self) {
+        return self._logLevel;
+    }
+
+    func setFormat (self, formatStr) {
+        self._formatStr = formatStr;
+    }
+
+    func getFormat (self) {
+        return self._formatStr;
+    }
+}
+
+_loggers = [IodineDefaultLogger ()]
+
+func _logMsg (logger, logLevel, message) {
+    prefixes = {
+        LogLevel.DEBUG :    "DEBUG   ",
+        LogLevel.INFO :     "INFO    ",
+        LogLevel.WARNING :  "WARN    ",
+        LogLevel.ERROR :    "ERROR   ",
+        LogLevel.CRITICAL : "CRITICAL"
+    };
+
+    time = datetime.now ();
+    
+    if (logger.getLevel () > logLevel) {
+        return null;
+    }
+
+    logger.log (logLevel,
+        time.hour,
+        time.minute,
+        time.second,
+        time.day,
+        time.month,
+        time.year,
+        prefixes [logLevel],
+        message
+    );
+}
+
+func debug (message) {
+    for (logger in _loggers) {
+        _logMsg (logger, LogLevel.DEBUG, message);
+    }
+}
+
+func info (message) {
+    for (logger in _loggers) {
+        _logMsg (logger, LogLevel.INFO, message);
+    }
+}
+
+func warning (message) {
+    for (logger in _loggers) {
+        _logMsg (logger, LogLevel.WARNING, message);
+    }
+}
+
+func error (message) {
+    for (logger in _loggers) {
+        _logMsg (logger, LogLevel.ERROR, message);
+    }
+}
+
+func critical (message) {
+    for (logger in _loggers) {
+        _logMsg (logger, LogLevel.CRITICAL, message);
+    }
+}
+
+func setLevel (logLevel) {
+    for (logger in _loggers) {
+        logger.setLevel (logger)
+    }
+}
