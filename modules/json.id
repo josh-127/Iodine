@@ -309,7 +309,21 @@ func _dump (item) {
             return "false";
         }
     }
-    return "\"{}\"".format (Str (item));
+    return "\"{}\"".format (_escapeStr (Str (item)));
+}
+
+func _escapeStr (str) {
+    prevCh = ' ';
+    buf = StringBuffer ();
+    for (ch in str) {
+        if (ch == '"' && prevCh != "\\") {
+            buf.append ("\\\"");
+        } else {
+            buf.append (ch);
+        }
+        prevCh = ch;
+    }
+    return Str (buf);
 }
 
 func _dumpList (item) {
