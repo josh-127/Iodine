@@ -32,6 +32,9 @@ using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// Iodine mixin, iodine code which can be reused by other iodine classes-
+    /// </summary>
     public class IodineMixin : IodineTypeDefinition
     {
         public IodineMixin (string name)

@@ -41,6 +41,7 @@ namespace Iodine.Modules.Extras
         public ZipModule () : base ("ziplib")
         {
             SetAttribute ("unzipToDirectory", new BuiltinMethodCallback (unzip, this));
+            SetAttribute ("unzip", new BuiltinMethodCallback (unzip, this));
         }
 
         private IodineObject unzip (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -28,6 +28,7 @@
 **/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using Iodine.Util;
 using Iodine.Compiler;
@@ -41,6 +42,10 @@ namespace Iodine.Runtime
     public class IodineObject
     {
         public static readonly IodineTypeDefinition ObjectTypeDef = new IodineTypeDefinition ("Object");
+
+        /*
+         * This is just a unique value for each Iodine object instance 
+         */
         private static long _nextID = 0x00;
 
         public AttributeDictionary Attributes {
@@ -64,11 +69,18 @@ namespace Iodine.Runtime
         /// </summary>
         public readonly List<IodineContract> Interfaces = new List<IodineContract> ();
 
+        /// <summary>
+        /// Object's type
+        /// </summary>
         public IodineTypeDefinition TypeDef {
             private set;
             get;
         }
 
+        /// <summary>
+        /// Object's super object (If it has one)
+        /// </summary>
+        /// <value>The super object</value>
         public IodineObject Super {
             set {
                 Attributes ["__super__"] = value;
@@ -107,6 +119,11 @@ namespace Iodine.Runtime
             }
         }
 
+        /// <summary>
+        /// Determines whether this instance has attribute the specified name.
+        /// </summary>
+        /// <returns><c>true</c> if this instance has attribute the specified name; otherwise, <c>false</c>.</returns>
+        /// <param name="name">Name.</param>
         public bool HasAttribute (string name)
         {
             bool res = Attributes.ContainsKey (name);
@@ -402,9 +419,9 @@ namespace Iodine.Runtime
 
         #region Unary Operator Stubs
 
-        /*
-         * - unary prefix operator
-         */
+        /// <summary>
+        /// Unary negation operator (-)
+        /// </summary>
         public virtual IodineObject Negate (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__negate__")) {
@@ -416,9 +433,9 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /*
-         * ~ unary prefix operator
-         */
+        /// <summary>
+        /// Unary bitwise inversion operator (~)
+        /// </summary>
         public virtual IodineObject Not (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__invert__")) {
@@ -430,9 +447,9 @@ namespace Iodine.Runtime
             return null;
         }
 
-        /*
-        * ! unary prefix operator
-        */
+        /// <summary>
+        /// Unary not operator (!)
+        /// </summary>
         public virtual IodineObject LogicalNot (VirtualMachine vm)
         {
             if (Attributes.ContainsKey ("__not__")) {
@@ -447,7 +464,10 @@ namespace Iodine.Runtime
         #endregion
 
         #region Binary Operator Stubs
-
+        
+        /// <summary>
+        /// Addition operator (+)
+        /// </summary>
         public virtual IodineObject Add (VirtualMachine vm, IodineObject left)
         {
             if (Attributes.ContainsKey ("__add__")) {
@@ -459,6 +479,9 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Subtraction operator (-)
+        /// </summary>
         public virtual IodineObject Sub (VirtualMachine vm, IodineObject left)
         {
             if (Attributes.ContainsKey ("__sub__")) {
@@ -470,6 +493,9 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Division operator (/)
+        /// </summary>
         public virtual IodineObject Div (VirtualMachine vm, IodineObject left)
         {
             if (Attributes.ContainsKey ("__div__")) {
@@ -481,6 +507,9 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Modulo operator (%)
+        /// </summary>
         public virtual IodineObject Mod (VirtualMachine vm, IodineObject left)
         {
             if (Attributes.ContainsKey ("__mod__")) {
@@ -492,6 +521,9 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Multiplication operator (*)
+        /// </summary>
         public virtual IodineObject Mul (VirtualMachine vm, IodineObject left)
         {
             if (Attributes.ContainsKey ("__mul__")) {
@@ -503,6 +535,9 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// And operator (&)
+        /// </summary>
         public virtual IodineObject And (VirtualMachine vm, IodineObject left)
         {
             if (Attributes.ContainsKey ("__and__")) {
@@ -514,6 +549,9 @@ namespace Iodine.Runtime
             return null;
         }
 
+        /// <summary>
+        /// Exclusive or operator (^)
+        /// </summary>
         public virtual IodineObject Xor (VirtualMachine vm, IodineObject left)
         {
             if (Attributes.ContainsKey ("__xor__")) {

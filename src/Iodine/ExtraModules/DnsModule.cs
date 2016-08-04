@@ -37,7 +37,7 @@ using Iodine.Runtime;
 namespace Iodine.Modules.Extras
 {
     [IodineBuiltinModule ("net/dns")]
-    internal class DNSModule : IodineModule
+    internal class DnsModule : IodineModule
     {
         public class IodineHostEntry : IodineObject
         {
@@ -54,18 +54,18 @@ namespace Iodine.Modules.Extras
                 foreach (IPAddress ip in Entry.AddressList) {
                     addresses [i++] = new IodineString (ip.ToString ());
                 }
-                SetAttribute ("addressList", new IodineTuple (addresses));
+                SetAttribute ("addresses", new IodineTuple (addresses));
             }
 
         }
 
-        public DNSModule ()
+        public DnsModule ()
             : base ("dns")
         {
-            SetAttribute ("lookup", new BuiltinMethodCallback (getHostEntry, this));
+            SetAttribute ("lookup", new BuiltinMethodCallback (GetHostEntry, this));
         }
 
-        private IodineObject getHostEntry (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        private IodineObject GetHostEntry (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));

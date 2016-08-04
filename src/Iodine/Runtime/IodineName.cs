@@ -31,6 +31,9 @@ using System;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// Iodine symbol reference
+    /// </summary>
     public class IodineName : IodineObject
     {
         private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Name");

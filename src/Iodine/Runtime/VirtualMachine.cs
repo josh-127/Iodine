@@ -244,6 +244,11 @@ namespace Iodine.Runtime
             return retVal;
         }
 
+        /// <summary>
+        /// Evaluates an Iodine code object
+        /// </summary>
+        /// <returns>The code.</returns>
+        /// <param name="bytecode">Bytecode.</param>
         public IodineObject EvalCode (CodeObject bytecode)
         {
             int insCount = bytecode.Instructions.Length;

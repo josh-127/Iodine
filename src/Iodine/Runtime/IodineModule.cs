@@ -38,6 +38,9 @@ using Iodine.Util;
 
 namespace Iodine.Runtime
 {
+    /// <summary>
+    /// An Iodine Module, basically a namespace for an Iodine file
+    /// </summary>
     public abstract class IodineModule : IodineObject
     {
         private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
