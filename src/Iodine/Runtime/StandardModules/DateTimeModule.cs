@@ -60,6 +60,12 @@ namespace Iodine.Runtime
                 SetAttribute ("month", new IodineInteger (val.Month));
                 SetAttribute ("year", new IodineInteger (val.Year));
                 SetAttribute ("epoch", new IodineInteger (unixEsposh));
+                SetAttribute ("utc", new BuiltinMethodCallback (ToUtc, null));
+            }
+
+            private IodineObject ToUtc (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                return new IodineTimeStamp (Value.ToUniversalTime ());
             }
 
             public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)

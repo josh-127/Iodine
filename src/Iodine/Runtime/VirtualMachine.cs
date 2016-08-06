@@ -309,6 +309,8 @@ namespace Iodine.Runtime
                 throw new UnhandledIodineExceptionException (Top, ex);
             }
             ex.SetAttribute ("stackTrace", new IodineString (GetStackTrace ()));
+            Console.WriteLine ("Raise exception" + ex.ToString ());
+            Console.WriteLine (GetStackTrace ());
             UnwindStack (frameCount - handler.Frame);
             lastException = ex;
             Top.InstructionPointer = handler.InstructionPointer;
