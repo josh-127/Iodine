@@ -190,16 +190,23 @@ class JsonFile {
                 if (peekChar () == "\\") {
                     readChar (); 
                     ch = readChar ();
-                    escapeVals = {"n" : "\n",
-                        "t" : "\t",
-                        "f" : "\f",
-                        "r" : "\r",
-                        "\"" : "\"",
-                        "\\" : "\\"};
-                    if (!escapeVals.contains (ch)) {
-                        raise InvalidJsonException ();
+               
+                    if (ch == "u") {
+                        val = readChar () + readChar () + readChar () + readChar ()
+                        accum += chr (Int (val, 16))
+                     } else {
+
+                        escapeVals = {"n" : "\n",
+                            "t" : "\t",
+                            "f" : "\f",
+                            "r" : "\r",
+                            "\"" : "\"",
+                            "\\" : "\\"};
+                        if (!escapeVals.contains (ch)) {
+                            raise InvalidJsonException ();
+                        }
+                        accum += escapeVals [ch];
                     }
-                    accum += escapeVals [ch];
                 } else {
                     accum += readChar ();
                 }
@@ -255,9 +262,9 @@ class JsonFile {
                 }
             }
 
-            if (ch.isdigit ()) {
+            if (peekChar ().isdigit ()) {
                 tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
-            } else if (ch.isalpha ()) {
+            } else if (peekChar ().isalpha ()) {
                 tokens.append (scanConstant ());           
             } else if (len (tokens) == last) {
                 raise InvalidJsonException ();
@@ -318,6 +325,8 @@ func _escapeStr (str) {
     for (ch in str) {
         if (ch == '"' && prevCh != "\\") {
             buf.append ("\\\"");
+        } else if (ch == "\\") {
+            buf.append ("\\\\")
         } else {
             buf.append (ch);
         }
