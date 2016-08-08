@@ -31,7 +31,12 @@
 
 using System;
 using System.Net;
+using System.Text;
 using System.Collections.Specialized;
+using System.Security;
+using System.Security.Cryptography;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using Iodine.Runtime;
 
 namespace Iodine.Modules.Extras
@@ -67,6 +72,7 @@ namespace Iodine.Modules.Extras
                 SetAttribute ("downloadraw", new BuiltinMethodCallback (DownloadRaw, this));
                 SetAttribute ("downloadfile", new BuiltinMethodCallback (DownloadFile, this));
                 SetAttribute ("uploadfile", new BuiltinMethodCallback (UploadFile, this));
+                SetAttribute ("uploadstr", new BuiltinMethodCallback (UploadString, this));
                 SetAttribute ("uploadvalues", new BuiltinMethodCallback (UploadValues, this));
                 WebProxy proxy = new WebProxy ();
                 client = new CookieAwareWebClient ();
@@ -113,7 +119,6 @@ namespace Iodine.Modules.Extras
                     vm.RaiseException (e.Message);
                 }
                 return null;
-
             }
 
             private IodineObject UploadFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -123,6 +128,21 @@ namespace Iodine.Modules.Extras
                 IodineString file = args [1] as IodineString;
                 byte[] result = client.UploadFile (uri.ToString (), file.ToString ());
                 return new IodineBytes (result);
+            }
+
+            private IodineObject UploadString (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += (o, certificate, chain, errors) => true;
+                IodineString uri = args [0] as IodineString;
+                IodineString str = args [1] as IodineString;
+                try {
+                    string result = client.UploadString (uri.ToString (), "POST", str.ToString ());
+                    return new IodineString (result);
+                } catch (Exception ex) {
+                    Console.WriteLine (ex.Message);
+                    Console.WriteLine (ex.InnerException);
+                }
+                return new IodineString ("");
             }
 
             private IodineObject UploadValues (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -145,7 +165,7 @@ namespace Iodine.Modules.Extras
         public WebClientModule () : base ("webclient")
         {
             SetAttribute ("WebClient", new BuiltinMethodCallback (webclient, this));
-            SetAttribute ("disableCertificateCheck", new BuiltinMethodCallback (disableCertCheck, this));
+            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true; 
         }
 
         private IodineObject webclient (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -153,11 +173,7 @@ namespace Iodine.Modules.Extras
             return new IodineWebClient ();
         }
 
-        private IodineObject disableCertCheck (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true; 
-            return null;
-        }
+
     }
 }
 

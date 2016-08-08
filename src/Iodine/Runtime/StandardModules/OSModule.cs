@@ -77,6 +77,7 @@ namespace Iodine.Runtime
                 SetAttribute ("write", new BuiltinMethodCallback (Write, this));
                 SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, this));
                 SetAttribute ("readln", new BuiltinMethodCallback (Readln, this));
+                SetAttribute ("read", new BuiltinMethodCallback (Read, this));
                 SetAttribute ("alive", new BuiltinMethodCallback (Alive, this));
                 SetAttribute ("empty", new BuiltinMethodCallback (Empty, this));
             }
@@ -141,6 +142,11 @@ namespace Iodine.Runtime
             private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 return new IodineString (Value.StandardOutput.ReadLine ());
+            }
+
+            private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            {
+                return new IodineString (Value.StandardOutput.ReadToEnd ());
             }
 
             private void StdinWriteFile (VirtualMachine vm, IodineStream stream)

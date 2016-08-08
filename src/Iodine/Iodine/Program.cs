@@ -79,7 +79,7 @@ namespace Iodine
         public static void Main (string[] args)
         {
             context = IodineContext.Create ();
-
+            System.Security.Cryptography.AesCryptoServiceProvider b = new System.Security.Cryptography.AesCryptoServiceProvider();
             if (args.Length == 0) {
                 ReplShell shell = new ReplShell (context);
                 shell.Run ();
