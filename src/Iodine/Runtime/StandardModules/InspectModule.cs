@@ -136,7 +136,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Checks whether or not an object has a specific attribute",
             "@param obj The object",
-            "@param attr : Str the attribute",
+            "@param attr Str the attribute",
             "@returns Bool"
         )]
         private IodineObject HasAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -157,7 +157,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Gets a specific attribute of an object",
             "@param obj The object",
-            "@param attr : Str the attribute",
+            "@param attr Str the attribute",
             "@returns Object"
         )]
         private IodineObject GetAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -226,7 +226,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Sets a specific attribute of an object",
             "@param obj The object",
-            "@param attr : Str the attribute",
+            "@param attrthe attribute",
             "@param value The value"
         )]
         private IodineObject SetAttribute (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -247,7 +247,7 @@ namespace Iodine.Runtime
 
         [BuiltinDocString (
             "Loads a module",
-            "@param path : Str The module",
+            "@param path The module",
             "@returns Module"
         )]
         private IodineObject LoadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -264,7 +264,7 @@ namespace Iodine.Runtime
 
         [BuiltinDocString (
             "Compiles source code into a module",
-            "@param source : Str The source code",
+            "@param source The source code",
             "@returns Module"
         )]
         private IodineObject CompileModule (VirtualMachine vm, IodineObject self, IodineObject[] args)

@@ -258,10 +258,10 @@ namespace Iodine.Runtime
             return new IodineList (lines);
         }
 
-        /**
-         * Iodine Function: getModifiedTime (dir)
-         * Description: Removes an directory, deleting all subfiles
-         */
+        [BuiltinDocString (
+            "Returns the time this file was last accessed.",
+            "@param file The file in question."
+        )]
         private IodineObject GetModifiedTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -281,12 +281,17 @@ namespace Iodine.Runtime
             return new DateTimeModule.IodineTimeStamp (File.GetLastAccessTime (args [0].ToString ()));
         }
 
+        [BuiltinDocString (
+            "Returns the time this file was created.",
+            "@param file The file in question."
+        )]
         private IodineObject GetCreationTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
+
             if (!(args [0] is IodineString)) {
                 vm.RaiseException (new IodineTypeException ("Str"));
                 return null;

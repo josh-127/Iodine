@@ -43,12 +43,21 @@ namespace Iodine.Runtime
                 public ThreadTypeDefinition ()
                     : base ("Thread")
                 {
+                    BindAttributes (this);
+                    SetDocumentation (
+                        "Creates and controls a thread.",
+                        "@param func The function to invoke when this thread is created."
+                    );
                 }
 
-                /**
-                 * Iodine Class: Thread (func)
-                 * Description: Represents a thread, upon starting the thread, func () will be executed
-                 */
+                public override IodineObject BindAttributes (IodineObject obj)
+                {
+                    obj.SetAttribute ("start", new BuiltinMethodCallback (Start, obj));
+                    obj.SetAttribute ("abort", new BuiltinMethodCallback (Abort, obj));
+                    obj.SetAttribute ("alive", new BuiltinMethodCallback (Alive, obj));
+                    return obj;
+                }
+
                 public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
                 {
                     if (args.Length <= 0) {
@@ -67,6 +76,40 @@ namespace Iodine.Runtime
                     });
                     return new IodineThread (t);
                 }
+
+                [BuiltinDocString (
+                    "Starts the thread."
+                )]
+                private static IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineThread thread = self as IodineThread;
+
+                    thread.Value.Start ();
+
+                    return null;
+                }
+
+                [BuiltinDocString (
+                    "Terminates the thread."
+                )]
+                private static IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineThread thread = self as IodineThread;
+
+                    thread.Value.Abort ();
+
+                    return null;
+                }
+
+                [BuiltinDocString (
+                    "Returns true if this thread is alive, false if it is not."
+                )]
+                private static IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineThread thread = self as IodineThread;
+
+                    return IodineBool.Create (thread.Value.IsAlive);
+                }
             }
 
             public static readonly IodineTypeDefinition TypeDefinition = new ThreadTypeDefinition ();
@@ -77,38 +120,6 @@ namespace Iodine.Runtime
                 : base (TypeDefinition)
             {
                 Value = t;
-                SetAttribute ("start", new BuiltinMethodCallback (Start, this));
-                SetAttribute ("abort", new BuiltinMethodCallback (Abort, this));
-                SetAttribute ("isalive", new BuiltinMethodCallback (IsAlive, this));
-            }
-
-            /**
-             * Iodine Method: Thread.start (self)
-             * Description: Starts the thread
-             */
-            private IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                Value.Start ();
-                return null;
-            }
-
-            /**
-             * Iodine Method: Thread.abort (self)
-             * Description: Aborts the thread
-             */
-            private IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                Value.Abort ();
-                return null;
-            }
-
-            /**
-             * Iodine Method: Thread.isAlive (self)
-             * Description: Returns true if the thread is alive
-             */
-            private IodineObject IsAlive (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                return IodineBool.Create (Value.IsAlive);
             }
         }
 
@@ -121,11 +132,52 @@ namespace Iodine.Runtime
                 public LockTypeDefinition ()
                     : base ("Lock")
                 {
+                    BindAttributes (this);
+                    SetDocumentation (
+                        "Creates and controls a simple spinlock."
+                    );
+                }
+
+                public override IodineObject BindAttributes (IodineObject obj)
+                {
+                    obj.SetAttribute ("acquire", new BuiltinMethodCallback (Acquire, obj));
+                    obj.SetAttribute ("release", new BuiltinMethodCallback (Release, obj));
+                    obj.SetAttribute ("locked", new BuiltinMethodCallback (Locked, obj));
+                    return obj;
                 }
 
                 public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
                 {
                     return new IodineLock ();
+                }
+
+                [BuiltinDocString (
+                    "Enters the critical section, blocking all threads until release the lock is released."
+                )]
+                private static IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineLock spinlock = self as IodineLock;
+                    spinlock.Acquire ();
+                    return null;
+                }
+
+                [BuiltinDocString (
+                    "Releases the lock, allowing any threads blocked by this lock to continue."
+                )]
+                private static IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineLock spinlock = self as IodineLock;
+                    spinlock.Release ();
+                    return null;
+                } 
+
+                [BuiltinDocString (
+                    "Returns true if a thread has acquired this lock, false if not."
+                )]
+                private static IodineObject Locked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineLock spinlock = self as IodineLock;
+                    return IodineBool.Create (spinlock.IsLocked ());
                 }
             }
 
@@ -134,40 +186,23 @@ namespace Iodine.Runtime
             public IodineLock ()
                 : base (TypeDefinition)
             {
-                SetAttribute ("acquire", new BuiltinMethodCallback (Acquire, this));
-                SetAttribute ("release", new BuiltinMethodCallback (Release, this));
-                SetAttribute ("locked", new BuiltinMethodCallback (IsLocked, this));
             }
 
-            /**
-             * Iodine Method: Lock.aquire (self)
-             * Description: Aquires the log
-             */
-            private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            public void Acquire ()
             {
                 while (_lock)
                     ;
                 _lock = true;
-                return null;
             }
 
-            /*
-             * Iodine Method: Lock.release (self)
-             * Description: Releases the lock
-             */
-            private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            public void Release ()
             {
                 _lock = false;
-                return null;
             }
 
-            /**
-             * Iodine Method: Lock.isLocked (self)
-             * Description: Returns true if the lock has been aquired
-             */
-            private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            public bool IsLocked ()
             {
-                return IodineBool.Create (_lock);
+                return _lock;
             }
         }
 
@@ -247,10 +282,10 @@ namespace Iodine.Runtime
             SetAttribute ("sleep", new BuiltinMethodCallback (Sleep, this));
         }
 
-       /**
-        * Iodine Function: sleep (t)
-        * Description: Suspends the current thread for t milliseconds 
-        */
+        [BuiltinDocString (
+            "Suspends the current thread for t milliseconds.",
+            "@param t How many milliseconds to suspend the thread for"
+        )]
         private IodineObject Sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

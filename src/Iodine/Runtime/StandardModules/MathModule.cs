@@ -58,10 +58,11 @@ namespace Iodine.Runtime
             SetAttribute ("log", new BuiltinMethodCallback (Log, this));
         }
 
-        /**
-         * Iodine Function: pow (val, power)
-         * Description: raises val to power
-         */
+        [BuiltinDocString (
+            "Returns the specified number raised to the specified power.",
+            "@param number The number.",
+            "@param power The power."
+        )]
         private IodineObject Pow (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -85,6 +86,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Pow (a1, a2));
         }
 
+        [BuiltinDocString (
+            "Returns the sine of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject Sin (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -102,6 +107,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Sin (input));
         }
 
+        [BuiltinDocString (
+            "Returns the cosine of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject Cos (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -118,6 +127,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Cos (input));
         }
 
+        [BuiltinDocString (
+            "Returns the tangent of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject Tan (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -135,6 +148,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Tan (input));
         }
 
+        [BuiltinDocString (
+            "Returns the arc sine of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject ASin (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -152,6 +169,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Asin (input));
         }
 
+        [BuiltinDocString (
+            "Returns the arc cosine of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject ACos (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -169,6 +190,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Acos (input));
         }
 
+        [BuiltinDocString (
+            "Returns the arc tangent of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject ATan (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -186,6 +211,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Atan (input));
         }
 
+        [BuiltinDocString (
+            "Returns the absolute value of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject Abs (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -203,6 +232,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Abs (input));
         }
 
+        [BuiltinDocString (
+            "Returns the square root of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject Sqrt (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -220,6 +253,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Sqrt (input));
         }
 
+        [BuiltinDocString (
+            "Returns the specified number, rounded down to the closest integer.",
+            "@param number The number."
+        )]
         private IodineObject Floor (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -237,6 +274,9 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Floor (input));
         }
 
+        [BuiltinDocString (
+            "Returns the specified numner, rounded up to the closest integer."
+        )]
         private IodineObject Ceiling (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -254,6 +294,10 @@ namespace Iodine.Runtime
             return new IodineFloat (Math.Ceiling (input));
         }
 
+        [BuiltinDocString (
+            "Returns the base 10 logarithm of the specified number.",
+            "@param number The number."
+        )]
         private IodineObject Log (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {

@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("")]
 [assembly: AssemblyProduct ("")]
-[assembly: AssemblyCopyright ("Splitty")]
+[assembly: AssemblyCopyright ("IodineLang")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 

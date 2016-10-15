@@ -6,7 +6,7 @@
  
  
 # Builtin hash functions
-use _hashfunctions;
+use __hashfunctions__;
 
 # SplittyDev's Whirlpool implementation
 use WhirlpoolAlgol from _whirlpool;

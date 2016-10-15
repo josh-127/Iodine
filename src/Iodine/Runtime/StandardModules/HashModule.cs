@@ -32,11 +32,11 @@ using System.Security.Cryptography;
 
 namespace Iodine.Runtime
 {
-    [IodineBuiltinModule ("_hashfunctions")]
+    [IodineBuiltinModule ("__hashfunctions__")]
     public class HashModule : IodineModule
     {
         public HashModule ()
-            : base ("hash")
+            : base ("__hashfunctions__")
         {
             SetAttribute ("sha1", new BuiltinMethodCallback (Sha1, this));
             SetAttribute ("sha256", new BuiltinMethodCallback (Sha256, this));

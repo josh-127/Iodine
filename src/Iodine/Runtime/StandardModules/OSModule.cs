@@ -41,45 +41,187 @@ namespace Iodine.Runtime
     [IodineBuiltinModule ("os")]
     public class OSModule : IodineModule
     {
+        /// <summary>
+        /// IodineProc, a process on the host operating system
+        /// </summary>
         class IodineProc : IodineObject
         {
-            public static readonly IodineTypeDefinition ProcTypeDef = new IodineTypeDefinition ("Process");
+            // Note: Having this much nesting really bothers me, but, I can't
+            // really think of a better way to do this. Anonymous classes would
+            // be a cool thing in C# for singletons
+            class ProcTypeDef : IodineTypeDefinition
+            {
+                public ProcTypeDef ()
+                    : base ("Process")
+                {
+                    BindAttributes (this);
+                }
+
+                public override IodineObject BindAttributes (IodineObject obj)
+                {
+                    obj.SetAttribute ("kill", new BuiltinMethodCallback (Kill, obj));
+                    return obj;
+                }
+
+                [BuiltinDocString ("Attempts to kill the associated process.")]
+                private static IodineObject Kill (
+                    VirtualMachine vm,
+                    IodineObject self,
+                    IodineObject[] args)
+                {
+                    IodineProc procObj = self as IodineProc;
+
+                    procObj.Value.Kill ();
+
+                    return null;
+                }
+            }
+
+            public static new readonly IodineTypeDefinition TypeDef = new ProcTypeDef ();
 
             public readonly Process Value;
 
             public IodineProc (Process proc)
-                : base (ProcTypeDef)
+                : base (TypeDef)
             {
                 Value = proc;
                 SetAttribute ("id", new IodineInteger (proc.Id));
                 SetAttribute ("name", new IodineString (proc.ProcessName));
-                SetAttribute ("kill", new BuiltinMethodCallback (kill, this));
             }
-
-            private IodineObject kill (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                Value.Kill ();
-                return null;
-            }
-
         }
 
-        class IodineSubprocess : IodineProc
+        /// <summary>
+        /// Subprocess, a process spawned by iodine
+        /// </summary>
+        class IodineSubprocess : IodineObject
         {
+            class SubProcessTypeDef : IodineTypeDefinition
+            {
+                public SubProcessTypeDef ()
+                    : base ("Subprocess")
+                {
+                    BindAttributes (this);
+                }
+
+                public override IodineObject BindAttributes (IodineObject obj)
+                {
+                    obj.SetAttribute ("write", new BuiltinMethodCallback (Write, obj));
+                    obj.SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, obj));
+                    obj.SetAttribute ("read", new BuiltinMethodCallback (Read, obj));
+                    obj.SetAttribute ("readln", new BuiltinMethodCallback (Readln, obj));
+                    obj.SetAttribute ("kill", new BuiltinMethodCallback (Kill, obj));
+                    obj.SetAttribute ("empty", new BuiltinMethodCallback (Empty, obj));
+                    obj.SetAttribute ("alive", new BuiltinMethodCallback (Alive, obj));
+                    return base.BindAttributes (obj);
+                }
+
+                [BuiltinDocString (
+                    "@param *args" +
+                    "Writes each string passed in *args to the process's standard input stream"
+                )]
+                private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineSubprocess proc = self as IodineSubprocess;
+
+                    foreach (IodineObject obj in args) {
+                        IodineString str = obj as IodineString;
+
+                        if (str == null) {
+                            vm.RaiseException (new IodineTypeException ("Str"));
+                            return null;
+                        }
+
+                        proc.StdinWriteString (vm, str.Value);
+                    }
+                    return null;
+                }
+
+                [BuiltinDocString (
+                    "@param *args.",
+                    "Writes each string passed in *args to the process's standard input stream, and ",
+                    "appends a new line."
+                )]
+                private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineSubprocess proc = self as IodineSubprocess;
+
+                    foreach (IodineObject obj in args) {
+                        IodineString str = obj as IodineString;
+
+                        if (str == null) {
+                            vm.RaiseException (new IodineTypeException ("Str"));
+                            return null;
+                        }
+
+                        proc.StdinWriteString (vm, str.Value + "\n");
+
+                    }
+                    return null;
+                }
+
+                [BuiltinDocString (
+                    "Reads a single line from the process's standard output stream."
+                )]
+                private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineSubprocess proc = self as IodineSubprocess;
+
+                    return new IodineString (proc.Value.StandardOutput.ReadLine ());
+                }
+
+                [BuiltinDocString (
+                    "Reads all text written to the process's standard output stream."
+                )]
+                private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineSubprocess proc = self as IodineSubprocess;
+
+                    return new IodineString (proc.Value.StandardOutput.ReadToEnd ());
+                }
+
+                [BuiltinDocString ("Attempts to kill the associated process.")]
+                private static IodineObject Kill (
+                    VirtualMachine vm,
+                    IodineObject self,
+                    IodineObject[] args)
+                {
+                    IodineSubprocess procObj = self as IodineSubprocess;
+
+                    procObj.Value.Kill ();
+
+                    return null;
+                }
+
+                [BuiltinDocString ("Returns true if the process is alive.")]
+                private IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineSubprocess proc = self as IodineSubprocess;
+                    return IodineBool.Create (proc.Value.HasExited);
+                }
+
+                [BuiltinDocString ("Returns true if there is no more data to be read from stdout.")]
+                private IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                {
+                    IodineSubprocess proc = self as IodineSubprocess;
+                    return IodineBool.Create (proc.Value.StandardOutput.Peek () < 0);
+                }
+            }
+
+            public static new IodineTypeDefinition TypeDef = new SubProcessTypeDef ();
+
+            public readonly Process Value;
+
             private bool canRead;
             private bool canWrite;
 
             public IodineSubprocess (Process proc, bool read, bool write)
-                : base (proc)
+                : base (TypeDef)
             {
                 canRead = read;
                 canWrite = write;
-                SetAttribute ("write", new BuiltinMethodCallback (Write, this));
-                SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, this));
-                SetAttribute ("readln", new BuiltinMethodCallback (Readln, this));
-                SetAttribute ("read", new BuiltinMethodCallback (Read, this));
-                SetAttribute ("alive", new BuiltinMethodCallback (Alive, this));
-                SetAttribute ("empty", new BuiltinMethodCallback (Empty, this));
+                Value = proc;
+                SetAttribute ("id", new IodineInteger (proc.Id));
+                SetAttribute ("name", new IodineString (proc.ProcessName));
             }
 
             public override void Exit (VirtualMachine vm)
@@ -94,85 +236,9 @@ namespace Iodine.Runtime
                 }
             }
 
-            /**
-             * Iodine Method: subprocess.write (self, *args)
-             * Description: Writes each string passed in *args to the process's standard input stream
-             */
-            private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                foreach (IodineObject obj in args) {
-                    IodineString str = obj as IodineString;
-
-                    if (str == null) {
-                        vm.RaiseException (new IodineTypeException ("Str"));
-                        return null;
-                    }
-
-                    StdinWriteString (vm, str.Value);
-                
-                }
-                return null;
-            }
-
-            /**
-             * Iodine Method: subprocess.writeln (self, *args)
-             * Description: Writes each string passed in *args to the process's standard input stream
-             * and appends \n to the output
-             */
-            private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                foreach (IodineObject obj in args) {
-                    IodineString str = obj as IodineString;
-
-                    if (str == null) {
-                        vm.RaiseException (new IodineTypeException ("Str"));
-                        return null;
-                    }
-
-                    StdinWriteString (vm, str.Value + "\n");
-
-                }
-                return null;
-            }
-
-            /**
-             * Iodine Method: subprocess.readln (self)
-             * Description: Reads a line from the process's standard output stream
-             */
-            private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                return new IodineString (Value.StandardOutput.ReadLine ());
-            }
-
-            private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                return new IodineString (Value.StandardOutput.ReadToEnd ());
-            }
-
-            private void StdinWriteFile (VirtualMachine vm, IodineStream stream)
-            {
-                if (stream == null) {
-                    vm.RaiseException (new IodineTypeException ("Stream"));
-                }
-
-                while (stream.File.Position < stream.File.Length) {
-                    Value.StandardInput.Write ((char)stream.File.ReadByte ());
-                }
-            }
-
             private void StdinWriteString (VirtualMachine vm, string str)
             {
                 Value.StandardInput.Write (str);
-            }
-
-            private IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                return IodineBool.Create (Value.HasExited);
-            }
-
-            private IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject[] args)
-            {
-                return IodineBool.Create (Value.StandardOutput.Peek () < 0);
             }
         }
 
