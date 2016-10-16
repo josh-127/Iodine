@@ -292,6 +292,10 @@ namespace Iodine.Runtime
                 method = ((IodineClosure)args [0]).Target;
             }
 
+            if (method == null && args [0] is IodineBoundMethod) {
+                method = ((IodineBoundMethod)args [0]).Method;
+            }
+
             IodineList ret = new IodineList (new IodineObject[] { });
 
             foreach (Instruction ins in method.Bytecode.Instructions) {
