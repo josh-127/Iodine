@@ -26,7 +26,6 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-
 using System;
 using System.IO;
 using System.Linq;
