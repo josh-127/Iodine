@@ -241,8 +241,8 @@ namespace Iodine.Runtime
         public virtual IodineObject Slice (VirtualMachine vm, IodineSlice slice)
         {
 
-            if (Attributes.ContainsKey ("__getItem__")) {
-                return Attributes ["__getItem__"].Invoke (vm, new IodineObject[] { slice });
+            if (Attributes.ContainsKey ("__getitem__")) {
+                return Attributes ["__getitem__"].Invoke (vm, new IodineObject[] { slice });
             } else {
                 return null;
             }
@@ -251,20 +251,20 @@ namespace Iodine.Runtime
 
         public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
         {
-            if (Attributes.ContainsKey ("__setItem__")) {
-                Attributes ["__setItem__"].Invoke (vm, new IodineObject[] {
+            if (Attributes.ContainsKey ("__setitem__")) {
+                Attributes ["__setitem__"].Invoke (vm, new IodineObject[] {
                     key,
                     value
                 });
             } else {
-                vm.RaiseException (new IodineNotSupportedException ("__setItem__ not implemented!"));
+                vm.RaiseException (new IodineNotSupportedException ("__setitem__ not implemented!"));
             }
         }
 
         public virtual IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            if (Attributes.ContainsKey ("__getItem__")) {
-                return Attributes ["__getItem__"].Invoke (vm, new IodineObject[] { key });
+            if (Attributes.ContainsKey ("__getitem__")) {
+                return Attributes ["__getitem__"].Invoke (vm, new IodineObject[] { key });
             }
             return null;
         }
