@@ -332,7 +332,7 @@ func _escapeStr (str) {
         }
         prevCh = ch;
     }
-    return Str (buf);
+    return Str (buf).replace ("\n", "\\n").replace ("\r", "\\r");
 }
 
 func _dumpList (item) {
