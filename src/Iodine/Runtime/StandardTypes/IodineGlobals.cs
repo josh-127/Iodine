@@ -61,12 +61,15 @@ namespace Iodine.Runtime
         protected IodineGlobals ()
             : base (TypeDefinition)
         {
+            
         }
 
         public IodineObject Set (VirtualMachine vm, IodineObject obj)
         {
             IodineDictionary dict = obj as IodineDictionary;
             if (dict != null) {
+                vm.Context.Globals.Clear ();
+                Console.WriteLine ("Set.");
                 foreach (IodineObject key in dict.Keys) {
                     vm.Context.Globals [key.ToString ()] = dict.Get (key);
                 }
@@ -82,7 +85,6 @@ namespace Iodine.Runtime
             }
             return ret;
         }
-
     }
 }
 

@@ -11,7 +11,7 @@ if [ "$#" -ge 1 ]; then
 fi
 
 echo "Using prefix $prefix"
-
+rm -rf ./modules/.iodine_cache
 mkdir -p $prefix/iodine
 
 cp ./bin/iodine.exe $prefix/iodine/iodine.exe

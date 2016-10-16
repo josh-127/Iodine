@@ -134,7 +134,7 @@ namespace Iodine.Compiler
 
             if (iodinePath != null) {
                 SearchPath.AddRange (iodinePath.Split (':'));
-            }
+            } 
 
             // Defaults
             WarningFilter = WarningType.DeprecationWarning | WarningType.SyntaxWarning;

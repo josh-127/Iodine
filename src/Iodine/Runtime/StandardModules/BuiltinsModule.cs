@@ -269,6 +269,7 @@ namespace Iodine.Runtime
 
             foreach (IodineObject key in hash.Keys) {
                 context.Globals [key.ToString ()] = hash.Get (key);
+                args [0].SetAttribute (key.ToString (), hash.Get (key));
             }
 
             VirtualMachine newVm = new VirtualMachine (context);
