@@ -22,7 +22,7 @@ cp -r ./bin/extensions $prefix/iodine
 echo "#! /bin/bash" > /usr/bin/iodine
 echo "/usr/bin/mono $prefix/iodine/iodine.exe \"\$@\"" >> /usr/bin/iodine
 
-echo -n "export IODINE_HOME=$prefix/iodine" | sudo tee /etc/profile.d/iodine.sh
+echo -n "export IODINE_HOME=$prefix/iodine" | tee /etc/profile.d/iodine.sh
 chmod a+x /usr/bin/iodine
 
 

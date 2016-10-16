@@ -1,0 +1,62 @@
+/**
+ * Primative module for CGI
+ */
+
+use os
+use json
+
+REQUEST_METHOD = os.getenv ("REQUEST_METHOD")
+HTTP_COOKIE = os.getenv ("HTTP_COOKIE")
+QUERY_STRING = os.getenv ("QUERY_STRING")
+
+POST = {}
+GET = {}
+
+func __initialize () {
+    GET = __parse_querystr (os.getenv ("QUERY_STRING"))
+    if (REQUEST_METHOD == "POST") {
+        contentType = os.getenv ("CONTENT_TYPE").trim ()
+        if (contentType == "application/json") {
+            data = stdin.read (Int (os.getEnv ("CONTENT_LENGTH")))
+            POST = json.parse (data)
+        } else if (contentType == "application/x-www-form-urlencoded") {
+            data = stdin.read (Int (os.getenv ("CONTENT_LENGTH")))
+            POST = __parse_querystr (data)
+        }
+    }
+}
+
+func __unescape_query_item (item) {
+    item = item.replace ("+", " ")
+    i = 0
+    accum = StringBuffer ()
+    while (i < len (item)) {
+        if (item [i] == "%") {
+            ch = item [i + 1] + item [i + 2]
+            accum.append (chr (Int (ch, 16)))
+            i += 3
+        } else {
+            accum.append (item [i])
+            i += 1
+        }
+    }
+    return Str (accum)
+}
+
+func __parse_querystr (queryString) {
+    if (queryString == null || queryString == "") {
+        return Dict ()
+    }
+    pairs = queryString.split ("&")
+    if (pairs [0] == "") {
+        return Dict ()
+    }
+    query_dict = Dict ()
+    for (pair in pairs) {
+        pair_items = pair.split ("=")
+        query_dict [pair_items [0]] = __unescape_query_item (pair_items [1])
+    }
+    return query_dict
+}
+
+__initialize ()
