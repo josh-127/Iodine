@@ -26,7 +26,6 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-
 using System;
 using System.IO;
 using System.Linq;
@@ -308,9 +307,8 @@ namespace Iodine.Runtime
                 }
                 throw new UnhandledIodineExceptionException (Top, ex);
             }
-            ex.SetAttribute ("stackTrace", new IodineString (GetStackTrace ()));
-            Console.WriteLine ("Raise exception" + ex.ToString ());
-            Console.WriteLine (GetStackTrace ());
+            ex.SetAttribute ("stacktrace", new IodineString (GetStackTrace ()));
+
             UnwindStack (frameCount - handler.Frame);
             lastException = ex;
             Top.InstructionPointer = handler.InstructionPointer;
@@ -432,7 +430,9 @@ namespace Iodine.Runtime
             case Opcode.LoadGlobal:
                 {
                     string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
-                    if (Top.Module.Attributes.ContainsKey (name)) {
+                    if (name == "_") {
+                        Push (Top.Module);
+                    } else if (Top.Module.Attributes.ContainsKey (name)) {
                         Push (Top.Module.GetAttribute (this, name));
                     } else {
                         RaiseException (new IodineAttributeNotFoundException (name));
@@ -1009,4 +1009,5 @@ namespace Iodine.Runtime
         }
     }
 }
+
 
