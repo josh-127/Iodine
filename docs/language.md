@@ -83,8 +83,16 @@ An iodine expression is a sequence of operators, operands and constants that ret
 ##### 2.1.2 Lambda Expressions
 Anonymous functions can be created using the lambda keyword. Anonymous functions have access to all local variables in their parent function. The syntax for the lambda keyword is
 ```
+lambda () statement
+```
+
+Or
+
+```
 lambda () => statement
 ```
+
+The rules for function parameters with lambda expressions are identical to those of iodine functions.
 
 ##### 2.1.3 Self reference
 Inside instance methods, the self reference points to the current object instance. The self reference can be accessed via the ```self``` keyword.
@@ -181,7 +189,7 @@ for (initializer; condition; afterthought)
     statement;
 ````
 
-##### 2.2.8 ```foreach``` Statement
+##### 2.2.8 foreach Statement
 The ```for``` loop can also be used to iterate through an iterable object. The syntax for the foreach loop is
 ```
 for (identifier in expression) 
