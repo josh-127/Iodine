@@ -103,17 +103,11 @@ Inside instance methods, the self reference points to the current object instanc
 ##### 2.2.1 Class Declaration
 Classes in Iodine are defined using the ```class``` keyword. The syntax for declaring a class is 
 ```
- class MyClass {
+ class MyClass [extends <base-class>] [implements <contract-list>] {
  
  }
-```
-Or
-```
-class MyClass : BaseClass {
-
-}
-```
-Classes may contain function definitions. A class can extend another class, or multiple interfaces seperated by a comma
+ 
+Classes may contain function definitions. A class can extend another class, or multiple interfaces seperated by a comma. Classes can extend one super class using the ```extend``` keyword. In addition, classes may implement several contracts using the ```implements``` keyword.
 
 ##### 2.2.2 Interface Declaration
 Interfaces in Iodine are defined using the ```contract``` keyword. The syntax for declaring a interface is
