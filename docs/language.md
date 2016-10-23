@@ -108,9 +108,9 @@ class MyClass : BaseClass {
 Classes may contain function definitions. A class can extend another class, or multiple interfaces seperated by a comma
 
 ##### 2.2.2 Interface Declaration
-Interfaces in Iodine are defined using the ```interface``` keyword. The syntax for declaring a interface is
+Interfaces in Iodine are defined using the ```contract``` keyword. The syntax for declaring a interface is
 ```
-interface IMyInterface {
+contract IMyInterface {
     func aFunction ();
 }
 ```
@@ -150,13 +150,13 @@ func instanceMethod (self) {
 
 }
 ```
-Variadic functions are supported by using the ```params``` keyword.
+Variadic functions are supported by prefixing the last argument with an asterix
 ```
-func variadicFunction (params args) {
+func variadicFunction (*args) {
 
 }
 ```
-The params keyword must be used on the final parameter. The final parameter will be a tuple containing all extra arguments that were passed to the function.
+The final parameter will be a tuple containing all extra arguments that were passed to the function.
 
 ##### 2.2.5 ```if``` statement
 The ```if``` statement can be used to test if a condition is true or false. If the condition is true, the body of the if statement wil be executed. If false, the optional else body will be executed. The syntax for the if statement is
@@ -182,9 +182,9 @@ for (initializer; condition; afterthought)
 ````
 
 ##### 2.2.8 ```foreach``` Statement
-The ```foreach``` loop can be used to iterate through an iterable object. The syntax for the foreach loop is
+The ```for``` loop can also be used to iterate through an iterable object. The syntax for the foreach loop is
 ```
-foreach (identifier in expression) 
+for (identifier in expression) 
     statement;
 ```
 ##### 2.2.9 ```switch``` Statement
