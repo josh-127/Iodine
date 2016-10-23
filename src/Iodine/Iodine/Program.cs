@@ -79,7 +79,11 @@ namespace Iodine
         public static void Main (string[] args)
         {
             context = IodineContext.Create ();
-            System.Security.Cryptography.AesCryptoServiceProvider b = new System.Security.Cryptography.AesCryptoServiceProvider();
+            AppDomain.CurrentDomain.UnhandledException += (object sender, UnhandledExceptionEventArgs e) => {
+                if (e.ExceptionObject is UnhandledIodineExceptionException) {
+                    HandleIodineException (e.ExceptionObject as UnhandledIodineExceptionException);
+                }
+            };
             if (args.Length == 0) {
                 ReplShell shell = new ReplShell (context);
                 shell.Run ();
@@ -102,14 +106,7 @@ namespace Iodine
                 }
 
             } catch (UnhandledIodineExceptionException ex) {
-                Console.Error.WriteLine ("An unhandled {0} has occured!",
-                    ex.OriginalException.TypeDef.Name);
-                Console.Error.WriteLine ("\tMessage: {0}", ex.OriginalException.GetAttribute (
-                    "message").ToString ());
-                Console.WriteLine ();
-                ex.PrintStack ();
-                Console.Error.WriteLine ();
-                Panic ("Program terminated.");
+                HandleIodineException (ex);
             } catch (SyntaxException ex) {
                 DisplayErrors (ex.ErrorLog, options.FileName);
                 Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
@@ -125,6 +122,24 @@ namespace Iodine
                 Panic ("Program terminated.");
             }
 
+        }
+
+        private static void HandleIodineException (UnhandledIodineExceptionException ex)
+        {
+            Console.Error.WriteLine (
+                "An unhandled {0} has occured!",
+                ex.OriginalException.TypeDef.Name
+            );
+
+            Console.Error.WriteLine (
+                "\tMessage: {0}",
+                ex.OriginalException.GetAttribute ("message").ToString ()
+            );
+
+            Console.WriteLine ();
+            ex.PrintStack ();
+            Console.Error.WriteLine ();
+            Panic ("Program terminated.");
         }
 
         private static void ParseOption (IodineContext context, string option)
