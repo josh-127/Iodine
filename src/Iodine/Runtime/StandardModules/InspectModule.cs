@@ -258,7 +258,7 @@ namespace Iodine.Runtime
             }
             IodineString pathStr = args [0] as IodineString;
             IodineModule module = vm.Context.LoadModule (pathStr.Value);
-            module.Initializer.Invoke (vm, new IodineObject[] { });
+            module.Invoke (vm, new IodineObject[] { });
             return module;
         }
 

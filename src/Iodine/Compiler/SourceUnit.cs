@@ -93,7 +93,6 @@ namespace Iodine.Compiler
                 IodineModule cachedModule = null;
 
                 if (LoadCachedModule (ref cachedModule)) {
-                    ApplyGlobalVariables (context, cachedModule);
                     return cachedModule;
                 }
             }
@@ -114,18 +113,7 @@ namespace Iodine.Compiler
                 CacheModule (module);
             }
 
-            ApplyGlobalVariables (context, module);
-
             return module;
-        }
-
-        private void ApplyGlobalVariables (IodineContext context, IodineModule module)
-        {
-            foreach (KeyValuePair <string, IodineObject> kv in context.Globals) {
-                if (!module.HasAttribute (kv.Key)) {
-                    module.SetAttribute (kv.Key, kv.Value);
-                }
-            }
         }
 
         private bool LoadCachedModule (ref IodineModule module)

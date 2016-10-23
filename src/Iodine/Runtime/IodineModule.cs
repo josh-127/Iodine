@@ -103,6 +103,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
+            ApplyGlobalVariables (vm.Context);
             vm.NewFrame (new StackFrame (this, null, new IodineObject[] { }, null, null, Attributes));
             IodineObject retObj = vm.EvalCode (Initializer);
             vm.EndFrame ();
@@ -112,6 +113,15 @@ namespace Iodine.Runtime
         public override string ToString ()
         {
             return string.Format ("<Module {0}>", Name);
+        }
+
+        private void ApplyGlobalVariables (IodineContext context)
+        {
+            foreach (KeyValuePair <string, IodineObject> kv in context.Globals) {
+                if (!HasAttribute (kv.Key)) {
+                    SetAttribute (kv.Key, kv.Value);
+                }
+            }
         }
     }
 }
