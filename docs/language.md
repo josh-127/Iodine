@@ -106,7 +106,7 @@ Classes in Iodine are defined using the ```class``` keyword. The syntax for decl
  class MyClass [extends <base-class>] [implements <contract-list>] {
  
  }
- 
+ ```
 Classes may contain function definitions. A class can extend another class, or multiple interfaces seperated by a comma. Classes can extend one super class using the ```extend``` keyword. In addition, classes may implement several contracts using the ```implements``` keyword.
 
 ##### 2.2.2 Interface Declaration
