@@ -238,6 +238,7 @@
     <Compile Include="Compiler\Ast\Function.cs" />
     <Compile Include="Runtime\StandardModules\RandomModule.cs" />
     <Compile Include="Runtime\StandardModules\InspectModule.cs" />
+    <Compile Include="ExtraModules\CursesModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
