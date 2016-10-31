@@ -32,6 +32,7 @@
 using System;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Net.Sockets;
 using System.Net.Security;
 using System.Collections.Generic;
@@ -46,6 +47,15 @@ namespace Iodine.Modules.Extras
     [IodineBuiltinModule ("curses")]
     internal class CursesModule : IodineModule
     {
+        const int KEY_BREAK = 257;
+        const int KEY_DOWN = 258;
+        const int KEY_UP = 259;
+        const int KEY_LEFT = 260;
+        const int KEY_RIGHT = 261;
+        const int KEY_HOME = 262;
+        const int KEY_BACKSPACE = 263;
+        const int KEY_F0 = 264;
+
         enum TerminalAttributes
         {
             FOREGROUND_BLACK = 0x01,
@@ -63,7 +73,15 @@ namespace Iodine.Modules.Extras
             BACKGROUND_BLUE = 0x50,
             BACKGROUND_MAGENTA = 0x60,
             BACKGROUND_CYAN = 0x70,
-            BACKGROUND_WHITE = 0x80
+            BACKGROUND_WHITE = 0x80,
+            ATTRIBUTE_BLINK = 0x100,
+            ATTRIBUTE_BOLD = 0x200,
+            ATTRIBUTE_DIM = 0x400,
+            ATTRIBUTE_INVIS = 0x800,
+            ATTRIBUTE_PROTECT = 0x1000,
+            ATTRIBUTE_REVERSE = 0x2000,
+            ATTRIBUTE_STANDOUT = 0x4000,
+            ATTRIBUTE_UNDERLINE = 0x8000
         }
 
         abstract class TerminalAction
@@ -103,11 +121,26 @@ namespace Iodine.Modules.Extras
             }
         }
 
+        class SetAttributesAction : TerminalAction
+        {
+            public readonly TerminalAttributes Attributes;
+
+            public SetAttributesAction (TerminalAttributes attributes)
+            {
+                Attributes = attributes;
+            }
+
+            public override void Visit (Terminal terminal)
+            {
+                terminal.AcceptAction (this);
+            }
+        }
+
         abstract class Terminal
         {
-            private TerminalAttributes activeAttributes = TerminalAttributes.BACKGROUND_BLACK | TerminalAttributes.FOREGROUND_WHITE;
-            private Dictionary<TerminalAttributes, TerminalAttributes> previousAttributes = new Dictionary<TerminalAttributes, TerminalAttributes> ();
+            private TerminalAttributes activeAttributes;
 
+            protected Mutex mutex = new Mutex ();
             protected TerminalAttributes[] palette = new TerminalAttributes[16];
             protected Queue<TerminalAction> actionQueue = new Queue<TerminalAction> ();
 
@@ -119,12 +152,26 @@ namespace Iodine.Modules.Extras
             public abstract int GetChar ();
             public abstract void Refresh ();
             public abstract void CurseSet (int amount);
-            public abstract void Move (int y, int x);
-            public abstract void Print (string message);
+
             public abstract void SetTerminalAttributes (TerminalAttributes attributes);
 
             public abstract void AcceptAction (MoveCursorAction action);
             public abstract void AcceptAction (PrintStringAction action);
+            public abstract void AcceptAction (SetAttributesAction action);
+
+            public void Move (int y, int x)
+            {
+                mutex.WaitOne ();
+                actionQueue.Enqueue (new MoveCursorAction (x, y));
+                mutex.ReleaseMutex ();
+            }
+
+            public void Print (string message)
+            {
+                mutex.WaitOne ();
+                actionQueue.Enqueue (new PrintStringAction (message));
+                mutex.ReleaseMutex ();
+            }
 
             public TerminalAttributes ColorPair (int index)
             {
@@ -138,16 +185,20 @@ namespace Iodine.Modules.Extras
                 palette [index & 0x0F] = attr;
             }
 
-
             public void AttributesOn (TerminalAttributes attributes)
             {
-                previousAttributes [attributes] = activeAttributes;
-                SetTerminalAttributes (attributes);
+                mutex.WaitOne ();
+                activeAttributes |= attributes;
+                actionQueue.Enqueue (new SetAttributesAction (activeAttributes));
+                mutex.ReleaseMutex ();
             }
 
             public void AttributesOff (TerminalAttributes attributes)
             {
-                SetTerminalAttributes (previousAttributes [activeAttributes]);
+                mutex.WaitOne ();
+                activeAttributes &= ~attributes;
+                actionQueue.Enqueue (new SetAttributesAction (activeAttributes));
+                mutex.ReleaseMutex ();
             }
         }
 
@@ -157,19 +208,20 @@ namespace Iodine.Modules.Extras
 
             public override void Init ()
             {
-                Console.Write ("\x1B[?47h");
+                Console.Write ("\x1B[0m\x1B[?47h");
                 Console.Out.Flush ();
                 Clear ();
             }
 
             public override void Destroy ()
             {
-                Console.Write ("\x1B[?47l");
+                Console.Write ("\x1B[0m\x1B[?47l");
                 Console.Out.Flush ();
             }
 
             public override void CurseSet (int amount)
             {
+                mutex.WaitOne ();
                 switch (amount) {
                 case 0x00:
                     Console.Write ("\x1B[?25l");
@@ -178,26 +230,33 @@ namespace Iodine.Modules.Extras
                     Console.Write ("\x1B[?25h");
                     break;
                 }
+                mutex.ReleaseMutex ();
             }
 
             public override void Clear ()
             {
+                mutex.WaitOne ();
                 Console.Write ("\x1B" + "c");
                 Console.CursorTop = 0;
                 Console.CursorLeft = 0;
                 Console.Out.Flush ();
+                mutex.ReleaseMutex ();
             }
 
             public override void Echo ()
             {
+                mutex.WaitOne ();
                 echo = true;
                 Console.Write ("\x1B[22l");
+                mutex.ReleaseMutex ();
             }
 
             public override void NoEcho ()
             {
+                mutex.WaitOne ();
                 echo = false;
                 Console.Write ("\x1B[22h");
+                mutex.ReleaseMutex ();
             }
 
             public override int GetChar ()
@@ -207,41 +266,40 @@ namespace Iodine.Modules.Extras
                 if (info.KeyChar == '\0') {
                     switch (info.Key) {
                     case ConsoleKey.LeftArrow:
-                        return 260;
+                        return KEY_LEFT;
                     case ConsoleKey.RightArrow:
-                        return 261;
+                        return KEY_RIGHT;
                     case ConsoleKey.UpArrow:
-                        return 259;
+                        return KEY_UP;
                     case ConsoleKey.DownArrow:
-                        return 258;
+                        return KEY_DOWN;
+                    case ConsoleKey.Pause:
+                        return KEY_BREAK;
+                    case ConsoleKey.Backspace:
+                        return KEY_BACKSPACE;
+                    case ConsoleKey.Home:
+                        return KEY_HOME;
                     }
                 }
-
                 return (int)info.KeyChar;
             }
 
             public override void Refresh ()
             {
+                mutex.WaitOne ();
                 foreach (TerminalAction action in actionQueue) {
                     action.Visit (this);
                 }
                 actionQueue.Clear ();
-            }
-
-            public override void Move (int y, int x)
-            {
-                actionQueue.Enqueue (new MoveCursorAction (x, y));
-            }
-
-            public override void Print (string message)
-            {
-                actionQueue.Enqueue (new PrintStringAction (message));
+                mutex.ReleaseMutex ();
             }
 
             public override void SetTerminalAttributes (TerminalAttributes attributes)
             {
                 int fg = (int)attributes & 0x0F;
                 int bg = ((int)attributes & 0xF0) >> 4;
+
+                Console.Write ("\x1B[m");
 
                 if (fg != 0) {
                     Console.ForegroundColor = AttributeToConsoleColor (fg);
@@ -250,17 +308,55 @@ namespace Iodine.Modules.Extras
                 if (bg != 0) {
                     Console.BackgroundColor = AttributeToConsoleColor (bg);
                 }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_UNDERLINE)) {
+                    Console.Write ("\x1B[4m");
+                }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_BLINK)) {
+                    Console.Write ("\x1B[5m");
+                }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_BOLD)) {
+                    Console.Write ("\x1B[1m");
+                }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_REVERSE)) {
+                    Console.Write ("\x1B[7m");
+                }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_PROTECT)) {
+                    Console.Write ("\x1B[7m");
+                }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_STANDOUT)) {
+                    Console.Write ("\x1B[3m");
+                }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_INVIS)) {
+                    Console.Write ("\x1B[8m");
+                }
+
+                if (attributes.HasFlag (TerminalAttributes.ATTRIBUTE_DIM)) {
+                    Console.Write ("\x1B[2m");
+                }
+
+                Console.Out.Flush ();
             }
 
             public override void AcceptAction (MoveCursorAction action)
             {
-                Console.CursorLeft = action.X;
-                Console.CursorTop = action.Y;
+                Console.Write ("\x1B[{0};{1}H", action.Y, action.X);
             }
 
             public override void AcceptAction (PrintStringAction action)
             {
                 Console.Write (action.Message);
+            }
+
+            public override void AcceptAction (SetAttributesAction action)
+            {
+                SetTerminalAttributes (action.Attributes);
             }
         }
 
@@ -280,6 +376,23 @@ namespace Iodine.Modules.Extras
         public CursesModule ()
             : base ("curses")
         {
+            SetAttribute ("KEY_LEFT", new IodineInteger (KEY_LEFT));
+            SetAttribute ("KEY_RIGHT", new IodineInteger (KEY_RIGHT));
+            SetAttribute ("KEY_UP", new IodineInteger (KEY_UP));
+            SetAttribute ("KEY_DOWN", new IodineInteger (KEY_DOWN));
+            SetAttribute ("KEY_BACKSPACE", new IodineInteger (KEY_BACKSPACE));
+            SetAttribute ("KEY_HOME", new IodineInteger (KEY_HOME));
+            SetAttribute ("KEY_ENTER", new IodineInteger (10));
+
+            SetAttribute ("A_BOLD", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_BOLD));
+            SetAttribute ("A_BLINK", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_BLINK));
+            SetAttribute ("A_DIM", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_DIM));
+            SetAttribute ("A_INVIS", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_INVIS));
+            SetAttribute ("A_STANDOUT", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_STANDOUT));
+            SetAttribute ("A_PROTECT", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_PROTECT));
+            SetAttribute ("A_REVERSE", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_REVERSE));
+            SetAttribute ("A_UNDERLINE", new AttributeWrapper (TerminalAttributes.ATTRIBUTE_UNDERLINE));
+
             SetAttribute ("COLOR_BLACK", new IodineInteger (1));
             SetAttribute ("COLOR_RED", new IodineInteger (2));
             SetAttribute ("COLOR_GREEN", new IodineInteger (3));
@@ -383,6 +496,11 @@ namespace Iodine.Modules.Extras
             IodineInteger fg = args [1] as IodineInteger;
             IodineInteger bg = args [2] as IodineInteger;
 
+            if (index == null || fg == null || bg == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
+
             activeTerminal.InitPair ((int)index.Value, (int)fg.Value, (int)bg.Value);
 
             return null;
@@ -397,6 +515,11 @@ namespace Iodine.Modules.Extras
 
             IodineInteger yPos = args [0] as IodineInteger;
             IodineInteger xPos = args [1] as IodineInteger;
+
+            if (xPos == null || yPos == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
 
             activeTerminal.Move ((int)yPos.Value, (int)xPos.Value);
 
@@ -427,6 +550,11 @@ namespace Iodine.Modules.Extras
             IodineInteger yPos = args [0] as IodineInteger;
             IodineInteger xPos = args [1] as IodineInteger;
 
+            if (xPos == null || yPos == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
+
             string message = args [2].ToString ();
 
             activeTerminal.Move ((int)yPos.Value, (int)xPos.Value);
@@ -444,6 +572,11 @@ namespace Iodine.Modules.Extras
 
             AttributeWrapper attrWrapper = args [0] as AttributeWrapper;
 
+            if (attrWrapper == null) {
+                vm.RaiseException (new IodineTypeException ("TerminalAttribute"));
+                return null;
+            }
+
             TerminalAttributes attr = attrWrapper.Value;
 
             activeTerminal.AttributesOn (attr);
@@ -460,6 +593,11 @@ namespace Iodine.Modules.Extras
             }
 
             AttributeWrapper attrWrapper = args [0] as AttributeWrapper;
+
+            if (attrWrapper == null) {
+                vm.RaiseException (new IodineTypeException ("TerminalAttribute"));
+                return null;
+            }
 
             TerminalAttributes attr = attrWrapper.Value;
 
