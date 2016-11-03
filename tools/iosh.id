@@ -1,0 +1,311 @@
+/**
+ * THIS IS A WORK IN PROGRESS....
+ *
+ * Inspired by https://github.com/SplittyDev/iosh
+ */ 
+
+use curses
+use inspect
+use Stack from collections
+
+class Shell {
+
+    func run (self) {
+        self._dict = {"print" : print, "require" : require}
+        self.prompt = Stack ()
+        self.prompt.push ("λ ")
+        self.eval ('use * from __builtins__');
+        self.runIteration ()
+    }
+
+    func runIteration (self) {
+        while (true) {
+            curses.attron (curses.COLOR_PAIR (0))
+            curses.print (self.prompt [0])
+            self.prompt.push ('| ')
+            curses.attroff (curses.COLOR_PAIR (0))
+            curses.refresh ()
+            code = self.readStatements ()
+            self.prompt.pop ()
+            ret = self.eval (code)
+            enhancedRepr (ret)
+            curses.print ("\n")
+        }
+    }
+
+    func readStatements (self) {
+        buf = StringBuffer ()
+        matcher = LineContinuationRule ()
+        line = ""
+        while (matcher.isMatch (line = self.readln ())) {
+            buf.append (line)
+            curses.print (self.prompt [0])
+            curses.print (" ".ljust (matcher.indent))
+            curses.refresh ()          
+        }
+
+        buf.append (line)
+
+        return Str (buf)
+    }
+
+    func readln (self) {
+        return input ("")
+    }
+
+    func eval (self, code) {
+        try {
+            module = compile (code)
+       
+            res = invoke (module, self._dict)
+
+            for (key, value in inspect.getattributes (module)) {
+                self._dict [key] = value
+            }
+            
+            return res
+
+        } except (e) {
+            print (e)
+        }
+    }
+}
+
+class LineContinuationRule {
+
+    func LineContinuationRule (self) {
+        self._remainder = 0
+        self.indent = 0
+    }
+
+    func isMatch (self, source) {
+        balance = self.getBraceBalance (source)
+        self._remainder += balance
+        self.indent = self._remainder * 2
+    }
+
+    func getBraceBalance (self, source) {
+        openBraces = reduce (source, 0, lambda (i, ch) { 
+            if (ch == '{')
+                return i + 1
+            return i
+        })
+
+        closeBraces = reduce (source, 0, lambda (i, ch) {
+            if (ch == '}')
+                return i + 1
+            return i
+        })
+
+        return openBraces - closeBraces
+    }
+}
+
+
+func enhancedRepr (value) {
+
+    lookup = {
+        Str : reprStr,
+        List : reprList,
+        Tuple : reprTuple,
+        Dict : reprDict
+    }
+
+    if (lookup.contains (type (value))) {
+        lookup [type (value)] (value)
+    } else if (inspect.isclass (value)) {
+        reprClass (value)
+    } else if (inspect.isfunction (value)) {
+        reprFunction (value)
+    } else {
+        reprDefault (value)
+    }
+}
+
+func reprDefault (primative) {
+    printcn (2, repr (primative))
+}
+
+func reprStr (str) {
+    printcn (3, repr (str))
+}
+
+func reprList (list) {
+    printcn (0, "[List: [\n")
+    indent ()
+    printc (1, "")
+    maxElements = 10
+    i = 0
+    for (item in list) {
+        pushIndent ()
+        if (i != 0) {
+            curses.print (", ")
+        }
+        if (i % maxElements == 0 && i != 0) {
+            curses.print ("\n")
+            printc (1, "")
+        }
+        enhancedRepr (item)
+        popIndent ()
+        i += 1
+    }
+    unindent ()
+    curses.print ("\n")
+    printc (0, "]]")
+}
+
+func reprTuple (tuple) {
+    printcn (0, "[Tuple: (\n")
+    indent ()
+    printc (1, "")
+    maxElements = 10
+    i = 0
+    for (item in tuple) {
+        pushIndent ()
+        if (i != 0) {
+            curses.print (", ")
+        }
+        if (i % maxElements == 0 && i != 0) {
+            curses.print ("\n")
+            printc (1, "")
+        }
+        enhancedRepr (item)
+        popIndent ()
+        i += 1
+    }
+    unindent ()
+    curses.print ("\n")
+    printc (0, ")]")
+}
+
+func reprDict (dict) {
+    printcn (0, "[Dict : {\n")
+    indent ()
+    
+    for (key, value in dict) {
+        pushIndent ()
+        printc (1, "")
+        enhancedRepr (key)
+        printcn (0, " : ")
+        enhancedRepr (value)
+        curses.print ("\n")
+        popIndent ()
+    }
+
+    unindent ()
+    printc (0, "}]")
+}
+
+func reprClass (clazz) {
+    printcn (0, "[Class: ")
+    printcn (1, clazz.__name__)
+    printcn (0, "]\n");
+    indent ()
+    functions = filter (inspect.getmembers (clazz), lambda (p) => inspect.isfunction (p [1]))
+    for (key, value in functions) {
+        pushIndent ()
+        printc (1, "")
+        enhancedRepr (value)
+        curses.print ("\n")
+        popIndent ()
+    }
+    unindent ()
+}
+
+func reprFunction (function) {
+    argspec = inspect.getargspec (function)
+    printcn (0, "[Function: ")
+    printcn (1, function.__name__)
+    printcn (1, " (")
+    printcn (1, ", ".join (argspec [0]))
+    printcn (1, ")")
+}
+
+_silent = false
+_indentFrozen = false
+_indent = 0
+_indentBlockSize = 4
+_indents = Stack ()
+_freezes = Stack ()
+_suppresses = Stack ()
+
+func silence () {
+    _silent = true
+}
+
+func unsilence () {
+    _silent = false
+}
+
+func freezeIndent () {
+    _indentFrozen = true
+}
+
+func unfreezeIndent () {
+    _indentFrozen = false
+}
+
+func indent () {
+    _indent += _indentBlockSize
+}
+
+func unindent () {
+    _indent -= _indentBlockSize
+}
+
+func allowIndent () {
+    _suppressIndent = false
+}
+
+func suppressIndent () {
+    _suppressIndent = true
+}
+
+func pushIndentState () {
+    _suppresses.push (_suppressIndent)
+}
+
+func popIndentState () {
+    _suppressIndent = _suppresses.Pop ()
+}
+
+func pushIndent () {
+    _indents.push (_indent)
+}
+
+func popIndent () {
+    _indent = _indents.pop ()
+}
+
+func noIndent () {
+    _indent = 0
+}
+
+func printc (color, message) {
+    curses.attron (curses.COLOR_PAIR (color)) 
+    curses.print (' '.rjust (_indent)) 
+    curses.print (message)
+    curses.attroff (curses.COLOR_PAIR (color))
+    curses.refresh ()
+}   
+
+func printcn (color, message) {
+    curses.attron (curses.COLOR_PAIR (color))
+    curses.print (message)
+    curses.attroff (curses.COLOR_PAIR (color))
+    curses.refresh ()
+}
+
+# Initialize colors
+
+curses.init_pair (0, curses.COLOR_CYAN, 0)
+curses.init_pair (1, curses.COLOR_WHITE, 0)
+curses.init_pair (2, curses.COLOR_YELLOW, 0)
+curses.init_pair (3, curses.COLOR_GREEN, 0)
+
+curses.attron (curses.COLOR_PAIR (1))
+
+myShell = Shell ()
+myShell.run ()
+
+curses.attroff (curses.COLOR_PAIR (1))
