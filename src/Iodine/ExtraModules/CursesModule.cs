@@ -58,6 +58,7 @@ namespace Iodine.Modules.Extras
 
         enum TerminalAttributes
         {
+            NONE = 0x00,
             FOREGROUND_BLACK = 0x01,
             FOREGROUND_RED = 0x02,
             FOREGROUND_GREEN = 0x03,
@@ -139,6 +140,7 @@ namespace Iodine.Modules.Extras
         abstract class Terminal
         {
             private TerminalAttributes activeAttributes;
+            private Dictionary<int, int> prevColorTable = new Dictionary<int, int> ();
 
             protected Mutex mutex = new Mutex ();
             protected TerminalAttributes[] palette = new TerminalAttributes[16];
@@ -188,6 +190,12 @@ namespace Iodine.Modules.Extras
             public void AttributesOn (TerminalAttributes attributes)
             {
                 mutex.WaitOne ();
+
+                if (((int)attributes & 0xFF) != 0) {
+                    prevColorTable [(int)attributes & 0xFF] = (int)activeAttributes & 0xFF;
+                    activeAttributes &= (TerminalAttributes)0xFF00;
+                }
+
                 activeAttributes |= attributes;
                 actionQueue.Enqueue (new SetAttributesAction (activeAttributes));
                 mutex.ReleaseMutex ();
@@ -196,7 +204,15 @@ namespace Iodine.Modules.Extras
             public void AttributesOff (TerminalAttributes attributes)
             {
                 mutex.WaitOne ();
-                activeAttributes &= ~attributes;
+
+                if (((int)attributes & 0xFF) != 0) {
+                    activeAttributes &= (TerminalAttributes)0xFF00;
+                    activeAttributes |= (TerminalAttributes) (
+                        prevColorTable [(int)attributes & 0xFF]
+                    );
+                } else {
+                    activeAttributes &= ~attributes;
+                }
                 actionQueue.Enqueue (new SetAttributesAction (activeAttributes));
                 mutex.ReleaseMutex ();
             }
@@ -371,6 +387,17 @@ namespace Iodine.Modules.Extras
             }
         }
 
+        class TerminalWrapper : IodineObject
+        {
+            public readonly Terminal Value;
+
+            public TerminalWrapper (Terminal terminal)
+                : base (new IodineTypeDefinition ("Screen"))
+            {
+                Value = terminal;
+            }
+        }
+
         static Terminal activeTerminal = new UnixTerminal ();
 
         public CursesModule ()
@@ -403,8 +430,13 @@ namespace Iodine.Modules.Extras
             SetAttribute ("COLOR_WHITE", new IodineInteger (8));
             SetAttribute ("COLOR_PAIR", new BuiltinMethodCallback (ColorPair, null));
 
+
+            SetAttribute ("curscr", new TerminalWrapper (activeTerminal));
+           
             SetAttribute ("initscr", new BuiltinMethodCallback (InitScreen, null));
             SetAttribute ("endwin", new BuiltinMethodCallback (EndWin, null));
+            SetAttribute ("getyx", new BuiltinMethodCallback (GetYx, null));
+            SetAttribute ("getmaxyx", new BuiltinMethodCallback (GetMaxYx, null));
             SetAttribute ("cur_set", new BuiltinMethodCallback (CurseSet, null));
             SetAttribute ("getch", new BuiltinMethodCallback (Getch, null));
             SetAttribute ("attron", new BuiltinMethodCallback (AttributeOn, null));
@@ -466,6 +498,34 @@ namespace Iodine.Modules.Extras
             activeTerminal.CurseSet ((int)index.Value);
 
             return null;
+        }
+
+        private static IodineObject GetYx (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+
+
+            return new IodineTuple (new IodineObject[] {
+                new IodineInteger (Console.CursorTop),
+                new IodineInteger (Console.CursorLeft)
+            });
+        }
+
+        private static IodineObject GetMaxYx (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
+            }
+
+            return new IodineTuple (new IodineObject[] {
+                new IodineInteger (Console.WindowHeight),
+                new IodineInteger (Console.WindowWidth)
+            });
         }
 
         private static IodineObject Getch (VirtualMachine vm, IodineObject self, IodineObject[] args)

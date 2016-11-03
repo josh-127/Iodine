@@ -257,7 +257,7 @@ namespace Iodine.Runtime
                 instruction = bytecode.Instructions [top.InstructionPointer++];
                 if (traceCallback != null && 
                     instruction.Location != null &&
-                    instruction.Location.Line != top.Location.Line) {
+                    (top.Location == null || instruction.Location.Line != top.Location.Line)) {
                     Trace (TraceType.Line, top, instruction.Location);
                 }
                 EvalInstruction ();
@@ -287,6 +287,7 @@ namespace Iodine.Runtime
             }
 
             IodineExceptionHandler handler = PopCurrentExceptionHandler ();
+
             if (handler == null) { // No exception handler
                /*
                 * The program has gone haywire and we ARE going to crash, however
@@ -326,7 +327,7 @@ namespace Iodine.Runtime
         private void Trace (TraceType type, StackFrame frame, SourceLocation location)
         {
             pauseVirtualMachine.WaitOne ();
-            if (traceCallback (type, this, frame, location)) {
+            if (traceCallback != null && traceCallback (type, this, frame, location)) {
                 pauseVirtualMachine.Reset ();
             }
         }

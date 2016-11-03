@@ -319,6 +319,8 @@ namespace Iodine.Runtime
 
             if (method == null && args [0] is IodineClosure) {
                 method = ((IodineClosure)args [0]).Target;
+            } else if (method == null && args [0] is IodineBoundMethod) {
+                method = ((IodineBoundMethod)args [0]).Method;
             }
 
             if (method == null) {
@@ -326,14 +328,37 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineObject[] items = new IodineObject[method.ParameterCount];
+            IodineObject[] items = new IodineObject[4];
 
             var names = method.Parameters;
+            int paramCount = method.ParameterCount;
 
-            for (int i = 0; i < method.ParameterCount; i++) {
-                items [i] = new IodineString (names [i]);
+            items [3] = new IodineTuple (method.DefaultValues);
+
+            if (method.AcceptsKeywordArgs) {
+                paramCount--;    
+                items [2] = new IodineString (method.KwargsParameter);
+            } else {
+                items [2] = IodineNull.Instance;
             }
 
+            if (method.Variadic) {
+                paramCount--;
+                items [1] = new IodineString (method.VarargsParameter);
+            } else {
+                items [1] = IodineNull.Instance;
+            }
+
+           
+            IodineObject[] parametersTuple = new IodineObject[paramCount];
+
+            for (int i = 0; i < paramCount; i++) {
+                parametersTuple [i] = new IodineString (names [i]);
+            }
+
+            items [0] = new IodineTuple (parametersTuple);
+
+        
             return new IodineTuple (items);
         }
 

@@ -79,11 +79,13 @@ namespace Iodine
         public static void Main (string[] args)
         {
             context = IodineContext.Create ();
+
             AppDomain.CurrentDomain.UnhandledException += (object sender, UnhandledExceptionEventArgs e) => {
                 if (e.ExceptionObject is UnhandledIodineExceptionException) {
                     HandleIodineException (e.ExceptionObject as UnhandledIodineExceptionException);
                 }
             };
+
             if (args.Length == 0) {
                 ReplShell shell = new ReplShell (context);
                 shell.Run ();
@@ -98,7 +100,13 @@ namespace Iodine
             try {
                 SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
                 IodineModule module = code.Compile (context);
+
+                if (context.Debug) {
+                    context.VirtualMachine.SetTrace (WaitForDebugger);
+                }
+
                 context.Invoke (module, new IodineObject[] { });
+
                 if (module.HasAttribute ("main")) {
                     context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
                         options.IodineArguments
@@ -142,6 +150,16 @@ namespace Iodine
             Panic ("Program terminated.");
         }
 
+        private static bool WaitForDebugger (
+            TraceType type,
+            VirtualMachine vm,
+            StackFrame frame,
+            SourceLocation location)
+        {
+            Console.WriteLine ("Waiting for debugger...");
+            return true;
+        }
+
         private static void ParseOption (IodineContext context, string option)
         {
             switch (option) {
@@ -152,6 +170,7 @@ namespace Iodine
                 DisplayUsage ();
                 break;
             case "debug":
+                context.Debug = true;
                 RunDebugServer ();
                 break;
             default:

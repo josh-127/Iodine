@@ -57,7 +57,6 @@ namespace Iodine.Runtime.Debug
         private StreamReader requestStream;
         private StreamWriter responseStream;
 
-
         private Dictionary<string, string[]> fileCache = new Dictionary<string, string[]> ();
 
         public DebugSession (VirtualMachine vm, Socket socket)
@@ -105,8 +104,14 @@ namespace Iodine.Runtime.Debug
                 return Next ();
             case "c":
             case "continue":
+                DebugResponse resp = new DebugResponse (
+                    virtualMachine.Top.Location,
+                    virtualMachine.Top
+                );
                 virtualMachine.SetTrace (null);
-                return null;
+
+                virtualMachine.ContinueExecution ();
+                return resp;
             }
             return null;
         }
