@@ -1,3 +1,5 @@
+#! /usr/bin/iodine
+
 use random
 
 # We will have a list of words hard coded into the program

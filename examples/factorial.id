@@ -1,3 +1,5 @@
+#! /usr/bin/iodine
+
 func factorial (n) {
 	if(n == 0) { 
 		return 1;
@@ -7,6 +9,6 @@ func factorial (n) {
 }
 
 func main() {
-	print (factorial (7));
+	print (factorial (32));
 }
 

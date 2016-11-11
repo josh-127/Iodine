@@ -1,13 +1,16 @@
+#! /usr/bin/iodine
 
 func calculateBmi (**kwargs) {
-	weight = kwargs ["weight"];
-	height = kwargs ["height"];
-	return weight / (height * height);
+    weight = kwargs ["weight"];
+    height = kwargs ["height"];
+    return weight / (height * height);
 }
 
-func main () {
-	weight = Float (input ("How much do you weigh? "));
-	height = Float (input ("How tall are you? "));
-	result = calculateBmi (weight: weight, height: height);
-	print (result);
-}
+weight = Float (input ("How much do you weigh? "));
+height = Float (input ("How tall are you? "));
+
+
+result = calculateBmi (weight: weight, height: height);
+
+print (result);
+

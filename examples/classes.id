@@ -1,3 +1,5 @@
+#! /usr/bin/iodine
+
 # Iodine is object oriented, and objects can be created by 
 # instantiating a class.
 

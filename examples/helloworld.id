@@ -1,4 +1,4 @@
-
+#! /usr/bin/iodine
 
 print ("Hello, World!") # This will get called first
 

@@ -1,3 +1,5 @@
+#! /usr/bin/iodine
+
 # Fizz buzz is a counting game designed to teach children how to divide. 
 # It is also a tool used by companies to weed out incompetent programmers.
 # Fizzbuzz involves counting off, and for each number that is divisible 

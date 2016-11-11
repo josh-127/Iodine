@@ -1,6 +1,8 @@
+#! /usr/bin/iodine
+
 
 func oneToOneMillion () {
-	for (i = 0; i < 1000000; i += 1) {
+	for (i in 0 .. 1000000) {
 		yield i;
 	}
 }

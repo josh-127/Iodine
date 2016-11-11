@@ -1,3 +1,4 @@
+#! /usr/bin/iodine
 
 func main () {
     opt = "y"; # input ("Yes or no/ [y/n]: )

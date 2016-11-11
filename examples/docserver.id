@@ -1,12 +1,9 @@
-use iododoc;
-use SimpleHttpServer from net.http;
+#! /usr/bin/iodine
 
-myserver = SimpleHttpServer ();
+use iododoc
+use SimpleHttpServer from net.http
 
-myserver.handle ("^/$", handleIndex);
-myserver.handle ("/module/*", displayModule);
-
-myserver.listen ("0.0.0.0", 8080);
+myserver = SimpleHttpServer ()
 
 func handleIndex (response, request) {
     response.writeln ("Some random documentation to view!<br>");
@@ -32,3 +29,9 @@ func displayModule (response, request) {
         response.writeln ("<h2>Could not found module #{moduleName}!</h2>");
     } 
 }
+
+
+myserver.handle ("^/$", handleIndex)
+myserver.handle ("/module/*", displayModule)
+
+myserver.listen ("0.0.0.0", 8080)
