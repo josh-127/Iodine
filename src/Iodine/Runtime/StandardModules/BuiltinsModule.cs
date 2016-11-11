@@ -59,6 +59,7 @@ namespace Iodine.Runtime
             SetAttribute ("hex", new BuiltinMethodCallback (Hex, null));
             SetAttribute ("property", new BuiltinMethodCallback (Property, null));
             SetAttribute ("eval", new BuiltinMethodCallback (Eval, null));
+            SetAttribute ("enumerate", new BuiltinMethodCallback (Enumerate, null));
             SetAttribute ("type", new BuiltinMethodCallback (Typeof, null));
             SetAttribute ("typecast", new BuiltinMethodCallback (Typecast, null));
             SetAttribute ("print", new BuiltinMethodCallback (Print, null));
@@ -118,7 +119,13 @@ namespace Iodine.Runtime
             }
             IodineString source = args [0] as IodineString;
             SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
-            return unit.Compile (vm.Context);
+
+            try {
+                return unit.Compile (vm.Context);
+            } catch (SyntaxException ex) {
+                vm.RaiseException (new IodineSyntaxException (ex.ErrorLog));
+                return IodineNull.Instance;
+            }
         }
 
         [BuiltinDocString (
@@ -262,6 +269,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return IodineNull.Instance;
             }
+
             IodineDictionary hash = args [1] as IodineDictionary;
             IodineContext context = new IodineContext ();
 
@@ -276,6 +284,9 @@ namespace Iodine.Runtime
 
             try {
                 return args [0].Invoke (newVm, new IodineObject[]{ });
+            } catch (SyntaxException syntaxException) {
+                vm.RaiseException (new IodineSyntaxException (syntaxException.ErrorLog));
+                return IodineNull.Instance;
             } catch (UnhandledIodineExceptionException ex) {
                 vm.RaiseException (ex.OriginalException);
                 return IodineNull.Instance;
@@ -580,6 +591,36 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
             return args [0].Represent (vm);
+        }
+
+        [BuiltinDocString (
+            "Maps an iterable object to a list, with each element in the list being a tuple ",
+            "containing an index and the object associated with that index in the supplied ",
+            "iterable object.",
+            "@param iterable An iterable object"
+        )]
+        private IodineObject Enumerate (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        {
+            if (args.Length == 0) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return IodineNull.Instance;
+            }
+
+            IodineList list = new IodineList (new IodineObject[]{ });
+            IodineObject collection = args [0].GetIterator (vm);
+
+            collection.IterReset (vm);
+
+            int counter = 0;
+
+            while (collection.IterMoveNext (vm)) {
+                IodineObject o = collection.IterGetCurrent (vm);
+                list.Add (new IodineTuple (new IodineObject[] {
+                    new IodineInteger (counter++),
+                    o
+                }));
+            }
+            return list;
         }
 
         [BuiltinDocString (

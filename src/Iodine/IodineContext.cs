@@ -285,11 +285,9 @@ namespace Iodine.Compiler
              * 
              * If that fails, return null
              */
-
-            if (VirtualMachine.Top.Module.Location == null) {
+            if (VirtualMachine.Top == null || VirtualMachine.Top.Module.Location == null) {
                 return FindInSearchPath (moduleName, fileExtension);
             }
-
             string moduleDir = Path.GetDirectoryName (VirtualMachine.Top.Module.Location);
 
             string file = FindInDirectory (moduleDir, moduleName, fileExtension);
@@ -355,9 +353,9 @@ namespace Iodine.Compiler
         private string FindInSearchPath (string moduleName, string fileExtension)
         {
             foreach (string path in SearchPath) {
-                string expectedName = Path.Combine (path, moduleName + fileExtension);
-                if (File.Exists (expectedName)) {
-                    return expectedName;
+                string file = FindInDirectory (path, moduleName, fileExtension);
+                if (file != null) {
+                    return file;
                 }
             }
 

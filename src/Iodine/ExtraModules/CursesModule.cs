@@ -362,7 +362,9 @@ namespace Iodine.Modules.Extras
 
             public override void AcceptAction (MoveCursorAction action)
             {
-                Console.Write ("\x1B[{0};{1}H", action.Y, action.X);
+                Console.CursorTop = action.Y;
+                Console.CursorLeft = action.X;
+                //Console.Write ("\x1B[{0};{1}H", action.Y, action.X);
             }
 
             public override void AcceptAction (PrintStringAction action)
