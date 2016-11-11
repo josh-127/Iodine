@@ -95,10 +95,18 @@ namespace Iodine.Runtime
         public IodineModule (string name, string location = null)
             : base (ModuleTypeDef)
         {
-            Name = name;
+            if (name == "__init__") {
+                /*
+                 * The name __init__ is reserved for packages
+                 */
+                Name = Path.GetFileName (Path.GetDirectoryName (location));
+            } else {
+                Name = name;
+            }
+
             Location = location;
             SetAttribute ("__doc__", IodineString.Empty);
-            Attributes ["__name__"] = new IodineString (name);
+            Attributes ["__name__"] = new IodineString (Name);
         }
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)

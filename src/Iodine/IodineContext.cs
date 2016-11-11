@@ -292,12 +292,10 @@ namespace Iodine.Compiler
 
             string moduleDir = Path.GetDirectoryName (VirtualMachine.Top.Module.Location);
 
-            if (File.Exists (Path.Combine (moduleDir, moduleName + fileExtension))) {
-                return Path.Combine (moduleDir, moduleName + fileExtension);
-            }
+            string file = FindInDirectory (moduleDir, moduleName, fileExtension);
 
-            if (File.Exists (Path.Combine (moduleDir, ".deps", moduleName + fileExtension))) {
-                return Path.Combine (moduleDir, ".deps", moduleName + fileExtension);
+            if (file != null) {
+                return file;
             }
 
             int pathCharCount = moduleDir.Count (
@@ -309,16 +307,49 @@ namespace Iodine.Compiler
             for (int i = 0; i < pathCharCount; i++) {
                 cd = cd.Substring (0, cd.LastIndexOf (Path.PathSeparator));
 
-                if (File.Exists (Path.Combine (cd, moduleName + fileExtension))) {
-                    return Path.Combine (cd, moduleName + fileExtension);
-                }
+                file = FindInDirectory (cd, moduleName, fileExtension);
 
-                if (File.Exists (Path.Combine (cd, ".deps", moduleName + fileExtension))) {
-                    return Path.Combine (cd, ".deps", moduleName + fileExtension);
+                if (file != null) {
+                    return file;
                 }
             }
 
             return FindInSearchPath (moduleName, fileExtension);
+        }
+
+        private string FindInDirectory (
+            string directory,
+            string moduleName,
+            string fileExtension)
+        {
+            if (File.Exists (Path.Combine (directory, moduleName + fileExtension))) {
+                return Path.Combine (directory, moduleName + fileExtension);
+            }
+
+            if (File.Exists (Path.Combine (directory, ".deps", moduleName + fileExtension))) {
+                return Path.Combine (directory, ".deps", moduleName + fileExtension);
+            }
+
+            if (Directory.Exists (Path.Combine (directory, moduleName))) {
+                if (File.Exists (Path.Combine (
+                    directory,
+                    moduleName,
+                    "__init__.id"))) {
+                    return Path.Combine (directory, moduleName, "__init__.id");
+                }
+            }
+
+            if (Directory.Exists (Path.Combine (directory, moduleName))) {
+                if (File.Exists (Path.Combine (
+                    directory,
+                    ".deps",
+                    moduleName,
+                    "__init__.id"))) {
+                    return Path.Combine (directory, moduleName, ".deps", "__init__.id");
+                }
+            }
+
+            return null;
         }
 
         private string FindInSearchPath (string moduleName, string fileExtension)
