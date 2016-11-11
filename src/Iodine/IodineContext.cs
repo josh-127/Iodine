@@ -264,8 +264,67 @@ namespace Iodine.Compiler
 
         private string FindModuleSource (string moduleName)
         {
+            return FileFile (moduleName, ".id");
+        }
+
+        private string FindExtension (string extensionName)
+        {
+            return FileFile (extensionName, ".dll");
+        }
+
+        private string FileFile (string moduleName, string fileExtension)
+        {
+            /*
+             * Iodine module search algorithm
+             * 
+             * First attempt to search in the current working directory for the module,
+             * 
+             * If that fails, try to search in each parent directory
+             * 
+             * If that fails... We'll try searching in each path contained in IODINE_PATH
+             * 
+             * If that fails, return null
+             */
+
+            if (VirtualMachine.Top.Module.Location == null) {
+                return FindInSearchPath (moduleName, fileExtension);
+            }
+
+            string moduleDir = Path.GetDirectoryName (VirtualMachine.Top.Module.Location);
+
+            if (File.Exists (Path.Combine (moduleDir, moduleName + fileExtension))) {
+                return Path.Combine (moduleDir, moduleName + fileExtension);
+            }
+
+            if (File.Exists (Path.Combine (moduleDir, ".deps", moduleName + fileExtension))) {
+                return Path.Combine (moduleDir, ".deps", moduleName + fileExtension);
+            }
+
+            int pathCharCount = moduleDir.Count (
+                p => p == Path.PathSeparator ? true : false
+            );
+
+            string cd = moduleDir;
+
+            for (int i = 0; i < pathCharCount; i++) {
+                cd = cd.Substring (0, cd.LastIndexOf (Path.PathSeparator));
+
+                if (File.Exists (Path.Combine (cd, moduleName + fileExtension))) {
+                    return Path.Combine (cd, moduleName + fileExtension);
+                }
+
+                if (File.Exists (Path.Combine (cd, ".deps", moduleName + fileExtension))) {
+                    return Path.Combine (cd, ".deps", moduleName + fileExtension);
+                }
+            }
+
+            return FindInSearchPath (moduleName, fileExtension);
+        }
+
+        private string FindInSearchPath (string moduleName, string fileExtension)
+        {
             foreach (string path in SearchPath) {
-                string expectedName = Path.Combine (path, moduleName + ".id");
+                string expectedName = Path.Combine (path, moduleName + fileExtension);
                 if (File.Exists (expectedName)) {
                     return expectedName;
                 }
@@ -276,18 +335,6 @@ namespace Iodine.Compiler
             }
 
             // Module not found!
-            return null;
-        }
-
-        private string FindExtension (string extensionName)
-        {
-            foreach (string path in SearchPath) {
-                string expectedName = Path.Combine (path, extensionName + ".dll");
-                if (File.Exists (expectedName)) {
-                    return expectedName;
-                }
-            }
-            // Extension not found!
             return null;
         }
     }
