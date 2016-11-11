@@ -39,6 +39,7 @@ namespace Iodine.Compiler
     public sealed class Parser
     {
         private ErrorSink errorLog;
+        private IodineContext context;
         private List<Token> tokens = new List<Token> ();
 
         private int position = 0;
@@ -67,16 +68,18 @@ namespace Iodine.Compiler
             }
         }
             
-        private Parser (ErrorSink log, IEnumerable<Token> tokens)
+        private Parser (IodineContext context, IEnumerable<Token> tokens)
         {
-            errorLog = log;
+            errorLog = context.ErrorLog;
+
+            this.context = context;
             this.tokens.AddRange (tokens);
         }
 
         public static Parser CreateParser (IodineContext context, SourceUnit source)
         {
             Tokenizer tokenizer = new Tokenizer (context.ErrorLog, source.Text, source.Path ?? "");
-            return new Parser (context.ErrorLog, tokenizer.Scan ());
+            return new Parser (context, tokenizer.Scan ());
         }
 
         public CompilationUnit Parse ()
@@ -788,6 +791,11 @@ namespace Iodine.Compiler
                 return ParseForeach ();
             }
 
+            context.Warn (
+                WarningType.SyntaxWarning,
+                "C style for loop is deprecated infavor of for each loop."
+            );
+
             Expect (TokenClass.Keyword, "for");
             Expect (TokenClass.OpenParan);
             AstNode initializer = new Expression (Location, ParseExpression ());
@@ -813,6 +821,10 @@ namespace Iodine.Compiler
                 Expect (TokenClass.Keyword, "for");
             } else {
                 Expect (TokenClass.Keyword, "foreach");
+                context.Warn (
+                    WarningType.SyntaxWarning,
+                    "'foreach' keyword is deprecated! Use 'for' instead."
+                );
             }
             Expect (TokenClass.OpenParan);
             bool anotherValue = false;
@@ -1764,7 +1776,7 @@ namespace Iodine.Compiler
             foreach (string name in subExpressions) {
                 Tokenizer tokenizer = new Tokenizer (errorLog, name);
 
-                Parser parser = new Parser (errorLog, tokenizer.Scan ());
+                Parser parser = new Parser (context, tokenizer.Scan ());
                 var expression = parser.ParseExpression ();
                 ret.AddSubExpression (expression);
             }

@@ -41,39 +41,6 @@ namespace Iodine
 {
     public class IodineEntry
     {
-        class IodineOptions
-        {
-            public readonly List<string> Options = new List<string> ();
-
-            public string FileName { get; set; }
-
-            public IodineList IodineArguments { private set; get; }
-
-            public static IodineOptions Parse (string[] args)
-            {
-                IodineOptions ret = new IodineOptions ();
-                int i;
-                for (i = 0; i < args.Length; i++) {
-                    if (args [i].StartsWith ("-")) {
-                        ret.Options.Add (args [i].Substring (1));
-                    } else {
-                        ret.FileName = args [i++];
-                        if (!File.Exists (ret.FileName)) {
-                            Panic ("Could not find file {0}!", ret.FileName);
-                        }
-                        break;
-                    }
-                }
-                IodineObject[] arguments = new IodineObject [args.Length - i];
-                int start = i;
-                for (; i < args.Length; i++) {
-                    arguments [i - start] = new IodineString (args [i]);
-                }
-                ret.IodineArguments = new IodineList (arguments);
-                return ret;
-            }
-        }
-
         private static IodineContext context;
 
         public static void Main (string[] args)
@@ -89,47 +56,12 @@ namespace Iodine
             if (args.Length == 0) {
                 ReplShell shell = new ReplShell (context);
                 shell.Run ();
-                DisplayUsage ();
                 Environment.Exit (0);
             }
 
             IodineOptions options = IodineOptions.Parse (args);
 
-            options.Options.ForEach (p => ParseOption (context, p));
-
-            try {
-                SourceUnit code = SourceUnit.CreateFromFile (options.FileName);
-                IodineModule module = code.Compile (context);
-
-                if (context.Debug) {
-                    context.VirtualMachine.SetTrace (WaitForDebugger);
-                }
-
-                context.Invoke (module, new IodineObject[] { });
-
-                if (module.HasAttribute ("main")) {
-                    context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
-                        options.IodineArguments
-                    });
-                }
-
-            } catch (UnhandledIodineExceptionException ex) {
-                HandleIodineException (ex);
-            } catch (SyntaxException ex) {
-                DisplayErrors (ex.ErrorLog, options.FileName);
-                Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
-            } catch (ModuleNotFoundException ex) {
-                Console.Error.WriteLine (ex.ToString ());
-                Panic ("Program terminated.");
-            } catch (Exception e) {
-                Console.Error.WriteLine ("Fatal exception has occured!");
-                Console.Error.WriteLine (e.Message);
-                Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
-                Console.Error.WriteLine ("\nIodine stack trace \n{0}",
-                    context.VirtualMachine.GetStackTrace ());
-                Panic ("Program terminated.");
-            }
-
+            ExecuteOptions (options);
         }
 
         private static void HandleIodineException (UnhandledIodineExceptionException ex)
@@ -160,23 +92,75 @@ namespace Iodine
             return true;
         }
 
-        private static void ParseOption (IodineContext context, string option)
+        private static void ExecuteOptions (IodineOptions options)
         {
-            switch (option) {
-            case "version":
+            if (options.DebugFlag) {
+                RunDebugServer ();
+            }
+
+            if (options.WarningFlag) {
+                context.WarningFilter = WarningType.SyntaxWarning;
+            }
+
+            if (options.SupressWarningFlag) {
+                context.WarningFilter = WarningType.None;
+            }
+
+            switch (options.InterpreterAction) {
+            case InterpreterAction.ShowVersion:
                 DisplayInfo ();
                 break;
-            case "help":
+            case InterpreterAction.ShowHelp:
                 DisplayUsage ();
                 break;
-            case "debug":
-                context.Debug = true;
-                RunDebugServer ();
+            case InterpreterAction.EvaluateFile:
+                EvalSourceUnit (options, SourceUnit.CreateFromFile (options.FileName));
                 break;
-            default:
-                Panic ("Unknown command line option: '{0}'", option);
+            case InterpreterAction.EvaluateArgument:
+                EvalSourceUnit (options, SourceUnit.CreateFromSource (options.FileName));
                 break;
             }
+        }
+
+        private static void EvalSourceUnit (IodineOptions options, SourceUnit unit)
+        {
+            try {
+
+                IodineModule module = unit.Compile (context);
+
+                if (context.Debug) {
+                    context.VirtualMachine.SetTrace (WaitForDebugger);
+                }
+
+                do {
+                    context.Invoke (module, new IodineObject[] { });
+
+                    if (module.HasAttribute ("main")) {
+                        context.Invoke (module.GetAttribute ("main"), new IodineObject[] {
+                            options.IodineArguments
+                        });
+                    }
+                } while (options.LoopFlag);
+
+            } catch (UnhandledIodineExceptionException ex) {
+                HandleIodineException (ex);
+            } catch (SyntaxException ex) {
+                DisplayErrors (ex.ErrorLog, options.FileName);
+                Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
+            } catch (ModuleNotFoundException ex) {
+                Console.Error.WriteLine (ex.ToString ());
+                Panic ("Program terminated.");
+            } catch (Exception e) {
+                Console.Error.WriteLine ("Fatal exception has occured!");
+                Console.Error.WriteLine (e.Message);
+                Console.Error.WriteLine ("Stack trace: \n{0}", e.StackTrace);
+                Console.Error.WriteLine (
+                    "\nIodine stack trace \n{0}",
+                    context.VirtualMachine.GetStackTrace ()
+                );
+                Panic ("Program terminated.");
+            }
+
         }
 
         private static void RunDebugServer ()
@@ -250,6 +234,15 @@ namespace Iodine
         private static void DisplayUsage ()
         {
             Console.WriteLine ("usage: iodine [option] ... [file] [arg] ...");
+            Console.WriteLine ("\n");
+            Console.WriteLine ("-c    Check syntax only");
+            Console.WriteLine ("-d    Run a debug server");
+            Console.WriteLine ("-e    Evaluate a string of iodine code");
+            Console.WriteLine ("-h    Display this message");
+            Console.WriteLine ("-l    Assume 'while (true) { ...}' loop around the program");
+            Console.WriteLine ("-v    Display the version of this interpreter");
+            Console.WriteLine ("-w    Enable all warnings");
+            Console.WriteLine ("-x    Disable all warnings");
             Environment.Exit (0);
         }
 

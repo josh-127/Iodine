@@ -184,6 +184,11 @@ namespace Iodine.Compiler
 
             CompileMethod (classDecl.Constructor);
 
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.LoadConst,
+                Context.CurrentModule.DefineConstant (new IodineString (classDecl.Documentation))
+            );
+
             Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (classDecl.Name));
 
             Context.CurrentMethod.EmitInstruction (Opcode.BuildClass, classDecl.Members.Count);
@@ -235,6 +240,11 @@ namespace Iodine.Compiler
                     Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (funcDecl.Name));
                 }
             }
+
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.LoadConst,
+                Context.CurrentModule.DefineConstant (new IodineString (mixinDecl.Documentation))
+            );
 
             Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (mixinDecl.Name));
 
@@ -335,6 +345,11 @@ namespace Iodine.Compiler
             Context.CurrentMethod.EmitInstruction (
                 Opcode.LoadConst,
                 Context.CurrentModule.DefineConstant (bytecode)
+            );
+
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.LoadConst,
+                Context.CurrentModule.DefineConstant (new IodineString (funcDecl.Documentation))
             );
 
             Context.CurrentMethod.EmitInstruction (

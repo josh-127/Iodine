@@ -534,7 +534,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Prints a string to the standard output stream",
             "and appends a newline character.",
-            "@variadic Object Anything"
+            "@param *object The objects to print"
         )]
         private IodineObject Print (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {

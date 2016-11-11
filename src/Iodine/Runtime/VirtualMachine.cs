@@ -308,6 +308,7 @@ namespace Iodine.Runtime
                 }
                 throw new UnhandledIodineExceptionException (Top, ex);
             }
+
             ex.SetAttribute ("stacktrace", new IodineString (GetStackTrace ()));
 
             UnwindStack (frameCount - handler.Frame);
@@ -594,6 +595,7 @@ namespace Iodine.Runtime
             case Opcode.BuildClass:
                 {
                     IodineName name = Pop () as IodineName;
+                    IodineString doc = Pop () as IodineString;
                     IodineMethod constructor = Pop () as IodineMethod;
                     //CodeObject initializer = Pop as CodeObject;
                     IodineTypeDefinition baseClass = Pop () as IodineTypeDefinition;
@@ -619,6 +621,8 @@ namespace Iodine.Runtime
                             break;
                         }
                     }
+
+                    clazz.SetAttribute ("__doc__", doc);
 
                     Push (clazz);
                     break;
@@ -895,8 +899,10 @@ namespace Iodine.Runtime
                     MethodFlags flags = (MethodFlags)instruction.Argument;
 
                     IodineString name = Pop () as IodineString;
+                    IodineString doc = Pop () as IodineString;
                     CodeObject bytecode = Pop () as CodeObject;
                     IodineTuple parameters = Pop () as IodineTuple;
+
                     IodineObject[] defaultValues = new IodineObject[] { };
                     int defaultValuesStart = 0;
 
@@ -916,6 +922,8 @@ namespace Iodine.Runtime
                         defaultValues,
                         defaultValuesStart
                     );
+
+                    method.SetAttribute ("__doc__", doc);
 
                     Push (method);
 

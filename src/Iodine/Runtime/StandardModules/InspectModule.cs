@@ -413,7 +413,11 @@ namespace Iodine.Runtime
             }
 
             IodineObject function = args [0];
-            bool isFunction = function is IodineMethod || function is IodineBoundMethod || function is IodineClosure || function is IodineGenerator;
+
+            bool isFunction = function is IodineMethod ||
+                function is IodineBoundMethod ||
+                function is IodineClosure ||
+                function is IodineGenerator;
 
             return IodineBool.Create (isFunction);
         }
