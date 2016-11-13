@@ -53,6 +53,7 @@ namespace Iodine.Compiler
         Div = 0x11,
         Mod = 0x12,
         InstanceOf = 0x13,
+        Pow,
         NotInstanceOf,
         DynamicCast,
         NullCoalescing,

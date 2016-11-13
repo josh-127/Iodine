@@ -143,6 +143,16 @@ namespace Iodine.Runtime
             return new IodineBigInt (Value % intVal);
         }
 
+        public override IodineObject Pow (VirtualMachine vm, IodineObject right)
+        {
+            BigInteger intVal;
+            if (!ConvertToBigInt (right, out intVal)) {
+                vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
+                return null;
+            }
+            return new IodineBigInt (BigInteger.Pow (Value, (int)intVal));
+        }
+
         public override IodineObject And (VirtualMachine vm, IodineObject right)
         {
             BigInteger intVal;
@@ -268,7 +278,7 @@ namespace Iodine.Runtime
         private static bool ConvertToBigInt (IodineObject obj, out BigInteger result)
         {
             if (obj is IodineBigInt) {
-                result =  ((IodineBigInt)obj).Value;
+                result = ((IodineBigInt)obj).Value;
                 return true;
             }
 
@@ -276,6 +286,7 @@ namespace Iodine.Runtime
                 result = new BigInteger (((IodineInteger)obj).Value);
                 return true;
             }
+
             result = BigInteger.Zero;
             return false;
         }

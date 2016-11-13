@@ -53,12 +53,6 @@ namespace Iodine
                 }
             };
 
-            if (args.Length == 0) {
-                ReplShell shell = new ReplShell (context);
-                shell.Run ();
-                Environment.Exit (0);
-            }
-
             IodineOptions options = IodineOptions.Parse (args);
 
             ExecuteOptions (options);
@@ -119,13 +113,37 @@ namespace Iodine
             case InterpreterAction.EvaluateArgument:
                 EvalSourceUnit (options, SourceUnit.CreateFromSource (options.FileName));
                 break;
+            case InterpreterAction.Repl:
+                LaunchRepl (options);
+                break;
+            }
+        }
+
+        private static void LaunchRepl (IodineOptions options, IodineModule module = null)
+        {
+            string interpreterDir = Path.GetDirectoryName (
+                Assembly.GetExecutingAssembly ().Location
+            );
+
+            if (module != null) {
+                foreach (KeyValuePair<string, IodineObject> kv in module.Attributes) {
+                    context.Globals [kv.Key] = kv.Value;
+                }
+            }
+
+            string iosh = Path.Combine (interpreterDir, "tools", "iosh.id");
+
+            if (File.Exists (iosh) && !options.FallBackFlag) {
+                EvalSourceUnit (options, SourceUnit.CreateFromFile (iosh));
+            } else {
+                ReplShell shell = new ReplShell (context);
+                shell.Run ();
             }
         }
 
         private static void EvalSourceUnit (IodineOptions options, SourceUnit unit)
         {
             try {
-
                 IodineModule module = unit.Compile (context);
 
                 if (context.Debug) {
@@ -141,6 +159,10 @@ namespace Iodine
                         });
                     }
                 } while (options.LoopFlag);
+
+                if (options.ReplFlag) {
+                    LaunchRepl (options, module);
+                }
 
             } catch (UnhandledIodineExceptionException ex) {
                 HandleIodineException (ex);
@@ -238,8 +260,10 @@ namespace Iodine
             Console.WriteLine ("-c    Check syntax only");
             Console.WriteLine ("-d    Run a debug server");
             Console.WriteLine ("-e    Evaluate a string of iodine code");
+            Console.WriteLine ("-f    Use builtin fallback REPL shell instead of iosh");
             Console.WriteLine ("-h    Display this message");
             Console.WriteLine ("-l    Assume 'while (true) { ...}' loop around the program");
+            Console.WriteLine ("-r    Launch an interactive REPL shell after the supplied program is ran");
             Console.WriteLine ("-v    Display the version of this interpreter");
             Console.WriteLine ("-w    Enable all warnings");
             Console.WriteLine ("-x    Disable all warnings");

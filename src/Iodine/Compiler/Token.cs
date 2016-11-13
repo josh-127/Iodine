@@ -41,6 +41,7 @@ namespace Iodine.Compiler
         BinaryStringLiteral,
         InterpolatedStringLiteral,
         IntLiteral,
+        BigIntLiteral,
         FloatLiteral,
         Keyword,
         OpenParan,

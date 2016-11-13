@@ -291,6 +291,8 @@ namespace Iodine.Runtime
                 return Add (vm, rvalue);
             case BinaryOperation.Sub:
                 return Sub (vm, rvalue);
+            case BinaryOperation.Pow:
+                return Pow (vm, rvalue);
             case BinaryOperation.Mul:
                 return Mul (vm, rvalue);
             case BinaryOperation.Div:
@@ -528,6 +530,20 @@ namespace Iodine.Runtime
         {
             if (Attributes.ContainsKey ("__mul__")) {
                 return GetAttribute (vm, "__mul__").Invoke (vm, new IodineObject[] { left });
+            }
+            vm.RaiseException (new IodineNotSupportedException (
+                "The requested binary operator has not been implemented")
+            );
+            return null;
+        }
+
+        /// <summary>
+        /// Power operator (**)
+        /// </summary>
+        public virtual IodineObject Pow (VirtualMachine vm, IodineObject left)
+        {
+            if (Attributes.ContainsKey ("__pow__")) {
+                return GetAttribute (vm, "__pow__").Invoke (vm, new IodineObject[] { left });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")

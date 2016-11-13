@@ -41,6 +41,16 @@ namespace Iodine
             get;
         }
 
+        public bool FallBackFlag {
+            protected set;
+            get;
+        }
+
+        public bool ReplFlag {
+            protected set;
+            get;
+        }
+
         public InterpreterAction InterpreterAction {
             protected set;
             get;
@@ -72,6 +82,14 @@ namespace Iodine
                     break;
                 case "-x":
                     ret.SupressWarningFlag = true;
+                    break;
+                case "-f":
+                case "--fallback-repl":
+                    ret.FallBackFlag = true;
+                    break;
+                case "-r":
+                case "--repl":
+                    ret.ReplFlag = true;
                     break;
                 case "-v":
                 case "--version":

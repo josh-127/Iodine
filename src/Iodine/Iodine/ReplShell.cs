@@ -65,7 +65,7 @@ namespace Iodine
         {
             var version = typeof(IodineContext).Assembly.GetName ().Version;
             Console.WriteLine ("Iodine v{0}-alpha", version.ToString (3));
-            Console.WriteLine ("Enter expressions to have them be evaluated");
+            Console.WriteLine ("Fallback REPL. Enter expressions to have them be evaluated");
 
             IodineContext context = new IodineContext ();
             context.ShouldOptimize = false;

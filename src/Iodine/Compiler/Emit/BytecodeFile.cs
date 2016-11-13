@@ -274,7 +274,7 @@ namespace Iodine.Compiler
                 ReadInstruction (codeObject);
             }
 
-            codeObject.Finalize ();
+            codeObject.FinalizeMethod ();
 
             return codeObject;
         }

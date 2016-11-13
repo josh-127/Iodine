@@ -69,6 +69,11 @@ namespace Iodine.Compiler
             return new SourceUnit (source);
         }
 
+        public SourceReader GetReader ()
+        {
+            return new SourceReader (Text, Path);
+        }
+
         public IodineModule Compile (IodineContext context)
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
@@ -98,6 +103,7 @@ namespace Iodine.Compiler
             }
 
             Parser parser = Parser.CreateParser (context, this);
+
             CompilationUnit root = parser.Parse ();
 
             IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);

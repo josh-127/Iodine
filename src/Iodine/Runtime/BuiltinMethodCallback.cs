@@ -75,7 +75,7 @@ namespace Iodine.Runtime
             if (setInvokeAttribute) {
                 
                 // Set the invoke attribute so traits can match __invoke__
-                SetAttribute ("__invoke__", new BuiltinMethodCallback (invoke, this, false));
+                SetAttribute ("__invoke__", new BuiltinMethodCallback (Invoke, this, false));
             }
         }
 
@@ -84,18 +84,15 @@ namespace Iodine.Runtime
             return true;
         }
 
-        IodineObject invoke (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        private IodineObject Invoke (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return Invoke (vm, args);
         }
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            //vm.Stack.NewFrame (new NativeStackFrame (this, vm.Stack.Top));
             try {
-                IodineObject obj = Callback.Invoke (vm, Self, arguments);
-                return obj;
-                //vm.Stack.EndFrame ();
+                return Callback.Invoke (vm, Self, arguments);
             } catch (RuntimeException ex) {
                 throw ex;
             } catch (SyntaxException ex) {

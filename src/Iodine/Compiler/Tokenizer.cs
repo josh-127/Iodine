@@ -40,35 +40,35 @@ namespace Iodine.Compiler
     /// </summary>
     public sealed class Tokenizer
     {
-        private int position;
-        private int sourceLen;
-        private string source;
-        private string file;
+        const string OperatorChars = "+-*/=<>~!&^|%@?.";
+
+        private SourceReader source;
+
         private string lastDocStr = null;
         private ErrorSink errorLog;
-        private SourceLocation location;
 
-        public Tokenizer (ErrorSink errorLog, string source, string file = "")
+        public Tokenizer (ErrorSink errorLog, SourceReader sourceReader)
         {
             this.errorLog = errorLog;
-            this.source = source;
-            this.file = file;
-            position = 0;
-            sourceLen = source.Length;
-            location = new SourceLocation (0, 0, file);
+            this.source = sourceReader;
         }
 
         public IEnumerable<Token> Scan ()
         {
             List<Token> tokens = new List<Token> ();
-            EatWhiteSpaces ();
-            while (PeekChar () != -1) {
+
+            source.SkipWhitespace ();
+
+            while (source.See ()) {
                 Token nextToken = NextToken ();
+
                 if (nextToken != null) {
                     tokens.Add (nextToken);
+
                     lastDocStr = null;
                 }
-                EatWhiteSpaces ();
+
+                source.SkipWhitespace ();
             }
 
             if (errorLog.ErrorCount > 0) {
@@ -79,86 +79,71 @@ namespace Iodine.Compiler
 
         private Token NextToken ()
         {
-            char ch = (char)PeekChar ();
-            switch (ch) {
-            case '#':
-                return ReadComment ();
-            case '\'':
-            case '"':
-                return ReadStringLiteral ();
-            case '_':
-                return ReadIdentifier ();
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
+            char ch = source.Peek ();
+
+            if (source.Peeks (2) == "0x") {
+                return ReadHexNumber ();
+            }
+
+            if (char.IsDigit (ch)) {
                 return ReadNumber ();
-            case '+':
-            case '-':
-            case '*':
-            case '/':
-            case '=':
-            case '<':
-            case '>':
-            case '~':
-            case '!':
-            case '&':
-            case '^':
-            case '|':
-            case '%':
-            case '@':
-            case '?':
-            case '.':
-                return ReadOperator ();
-            case '{':
-                ReadChar ();
-                return new Token (TokenClass.OpenBrace, "{", lastDocStr, location);
-            case '}':
-                ReadChar ();
-                return new Token (TokenClass.CloseBrace, "}", lastDocStr, location);
-            case '(':
-                ReadChar ();
-                return new Token (TokenClass.OpenParan, "(", lastDocStr, location);
-            case ')':
-                ReadChar ();
-                return new Token (TokenClass.CloseParan, ")", lastDocStr, location);
-            case '[':
-                ReadChar ();
-                return new Token (TokenClass.OpenBracket, "[", lastDocStr, location);
-            case ']':
-                ReadChar ();
-                return new Token (TokenClass.CloseBracket, "]", lastDocStr, location);
-            case ';':
-                ReadChar ();
-                return new Token (TokenClass.SemiColon, ";", lastDocStr, location);
-            case ':':
-                ReadChar ();
-                return new Token (TokenClass.Colon, ":", lastDocStr, location);
-            case ',':
-                ReadChar ();
-                return new Token (TokenClass.Comma, ",", lastDocStr, location);
-            default:
-                if (char.IsLetter (ch)) {
-                    return ReadIdentifier ();
-                }
-                errorLog.Add (Errors.UnexpectedToken, location, (char)ReadChar ());
-                
+            }
+
+            if (char.IsLetter (ch) || ch == '_') {
+                return ReadIdentifier ();
+            }
+
+            if (source.Peeks (3) == "/**") {
+                ReadDocComment ();
                 return null;
             }
-        }
 
-        private Token ReadComment ()
-        {
-            int ch = 0;
-            do {
-                ch = ReadChar ();
-            } while (ch != -1 && ch != '\n');
+            if (source.Peeks (2) == "/*") {
+                ReadLineComment ();
+                return null;
+            }
+
+            switch (ch) {
+            case '\"':
+            case '\'':
+                return ReadStringLiteral ();
+            case '#':
+                source.SkipLine ();
+                return null;
+            }
+
+            var punctuators = new Dictionary<char, TokenClass> {
+                { '{', TokenClass.OpenBrace },
+                { '}', TokenClass.CloseBrace },
+                { '(', TokenClass.OpenParan },
+                { ')', TokenClass.CloseParan },
+                { '[', TokenClass.OpenBracket },
+                { ']', TokenClass.CloseBracket },
+                { ';', TokenClass.SemiColon },
+                { ':', TokenClass.Colon },
+                { ',', TokenClass.Comma }
+            };
+
+            if (punctuators.ContainsKey (source.Peek ())) {
+                char punctuator = source.Read ();
+
+                return new Token (
+                    punctuators [punctuator],
+                    punctuator.ToString (),
+                    lastDocStr,
+                    source.Location
+                );
+            }
+
+            if (OperatorChars.Contains (source.Peek ())) {
+                return ReadOperator ();
+            }
+
+            if (char.IsLetter (ch)) {
+                return ReadIdentifier ();
+            }
+
+            errorLog.Add (Errors.UnexpectedToken, source.Location, source.Read ());
 
             return null;
         }
@@ -166,45 +151,91 @@ namespace Iodine.Compiler
         private Token ReadNumber ()
         {
             StringBuilder accum = new StringBuilder ();
-            char ch = (char)PeekChar ();
-            if (ch == '0' && PeekChar (1) == 'x')
-                return ReadHexNumber (accum);
-            do {
-                if (ch == '.')
-                    return ReadFloat (accum);
-                accum.Append ((char)ReadChar ());
-                ch = (char)PeekChar ();
-            } while (char.IsDigit (ch) || ch == '.');
-            return new Token (TokenClass.IntLiteral, accum.ToString (), lastDocStr, location);
+
+            while (source.See () && char.IsDigit (source.Peek ())) {
+                accum.Append (source.Read ());
+            }
+
+            if (source.Peek () == '.') {
+                return ReadFloat (accum);
+            }
+
+            bool isBigInt = source.Peek () == 'L';
+
+            string val = accum.ToString ();
+            bool fitsInInteger;
+           
+            if (isBigInt) {
+                source.Skip ();
+                BigInteger valBig;
+                fitsInInteger = BigInteger.TryParse ("0" + val, out valBig);
+            } else {
+                long val64;
+                fitsInInteger = long.TryParse (val, out val64);
+            }
+
+            if (!fitsInInteger) {
+                errorLog.Add (Errors.IntegerOverBounds, source.Location);
+            }
+
+            TokenClass tokenClass = isBigInt ?
+                TokenClass.BigIntLiteral :
+                TokenClass.IntLiteral;
+
+            if (string.IsNullOrEmpty (val)) {
+                errorLog.Add (Errors.IllegalSyntax, source.Location);
+            }
+
+            return new Token (tokenClass, accum.ToString (), lastDocStr, source.Location);
         }
 
-        private Token ReadHexNumber (StringBuilder accum)
+        private Token ReadHexNumber ()
         {
-            ReadChar (); // 0
-            ReadChar (); // x
-            while (IsHexNumber ((char)PeekChar ())) {
-                accum.Append ((char)ReadChar ());
-                if ((char)PeekChar (1) == 'L' && IsHexNumber ((char)PeekChar (1))) {
-                    errorLog.Add (Errors.IllegalSyntax, location);
-                }
+            StringBuilder accum = new StringBuilder ();
+
+            source.Skip (2);
+
+            while (source.See () && IsHexNumber (source.Peek ())) {
+                accum.Append (source.Read ());
             }
 
-            string val = string.Empty;
-            Int64 val64;
-            string numstr = accum.ToString ();
-            var big = (char)PeekChar (0) == 'L';
-            if (big) {
-                val = BigInteger.Parse ("0" + numstr, System.Globalization.NumberStyles.HexNumber).ToString ();
-            } else if (Int64.TryParse (numstr, System.Globalization.NumberStyles.HexNumber, null, out val64)) {
-                val = val64.ToString ();
+            string val = accum.ToString ();
+
+            bool isBigInt = source.Peek () == 'L';
+
+            bool fitsInInteger = false;
+
+            if (isBigInt) {
+                source.Skip ();
+                BigInteger valBig;
+                fitsInInteger = BigInteger.TryParse (
+                    "0" + val,
+                    System.Globalization.NumberStyles.HexNumber,
+                    null,
+                    out valBig
+                );
             } else {
-                // BigInteger works in mysterious ways.
-                // FFFFFF doesn't parse, 0FFFFFF does.
-                val = BigInteger.Parse ("0" + numstr, System.Globalization.NumberStyles.HexNumber).ToString ();
+                long val64;
+                fitsInInteger = long.TryParse (
+                    val,
+                    System.Globalization.NumberStyles.HexNumber,
+                    null,
+                    out val64
+                );
             }
-            if (string.IsNullOrEmpty (val))
-                errorLog.Add (Errors.IllegalSyntax, location);
-            return new Token (TokenClass.IntLiteral, val, lastDocStr, location);
+
+            if (!fitsInInteger) {
+                errorLog.Add (Errors.IntegerOverBounds, source.Location);
+            }
+            TokenClass tokenClass = isBigInt ?
+                TokenClass.BigIntLiteral :
+                TokenClass.IntLiteral;
+
+            if (string.IsNullOrEmpty (val)) {
+                errorLog.Add (Errors.IllegalSyntax, source.Location);
+            }
+
+            return new Token (tokenClass, val, lastDocStr, source.Location);
         }
 
         private static bool IsHexNumber (char c)
@@ -214,33 +245,53 @@ namespace Iodine.Compiler
 
         private Token ReadFloat (StringBuilder buffer)
         {
-            ReadChar (); // .
+            SourceLocation location = source.Location;
+
+            source.Skip (); // .
             buffer.Append (".");
-            char ch = (char)PeekChar ();
+            char ch = source.Peek ();
             do {
-                buffer.Append ((char)ReadChar ());
-                ch = (char)PeekChar ();
+                buffer.Append (source.Read ());
+                ch = source.Peek ();
             } while (char.IsDigit (ch));
+
             return new Token (TokenClass.FloatLiteral, buffer.ToString (), lastDocStr, location);
         }
 
-        private Token ReadStringLiteral ()
+        private Token ReadStringLiteral (bool binary = false)
         {
+            SourceLocation location = source.Location;
+
             StringBuilder accum = new StringBuilder ();
-            int delimiter = ReadChar ();
-            int ch = (char)PeekChar ();
-            while (ch != delimiter && ch != -1) {
+
+            char delimiter = source.Read ();
+
+            char ch = source.Peek ();
+
+            while (source.See () && ch != delimiter) {
                 if (ch == '\\') {
-                    ReadChar ();
+                    source.Skip ();
                     accum.Append (ParseEscapeCode ());
                 } else {
-                    accum.Append ((char)ReadChar ());
+                    accum.Append (source.Read ());
                 }
-                ch = PeekChar ();
+                ch = source.Peek ();
             }
-            if (ReadChar () == -1) {
+
+            if (!source.See ()) {
                 errorLog.Add (Errors.UnterminatedStringLiteral, location);
             }
+
+            source.Skip ();
+
+            if (binary) {
+                return new Token (TokenClass.BinaryStringLiteral,
+                    accum.ToString (),
+                    lastDocStr,
+                    location
+                );
+            }
+
             return new Token (ch == '"' ? 
                 TokenClass.InterpolatedStringLiteral :
                 TokenClass.StringLiteral,
@@ -250,35 +301,9 @@ namespace Iodine.Compiler
             );
         }
 
-        private Token ReadBinaryStringLiteral ()
-        {
-            StringBuilder accum = new StringBuilder ();
-            int delimiter = ReadChar ();
-            int ch = (char)PeekChar ();
-            while (ch != delimiter && ch != -1) {
-                if (ch == '\\') {
-                    ReadChar ();
-                    accum.Append (ParseEscapeCode ());
-                } else {
-                    accum.Append ((char)ReadChar ());
-                }
-                ch = PeekChar ();
-            }
-            if (ReadChar () == -1) {
-                errorLog.Add (Errors.UnterminatedStringLiteral, location);
-            }
-
-            return new Token (TokenClass.BinaryStringLiteral,
-                accum.ToString (),
-                lastDocStr,
-                location
-            );
-        }
-
         private char ParseEscapeCode ()
         {
-            char escape = (char)ReadChar ();
-            switch (escape) {
+            switch (source.Read ()) {
             case '\'':
                 return '\'';
             case '"':
@@ -296,241 +321,157 @@ namespace Iodine.Compiler
             case '\\':
                 return '\\';
             }
-            errorLog.Add (Errors.UnrecognizedEscapeSequence, location);
-            return '\0';
+
+            errorLog.Add (Errors.UnrecognizedEscapeSequence, source.Location);
+
+            return char.MinValue;
         }
 
         private Token ReadIdentifier ()
         {
             StringBuilder accum = new StringBuilder ();
-            char ch = (char)PeekChar ();
-            do {
-                accum.Append ((char)ReadChar ());
-                ch = (char)PeekChar ();
-            } while (char.IsLetterOrDigit (ch) || ch == '_');
 
-            string final = accum.ToString ();
+            char ch = source.Peek ();
 
-            if (final == "b" && (ch == '\"' || ch == '\'')) {
-                return ReadBinaryStringLiteral ();
+            while (char.IsLetterOrDigit (ch) || ch == '_') {
+                accum.Append (source.Read ());
+                ch = source.Peek ();
             }
 
-            switch (final) {
-            case "if":
-            case "else":
-            case "while":
-            case "do":
-            case "for":
-            case "func":
-            case "class":
-            case "use":
-            case "self":
-            case "foreach":
-            case "in":
-            case "true":
-            case "false":
-            case "null":
-            case "lambda":
-            case "try":
-            case "except":
-            case "break":
-            case "from":
-            case "continue":
-            case "super":
-            case "enum":
-            case "raise":
-            case "contract":
-            case "trait":
-            case "mixin":
-            case "given":
-            case "case":
-            case "yield":
-            case "default":
-            case "return":
-            case "match":
-            case "when":
-            case "var":
-            case "with":
-            case "global":
-            case "extend":
-            case "extends":
-            case "implements":
-                return new Token (TokenClass.Keyword, accum.ToString (), lastDocStr, location);
-            case "is":
-            case "isnot":
-            case "as":
-                return new Token (TokenClass.Operator, accum.ToString (), lastDocStr, location);
-            default:
-                return new Token (TokenClass.Identifier, accum.ToString (), lastDocStr, location);
+            string identValue = accum.ToString ();
+
+            string[] keywords = new string[] {
+                "if", "else", "while", "do", "for", "func",
+                "class", "use", "self", "foreach", "in",
+                "true", "false", "null", "lambda", "try",
+                "except", "break", "from", "continue", "super",
+                "enum", "raise", "contract", "trait", "mixin", 
+                "given", "case", "yield", "default", "return", 
+                "match", "when", "var", "with", "global",
+                "extend", "extends", "implements"
+            };
+
+            string[] operators = new string[] { "in", "is", "isnot", "as" };
+
+            if (keywords.Contains (identValue)) {
+                return new Token (TokenClass.Keyword, accum.ToString (), lastDocStr, source.Location);
             }
+
+            if (operators.Contains (identValue)) {
+                return new Token (TokenClass.Operator, accum.ToString (), lastDocStr, source.Location);
+            }
+
+            return new Token (TokenClass.Identifier, accum.ToString (), lastDocStr, source.Location);
         }
 
         private Token ReadOperator ()
         {
-            char op = (char)ReadChar ();
-            string nextTwoChars = op + ((char)PeekChar ()).ToString ();
-            string nextThreeChars = op + ((char)PeekChar ()).ToString () + ((char)PeekChar (1)).ToString ();
+            var operators = new Dictionary<string, TokenClass> {
+                { ">>", TokenClass.Operator },
+                { "<<", TokenClass.Operator },
+                { "&&", TokenClass.Operator },
+                { "||", TokenClass.Operator },
+                { "==", TokenClass.Operator },
+                { "!=", TokenClass.Operator },
+                { "=>", TokenClass.Operator },
+                { "<=", TokenClass.Operator },
+                { ">=", TokenClass.Operator },
+                { "+=", TokenClass.Operator },
+                { "-=", TokenClass.Operator },
+                { "*=", TokenClass.Operator },
+                { "/=", TokenClass.Operator },
+                { "%=", TokenClass.Operator },
+                { "^=", TokenClass.Operator },
+                { "&=", TokenClass.Operator },
+                { "|=", TokenClass.Operator },
+                { "??", TokenClass.Operator },
+                { "**", TokenClass.Operator },
+                { "..", TokenClass.Operator },
+                { "...", TokenClass.Operator },
+                { "<<=", TokenClass.Operator },
+                { ">>=", TokenClass.Operator },
+                {".", TokenClass.MemberAccess },
+                { ".?", TokenClass.MemberDefaultAccess },
+            };
 
-            switch (nextThreeChars) {
-            case "/**":
-                ReadChar ();
-                ReadChar ();
-                ReadDocComment ();
-                return null;
-            case "<<=":
-                ReadChar ();
-                ReadChar ();
-                return new Token (TokenClass.Operator, nextThreeChars, lastDocStr, location);
-            case ">>=":
-                ReadChar ();
-                ReadChar ();
-                return new Token (TokenClass.Operator, nextThreeChars, lastDocStr, location);
-            case "...":
-                ReadChar ();
-                ReadChar ();
-                return new Token (TokenClass.Operator, nextThreeChars, lastDocStr, location);
+            string opStr;
+
+            if (operators.ContainsKey (source.Peeks (3))) {
+                opStr = source.Reads (3);
+
+                return new Token (
+                    operators [opStr],
+                    opStr, lastDocStr,
+                    source.Location
+                );
             }
 
-            switch (nextTwoChars) {
-            case ".?":
-                return new Token (TokenClass.MemberDefaultAccess, ".?", lastDocStr, location);
-            case ">>":
-            case "<<":
-            case "&&":
-            case "||":
-            case "==":
-            case "!=":
-            case "=>":
-            case "<=":
-            case ">=":
-            case "+=":
-            case "-=":
-            case "*=":
-            case "/=":
-            case "%=":
-            case "^=":
-            case "&=":
-            case "|=":
-            case "??":
-            case "..":
-                ReadChar ();
-                return new Token (TokenClass.Operator, nextTwoChars, lastDocStr, location);
-            case "/*":
-                ReadChar ();
-                ReadLineComment ();
-                return null;
+            if (operators.ContainsKey (source.Peeks (2))) {
+                opStr = source.Reads (2);
+
+                return new Token (
+                    operators [opStr],
+                    opStr, lastDocStr,
+                    source.Location
+                );
             }
 
-            switch (op) {
-            case '.':
-                return new Token (TokenClass.MemberAccess, ".", lastDocStr, location);
-            default:
-                return new Token (TokenClass.Operator, op.ToString (), lastDocStr, location);
+
+            opStr = source.Reads (1);
+
+
+            if (operators.ContainsKey (opStr)) {
+                return new Token (
+                    operators [opStr],
+                    opStr, lastDocStr,
+                    source.Location
+                );
             }
+
+            return new Token (
+                TokenClass.Operator,
+                opStr, lastDocStr,
+                source.Location
+            );
         }
 
         private void ReadLineComment ()
         {
-            while (PeekChar () != -1) {
-
-                char ch = (char)ReadChar ();
-
-                if (ch == '*') {
-                    if ((char)PeekChar () == '/') {
-                        ReadChar ();
-                        return;
-                    }
+            while (source.See ()) {
+                if (source.Peeks (2) == "*/") {
+                    source.Skip (2);
+                    return;
                 }
+                source.Skip ();
             }
 
-            errorLog.Add (Errors.UnexpectedEndOfFile, location);
+            errorLog.Add (Errors.UnexpectedEndOfFile, source.Location);
         }
 
         private void ReadDocComment ()
         {
             StringBuilder accum = new StringBuilder ();
-            while (PeekChar () != -1) {
 
-                char ch = (char)ReadChar ();
+            source.Skip (3);
 
-                accum.Append (ch);
+            while (source.See ()) {
+                if (source.Peeks (2) == "*/") {
 
-                if (ch == '*') {
-                    if ((char)PeekChar () == '/') {
-                        ReadChar ();
+                    source.Skip (2);
 
-                        string doc = accum.ToString ();
-                        var lines = doc.Split ('\n')
-                            .Select (p => p.Trim ())
-                            .Where (p => p.StartsWith ("*"))
-                            .Select (p => p.Substring (p.IndexOf ('*') + 1).Trim ());
-                        lastDocStr = String.Join ("\n", lines);
-                        return;
-                    }
+                    string doc = accum.ToString ();
+                    var lines = doc.Split ('\n')
+                        .Select (p => p.Trim ())
+                        .Where (p => p.StartsWith ("*"))
+                        .Select (p => p.Substring (p.IndexOf ('*') + 1).Trim ());
+                    lastDocStr = String.Join ("\n", lines);
+                    return;
                 }
 
+                accum.Append (source.Read ());
             }
 
-            errorLog.Add (Errors.UnexpectedEndOfFile, location);
-        }
-
-        private bool EatWhiteSpaces ()
-        {
-            bool hadNewLine = false;
-            while (char.IsWhiteSpace ((char)PeekChar ())) {
-                char ch = (char)ReadChar ();
-                if (ch == '\n') {
-                    hadNewLine = true;
-                }
-            }
-            return hadNewLine;
-        }
-
-        private bool MatchString (string str)
-        {
-            for (int i = 0; i < str.Length; i++) {
-                if (PeekChar (i) != str [i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private void ReadChars (int n)
-        {
-            for (int i = 0; i < n; i++) {
-                ReadChar ();
-            }
-        }
-
-        private int ReadChar ()
-        {
-            if (position >= sourceLen) {
-                return -1;
-            }
-
-            if (source [position] == '\n') {
-                location = new SourceLocation (location.Line + 1, 0, this.file); 
-            } else {
-                location = new SourceLocation (location.Line,
-                    location.Column + 1,
-                    this.file
-                ); 
-            }
-            return source [position++];
-        }
-
-        private int PeekChar ()
-        {
-            return PeekChar (0);
-        }
-
-        private int PeekChar (int n)
-        {
-            if (position + n >= sourceLen) {
-                return -1;
-            }
-            return source [position + n];
+            errorLog.Add (Errors.UnexpectedEndOfFile, source.Location);
         }
     }
 }

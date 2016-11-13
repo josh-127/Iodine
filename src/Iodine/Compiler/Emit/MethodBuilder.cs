@@ -82,7 +82,7 @@ namespace Iodine.Compiler
             label._Position = instructions.Count;
         }
 
-        public void Finalize ()
+        public void FinalizeMethod ()
         {
             foreach (int position in labelReferences.Keys) {
                 instructions [position] = new Instruction (instructions [position].Location,

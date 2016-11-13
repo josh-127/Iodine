@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>/home/grunt/IodineLang/Iodine/modules/functools.id</Commandlineparameters>
+    <Commandlineparameters>-e "print (0 when 1 == 2 else 4)"</Commandlineparameters>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -48,7 +48,7 @@ namespace Iodine.Runtime
             : base (NullType.Instance)
         {
         }
-
+        
         public override bool IsTrue ()
         {
             return false;

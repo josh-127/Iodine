@@ -86,7 +86,7 @@ namespace Iodine.Compiler
 
             root.Visit (this);
 
-            moduleBuilder.Initializer.Finalize ();
+            moduleBuilder.Initializer.FinalizeMethod ();
 
             DestroyContext ();
 
@@ -300,7 +300,7 @@ namespace Iodine.Compiler
 
             DestroyContext ();
 
-            bytecode.Finalize ();
+            bytecode.FinalizeMethod ();
 
             MethodFlags flags = new MethodFlags ();
 
@@ -1209,6 +1209,26 @@ namespace Iodine.Compiler
             Context.CurrentMethod.EmitInstruction (slice.Location, Opcode.Slice);
         }
 
+        public override void Accept (TernaryExpression ternaryExpr)
+        {
+            Label elseLabel = Context.CurrentMethod.CreateLabel ();
+            Label endLabel = Context.CurrentMethod.CreateLabel ();
+            ternaryExpr.Condition.Visit (this);
+            Context.CurrentMethod.EmitInstruction (ternaryExpr.Expression.Location, Opcode.JumpIfFalse, elseLabel);
+            ternaryExpr.Expression.Visit (this);
+            Context.CurrentMethod.EmitInstruction (ternaryExpr.ElseExpression != null
+                ? ternaryExpr.ElseExpression.Location
+                : ternaryExpr.Location,
+                Opcode.Jump,
+                endLabel
+            );
+            Context.CurrentMethod.MarkLabelPosition (elseLabel);
+            if (ternaryExpr.ElseExpression != null) {
+                ternaryExpr.ElseExpression.Visit (this);
+            }
+            Context.CurrentMethod.MarkLabelPosition (endLabel);
+        }
+
         public override void Accept (GeneratorExpression genExpr)
         {
             CodeBuilder anonMethod = new CodeBuilder ();
@@ -1266,7 +1286,7 @@ namespace Iodine.Compiler
 
             Context.SymbolTable.ExitScope ();
 
-            anonMethod.Finalize ();
+            anonMethod.FinalizeMethod ();
 
             DestroyContext ();
 
@@ -1502,23 +1522,26 @@ namespace Iodine.Compiler
                     Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadTrue);
                 } else {
 
-                    Context.SymbolTable.AddSymbol (ident.Value);
-
-                    Context.CurrentMethod.EmitInstruction (ident.Location,
-                        Opcode.LoadLocal,
-                        Context.PatternTemporary
-                    );
-
-                    Context.CurrentMethod.EmitInstruction (ident.Location,
-                        Opcode.StoreLocal,
+                    Context.CurrentMethod.EmitInstruction (
+                        ident.Location,
+                        Opcode.LoadGlobal,
                         CreateName (ident.Value)
                     );
-
-                    Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadTrue);
                 }
-                return;
-            }
 
+                Context.CurrentMethod.EmitInstruction (ident.Location,
+                    Opcode.LoadLocal,
+                    Context.PatternTemporary
+                );
+
+                Context.CurrentMethod.EmitInstruction (
+                    ident.Location,
+                    Opcode.InstanceOf
+                );
+                return;
+            
+            }
+        
             if (Context.SymbolTable.IsSymbolDefined (ident.Value)) {
                 if (!Context.SymbolTable.IsGlobal (ident.Value)) {
                     Context.CurrentMethod.EmitInstruction (
