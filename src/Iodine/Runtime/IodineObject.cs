@@ -752,11 +752,16 @@ namespace Iodine.Runtime
                 return trait.HasTrait (this);
             }
 
+            if (def is IodineSomething.SomethingType) {
+                return !(this is IodineNull || this is IodineNull.NullType);
+            }
+
             foreach (IodineContract contract in this.Interfaces) {
                 if (contract == def) {
                     return true;
                 }
             }
+
             IodineObject i = this;
             while (i != null) {
                 if (i.TypeDef == def) {

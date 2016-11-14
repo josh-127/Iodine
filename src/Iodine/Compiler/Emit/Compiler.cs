@@ -1199,7 +1199,6 @@ namespace Iodine.Compiler
             indexer.Target.Visit (this);
             indexer.Index.Visit (this);
             Context.CurrentMethod.EmitInstruction (indexer.Location, Opcode.LoadIndex);
-
         }
 
         public override void Accept (SliceExpression slice)
@@ -1373,43 +1372,18 @@ namespace Iodine.Compiler
 
         public override void Accept (TupleExpression tuple)
         {
+            CreateContext (Context.IsInClassBody);
+
+            tuple.VisitChildren (this);
+
+            DestroyContext ();
+
+
             if (Context.IsPatternExpression) {
-                Label startLabel = Context.CurrentMethod.CreateLabel ();
-                Label endLabel = Context.CurrentMethod.CreateLabel ();
-                int item = CreateTemporary ();
+                Context.CurrentMethod.EmitInstruction (Opcode.LoadLocal, Context.PatternTemporary);
+                Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.MatchPattern, tuple.Items.Count);
 
-                int prevTemporary = Context.PatternTemporary;
-
-                CreatePatternContext (item);
-
-                for (int i = 0; i < tuple.Items.Count; i++) {
-                    if (tuple.Items [i] is NameExpression &&
-                        ((NameExpression)tuple.Items [i]).Value == "_")
-                        continue;
-                    Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.LoadLocal, prevTemporary);
-                    Context.CurrentMethod.EmitInstruction (tuple.Location,
-                        Opcode.LoadConst,
-                        Context.CurrentModule.DefineConstant (new IodineInteger (i))
-                    );
-                    Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.LoadIndex);
-                    Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.StoreLocal, item);
-
-                    tuple.Items [i].Visit (this);
-
-                    Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.JumpIfFalse, endLabel);
-                }
-
-                DestroyContext ();
-
-                Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.LoadTrue);
-                Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.Jump, startLabel);
-
-                Context.CurrentMethod.MarkLabelPosition (endLabel);
-                Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.LoadFalse);
-
-                Context.CurrentMethod.MarkLabelPosition (startLabel);
             } else {
-                tuple.VisitChildren (this);
                 Context.CurrentMethod.EmitInstruction (tuple.Location, Opcode.BuildTuple, tuple.Items.Count);
             }
         }

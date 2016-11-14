@@ -96,7 +96,8 @@ namespace Iodine.Runtime
         BuildEnum = 0x3A,
         BuildContract = 0x3B,
         BuildMixin = 0x3C,
-        BuildTrait = 0x3D
+        BuildTrait = 0x3D,
+        MatchPattern = 0x3E
     }
 }
 

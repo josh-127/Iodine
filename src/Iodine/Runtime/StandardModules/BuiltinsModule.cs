@@ -100,6 +100,7 @@ namespace Iodine.Runtime
             SetAttribute ("ModuleNotFoundException", IodineModuleNotFoundException.TypeDefinition);
             SetAttribute ("StringBuffer", IodineStringBuilder.TypeDefinition);
             SetAttribute ("Null", IodineNull.Instance.TypeDef);
+            SetAttribute ("Something", IodineSomething.Instance.TypeDef);
             SetAttribute ("TypeDef", IodineTypeDefinition.TypeDefinition);
             SetAttribute ("__globals__", IodineGlobals.Instance);
             //IodineString.TypeDefinition.TypeDef.BindAttributes (IodineString.TypeDefinition.TypeDef);

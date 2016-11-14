@@ -748,6 +748,43 @@ namespace Iodine.Runtime
 
                     break;
                 }
+            case Opcode.MatchPattern:
+                {
+                    IodineObject collection = Pop ().GetIterator (this);
+
+                    IodineObject[] items = new IodineObject[instruction.Argument];
+                    for (int i = 1; i <= instruction.Argument; i++) {
+                        items [instruction.Argument - i] = Pop ();
+                    }
+
+
+                    int index = 0;
+
+                    collection.IterReset (this);
+
+                    while (collection.IterMoveNext (this) && index < items.Length) {
+
+                        IodineObject o = collection.IterGetCurrent (this);
+
+                        if (items [index] is IodineTypeDefinition) {
+                            if (!o.InstanceOf (items [index] as IodineTypeDefinition)) {
+                                Push (IodineBool.False);
+                                break;
+                            }
+                        } else {
+                            if (!o.Equals (items [index])) {
+                                Push (IodineBool.False);
+                                break;
+                            }
+                        }
+
+                        index++;
+                    }
+                        
+                    Push (IodineBool.Create (index == items.Length));
+
+                    break;
+                }
             case Opcode.GetIter:
                 {
                     Push (Pop ().GetIterator (this));
