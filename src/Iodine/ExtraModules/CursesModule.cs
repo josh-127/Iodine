@@ -198,6 +198,7 @@ namespace Iodine.Modules.Extras
 
                 activeAttributes |= attributes;
                 actionQueue.Enqueue (new SetAttributesAction (activeAttributes));
+
                 mutex.ReleaseMutex ();
             }
 
@@ -497,6 +498,11 @@ namespace Iodine.Modules.Extras
 
             IodineInteger index = args [0] as IodineInteger;
 
+            if (index == null) {
+                vm.RaiseException (new IodineTypeException ("Int"));
+                return null;
+            }
+
             activeTerminal.CurseSet ((int)index.Value);
 
             return null;
@@ -508,8 +514,6 @@ namespace Iodine.Modules.Extras
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-
-
 
             return new IodineTuple (new IodineObject[] {
                 new IodineInteger (Console.CursorTop),

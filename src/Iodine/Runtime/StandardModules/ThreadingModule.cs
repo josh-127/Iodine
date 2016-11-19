@@ -64,6 +64,7 @@ namespace Iodine.Runtime
                         vm.RaiseException (new IodineArgumentException (1));
                         return null;
                     }
+
                     IodineObject func = args [0];
                     VirtualMachine newVm = new VirtualMachine (vm.Context);
 
@@ -84,6 +85,12 @@ namespace Iodine.Runtime
                 {
                     IodineThread thread = self as IodineThread;
 
+                    if (thread == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
+
                     thread.Value.Start ();
 
                     return null;
@@ -96,6 +103,11 @@ namespace Iodine.Runtime
                 {
                     IodineThread thread = self as IodineThread;
 
+                    if (thread == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     thread.Value.Abort ();
 
                     return null;
@@ -107,6 +119,11 @@ namespace Iodine.Runtime
                 private static IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
                     IodineThread thread = self as IodineThread;
+
+                    if (thread == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
 
                     return IodineBool.Create (thread.Value.IsAlive);
                 }
@@ -157,6 +174,12 @@ namespace Iodine.Runtime
                 private static IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
                     IodineLock spinlock = self as IodineLock;
+
+                    if (spinlock == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     spinlock.Acquire ();
                     return null;
                 }
@@ -167,6 +190,12 @@ namespace Iodine.Runtime
                 private static IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
                     IodineLock spinlock = self as IodineLock;
+
+                    if (spinlock == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     spinlock.Release ();
                     return null;
                 } 
@@ -177,6 +206,12 @@ namespace Iodine.Runtime
                 private static IodineObject Locked (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
                     IodineLock spinlock = self as IodineLock;
+
+                    if (spinlock == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     return IodineBool.Create (spinlock.IsLocked ());
                 }
             }
@@ -222,11 +257,14 @@ namespace Iodine.Runtime
                     if (args.Length == 0) {
                         return new IodineSemaphore (1);
                     }
+
                     IodineInteger semaphore = args [0] as IodineInteger;
+
                     if (semaphore == null) {
                         vm.RaiseException (new IodineTypeException ("Integer"));
                         return null;
                     }
+
                     return new IodineSemaphore ((int)semaphore.Value);
                 }
             }

@@ -1547,17 +1547,16 @@ namespace Iodine.Compiler
                         Opcode.LoadGlobal,
                         CreateName (ident.Value)
                     );
+                    Context.CurrentMethod.EmitInstruction (ident.Location,
+                        Opcode.LoadLocal,
+                        Context.PatternTemporary
+                    );
+
+                    Context.CurrentMethod.EmitInstruction (
+                        ident.Location,
+                        Opcode.InstanceOf
+                    );
                 }
-
-                Context.CurrentMethod.EmitInstruction (ident.Location,
-                    Opcode.LoadLocal,
-                    Context.PatternTemporary
-                );
-
-                Context.CurrentMethod.EmitInstruction (
-                    ident.Location,
-                    Opcode.InstanceOf
-                );
                 return;
             
             }

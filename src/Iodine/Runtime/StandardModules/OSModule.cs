@@ -123,6 +123,11 @@ namespace Iodine.Runtime
                 {
                     IodineSubprocess proc = self as IodineSubprocess;
 
+                    if (proc == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     foreach (IodineObject obj in args) {
                         IodineString str = obj as IodineString;
 
@@ -145,6 +150,11 @@ namespace Iodine.Runtime
                 {
                     IodineSubprocess proc = self as IodineSubprocess;
 
+                    if (proc == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     foreach (IodineObject obj in args) {
                         IodineString str = obj as IodineString;
 
@@ -166,6 +176,11 @@ namespace Iodine.Runtime
                 {
                     IodineSubprocess proc = self as IodineSubprocess;
 
+                    if (proc == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     return new IodineString (proc.Value.StandardOutput.ReadLine ());
                 }
 
@@ -175,6 +190,11 @@ namespace Iodine.Runtime
                 private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
                     IodineSubprocess proc = self as IodineSubprocess;
+
+                    if (proc == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
 
                     return new IodineString (proc.Value.StandardOutput.ReadToEnd ());
                 }
@@ -187,6 +207,11 @@ namespace Iodine.Runtime
                 {
                     IodineSubprocess procObj = self as IodineSubprocess;
 
+                    if (procObj == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+                        
                     procObj.Value.Kill ();
 
                     return null;
@@ -196,6 +221,12 @@ namespace Iodine.Runtime
                 private IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
                     IodineSubprocess proc = self as IodineSubprocess;
+
+                    if (proc == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     return IodineBool.Create (proc.Value.HasExited);
                 }
 
@@ -203,6 +234,12 @@ namespace Iodine.Runtime
                 private IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
                     IodineSubprocess proc = self as IodineSubprocess;
+
+                    if (proc == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
                     return IodineBool.Create (proc.Value.StandardOutput.Peek () < 0);
                 }
             }
@@ -245,12 +282,14 @@ namespace Iodine.Runtime
         public OSModule ()
             : base ("os")
         {
-            SetAttribute ("USER_DIR", new IodineString (Environment.GetFolderPath (
-                Environment.SpecialFolder.UserProfile)));
+            SetAttribute ("USER_DIR", new IodineString (
+                Environment.GetFolderPath (Environment.SpecialFolder.UserProfile))
+            );
             SetAttribute ("ENV_SEP", new IodineString (Path.PathSeparator.ToString ()));
             SetAttribute ("SEEK_SET", new IodineInteger (IodineStream.SEEK_SET));
             SetAttribute ("SEEK_CUR", new IodineInteger (IodineStream.SEEK_CUR));
             SetAttribute ("SEEK_END", new IodineInteger (IodineStream.SEEK_END));
+
             SetAttribute ("getEnv", new BuiltinMethodCallback (GetEnv, this)); // DEPRECATED
             SetAttribute ("setEnv", new BuiltinMethodCallback (SetEnv, this)); // DEPRECATED
             SetAttribute ("putenv", new BuiltinMethodCallback (SetEnv, this));
@@ -349,7 +388,14 @@ namespace Iodine.Runtime
             if (args.Length < 2) {
                 vm.RaiseException (new IodineArgumentException (2));
             }
+
             IodineString str = args [0] as IodineString;
+
+            if (str == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+
             Environment.SetEnvironmentVariable (str.Value, args [1].ToString (), EnvironmentVariableTarget.User);
             return null;
         }
@@ -367,6 +413,7 @@ namespace Iodine.Runtime
             }
 
             IodineString str = args [0] as IodineString;
+
             string cmdArgs = "";
             bool wait = true;
 
