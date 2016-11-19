@@ -167,7 +167,7 @@ namespace Iodine
             } catch (UnhandledIodineExceptionException ex) {
                 HandleIodineException (ex);
             } catch (SyntaxException ex) {
-                DisplayErrors (ex.ErrorLog, options.FileName);
+                DisplayErrors (ex.ErrorLog);
                 Panic ("Compilation failed with {0} errors!", ex.ErrorLog.ErrorCount);
             } catch (ModuleNotFoundException ex) {
                 Console.Error.WriteLine (ex.ToString ());
@@ -232,7 +232,7 @@ namespace Iodine
             Environment.Exit (0);
         }
 
-        private static void DisplayErrors (ErrorSink errorLog, string filePath)
+        private static void DisplayErrors (ErrorSink errorLog)
         {
             Dictionary<string, string[]> lineDict = new Dictionary<string, string[]> ();
 
