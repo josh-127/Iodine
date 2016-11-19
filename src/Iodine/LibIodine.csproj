@@ -116,21 +116,6 @@
     <Compile Include="Runtime\StandardModules\SysModule.cs" />
     <Compile Include="Runtime\StandardModules\MathModule.cs" />
     <Compile Include="Runtime\StandardModules\StructModule.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineInteger.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineBool.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineString.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineList.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineTuple.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineNull.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineFloat.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineFormatter.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineStream.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineProperty.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineRange.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineStringBuilder.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineBytes.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineComplex.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineException.cs" />
     <Compile Include="Compiler\ErrorSink.cs" />
     <Compile Include="Runtime\BuiltinMethodCallback.cs" />
     <Compile Include="Runtime\ModuleNotFoundException.cs" />
@@ -147,9 +132,7 @@
     <Compile Include="Runtime\IodineGenerator.cs" />
     <Compile Include="Runtime\IodineEnum.cs" />
     <Compile Include="Runtime\IodineBoundMethod.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineStackFrameWrapper.cs" />
     <Compile Include="Util\LinkedStack.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineDictionary.cs" />
     <Compile Include="Compiler\SemanticAnalyser.cs" />
     <Compile Include="Compiler\Ast\ArgumentList.cs" />
     <Compile Include="Compiler\Ast\BinaryExpression.cs" />
@@ -209,16 +192,13 @@
     <Compile Include="Compiler\Token.cs" />
     <Compile Include="Compiler\UnaryOperation.cs" />
     <Compile Include="Compiler\Tokenizer.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineSlice.cs" />
     <Compile Include="Compiler\Ast\MemberExpression.cs" />
     <Compile Include="Compiler\Ast\MemberDefaultExpression.cs" />
     <Compile Include="Compiler\Ast\GeneratorExpression.cs" />
     <Compile Include="Runtime\IodineGeneratorExpr.cs" />
     <Compile Include="Compiler\Ast\AssignStatement.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineGlobals.cs" />
     <Compile Include="Util\AttributeDictionary.cs" />
     <Compile Include="Runtime\StackFrame.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineBigInt.cs" />
     <Compile Include="Compiler\Ast\BigIntegerExpression.cs" />
     <Compile Include="Interop\TypeMappings\BigIntegerTypeMapping.cs" />
     <Compile Include="Runtime\BuiltinDocString.cs" />
@@ -240,8 +220,28 @@
     <Compile Include="Runtime\StandardModules\InspectModule.cs" />
     <Compile Include="ExtraModules\CursesModule.cs" />
     <Compile Include="Compiler\SourceReader.cs" />
-    <Compile Include="Runtime\StandardTypes\IodineSomething.cs" />
     <Compile Include="Compiler\Ast\PatternExtractExpression.cs" />
+    <Compile Include="Runtime\IodineBigInt.cs" />
+    <Compile Include="Runtime\IodineBool.cs" />
+    <Compile Include="Runtime\IodineBytes.cs" />
+    <Compile Include="Runtime\IodineComplex.cs" />
+    <Compile Include="Runtime\IodineDictionary.cs" />
+    <Compile Include="Runtime\IodineException.cs" />
+    <Compile Include="Runtime\IodineFloat.cs" />
+    <Compile Include="Runtime\IodineFormatter.cs" />
+    <Compile Include="Runtime\IodineGlobals.cs" />
+    <Compile Include="Runtime\IodineInteger.cs" />
+    <Compile Include="Runtime\IodineList.cs" />
+    <Compile Include="Runtime\IodineNull.cs" />
+    <Compile Include="Runtime\IodineProperty.cs" />
+    <Compile Include="Runtime\IodineRange.cs" />
+    <Compile Include="Runtime\IodineSlice.cs" />
+    <Compile Include="Runtime\IodineSomething.cs" />
+    <Compile Include="Runtime\IodineStackFrameWrapper.cs" />
+    <Compile Include="Runtime\IodineStream.cs" />
+    <Compile Include="Runtime\IodineString.cs" />
+    <Compile Include="Runtime\IodineStringBuilder.cs" />
+    <Compile Include="Runtime\IodineTuple.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -252,7 +252,6 @@
     <Folder Include="Interop\TypeMappings\" />
     <Folder Include="Compiler\Emit\" />
     <Folder Include="Runtime\StandardModules\" />
-    <Folder Include="Runtime\StandardTypes\" />
     <Folder Include="Util\" />
     <Folder Include="Compiler\Ast\" />
   </ItemGroup>

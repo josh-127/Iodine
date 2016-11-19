@@ -302,6 +302,8 @@ namespace Iodine.Compiler
 
             bytecode.FinalizeMethod ();
 
+            OptimizeObject (bytecode);
+
             MethodFlags flags = new MethodFlags ();
 
             if (funcDecl.AcceptsKeywordArgs) {
