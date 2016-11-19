@@ -119,6 +119,33 @@ namespace Iodine.Runtime
         }
     }
 
+    public class IodineUnpackException : IodineException
+    {
+        public static new readonly IodineTypeDefinition TypeDefinition = new UnpackExceptionTypeDef ();
+
+        class UnpackExceptionTypeDef : IodineTypeDefinition
+        {
+            public UnpackExceptionTypeDef ()
+                : base ("UnpackException")
+            {
+            }
+
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            {
+                if (args.Length <= 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                }
+                return new IodineTypeException (args [0].ToString ());
+            }
+        }
+
+        public IodineUnpackException (int expectedCount)
+            : base (TypeDefinition, "Could not unpack tuple, expected {0} elements!", expectedCount)
+        {
+            Base = new IodineException ();
+        }
+    }
+
     public class IodineModuleNotFoundException : IodineException
     {
         public static new readonly IodineTypeDefinition TypeDefinition = new ModuleNotFoundExceptionTypeDef ();

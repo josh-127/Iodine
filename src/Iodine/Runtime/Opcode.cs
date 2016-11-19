@@ -97,7 +97,10 @@ namespace Iodine.Runtime
         BuildContract = 0x3B,
         BuildMixin = 0x3C,
         BuildTrait = 0x3D,
-        MatchPattern = 0x3E
+        MatchPattern = 0x3E,
+        Unwrap = 0x3F,
+        Unpack = 0x40,
+        TestUnwrap = 0x41
     }
 }
 

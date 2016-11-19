@@ -198,6 +198,59 @@ namespace Iodine.Compiler
             list.VisitChildren (this);
         }
 
+        public override void Accept (PatternExpression expression)
+        {
+            expression.VisitChildren (this);
+        }
+
+        public override void Accept (TryExceptStatement tryCatch)
+        {
+            tryCatch.VisitChildren (this);
+        }
+
+        public override void Accept (CaseExpression caseExpr)
+        {
+            caseExpr.VisitChildren (this);
+        }
+
+        public override void Accept (WithStatement with)
+        {
+            with.VisitChildren (this);
+        }
+
+        public override void Accept (PatternExtractExpression patternExtract)
+        {
+            patternExtract.Target.Visit (this);
+
+            foreach (string capture in patternExtract.Captures) {
+                symbolTable.AddSymbol (capture);
+            }
+        }
+
+        public override void Accept (CompilationUnit ast)
+        {
+            ast.VisitChildren (this);
+        }
+
+        public override void Accept (DecoratedFunction funcDecl)
+        {
+            funcDecl.VisitChildren (this);
+        }
+
+        public override void Accept (ExtendStatement exten)
+        {
+            exten.VisitChildren (this);
+        }
+
+        public override void Accept (WhenStatement caseStmt)
+        {
+            caseStmt.VisitChildren (this);
+        }
+
+        public override void Accept (LambdaExpression lambda)
+        {
+            lambda.VisitChildren (this);
+        }
     }
 }
 

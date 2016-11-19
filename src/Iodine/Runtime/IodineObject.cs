@@ -224,6 +224,17 @@ namespace Iodine.Runtime
             return ToString (vm);
         }
 
+        /// <summary>
+        /// Unwraps an enscapulated value, used for pattern matching
+        /// </summary>
+        /// <param name="vm">Vm.</param>
+        public virtual IodineObject Unwrap (VirtualMachine vm)
+        {
+            if (Attributes.ContainsKey ("__unwrap__")) {
+                return Attributes ["__unwrap__"].Invoke (vm, new IodineObject[] { });
+            }
+            return this;
+        }
 
         /// <summary>
         /// Compares this instance with another iodine object.
@@ -240,7 +251,6 @@ namespace Iodine.Runtime
 
         public virtual IodineObject Slice (VirtualMachine vm, IodineSlice slice)
         {
-
             if (Attributes.ContainsKey ("__getitem__")) {
                 return Attributes ["__getitem__"].Invoke (vm, new IodineObject[] { slice });
             } else {

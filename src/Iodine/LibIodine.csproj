@@ -241,6 +241,7 @@
     <Compile Include="ExtraModules\CursesModule.cs" />
     <Compile Include="Compiler\SourceReader.cs" />
     <Compile Include="Runtime\StandardTypes\IodineSomething.cs" />
+    <Compile Include="Compiler\Ast\PatternExtractExpression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

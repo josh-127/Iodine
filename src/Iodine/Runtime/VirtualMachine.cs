@@ -785,6 +785,44 @@ namespace Iodine.Runtime
 
                     break;
                 }
+            case Opcode.Unwrap:
+                {
+                    IodineObject container = Pop ();
+
+                    IodineObject value = container.Unwrap (this);
+
+                    if (instruction.Argument > 0) {
+                        IodineInteger len = value.Len (this) as IodineInteger;
+
+                        if (len == null || len.Value != instruction.Argument) {
+                            Push (IodineBool.False);
+                            break;
+                        }
+                    }
+
+                    Push (value);
+                    Push (IodineBool.True);
+
+                    break;
+                }
+            case Opcode.Unpack:
+                {
+                    IodineTuple tuple = Pop () as IodineTuple;
+
+                    if (tuple == null) {
+                        RaiseException (new IodineTypeException ("Tuple"));
+                        break;
+                    }
+
+                    if (tuple.Objects.Length != instruction.Argument) {
+                        RaiseException (new IodineUnpackException (instruction.Argument));
+                        break;
+                    }
+                    for (int i = tuple.Objects.Length - 1; i >= 0; i--) {
+                        Push (tuple.Objects [i]);
+                    }
+                    break;
+                }
             case Opcode.GetIter:
                 {
                     Push (Pop ().GetIterator (this));

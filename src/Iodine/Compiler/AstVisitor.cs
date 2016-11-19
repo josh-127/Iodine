@@ -258,6 +258,10 @@ namespace Iodine.Compiler
         {
         }
 
+        public virtual void Accept (PatternExtractExpression extractExpression)
+        {
+        }
+
         public virtual void Accept (ListCompExpression list)
         {
         }

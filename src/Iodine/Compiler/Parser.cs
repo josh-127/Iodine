@@ -1567,16 +1567,39 @@ namespace Iodine.Compiler
 
         private AstNode ParsePatternAnd ()
         {
-            AstNode expr = ParsePatternTerm ();
+            AstNode expr = ParsePatternExtractor ();
             while (Match (TokenClass.Operator, "&")) {
                 Accept (TokenClass.Operator);
                 expr = new PatternExpression (Location,
                     BinaryOperation.And,
                     expr,
-                    ParsePatternTerm ()
+                    ParsePatternExtractor ()
                 );
             }
             return expr;
+        }
+
+        private AstNode ParsePatternExtractor ()
+        {
+            AstNode ret = ParsePatternTerm ();
+
+            if (Accept (TokenClass.OpenParan)) {
+                ret = new PatternExtractExpression (Location, ret);
+
+                while (!Match (TokenClass.CloseParan)) {
+                    Token capture = Expect (TokenClass.Identifier);
+
+                    ((PatternExtractExpression)ret).Captures.Add (capture.Value);
+
+                    if (!Match (TokenClass.CloseParan)) {
+                        Expect (TokenClass.Comma);
+                    }
+                }
+
+                Expect (TokenClass.CloseParan);
+            }
+
+            return ret;
         }
 
         private AstNode ParsePatternTerm ()

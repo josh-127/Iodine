@@ -21,7 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>-e "Null is Something"</Commandlineparameters>
+    <Commandlineparameters>-e "match 3 { case Int (x) =&gt; print (x) }"</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>
