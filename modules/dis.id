@@ -4,8 +4,7 @@
  * @author GruntTheDivine
  */
 
-use inspect;
-
+use inspect
 
 _instructions = [
     "NOP",
@@ -57,7 +56,21 @@ _instructions = [
     "SWITCH_LOOKUP",
     "NULL_COALESCE",
     "BEGIN_WITH",
-    "END_WITH"
+    "END_WITH",
+    "SLICE",
+    "BUILD_GENERATOR_EXPR",
+    "CAST_LOCAL",
+    "INCLUDE_MIXIN",
+    "APPLY_MIXIN",
+    "BUILD_FUNCTION",
+    "BUILD_CLASS",
+    "BUILD_ENUM",
+    "BUILD_CONTRACT",
+    "BUILD_MIXIN",
+    "BUILD_TRAIT",
+    "MATCH_PATTERN",
+    "UNWRAP",
+    "UNPACK"
 ];
 
 _binopLookup = [
@@ -100,7 +113,7 @@ func _getMnemonic (opcode, argument) {
  */
 func disassemble (obj) {
 
-    bytecode = reflection.getBytecode (obj);
+    bytecode = inspect.getbytecode (obj);
 
     lastLine = -1;
     
@@ -116,8 +129,8 @@ func disassemble (obj) {
         buffer.append (_getMnemonic (ins.opcode, ins.immediate).ljust (30));
         
         buffer.append (ins.immediate);
-        if (ins.immediateRef isnot Null) {
-            buffer.append (" (#{Str (ins.immediateRef)})");
+        if (ins.immediateref isnot Null) {
+            buffer.append (" (#{Str (ins.immediateref)})");
         }
         print (buffer);
     }
