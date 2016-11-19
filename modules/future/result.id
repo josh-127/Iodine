@@ -1,0 +1,32 @@
+
+class Result {
+
+    func iserror (self) {
+        return self is Error
+    }
+
+    func isok (self) {
+        return self is Ok
+    }
+
+}
+
+class Ok extends Result {
+    func Ok (self, value) {
+        self._value = value
+    }
+
+    func __unwrap__ (self) {
+        return self._value
+    }
+}
+
+class Error extends Result {
+    func Error (self, value) {
+        self._value = value
+    }
+
+    func __unwrap__ (self) {
+        return self._value
+    }
+}
