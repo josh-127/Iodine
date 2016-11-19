@@ -107,7 +107,7 @@ namespace Iodine
                     if (args [i].StartsWith ("-")) {
                         Console.Error.WriteLine ("Unknown option '{0}'", args [i]);
                     } else {
-                        ret.FileName = args [i++];
+                        ret.FileName = args [i];
 
                         if (ret.InterpreterAction == InterpreterAction.Repl) {
                             ret.InterpreterAction = InterpreterAction.EvaluateFile;

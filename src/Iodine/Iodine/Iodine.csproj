@@ -21,7 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
-    <Commandlineparameters>-e "match 3 { case Int (x) =&gt; print (x) }"</Commandlineparameters>
+    <Commandlineparameters>/home/grunt/IodineLang/Iodine/examples/helloworld.id Hello world</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <Optimize>true</Optimize>

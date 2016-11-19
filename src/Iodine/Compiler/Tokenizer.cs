@@ -214,6 +214,8 @@ namespace Iodine.Compiler
                     null,
                     out valBig
                 );
+
+                val = valBig.ToString ();
             } else {
                 long val64;
                 fitsInInteger = long.TryParse (
@@ -222,11 +224,14 @@ namespace Iodine.Compiler
                     null,
                     out val64
                 );
+
+                val = val64.ToString ();
             }
 
             if (!fitsInInteger) {
                 errorLog.Add (Errors.IntegerOverBounds, source.Location);
             }
+
             TokenClass tokenClass = isBigInt ?
                 TokenClass.BigIntLiteral :
                 TokenClass.IntLiteral;
