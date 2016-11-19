@@ -9,6 +9,32 @@ class Result {
         return self is Ok
     }
 
+    func and_then (self, p) {
+        if (self.isok ()) {
+            res = p (self.unwrap ())
+            return match res {
+                case Result => p
+                case Something => self
+                case Null => self
+            }
+        }
+        return self
+    }
+
+    func or_else (self, p) {
+        if (!self.isok ()) {
+            return match p (self.unwrap ()) {
+                case Result => p
+                case Something => self
+                case Null => self
+            }
+        }
+        return self
+    }
+
+    func unwrap (self) {
+        return self.__unwrap__ ()
+    }
 }
 
 class Ok extends Result {
@@ -28,5 +54,14 @@ class Error extends Result {
 
     func __unwrap__ (self) {
         return self._value
+    }
+}
+
+
+func dotry (code, *args) {
+    try {
+        return Ok (code (*args))
+    } except (ex) {
+        return Error (ex)
     }
 }
