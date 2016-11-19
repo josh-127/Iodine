@@ -234,10 +234,17 @@ namespace Iodine
 
         private static void DisplayErrors (ErrorSink errorLog, string filePath)
         {
-            string[] lines = File.ReadAllLines (filePath);
+            Dictionary<string, string[]> lineDict = new Dictionary<string, string[]> ();
 
             foreach (Error err in errorLog) {
                 SourceLocation loc = err.Location;
+
+                if (!lineDict.ContainsKey (err.Location.File)) {
+                    lineDict [err.Location.File] = File.ReadAllLines (err.Location.File);
+                }
+
+                string[] lines = lineDict [err.Location.File];
+
                 Console.Error.WriteLine ("{0} ({1}:{2}) error ID{3:d4}: {4}",
                     Path.GetFileName (loc.File),
                     loc.Line,
