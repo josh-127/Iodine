@@ -18,7 +18,7 @@ func __keyName (self, key) {
         match (c) {
             case '-' when !strip => accum.append ('_')
             case '-' => null
-            case _ {
+            case Something {
                 strip = false;
                 accum.append (c);
             }
@@ -99,7 +99,7 @@ class ArgumentParser {
         realdest = 0
 
         # Iterate through the argument strings
-        for (i = 0; i < argcount; i += 1) {
+        for (i in 0 .. argcount) {
             key = args [i]
 
             # Continue if the current string is not an argument
