@@ -115,7 +115,7 @@ namespace Iodine.Compiler
                     context.InteractiveLocals [kv.Key] = kv.Value;
                 }
                 module.Attributes = context.InteractiveLocals;
-            } else {
+            } else if (context.ShouldCache) {
                 CacheModule (module);
             }
 

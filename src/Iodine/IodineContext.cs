@@ -87,6 +87,16 @@ namespace Iodine.Compiler
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> should cache 
+        /// bytecode from evaluated iodine files
+        /// </summary>
+        /// <value><c>true</c> if should cache; otherwise, <c>false</c>.</value>
+        public bool ShouldCache {
+            set;
+            get;
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="Iodine.Compiler.IodineContext"/> is being ran with
         /// a debugger.
         /// </summary>
@@ -140,7 +150,7 @@ namespace Iodine.Compiler
             WarningFilter = WarningType.DeprecationWarning | WarningType.SyntaxWarning;
             ShouldOptimize = true;
             AllowBuiltins = true;
-
+            ShouldCache = true;
         }
 
         public IodineContext (IodineConfiguration config)
