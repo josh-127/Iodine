@@ -545,6 +545,7 @@ func run_tests (test) {
                 expect(list2[1]).to.be._true();
             });
         });
+        /*
         test.describe('pattern matching', lambda(test) {
             test.it('match 2 should yield 9', lambda() {
                 x = 2;
@@ -564,5 +565,6 @@ func run_tests (test) {
                 expect(result).to.equal(2);
             });
         });
+        */
     });
 }
