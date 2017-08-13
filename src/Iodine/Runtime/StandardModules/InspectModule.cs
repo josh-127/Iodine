@@ -235,8 +235,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (3));
                 return null;
             }
-            IodineObject o1 = args [0];
-            IodineString str = args [1] as IodineString;
+            var o1 = args [0];
+            var str = args [1] as IodineString;
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
                 return null;
@@ -256,8 +256,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-            IodineString pathStr = args [0] as IodineString;
-            IodineModule module = vm.Context.LoadModule (pathStr.Value);
+            var pathStr = args [0] as IodineString;
+            var module = vm.Context.LoadModule (pathStr.Value);
             module.Invoke (vm, new IodineObject[] { });
             return module;
         }
@@ -269,8 +269,8 @@ namespace Iodine.Runtime
         )]
         private IodineObject CompileModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
-            IodineString source = args [0] as IodineString;
-            SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
+            var source = args [0] as IodineString;
+            var unit = SourceUnit.CreateFromSource (source.Value);
             return unit.Compile (vm.Context);
         }
 
@@ -286,7 +286,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineMethod method = args [0] as IodineMethod;
+            var method = args [0] as IodineMethod;
 
             if (method == null && args [0] is IodineClosure) {
                 method = ((IodineClosure)args [0]).Target;
@@ -296,7 +296,7 @@ namespace Iodine.Runtime
                 method = ((IodineBoundMethod)args [0]).Method;
             }
 
-            IodineList ret = new IodineList (new IodineObject[] { });
+            var ret = new IodineList (new IodineObject[] { });
 
             foreach (Instruction ins in method.Bytecode.Instructions) {
                 ret.Add (new IodineInstruction (method, ins));
@@ -315,7 +315,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineMethod method = args [0] as IodineMethod;
+            var method = args [0] as IodineMethod;
 
             if (method == null && args [0] is IodineClosure) {
                 method = ((IodineClosure)args [0]).Target;
@@ -376,7 +376,8 @@ namespace Iodine.Runtime
 
             IodineObject method = args [0];
 
-            bool isMethod = method is IodineMethod || method is IodineBoundMethod;
+            bool isMethod = method is IodineMethod ||
+                            method is IodineBoundMethod;
 
             return IodineBool.Create (isMethod);
         }

@@ -118,8 +118,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return IodineNull.Instance;
             }
-            IodineString source = args [0] as IodineString;
-            SourceUnit unit = SourceUnit.CreateFromSource (source.Value);
+            var source = args [0] as IodineString;
+            var unit = SourceUnit.CreateFromSource (source.Value);
 
             try {
                 return unit.Compile (vm.Context);
@@ -140,7 +140,7 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineModule module = args [0] as IodineModule;
+            var module = args [0] as IodineModule;
 
             if (module == null) {
                 vm.RaiseException (new IodineTypeException ("Module"));
@@ -160,7 +160,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return IodineNull.Instance;
             }
-            IodineString source = args [0] as IodineString;
+            var source = args [0] as IodineString;
 
             try {
                 return vm.LoadModule (source.ToString ());
@@ -196,7 +196,7 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -204,7 +204,7 @@ namespace Iodine.Runtime
             }
 
             string name = path.Value;
-            string fullPath = Path.GetFullPath (name);
+            var fullPath = Path.GetFullPath (name);
 
             if (args.Length == 1) {
                 // use <module>
@@ -212,7 +212,7 @@ namespace Iodine.Runtime
                     IodineModule module = VirtualMachine.ModuleCache [fullPath];
                     vm.Top.StoreLocal (Path.GetFileNameWithoutExtension (fullPath), module);
                 } else {
-                    IodineModule module = vm.LoadModule (name);
+                    var module = vm.LoadModule (name);
                     vm.Top.StoreLocal (Path.GetFileNameWithoutExtension (fullPath), module);
 
                     VirtualMachine.ModuleCache [fullPath] = module;
@@ -223,7 +223,7 @@ namespace Iodine.Runtime
                 }
             } else {
                 // use <types> from <module>
-                IodineTuple names = args [1] as IodineTuple;
+                var names = args [1] as IodineTuple;
                 if (names == null) {
                     vm.RaiseException (new IodineTypeCastException ("Tuple"));
                     return IodineNull.Instance;
@@ -271,8 +271,8 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineDictionary hash = args [1] as IodineDictionary;
-            IodineContext context = new IodineContext ();
+            var hash = args [1] as IodineDictionary;
+            var context = new IodineContext ();
 
             context.Globals.Clear ();
 
@@ -281,7 +281,7 @@ namespace Iodine.Runtime
                 args [0].SetAttribute (key.ToString (), hash.Get (key));
             }
 
-            VirtualMachine newVm = new VirtualMachine (context);
+            var newVm = new VirtualMachine (context);
 
             try {
                 return args [0].Invoke (newVm, new IodineObject[]{ });
@@ -320,7 +320,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return IodineNull.Instance;
             }
-            IodineInteger ascii = args [0] as IodineInteger;
+            var ascii = args [0] as IodineInteger;
             return new IodineString (((char)(int)ascii.Value).ToString ());
         }
 
@@ -334,7 +334,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return IodineNull.Instance;
             }
-            IodineString str = args [0] as IodineString;
+            var str = args [0] as IodineString;
 
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -351,7 +351,7 @@ namespace Iodine.Runtime
         )]
         private IodineObject Hex (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
-            string[] lut = new string[] { 
+            var lut = new string[] { 
                 "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
                 "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
                 "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
@@ -376,10 +376,10 @@ namespace Iodine.Runtime
             }
 
 
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
 
             if (args [0] is IodineBytes) {
-                IodineBytes bytes = args [0] as IodineBytes;
+                var bytes = args [0] as IodineBytes;
 
                 foreach (byte b in bytes.Value) {
                     accum.Append (lut [b]);
@@ -389,7 +389,7 @@ namespace Iodine.Runtime
             }
 
             if (args [0] is IodineString) {
-                IodineString str = args [0] as IodineString;
+                var str = args [0] as IodineString;
 
                 foreach (byte b in str.Value) {
                     accum.Append (lut [b]);
@@ -398,7 +398,7 @@ namespace Iodine.Runtime
                 return new IodineString (accum.ToString ());
             }
 
-            IodineObject iterator = args [0].GetIterator (vm);
+            var iterator = args [0].GetIterator (vm);
 
 
             if (iterator != null) {
@@ -457,8 +457,9 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineString str = args [0] as IodineString;
+            var str = args [0] as IodineString;
             IodineDictionary map = null;
+
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
                 return IodineNull.Instance;
@@ -492,8 +493,9 @@ namespace Iodine.Runtime
                 }
             }
 
-            SourceUnit code = SourceUnit.CreateFromSource (source);
+            var code = SourceUnit.CreateFromSource (source);
             IodineModule module = null;
+
             try {
                 module = code.Compile (context);
             } catch (SyntaxException ex) {
@@ -529,7 +531,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return IodineNull.Instance;
             }
-            IodineTypeDefinition typedef = args [0] as IodineTypeDefinition;
+            var typedef = args [0] as IodineTypeDefinition;
             if (typedef == null) {
                 vm.RaiseException (new IodineTypeException ("TypeDef"));
                 return IodineNull.Instance;
@@ -607,15 +609,15 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineList list = new IodineList (new IodineObject[]{ });
-            IodineObject collection = args [0].GetIterator (vm);
+            var list = new IodineList (new IodineObject[]{ });
+            var collection = args [0].GetIterator (vm);
 
             collection.IterReset (vm);
 
             int counter = 0;
 
             while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
+                var o = collection.IterGetCurrent (vm);
                 list.Add (new IodineTuple (new IodineObject[] {
                     new IodineInteger (counter++),
                     o
@@ -638,13 +640,13 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineList list = new IodineList (new IodineObject[]{ });
-            IodineObject collection = args [0].GetIterator (vm);
+            var list = new IodineList (new IodineObject[]{ });
+            var collection = args [0].GetIterator (vm);
             IodineObject func = args [1];
             collection.IterReset (vm);
 
             while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
+                var o = collection.IterGetCurrent (vm);
                 if (func.Invoke (vm, new IodineObject[] { o }).IsTrue ()) {
                     list.Add (o);
                 }
@@ -665,13 +667,13 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineList list = new IodineList (new IodineObject[]{ });
-            IodineObject collection = args [0].GetIterator (vm);
-            IodineObject func = args [1];
+            var list = new IodineList (new IodineObject[]{ });
+            var collection = args [0].GetIterator (vm);
+            var func = args [1];
 
             collection.IterReset (vm);
             while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
+                var o = collection.IterGetCurrent (vm);
                 list.Add (func.Invoke (vm, new IodineObject[] { o }));
             }
             return list;
@@ -693,12 +695,12 @@ namespace Iodine.Runtime
             }
 
             IodineObject result = args.Length > 2 ? args [1] : null;
-            IodineObject collection = args [0].GetIterator (vm);
+            var collection = args [0].GetIterator (vm);
             IodineObject func = args.Length > 2 ? args [2] : args [1];
 
             collection.IterReset (vm);
             while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
+                var o = collection.IterGetCurrent (vm);
                 if (result == null)
                     result = o;
                 result = func.Invoke (vm, new IodineObject[] { result, o });
@@ -718,7 +720,7 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineList result = new IodineList (new IodineObject[0]);
+            var result = new IodineList (new IodineObject[0]);
             IodineObject[] iterators = new IodineObject[args.Length];
             for (int i = 0; i < args.Length; i++) {
                 iterators [i] = args [i].GetIterator (vm);
@@ -730,7 +732,7 @@ namespace Iodine.Runtime
                 for (int i = 0; i < iterators.Length; i++) {
                     if (!iterators [i].IterMoveNext (vm))
                         return result;
-                    IodineObject o = iterators [i].IterGetCurrent (vm);
+                    var o = iterators [i].IterGetCurrent (vm);
                     objs [i] = o;
                 }
                 result.Add (new IodineTuple (objs));
@@ -750,11 +752,11 @@ namespace Iodine.Runtime
             }
 
             IodineObject initial = args.Length > 1 ? args [1] : new IodineInteger (0);
-            IodineObject collection = args [0].GetIterator (vm);
+            var collection = args [0].GetIterator (vm);
 
             collection.IterReset (vm);
             while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
+                var o = collection.IterGetCurrent (vm);
                 initial = initial.Add (vm, o);
             }
             return initial;
@@ -773,19 +775,19 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
-            IodineObject collection = args [0].GetIterator (vm);
+            var collection = args [0].GetIterator (vm);
             IodineObject func = null;
 
             if (args.Length > 1) {
                 func = args [1];
             }
 
-            List<IodineObject> items = new List<IodineObject> ();
+            var items = new List<IodineObject> ();
 
             collection.IterReset (vm);
 
             while (collection.IterMoveNext (vm)) {
-                IodineObject item = collection.IterGetCurrent (vm);
+                var item = collection.IterGetCurrent (vm);
                 items.Add (item);
             }
 
@@ -794,7 +796,7 @@ namespace Iodine.Runtime
                     x = func.Invoke (vm, new IodineObject[] { x });
                     y = func.Invoke (vm, new IodineObject[] { y });
                 }
-                IodineInteger i = x.Compare (vm, y) as IodineInteger;
+                var i = x.Compare (vm, y) as IodineInteger;
                 return (int)i.Value;
             });
 
@@ -818,15 +820,15 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
             if (args.Length == 1) {
-                IodineInteger stepObj = args [0] as IodineInteger;
+                var stepObj = args [0] as IodineInteger;
                 if (stepObj == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
                     return IodineNull.Instance;
                 }
                 end = stepObj.Value;
             } else if (args.Length == 2) {
-                IodineInteger startObj = args [0] as IodineInteger;
-                IodineInteger endObj = args [1] as IodineInteger;
+                var startObj = args [0] as IodineInteger;
+                var endObj = args [1] as IodineInteger;
                 if (startObj == null || endObj == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
                     return IodineNull.Instance;
@@ -834,9 +836,10 @@ namespace Iodine.Runtime
                 start = startObj.Value;
                 end = endObj.Value;
             } else {
-                IodineInteger startObj = args [0] as IodineInteger;
-                IodineInteger endObj = args [1] as IodineInteger;
-                IodineInteger stepObj = args [2] as IodineInteger;
+                var startObj = args [0] as IodineInteger;
+                var endObj = args [1] as IodineInteger;
+                var stepObj = args [2] as IodineInteger;
+
                 if (startObj == null || endObj == null || stepObj == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
                     return IodineNull.Instance;
@@ -864,8 +867,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return IodineNull.Instance;
             }
-            IodineString filePath = args [0] as IodineString;
-            IodineString mode = args [1] as IodineString;
+            var filePath = args [0] as IodineString;
+            var mode = args [1] as IodineString;
 
             if (filePath == null || mode == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));

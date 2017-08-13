@@ -74,15 +74,15 @@ namespace Iodine.Compiler
                 return false;
             }
 
-            string name = binaryReader.ReadString ();
+            var name = binaryReader.ReadString ();
 
-            ModuleBuilder builder = new ModuleBuilder (name, fileName);
+            var builder = new ModuleBuilder (name, fileName);
 
             binaryReader.ReadByte ();
 
             ReadCodeObject (builder.Initializer);
 
-            int constantCount = binaryReader.ReadInt32 ();
+            var constantCount = binaryReader.ReadInt32 ();
 
             for (int i = 0; i < constantCount; i++) {
                 builder.DefineConstant (ReadConstant ());
@@ -94,11 +94,11 @@ namespace Iodine.Compiler
 
         private bool ReadHeader ()
         {
-            byte mag0 = binaryReader.ReadByte ();
-            byte mag1 = binaryReader.ReadByte ();
-            byte mag2 = binaryReader.ReadByte ();
-            byte mag3 = binaryReader.ReadByte ();
-            byte mag4 = binaryReader.ReadByte ();
+            var mag0 = binaryReader.ReadByte ();
+            var mag1 = binaryReader.ReadByte ();
+            var mag2 = binaryReader.ReadByte ();
+            var mag3 = binaryReader.ReadByte ();
+            var mag4 = binaryReader.ReadByte ();
 
             if (mag0 != MAGIC_0 ||
                 mag1 != MAGIC_1 ||
@@ -120,9 +120,9 @@ namespace Iodine.Compiler
                 return false;
             }
 
-            long timestamp = binaryReader.ReadInt64 ();
+            var timestamp = binaryReader.ReadInt64 ();
 
-            DateTime lastModified = File.GetLastWriteTime (fileName);
+            var lastModified = File.GetLastWriteTime (fileName);
 
             if (timestamp < GetUnixTime (lastModified)) {
                 return false;
@@ -230,7 +230,7 @@ namespace Iodine.Compiler
         private void WriteBigInt (IodineBigInt bigint)
         {
             binaryWriter.Write ((byte)DataType.BigIntObject);
-            byte[] bytes = bigint.Value.ToByteArray ();
+            var bytes = bigint.Value.ToByteArray ();
             binaryWriter.Write (bytes.Length);
             binaryWriter.Write (bytes);
         }
@@ -242,7 +242,7 @@ namespace Iodine.Compiler
 
         private IodineObject ReadConstant ()
         {
-            DataType type = (DataType)binaryReader.ReadByte ();
+            var type = (DataType)binaryReader.ReadByte ();
 
             switch (type) {
             case DataType.NameObject:
@@ -254,7 +254,7 @@ namespace Iodine.Compiler
             case DataType.FloatObject:
                 return ReadFloat ();
             case DataType.CodeObject:
-                CodeBuilder codeObj = new CodeBuilder ();
+                var codeObj = new CodeBuilder ();
                 return ReadCodeObject (codeObj);
             case DataType.BoolObject:
                 return ReadBool ();
@@ -268,7 +268,7 @@ namespace Iodine.Compiler
 
         private CodeBuilder ReadCodeObject (CodeBuilder codeObject)
         {
-            int instructionCount = binaryReader.ReadInt32 ();
+            var instructionCount = binaryReader.ReadInt32 ();
 
             for (int i = 0; i < instructionCount; i++) {
                 ReadInstruction (codeObject);
@@ -281,9 +281,9 @@ namespace Iodine.Compiler
 
         private void ReadInstruction (CodeBuilder codeObject)
         {
-            Opcode opcode = (Opcode)binaryReader.ReadByte ();
-            int argument = binaryReader.ReadInt32 ();
-            int line = binaryReader.ReadInt32 ();
+            var opcode = (Opcode)binaryReader.ReadByte ();
+            var argument = binaryReader.ReadInt32 ();
+            var line = binaryReader.ReadInt32 ();
 
             SourceLocation location = line == -1 
                 ? null
@@ -323,8 +323,8 @@ namespace Iodine.Compiler
 
         public IodineObject ReadBigInt ()
         {
-            int size = binaryReader.ReadInt32 ();
-            byte[] bytes = binaryReader.ReadBytes (size);
+            var size = binaryReader.ReadInt32 ();
+            var bytes = binaryReader.ReadBytes (size);
 
             return new IodineBigInt (new System.Numerics.BigInteger (bytes));
         }

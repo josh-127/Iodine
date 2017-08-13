@@ -126,7 +126,7 @@ namespace Iodine.Runtime
         /// <param name="name">Name.</param>
         public bool HasAttribute (string name)
         {
-            bool res = Attributes.ContainsKey (name);
+            var res = Attributes.ContainsKey (name);
             if (!res && Base != null)
                 return Base.HasAttribute (name);
             return res;
@@ -146,18 +146,18 @@ namespace Iodine.Runtime
         public void SetAttribute (string name, IodineObject value)
         {
             if (value is IodineMethod) {
-                IodineMethod method = (IodineMethod)value;
+                var method = (IodineMethod)value;
                 Attributes [name] = new IodineBoundMethod (this, method);
 
             } else if (value is BuiltinMethodCallback) {
-                BuiltinMethodCallback callback = (BuiltinMethodCallback)value;
+                var callback = (BuiltinMethodCallback)value;
                 callback.Self = this;
                 Attributes [name] = value;
             } else if (value is IodineBoundMethod) {
-                IodineBoundMethod wrapper = (IodineBoundMethod)value;
+                var wrapper = (IodineBoundMethod)value;
                 Attributes [name] = new IodineBoundMethod (this, wrapper.Method);
             } else if (value is IodineProperty) {
-                IodineProperty property = (IodineProperty)value;
+                var property = (IodineProperty)value;
                 Attributes [name] = new IodineProperty (property.Getter, property.Setter, this); 
             } else {
                 Attributes [name] = value;
@@ -167,6 +167,7 @@ namespace Iodine.Runtime
         public IodineObject GetAttribute (string name)
         {
             IodineObject ret;
+
             Attributes.TryGetValue (name, out ret);
 
             bool hasAttribute = Attributes.TryGetValue (name, out ret) ||
@@ -181,11 +182,16 @@ namespace Iodine.Runtime
 
         public virtual IodineObject GetAttribute (VirtualMachine vm, string name)
         {
-            if (Attributes.ContainsKey (name))
+            if (Attributes.ContainsKey (name)) {
                 return Attributes [name];
-            else if (Base != null && Base.HasAttribute (name))
+            }
+
+            if (Base != null && Base.HasAttribute (name)) {
                 return Base.GetAttribute (name);
+            }
+
             vm.RaiseException (new IodineAttributeNotFoundException (name));
+
             return null;
         }
 
@@ -253,10 +259,9 @@ namespace Iodine.Runtime
         {
             if (Attributes.ContainsKey ("__getitem__")) {
                 return Attributes ["__getitem__"].Invoke (vm, new IodineObject[] { slice });
-            } else {
-                return null;
             }
 
+            return null;
         }
 
         public virtual void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
@@ -757,7 +762,7 @@ namespace Iodine.Runtime
         {
             if (def is IodineTrait) {
 
-                IodineTrait trait = def as IodineTrait;
+                var trait = def as IodineTrait;
 
                 return trait.HasTrait (this);
             }

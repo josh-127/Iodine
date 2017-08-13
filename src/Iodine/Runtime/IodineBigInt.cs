@@ -52,12 +52,12 @@ namespace Iodine.Runtime
                 }
 
                 if (args [0] is IodineFloat) {
-                    IodineFloat fp = args [0] as IodineFloat;
+                    var fp = args [0] as IodineFloat;
                     return new IodineBigInt ((long)fp.Value);
                 }
 
                 if (args [0] is IodineInteger) {
-                    IodineInteger integer = args [0] as IodineInteger;
+                    var integer = args [0] as IodineInteger;
                     return new IodineBigInt (new BigInteger (integer.Value));
                 }
 

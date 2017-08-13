@@ -203,7 +203,7 @@ namespace Iodine.Runtime
         #endif
         internal StackFrame Duplicate (StackFrame top)
         {
-            AttributeDictionary oldLocals = new AttributeDictionary ();
+            var oldLocals = new AttributeDictionary ();
 
             foreach (KeyValuePair<string, IodineObject> kv in locals) {
                 oldLocals.Add (kv.Key, kv.Value);

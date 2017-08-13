@@ -41,9 +41,10 @@ namespace Iodine.Runtime
             private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
 
             private long iterIndex = 0;
-            private long min;
-            private long end;
-            private long step;
+
+            private readonly long min;
+            private readonly long end;
+            private readonly long step;
 
             public RangeIterator (long min, long max, long step)
                 : base (TypeDefinition)
@@ -80,7 +81,8 @@ namespace Iodine.Runtime
         public IodineRange (long min, long max, long step)
             : base (TypeDefinition)
         {
-            this.end = max;
+            end = max;
+
             this.step = step;
             this.min = min;
 

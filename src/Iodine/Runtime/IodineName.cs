@@ -53,7 +53,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineName name = obj as IodineName;
+            var name = obj as IodineName;
 
             if (name != null) {
                 return name.Value == Value;

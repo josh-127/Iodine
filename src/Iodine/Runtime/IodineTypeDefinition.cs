@@ -54,7 +54,7 @@ namespace Iodine.Runtime
                     return null;
                 }
 
-                IodineString name = args [0] as IodineString;
+                var name = args [0] as IodineString;
 
                 if (name == null) {
                     vm.RaiseException (new IodineTypeException ("Str"));
@@ -72,12 +72,12 @@ namespace Iodine.Runtime
                     }
                 }
 
-                IodineTypeDefinition clazz = new IodineTypeDefinition (name.Value);
+                var clazz = new IodineTypeDefinition (name.Value);
 
                 clazz.Base = baseType;
 
                 if (args.Length > 2) {
-                    IodineDictionary map = args [2] as IodineDictionary;
+                    var map = args [2] as IodineDictionary;
 
                     foreach (IodineObject key in map.Keys) {
                         clazz.SetAttribute (key.ToString (), map.Get (key));
@@ -124,7 +124,7 @@ namespace Iodine.Runtime
 
         public virtual void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
-            IodineObject obj = Invoke (vm, arguments);
+            var obj = Invoke (vm, arguments);
             foreach (string attr in Attributes.Keys) {
                 if (!self.HasAttribute (attr)) {
                     self.SetAttribute (attr, Attributes [attr]);

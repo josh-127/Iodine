@@ -68,8 +68,8 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString src = args [0] as IodineString;
-            IodineString dest = args [1] as IodineString;
+            var src = args [0] as IodineString;
+            var dest = args [1] as IodineString;
 
             if (dest == null || src == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -98,8 +98,8 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString src = args [0] as IodineString;
-            IodineString dest = args [1] as IodineString;
+            var src = args [0] as IodineString;
+            var dest = args [1] as IodineString;
 
             if (dest == null || src == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -122,7 +122,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -143,7 +143,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -164,7 +164,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -185,7 +185,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -211,7 +211,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -237,7 +237,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -249,7 +249,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            List<IodineObject> lines = new List<IodineObject> ();
+            var lines = new List<IodineObject> ();
 
             foreach (string line in File.ReadAllLines (path.Value)) {
                 lines.Add (new IodineString (line));
@@ -306,8 +306,8 @@ namespace Iodine.Runtime
 
         private static bool CopyDir (string src, string dest, bool recurse)
         {
-            DirectoryInfo dir = new DirectoryInfo (src);
-            DirectoryInfo[] dirs = dir.GetDirectories ();
+            var dir = new DirectoryInfo (src);
+            var dirs = dir.GetDirectories ();
 
             if (!dir.Exists) {
                 return false;
@@ -317,15 +317,15 @@ namespace Iodine.Runtime
                 Directory.CreateDirectory (dest);
             }
 
-            FileInfo[] files = dir.GetFiles ();
+            var files = dir.GetFiles ();
             foreach (FileInfo file in files) {
-                string temppath = Path.Combine (dest, file.Name);
+                var temppath = Path.Combine (dest, file.Name);
                 file.CopyTo (temppath, false);
             }
 
             if (recurse) {
                 foreach (DirectoryInfo subdir in dirs) {
-                    string temppath = Path.Combine (dest, subdir.Name);
+                    var temppath = Path.Combine (dest, subdir.Name);
                     CopyDir (subdir.FullName, temppath, recurse);
                 }
             }

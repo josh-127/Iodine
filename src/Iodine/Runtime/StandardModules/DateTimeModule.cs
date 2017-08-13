@@ -51,7 +51,7 @@ namespace Iodine.Runtime
                 : base (TimeStampTypeDef)
             {
                 Value = val;
-                long unixEsposh = (long)(val.Subtract (new DateTime (1970, 1, 1))).TotalSeconds;
+                var unixEsposh = (long)(val.Subtract (new DateTime (1970, 1, 1))).TotalSeconds;
                 SetAttribute ("millisecond", new IodineInteger (val.Millisecond));
                 SetAttribute ("second", new IodineInteger (val.Second));
                 SetAttribute ("minute", new IodineInteger (val.Minute));
@@ -70,7 +70,7 @@ namespace Iodine.Runtime
 
             public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
             {
-                IodineTimeStamp op = right as IodineTimeStamp;
+                var op = right as IodineTimeStamp;
                 if (op == null) {
                     vm.RaiseException (new IodineTypeException (
                         "Right hand value expected to be of type TimeStamp"));
@@ -81,7 +81,7 @@ namespace Iodine.Runtime
 
             public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
             {
-                IodineTimeStamp op = right as IodineTimeStamp;
+                var op = right as IodineTimeStamp;
                 if (op == null) {
                     vm.RaiseException (new IodineTypeException (
                         "Right hand value expected to be of type TimeStamp"));
@@ -92,7 +92,7 @@ namespace Iodine.Runtime
 
             public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
             {
-                IodineTimeStamp op = right as IodineTimeStamp;
+                var op = right as IodineTimeStamp;
                 if (op == null) {
                     vm.RaiseException (new IodineTypeException (
                         "Right hand value expected to be of type TimeStamp"));
@@ -103,7 +103,7 @@ namespace Iodine.Runtime
 
             public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
             {
-                IodineTimeStamp op = right as IodineTimeStamp;
+                var op = right as IodineTimeStamp;
                 if (op == null) {
                     vm.RaiseException (new IodineTypeException (
                         "Right hand value expected to be of type TimeStamp"));
@@ -114,7 +114,7 @@ namespace Iodine.Runtime
 
             public override IodineObject Equals (VirtualMachine vm, IodineObject right)
             {
-                IodineTimeStamp op = right as IodineTimeStamp;
+                var op = right as IodineTimeStamp;
                 if (op == null) {
                     vm.RaiseException (new IodineTypeException (
                         "Right hand value expected to be of type TimeStamp"));

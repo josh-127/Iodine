@@ -43,7 +43,7 @@ namespace Iodine.Runtime
 
         public static readonly IodineTypeDefinition TypeDefinition = new IodineFileTypeDef ();
 
-        class IodineFileTypeDef : IodineTypeDefinition
+        sealed class IodineFileTypeDef : IodineTypeDefinition
         {
             public IodineFileTypeDef () 
                 : base ("File")
@@ -69,7 +69,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (thisObj.Closed) { 
                     vm.RaiseException (new IodineIOException ("Stream has been closed!"));
                     return null;
@@ -92,7 +92,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (thisObj.Closed) { 
                     vm.RaiseException (new IodineIOException ("Stream has been closed!"));
                     return null;
@@ -122,7 +122,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Tell (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (thisObj.Closed) { 
                     vm.RaiseException ("Stream has been closed!");
                     return null;
@@ -136,7 +136,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Seek (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (args.Length == 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -152,7 +152,7 @@ namespace Iodine.Runtime
                     return null;
                 }
 
-                IodineInteger offsetObj = args [0] as IodineInteger;
+                var offsetObj = args [0] as IodineInteger;
                 int whence = SEEK_SET;
                 long offset = offsetObj.Value;
 
@@ -162,7 +162,7 @@ namespace Iodine.Runtime
                 }
 
                 if (args.Length > 1) {
-                    IodineInteger whenceObj = args [1] as IodineInteger;
+                    var whenceObj = args [1] as IodineInteger;
 
                     if (whenceObj == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
@@ -194,7 +194,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Close (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (thisObj.Closed) { 
                     vm.RaiseException ("Stream has been closed!");
                     return null;
@@ -208,7 +208,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Flush (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (thisObj.Closed) { 
                     vm.RaiseException ("Stream has been closed!");
                     return null;
@@ -222,14 +222,14 @@ namespace Iodine.Runtime
             )]
             private IodineObject ReadAll (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
 
                 if (thisObj.Closed) { 
                     vm.RaiseException ("Stream has been closed!");
                     return null;
                 }
 
-                List<byte> bytes = new List<byte> ();
+                var bytes = new List<byte> ();
                 int ch = 0;
                 while ((ch = thisObj.File.ReadByte ()) != -1) {
                     bytes.Add ((byte)ch);
@@ -246,7 +246,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] argss)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (thisObj.Closed) { 
                     vm.RaiseException ("Stream has been closed!");
                     return null;
@@ -266,7 +266,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStream thisObj = self as IodineStream;
+                var thisObj = self as IodineStream;
                 if (thisObj.Closed) { 
                     vm.RaiseException ("Stream has been closed!");
                     return null;
@@ -278,7 +278,7 @@ namespace Iodine.Runtime
                 }
 
                 if (args.Length > 0) {
-                    IodineInteger intv = args [0] as IodineInteger;
+                    var intv = args [0] as IodineInteger;
 
                     if (intv == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
@@ -332,10 +332,10 @@ namespace Iodine.Runtime
             if (obj is IodineString) {
                 Write (obj.ToString ());
             } else if (obj is IodineBytes) {
-                IodineBytes arr = obj as IodineBytes;
+                var arr = obj as IodineBytes;
                 File.Write (arr.Value, 0, arr.Value.Length);
             } else if (obj is IodineInteger) {
-                IodineInteger intVal = obj as IodineInteger;
+                var intVal = obj as IodineInteger;
                 Write ((byte)intVal.Value);
             } else {
                 return false;
@@ -358,7 +358,7 @@ namespace Iodine.Runtime
 
         public IodineObject ReadLine ()
         {
-            List<byte> bytes = new List<byte> ();
+            var bytes = new List<byte> ();
             int ch = 0;
             while ((ch = File.ReadByte ()) != '\n' && ch != -1) {
                 bytes.Add ((byte)ch);

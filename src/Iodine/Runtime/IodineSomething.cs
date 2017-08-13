@@ -36,6 +36,7 @@ namespace Iodine.Runtime
         public class SomethingType : IodineTypeDefinition
         {
             public static readonly SomethingType Instance = new SomethingType ();
+
             private SomethingType () 
                 : base ("Something")
             {

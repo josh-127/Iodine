@@ -56,8 +56,8 @@ namespace Iodine.Runtime
 
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            StackFrame newFrame = frame.Duplicate (vm.Top);
-            IodineObject initialValue = vm.InvokeMethod (Target, newFrame, frame.Self, arguments);
+            var newFrame = frame.Duplicate (vm.Top);
+            var initialValue = vm.InvokeMethod (Target, newFrame, frame.Self, arguments);
 
             if (newFrame.Yielded) {
                 return new IodineGenerator (newFrame, Target, arguments, initialValue);

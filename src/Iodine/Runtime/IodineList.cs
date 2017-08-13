@@ -40,7 +40,7 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition TypeDefinition = new ListTypeDef ();
 
-        class ListTypeDef : IodineTypeDefinition
+        sealed class ListTypeDef : IodineTypeDefinition
         {
             public ListTypeDef ()
                 : base ("List")
@@ -72,13 +72,13 @@ namespace Iodine.Runtime
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
             {
-                IodineList list = new IodineList (new IodineObject[0]);
+                var list = new IodineList (new IodineObject[0]);
                 if (args.Length > 0) {
                     foreach (IodineObject arg in args) {
-                        IodineObject collection = arg.GetIterator (vm);
+                        var collection = arg.GetIterator (vm);
                         collection.IterReset (vm);
                         while (collection.IterMoveNext (vm)) {
-                            IodineObject o = collection.IterGetCurrent (vm);
+                            var o = collection.IterGetCurrent (vm);
                             list.Add (o);
                         }
                     }
@@ -92,7 +92,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -109,15 +109,15 @@ namespace Iodine.Runtime
             )]
             private IodineObject AddRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
                 }
-                IodineObject collection = arguments [0].GetIterator (vm);
+                var collection = arguments [0].GetIterator (vm);
                 collection.IterReset (vm);
                 while (collection.IterMoveNext (vm)) {
-                    IodineObject o = collection.IterGetCurrent (vm);
+                    var o = collection.IterGetCurrent (vm);
                     thisObj.Add (o);
                 }
                 return thisObj;
@@ -129,7 +129,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -144,7 +144,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Discard (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -165,7 +165,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -185,12 +185,12 @@ namespace Iodine.Runtime
             )]
             private IodineObject RemoveAt (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
                 }
-                IodineInteger index = arguments [0] as IodineInteger;
+                var index = arguments [0] as IodineInteger;
                 if (index != null) {
                     if (index.Value < thisObj.Objects.Count) {
                         thisObj.Objects.RemoveAt ((int)index.Value);
@@ -210,7 +210,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -226,7 +226,7 @@ namespace Iodine.Runtime
 
             private IodineObject Splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -235,7 +235,7 @@ namespace Iodine.Runtime
                 int start = 0;
                 int end = thisObj.Objects.Count;
 
-                IodineInteger startInt = arguments [0] as IodineInteger;
+                var startInt = arguments [0] as IodineInteger;
                 if (startInt == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
                     return null;
@@ -243,7 +243,7 @@ namespace Iodine.Runtime
                 start = (int)startInt.Value;
 
                 if (arguments.Length >= 2) {
-                    IodineInteger endInt = arguments [1] as IodineInteger;
+                    var endInt = arguments [1] as IodineInteger;
                     if (endInt == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return null;
@@ -256,7 +256,7 @@ namespace Iodine.Runtime
                 if (end < 0)
                     end = thisObj.Objects.Count - end;
 
-                IodineList retList = new IodineList (new IodineObject[]{ });
+                var retList = new IodineList (new IodineObject[]{ });
 
                 for (int i = start; i < end; i++) {
                     if (i < 0 || i > thisObj.Objects.Count) {
@@ -274,7 +274,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 thisObj.Objects.Clear ();
                 return thisObj;
             }
@@ -286,7 +286,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Index (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (args.Length == 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -308,7 +308,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (args.Length == 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -331,7 +331,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
                 if (args.Length == 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -352,7 +352,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineList thisObj = self as IodineList;
+                var thisObj = self as IodineList;
 
                 if (args.Length == 0) {
                     vm.RaiseException (new IodineArgumentException (1));
@@ -422,7 +422,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineList listVal = obj as IodineList;
+            var listVal = obj as IodineList;
 
             if (listVal != null && listVal.Objects.Count == Objects.Count) {
                 for (int i = 0; i < Objects.Count; i++) {
@@ -456,7 +456,7 @@ namespace Iodine.Runtime
             int actualStart = start >= 0 ? start : Objects.Count - (start + 2);
             int actualEnd = end >= 0 ? end : Objects.Count - (end + 2);
 
-            List<IodineObject> accum = new List<IodineObject> ();
+            var accum = new List<IodineObject> ();
 
             if (stride >= 0) {
 
@@ -491,38 +491,43 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            IodineInteger index = key as IodineInteger;
+            var index = key as IodineInteger;
+
             if (index == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return null;
             }
 
-            if (index.Value < Objects.Count)
+            if (index.Value < Objects.Count) {
                 return Objects [(int)index.Value];
+            }
+
             vm.RaiseException (new IodineIndexException ());
             return null;
         }
 
         public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
         {
-            IodineInteger index = key as IodineInteger;
+            var index = key as IodineInteger;
+
             if (index == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return;
             }
 
-            if (index.Value < Objects.Count)
-                this.Objects [(int)index.Value] = value;
-            else
+            if (index.Value < Objects.Count) {
+                Objects [(int)index.Value] = value;
+            } else {
                 vm.RaiseException (new IodineIndexException ());
+            }
         }
 
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
-            IodineList list = new IodineList (Objects.ToArray ());
+            var list = new IodineList (Objects.ToArray ());
             right.IterReset (vm);
             while (right.IterMoveNext (vm)) {
-                IodineObject o = right.IterGetCurrent (vm);
+                var o = right.IterGetCurrent (vm);
                 list.Add (o);
             }
             return list;
@@ -540,7 +545,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Represent (VirtualMachine vm)
         {
-            string repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
+            var repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
             return new IodineString (String.Format ("[{0}]", repr));
         }
 

@@ -44,7 +44,7 @@ namespace Iodine.Runtime
             public IodineRegex (Regex val)
                 : base (RegexTypeDef)
             {
-                this.Value = val;
+                Value = val;
                 SetAttribute ("find", new BuiltinMethodCallback (Find, this));
                 SetAttribute ("ismatch", new BuiltinMethodCallback (IsMatch, this));
             }
@@ -59,7 +59,8 @@ namespace Iodine.Runtime
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
                 }
-                IodineString expr = args [0] as IodineString;
+
+                var expr = args [0] as IodineString;
 
                 if (expr == null) {
                     vm.RaiseException (new IodineTypeException ("Str"));
@@ -79,7 +80,8 @@ namespace Iodine.Runtime
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
                 }
-                IodineString expr = args [0] as IodineString;
+
+                var expr = args [0] as IodineString;
 
                 if (expr == null) {
                     vm.RaiseException (new IodineTypeException ("Str"));
@@ -99,8 +101,9 @@ namespace Iodine.Runtime
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
                 }
-                IodineString input = args [0] as IodineString;
-                IodineString val = args [1] as IodineString;
+
+                var input = args [0] as IodineString;
+                var val = args [1] as IodineString;
 
                 if (input == null || val == null) {
                     vm.RaiseException (new IodineTypeException ("Str"));
@@ -152,7 +155,7 @@ namespace Iodine.Runtime
 
             public override void IterReset (VirtualMachine vm)
             {
-                this.iterMatch = Value;
+                iterMatch = Value;
             }
 
             /**
@@ -183,7 +186,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-            IodineString expr = args [0] as IodineString;
+
+            var expr = args [0] as IodineString;
 
             if (expr == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -203,8 +207,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return null;
             }
-            IodineString data = args [0] as IodineString;
-            IodineString pattern = args [1] as IodineString;
+            var data = args [0] as IodineString;
+            var pattern = args [1] as IodineString;
 
             if (pattern == null || data == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -224,8 +228,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return null;
             }
-            IodineString data = args [0] as IodineString;
-            IodineString pattern = args [1] as IodineString;
+            var data = args [0] as IodineString;
+            var pattern = args [1] as IodineString;
 
             if (pattern == null || data == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));

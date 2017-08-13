@@ -71,7 +71,7 @@ namespace Iodine.Compiler.Ast
             get;
         }
 
-        public Function (SourceLocation location)
+        protected Function (SourceLocation location)
             : base (location)
         {
             Body = new StatementList (location);

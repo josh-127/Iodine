@@ -191,8 +191,8 @@ namespace Iodine.Runtime
              * may yield. If the method did not yield, we just return the original value
              * returned
              */
-            StackFrame frame = new StackFrame (this.Module, this, vm.Top.Arguments, vm.Top, null);
-            IodineObject initialValue = vm.InvokeMethod (this, frame, null, arguments);
+            var frame = new StackFrame (this.Module, this, vm.Top.Arguments, vm.Top, null);
+            var initialValue = vm.InvokeMethod (this, frame, null, arguments);
 
             if (frame.Yielded) {
                 return new IodineGenerator (frame, this, arguments, initialValue);

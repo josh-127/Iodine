@@ -345,7 +345,7 @@ namespace Iodine.Runtime
             int i = 0;
             foreach (Error error in errorLog.Errors) {
                 SourceLocation loc = error.Location;
-                string text = String.Format (
+                var text = String.Format (
                     "{0} ({1}:{2}) error: {3}",
                     Path.GetFileName (loc.File),
                     loc.Line, loc.Column, error.Text

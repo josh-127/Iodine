@@ -36,8 +36,9 @@ namespace Iodine.Compiler
     {
         public void PerformOptimization (CodeObject method)
         {
-            while (PerformMethodOptimization (method) > 0)
-                ;
+            while (PerformMethodOptimization (method) > 0) {
+                // Repeat until this condition is true
+            }
         }
 
         private int PerformMethodOptimization (CodeObject method)
@@ -46,12 +47,13 @@ namespace Iodine.Compiler
             Instruction[] oldInstructions = method.Instructions;
             Instruction[] newInstructions = new Instruction[method.Instructions.Length];
             int next = 0;
-            Instruction last = new Instruction ();
+
+            var lastIns = new Instruction ();
             for (int i = 0; i < method.Instructions.Length; i++) {
                 Instruction curr = oldInstructions [i];
                 if (i != 0 && curr.OperationCode == Opcode.Pop) {
-                    if (last.OperationCode == Opcode.LoadLocal || last.OperationCode == Opcode.LoadGlobal
-                        || last.OperationCode == Opcode.LoadNull) {
+                    if (lastIns.OperationCode == Opcode.LoadLocal || lastIns.OperationCode == Opcode.LoadGlobal
+                        || lastIns.OperationCode == Opcode.LoadNull) {
                         oldInstructions [i] = new Instruction (curr.Location, Opcode.Nop, 0);
                         oldInstructions [i - 1] = new Instruction (curr.Location, Opcode.Nop, 0);
                         removed++;
@@ -60,7 +62,7 @@ namespace Iodine.Compiler
                     oldInstructions [i] = new Instruction (curr.Location, Opcode.Nop, 0);
                     removed++;
                 }
-                last = curr;
+                lastIns = curr;
             }
             for (int i = 0; i < oldInstructions.Length; i++) {
                 Instruction curr = oldInstructions [i];

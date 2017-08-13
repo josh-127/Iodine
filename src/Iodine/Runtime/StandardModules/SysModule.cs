@@ -74,7 +74,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineInteger exitCode = args [0] as IodineInteger;
+            var exitCode = args [0] as IodineInteger;
 
             if (exitCode == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));
@@ -96,7 +96,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineInteger index = args [0] as IodineInteger;
+            var index = args [0] as IodineInteger;
 
             if (index == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));
@@ -129,8 +129,8 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineInteger warnType = args [0] as IodineInteger;
-            IodineString warnMsg = args [1] as IodineString;
+            var warnType = args [0] as IodineInteger;
+            var warnMsg = args [1] as IodineString;
 
             if (warnType == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));
@@ -143,6 +143,7 @@ namespace Iodine.Runtime
             }
 
             vm.Context.Warn ((WarningType)warnType.Value, warnMsg.ToString ());
+
             return null;
         }
 
@@ -168,7 +169,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineInteger value = args [0] as IodineInteger;
+            var value = args [0] as IodineInteger;
 
             if (value == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));

@@ -49,7 +49,7 @@ namespace Iodine.Runtime
             // Note: Having this much nesting really bothers me, but, I can't
             // really think of a better way to do this. Anonymous classes would
             // be a cool thing in C# for singletons
-            class ProcTypeDef : IodineTypeDefinition
+            sealed class ProcTypeDef : IodineTypeDefinition
             {
                 public ProcTypeDef ()
                     : base ("Process")
@@ -69,7 +69,7 @@ namespace Iodine.Runtime
                     IodineObject self,
                     IodineObject[] args)
                 {
-                    IodineProc procObj = self as IodineProc;
+                    var procObj = self as IodineProc;
 
                     procObj.Value.Kill ();
 
@@ -95,7 +95,7 @@ namespace Iodine.Runtime
         /// </summary>
         class IodineSubprocess : IodineObject
         {
-            class SubProcessTypeDef : IodineTypeDefinition
+            sealed class SubProcessTypeDef : IodineTypeDefinition
             {
                 public SubProcessTypeDef ()
                     : base ("Subprocess")
@@ -121,7 +121,7 @@ namespace Iodine.Runtime
                 )]
                 private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
-                    IodineSubprocess proc = self as IodineSubprocess;
+                    var proc = self as IodineSubprocess;
 
                     if (proc == null) {
                         vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
@@ -129,7 +129,7 @@ namespace Iodine.Runtime
                     }
 
                     foreach (IodineObject obj in args) {
-                        IodineString str = obj as IodineString;
+                        var str = obj as IodineString;
 
                         if (str == null) {
                             vm.RaiseException (new IodineTypeException ("Str"));
@@ -148,7 +148,7 @@ namespace Iodine.Runtime
                 )]
                 private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
-                    IodineSubprocess proc = self as IodineSubprocess;
+                    var proc = self as IodineSubprocess;
 
                     if (proc == null) {
                         vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
@@ -156,7 +156,7 @@ namespace Iodine.Runtime
                     }
 
                     foreach (IodineObject obj in args) {
-                        IodineString str = obj as IodineString;
+                        var str = obj as IodineString;
 
                         if (str == null) {
                             vm.RaiseException (new IodineTypeException ("Str"));
@@ -174,7 +174,7 @@ namespace Iodine.Runtime
                 )]
                 private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
-                    IodineSubprocess proc = self as IodineSubprocess;
+                    var proc = self as IodineSubprocess;
 
                     if (proc == null) {
                         vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
@@ -189,7 +189,7 @@ namespace Iodine.Runtime
                 )]
                 private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
-                    IodineSubprocess proc = self as IodineSubprocess;
+                    var proc = self as IodineSubprocess;
 
                     if (proc == null) {
                         vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
@@ -205,7 +205,7 @@ namespace Iodine.Runtime
                     IodineObject self,
                     IodineObject[] args)
                 {
-                    IodineSubprocess procObj = self as IodineSubprocess;
+                    var procObj = self as IodineSubprocess;
 
                     if (procObj == null) {
                         vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
@@ -220,7 +220,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString ("Returns true if the process is alive.")]
                 private IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
-                    IodineSubprocess proc = self as IodineSubprocess;
+                    var proc = self as IodineSubprocess;
 
                     if (proc == null) {
                         vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
@@ -233,7 +233,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString ("Returns true if there is no more data to be read from stdout.")]
                 private IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject[] args)
                 {
-                    IodineSubprocess proc = self as IodineSubprocess;
+                    var proc = self as IodineSubprocess;
 
                     if (proc == null) {
                         vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
@@ -312,7 +312,7 @@ namespace Iodine.Runtime
         [BuiltinDocString ("Returns a list of processes running on the machine.")]
         private IodineObject GetProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
-            IodineList list = new IodineList (new IodineObject[] { });
+            var list = new IodineList (new IodineObject[] { });
             foreach (Process proc in Process.GetProcesses ()) {
                 list.Add (new IodineProc (proc));
             }
@@ -342,7 +342,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString cwd = args [0] as IodineString;
+            var cwd = args [0] as IodineString;
 
             if (cwd == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -364,7 +364,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString str = args [0] as IodineString;
+            var str = args [0] as IodineString;
 
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -389,7 +389,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
             }
 
-            IodineString str = args [0] as IodineString;
+            var str = args [0] as IodineString;
 
             if (str == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -412,7 +412,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
             }
 
-            IodineString str = args [0] as IodineString;
+            var str = args [0] as IodineString;
 
             string cmdArgs = "";
             bool wait = true;
@@ -423,7 +423,7 @@ namespace Iodine.Runtime
             }
 
             if (args.Length >= 2) {
-                IodineString cmdArgsObj = args [1] as IodineString;
+                var cmdArgsObj = args [1] as IodineString;
                 if (cmdArgsObj == null) {
                     vm.RaiseException (new IodineTypeException ("Str"));
                     return null;
@@ -432,7 +432,7 @@ namespace Iodine.Runtime
             }
 
             if (args.Length >= 3) {
-                IodineBool waitObj = args [2] as IodineBool;
+                var waitObj = args [2] as IodineBool;
                 if (waitObj == null) {
                     vm.RaiseException (new IodineTypeException ("Bool"));
                     return null;
@@ -440,7 +440,7 @@ namespace Iodine.Runtime
                 wait = waitObj.Value;
             }
 
-            ProcessStartInfo info = new ProcessStartInfo (str.Value, cmdArgs);
+            var info = new ProcessStartInfo (str.Value, cmdArgs);
             info.UseShellExecute = false;
 
             return new IodineProc (Process.Start (info));
@@ -459,7 +459,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString program = args [0] as IodineString;
+            var program = args [0] as IodineString;
 
             string arguments = "";
             bool useShell = false;
@@ -471,7 +471,7 @@ namespace Iodine.Runtime
 
             if (args.Length > 1) {
 
-                IodineString argObj = args [1] as IodineString;
+                var argObj = args [1] as IodineString;
 
                 if (argObj == null) {
                     vm.RaiseException (new IodineTypeException ("Str"));
@@ -482,7 +482,7 @@ namespace Iodine.Runtime
             }
 
             if (args.Length > 2) {
-                IodineBool useShellObj = args [1] as IodineBool;
+                var useShellObj = args [1] as IodineBool;
 
                 if (useShellObj == null) {
                     vm.RaiseException (new IodineTypeException ("Bool"));
@@ -492,12 +492,12 @@ namespace Iodine.Runtime
                 useShell = useShellObj.Value;
             }
 
-            ProcessStartInfo info = new ProcessStartInfo ();
+            var info = new ProcessStartInfo ();
             info.FileName = program.Value;
             info.Arguments = arguments;
             info.UseShellExecute = useShell;
 
-            Process proc = Process.Start (info);
+            var proc = Process.Start (info);
 
             proc.WaitForExit ();
 
@@ -516,8 +516,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return null;
             }
-            IodineString command = args [0] as IodineString;
-            IodineString mode = args [1] as IodineString;
+            var command = args [0] as IodineString;
+            var mode = args [1] as IodineString;
 
             if (command == null || mode == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -548,7 +548,7 @@ namespace Iodine.Runtime
             if (isWindows) {
                 return new IodineSubprocess (Popen_Win32 (command.Value, read, write), read, write);
             } else {
-                Process proc = Popen_Unix (command.Value, read, write);
+                var proc = Popen_Unix (command.Value, read, write);
                 proc.Start ();
                 return new IodineSubprocess (proc, read, write);
             }
@@ -557,27 +557,27 @@ namespace Iodine.Runtime
 
         private Process Popen_Win32 (string command, bool read, bool write)
         {
-            string systemPath = Environment.GetFolderPath (Environment.SpecialFolder.System);
-            string args = String.Format ("/K \"{0}\"", command);
-            ProcessStartInfo info = new ProcessStartInfo (Path.Combine (systemPath, "cmd.exe"), args);
+            var systemPath = Environment.GetFolderPath (Environment.SpecialFolder.System);
+            var args = String.Format ("/K \"{0}\"", command);
+            var info = new ProcessStartInfo (Path.Combine (systemPath, "cmd.exe"), args);
             info.UseShellExecute = false;
             info.RedirectStandardOutput = read;
             info.RedirectStandardError = read;
             info.RedirectStandardInput = write;
-            Process proc = new Process ();
+            var proc = new Process ();
             proc.StartInfo = info;
             return proc;
         }
 
         private Process Popen_Unix (string command, bool read, bool write)
         {
-            string args = String.Format ("-c \"{0}\"", command);
-            ProcessStartInfo info = new ProcessStartInfo ("/bin/sh", args);
+            var args = String.Format ("-c \"{0}\"", command);
+            var info = new ProcessStartInfo ("/bin/sh", args);
             info.UseShellExecute = false;
             info.RedirectStandardOutput = read;
             info.RedirectStandardError = read;
             info.RedirectStandardInput = write;
-            Process proc = new Process ();
+            var proc = new Process ();
             proc.StartInfo = info;
             return proc;
         }
@@ -594,7 +594,7 @@ namespace Iodine.Runtime
             }
 
 
-            IodineString command = args [0] as IodineString;
+            var command = args [0] as IodineString;
 
             if (command == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -634,7 +634,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString fileString = args [0] as IodineString;
+            var fileString = args [0] as IodineString;
 
             if (fileString == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -680,7 +680,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -710,7 +710,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString path = args [0] as IodineString;
+            var path = args [0] as IodineString;
 
             if (path == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -734,21 +734,21 @@ namespace Iodine.Runtime
          */
         private static bool RemoveRecursive (string target)
         {
-            DirectoryInfo dir = new DirectoryInfo (target);
-            DirectoryInfo[] dirs = dir.GetDirectories ();
+            var dir = new DirectoryInfo (target);
+            var dirs = dir.GetDirectories ();
 
             if (!dir.Exists) {
                 return false;
             }
 
-            FileInfo[] files = dir.GetFiles ();
+            var files = dir.GetFiles ();
             foreach (FileInfo file in files) {
-                string temppath = Path.Combine (target, file.Name);
+                var temppath = Path.Combine (target, file.Name);
                 File.Delete (temppath);
             }
 
             foreach (DirectoryInfo subdir in dirs) {
-                string temppath = Path.Combine (target, subdir.Name);
+                var temppath = Path.Combine (target, subdir.Name);
                 RemoveRecursive (temppath);
             }
             Directory.Delete (target);
@@ -766,7 +766,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineString dir = args [0] as IodineString;
+            var dir = args [0] as IodineString;
 
             if (dir == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -778,12 +778,12 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            List<string> items = new List<string> ();
+            var items = new List<string> ();
 
             items.AddRange (Directory.GetFiles (dir.Value));
             items.AddRange (Directory.GetDirectories (dir.Value));
 
-            IodineList retList = new IodineList (new IodineObject[] { });
+            var retList = new IodineList (new IodineObject[] { });
 
             items.ForEach (p => retList.Add (new IodineString (p)));
 

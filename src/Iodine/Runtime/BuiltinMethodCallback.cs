@@ -60,7 +60,7 @@ namespace Iodine.Runtime
         {
             Self = self;
             Callback = callback;
-            object[] attributes = callback.GetInvocationList() [0].Method.GetCustomAttributes (false);
+            var attributes = callback.GetInvocationList() [0].Method.GetCustomAttributes (false);
 
             foreach (object attr in attributes) {
                 if (attr is BuiltinDocString) {

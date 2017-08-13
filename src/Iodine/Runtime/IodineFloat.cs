@@ -64,7 +64,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineFloat floatVal = obj as IodineFloat;
+            var floatVal = obj as IodineFloat;
 
             if (floatVal != null) {
                 return Math.Abs (floatVal.Value - Value) < double.Epsilon;
@@ -219,7 +219,9 @@ namespace Iodine.Runtime
             if (obj is IodineFloat) {
                 result = ((IodineFloat)obj).Value;
                 return true;
-            } else if (obj is IodineInteger) {
+            }
+
+            if (obj is IodineInteger) {
                 result = (double)((IodineInteger)obj).Value;
                 return true;
             }

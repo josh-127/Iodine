@@ -36,7 +36,7 @@ namespace Iodine.Runtime
     {
         public readonly static IodineTypeDefinition TypeDefinition = new StringBuilderTypeDef ();
 
-        class StringBuilderTypeDef : IodineTypeDefinition
+        sealed class StringBuilderTypeDef : IodineTypeDefinition
         {
             public StringBuilderTypeDef ()
                 : base ("StringBuffer")
@@ -67,7 +67,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStringBuilder thisObj = self as IodineStringBuilder;
+                var thisObj = self as IodineStringBuilder;
                 foreach (IodineObject obj in args) {
                     thisObj.Buffer.Append (obj.ToString (vm));
                 }
@@ -80,7 +80,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStringBuilder thisObj = self as IodineStringBuilder;
+                var thisObj = self as IodineStringBuilder;
                 foreach (IodineObject obj in args) {
                     thisObj.Buffer.Insert (0, obj.ToString (vm));
                 }
@@ -92,7 +92,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineStringBuilder thisObj = self as IodineStringBuilder;
+                var thisObj = self as IodineStringBuilder;
                 thisObj.Buffer.Clear ();
                 return null;
             }
@@ -107,7 +107,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineStringBuilder strVal = obj as IodineStringBuilder;
+            var strVal = obj as IodineStringBuilder;
 
             if (strVal != null) {
                 return strVal.ToString () == ToString ();

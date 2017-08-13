@@ -66,10 +66,10 @@ namespace Iodine.Runtime
 
         public IodineObject Set (VirtualMachine vm, IodineObject obj)
         {
-            IodineDictionary dict = obj as IodineDictionary;
+            var dict = obj as IodineDictionary;
             if (dict != null) {
                 vm.Context.Globals.Clear ();
-                Console.WriteLine ("Set.");
+
                 foreach (IodineObject key in dict.Keys) {
                     vm.Context.Globals [key.ToString ()] = dict.Get (key);
                 }
@@ -79,7 +79,7 @@ namespace Iodine.Runtime
 
         public IodineObject Get (VirtualMachine vm)
         {
-            IodineDictionary ret = new IodineDictionary ();
+            var ret = new IodineDictionary ();
             foreach (KeyValuePair<string, IodineObject> kv in vm.Context.Globals) {
                 ret.Set (new IodineString (kv.Key), kv.Value);
             }

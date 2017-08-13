@@ -78,15 +78,15 @@ namespace Iodine.Runtime
 
         public static IodineConfiguration Load (string path)
         {
-            IodineConfiguration config = new IodineConfiguration ();
+            var config = new IodineConfiguration ();
 
-            string[] lines = File.ReadAllLines (path);
+            var lines = File.ReadAllLines (path);
             var configLines = lines.Where (p => p.Trim () != "" && !p.StartsWith ("#"));
             foreach (string configLine in configLines) {
-                string line = configLine.Trim ();
+                var line = configLine.Trim ();
                 if (line.Contains (" ")) {
-                    string key = line.Substring (0, line.IndexOf (" "));
-                    string value = line.Substring (line.IndexOf (" ")).Trim ();
+                    var key = line.Substring (0, line.IndexOf (" "));
+                    var value = line.Substring (line.IndexOf (" ")).Trim ();
                     config.SetField (key, value);
                 }
             }

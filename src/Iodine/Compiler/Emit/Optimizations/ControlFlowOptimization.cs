@@ -56,7 +56,7 @@ namespace Iodine.Compiler
 
         public void PerformOptimization (CodeObject method)
         {
-            List <ReachableRegion> regions = new List<ReachableRegion> ();
+            var regions = new List<ReachableRegion> ();
             int reachableSize = 0;
             FindRegion (method, regions, 0);
             foreach (ReachableRegion region in regions) {
@@ -90,14 +90,18 @@ namespace Iodine.Compiler
                     regions.Add (new ReachableRegion (start, i));
                     FindRegion (method, regions, ins.Argument);
                     return;
-                } else if (ins.OperationCode == Opcode.JumpIfTrue ||
+                }
+
+                if (ins.OperationCode == Opcode.JumpIfTrue ||
                            ins.OperationCode == Opcode.JumpIfFalse ||
                            ins.OperationCode == Opcode.PushExceptionHandler) {
                     regions.Add (new ReachableRegion (start, i));
                     FindRegion (method, regions, i + 1);
                     FindRegion (method, regions, ins.Argument);
                     return;
-                } else if (ins.OperationCode == Opcode.Return) {
+                }
+
+                if (ins.OperationCode == Opcode.Return) {
                     regions.Add (new ReachableRegion (start, i));
                     return;
                 }

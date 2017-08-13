@@ -47,7 +47,7 @@ namespace Iodine.Runtime
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
             {
                 if (args.Length >= 1) {
-                    IodineList inputList = args [0] as IodineList;
+                    var inputList = args [0] as IodineList;
                     return new IodineTuple (inputList.Objects.ToArray ());
                 }
                 return null;
@@ -102,8 +102,8 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineTuple tupleVal = obj as IodineTuple;
-            Console.WriteLine (Objects.Length);
+            var tupleVal = obj as IodineTuple;
+
             if (tupleVal != null && tupleVal.Objects.Length == Objects.Length) {
                 for (int i = 0; i < Objects.Length; i++) {
                     if (!Objects [i].Equals (tupleVal.Objects [i])) {
@@ -141,7 +141,7 @@ namespace Iodine.Runtime
             int actualStart = start >= 0 ? start : Objects.Length - (start + 2);
             int actualEnd = end >= 0 ? end : Objects.Length - (end + 2);
 
-            List<IodineObject> accum = new List<IodineObject> ();
+            var accum = new List<IodineObject> ();
 
             if (stride >= 0) {
 
@@ -176,9 +176,10 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            IodineInteger index = key as IodineInteger;
-            if (index.Value < Objects.Length)
+            var index = key as IodineInteger;
+            if (index.Value < Objects.Length) {
                 return Objects [(int)index.Value];
+            }
             vm.RaiseException (new IodineIndexException ());
             return null;
         }
@@ -190,7 +191,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Represent (VirtualMachine vm)
         {
-            string repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
+            var repr = String.Join (", ", Objects.Select (p => p.Represent (vm).ToString ()));
             return new IodineString (String.Format ("({0})", repr));
         }
 

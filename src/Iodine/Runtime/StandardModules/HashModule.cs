@@ -57,7 +57,7 @@ namespace Iodine.Runtime
 
             byte[] hash = null;
 
-            SHA256Managed shaAlgol = new SHA256Managed ();
+            var shaAlgol = new SHA256Managed ();
 
             hash = PreformHash (vm, args [0], shaAlgol);
 
@@ -81,7 +81,7 @@ namespace Iodine.Runtime
 
             byte[] hash = null;
 
-            SHA1Managed shaAlgol = new SHA1Managed ();
+            var shaAlgol = new SHA1Managed ();
 
             hash = PreformHash (vm, args [0], shaAlgol);
 
@@ -106,7 +106,7 @@ namespace Iodine.Runtime
 
             byte[] hash = null;
 
-            SHA512Managed shaAlgol = new SHA512Managed ();
+            var shaAlgol = new SHA512Managed ();
 
             hash = PreformHash (vm, args [0], shaAlgol);
 
@@ -130,7 +130,7 @@ namespace Iodine.Runtime
 
             byte[] hash = null;
 
-            MD5 md5Algol = MD5.Create ();
+            var md5Algol = MD5.Create ();
 
             hash = PreformHash (vm, args [0], md5Algol);
 
@@ -145,7 +145,9 @@ namespace Iodine.Runtime
         {
             if (obj is IodineString) {
                 return System.Text.Encoding.UTF8.GetBytes (obj.ToString ());
-            } else if (obj is IodineBytes) {
+            }
+
+            if (obj is IodineBytes) {
                 return ((IodineBytes)obj).Value;
             }
             return null;
@@ -154,12 +156,12 @@ namespace Iodine.Runtime
         private static byte[] PreformHash (VirtualMachine vm, IodineObject obj, HashAlgorithm algol)
         {
             if (obj is IodineString || obj is IodineBytes) {
-                byte[] data = GetBytes (obj);
+                var data = GetBytes (obj);
 
                 return algol.ComputeHash (data);
             }
 
-            IodineStream stream = obj as IodineStream;
+            var stream = obj as IodineStream;
 
             if (obj == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));

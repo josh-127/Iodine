@@ -46,13 +46,14 @@ namespace Iodine.Runtime
             foreach (Type type in modules) {
                 if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
 
-                    IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
+                    var attr = (IodineBuiltinModule)type.GetCustomAttributes (
                         typeof(IodineBuiltinModule),
                         false
                     ).First ();
-                    IodineModule module = (IodineModule)Activator.CreateInstance (type);
 
-                    BuiltinDocString docstr = type.GetCustomAttribute<BuiltinDocString> ();
+                    var module = (IodineModule)Activator.CreateInstance (type);
+
+                    var docstr = type.GetCustomAttribute<BuiltinDocString> ();
 
                     if (docstr != null) {
                         module.SetAttribute ("__doc__", new IodineString (docstr.DocumentationString));

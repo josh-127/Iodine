@@ -74,8 +74,9 @@ namespace Iodine.Compiler.Ast
 
         public override AstNode Reduce ()
         {
-            AstNode left = Left.Reduce ();
-            AstNode right = Right.Reduce ();
+            var left = Left.Reduce ();
+            var right = Right.Reduce ();
+
             switch (Operation) {
             case BinaryOperation.Add:
                 {

@@ -72,15 +72,15 @@ namespace Iodine.Runtime
                 int start = 0;
                 int end = 0;
                 if (args.Length <= 1) {
-                    IodineInteger integer = args [0] as IodineInteger;
+                    var integer = args [0] as IodineInteger;
                     if (integer == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return null;
                     }
                     end = (int)integer.Value;
                 } else {
-                    IodineInteger startInteger = args [0] as IodineInteger;
-                    IodineInteger endInteger = args [1] as IodineInteger;
+                    var startInteger = args [0] as IodineInteger;
+                    var endInteger = args [1] as IodineInteger;
                     if (startInteger == null || endInteger == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return null;
@@ -102,14 +102,14 @@ namespace Iodine.Runtime
                 return null;
             }
                 
-            IodineInteger count = args [0] as IodineInteger;
+            var count = args [0] as IodineInteger;
 
             if (count == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return null;
             }
 
-            byte[] buf = new byte[(int)count.Value];
+            var buf = new byte[(int)count.Value];
             secureRand.GetBytes (buf);
             return new IodineString (Convert.ToBase64String (buf).Substring (0, (int)count.Value));
         }
@@ -125,7 +125,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-            IodineObject collection = args [0].GetIterator (vm);
+            var collection = args [0].GetIterator (vm);
             int count = 0;
             collection.IterReset (vm);
 
@@ -134,14 +134,17 @@ namespace Iodine.Runtime
                 count++;
             }
 
-            int choice = rgn.Next (0, count);
+            var choice = rgn.Next (0, count);
             count = 0;
 
             collection.IterReset (vm);
             while (collection.IterMoveNext (vm)) {
-                IodineObject o = collection.IterGetCurrent (vm);
-                if (count == choice)
+                var o = collection.IterGetCurrent (vm);
+
+                if (count == choice) {
                     return o;
+                }
+
                 count++;
             }
 

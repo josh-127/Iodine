@@ -37,7 +37,8 @@ namespace Iodine.Compiler
     {
         private static int nextLabelID = 0;
 
-        private Dictionary<int, Label> labelReferences = new Dictionary<int, Label> ();
+        private readonly Dictionary<int, Label> labelReferences = new Dictionary<int, Label> ();
+
         protected List<Instruction> instructions = new List<Instruction> ();
 
         public void EmitInstruction (Opcode opcode)

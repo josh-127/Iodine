@@ -70,15 +70,15 @@ namespace Iodine.Compiler
 
         public static IodineCompiler CreateCompiler (IodineContext context, CompilationUnit root)
         {
-            SemanticAnalyser analyser = new SemanticAnalyser (context.ErrorLog);
-            SymbolTable table = analyser.Analyse (root);
+            var analyser = new SemanticAnalyser (context.ErrorLog);
+            var table = analyser.Analyse (root);
             return new IodineCompiler (table, root);
         }
 
         public IodineModule Compile (string moduleName, string filePath)
         {
-            ModuleBuilder moduleBuilder = new ModuleBuilder (moduleName, filePath);
-            EmitContext context = new EmitContext (symbolTable, moduleBuilder, moduleBuilder.Initializer);
+            var moduleBuilder = new ModuleBuilder (moduleName, filePath);
+            var context = new EmitContext (symbolTable, moduleBuilder, moduleBuilder.Initializer);
 
             context.SetCurrentModule (moduleBuilder);
 
@@ -145,7 +145,7 @@ namespace Iodine.Compiler
 
         private int CreateName (string name)
         {
-            int i= Context.CurrentModule.DefineConstant (
+            var i = Context.CurrentModule.DefineConstant (
                 new IodineName (name)
             );
             return i;
@@ -201,7 +201,7 @@ namespace Iodine.Compiler
 
             foreach (AstNode member in contractDecl.Members) {
                 if (member is FunctionDeclaration) {
-                    FunctionDeclaration funcDecl = member as FunctionDeclaration;
+                    var funcDecl = member as FunctionDeclaration;
                     CompileMethod (funcDecl);
                 }
             }
@@ -218,7 +218,7 @@ namespace Iodine.Compiler
 
             foreach (AstNode member in traitDecl.Members) {
                 if (member is FunctionDeclaration) {
-                    FunctionDeclaration funcDecl = member as FunctionDeclaration;
+                    var funcDecl = member as FunctionDeclaration;
                     CompileMethod (funcDecl);
                 }
             }
@@ -283,7 +283,7 @@ namespace Iodine.Compiler
 
             Context.SymbolTable.EnterScope ();
 
-            CodeBuilder bytecode = new CodeBuilder ();
+            var bytecode = new CodeBuilder ();
 
             CreateContext (bytecode);
 
@@ -304,7 +304,7 @@ namespace Iodine.Compiler
 
             OptimizeObject (bytecode);
 
-            MethodFlags flags = new MethodFlags ();
+            var flags = new MethodFlags ();
 
             if (funcDecl.AcceptsKeywordArgs) {
                 flags |= MethodFlags.AcceptsKwargs;
@@ -317,7 +317,7 @@ namespace Iodine.Compiler
             if (funcDecl.HasDefaultValues) {
                 flags |= MethodFlags.HasDefaultParameters;
 
-                int startingIndex = funcDecl.Parameters.FindIndex (p => p.HasDefaultValue);
+                var startingIndex = funcDecl.Parameters.FindIndex (p => p.HasDefaultValue);
                 int defaultParamCount = 0;
 
                 Context.CurrentMethod.EmitInstruction (
@@ -538,7 +538,7 @@ namespace Iodine.Compiler
 
             foreach (AstNode member in extendStmt.Members) {
                 if (member is FunctionDeclaration) {
-                    FunctionDeclaration funcDecl = member as FunctionDeclaration;
+                    var funcDecl = member as FunctionDeclaration;
                     CompileMethod (funcDecl);
                     Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName (funcDecl.Name));
                 }
@@ -568,7 +568,7 @@ namespace Iodine.Compiler
         {
             switchStmt.GivenValue.Visit (this);
 
-            int temporary = CreateTemporary ();
+            var temporary = CreateTemporary ();
 
             Context.CurrentMethod.EmitInstruction (
                 switchStmt.GivenValue.Location,
@@ -576,10 +576,10 @@ namespace Iodine.Compiler
                 temporary
             );
 
-            Label endSwitch = Context.CurrentMethod.CreateLabel ();
+            var endSwitch = Context.CurrentMethod.CreateLabel ();
 
             foreach (WhenStatement caseStmt in switchStmt.WhenStatements) {
-                Label nextLabel = Context.CurrentMethod.CreateLabel ();
+                var nextLabel = Context.CurrentMethod.CreateLabel ();
 
                 CreatePatternContext (temporary);
                 caseStmt.Values.Visit (this);
@@ -602,8 +602,8 @@ namespace Iodine.Compiler
 
         public override void Accept (TryExceptStatement tryExcept)
         {
-            Label exceptLabel = Context.CurrentMethod.CreateLabel ();
-            Label endLabel = Context.CurrentMethod.CreateLabel ();
+            var exceptLabel = Context.CurrentMethod.CreateLabel ();
+            var endLabel = Context.CurrentMethod.CreateLabel ();
 
             Context.CurrentMethod.EmitInstruction (tryExcept.Location, Opcode.PushExceptionHandler, exceptLabel);
 
@@ -653,8 +653,8 @@ namespace Iodine.Compiler
 
         public override void Accept (IfStatement ifStmt)
         {
-            Label elseLabel = Context.CurrentMethod.CreateLabel ();
-            Label endLabel = Context.CurrentMethod.CreateLabel ();
+            var elseLabel = Context.CurrentMethod.CreateLabel ();
+            var endLabel = Context.CurrentMethod.CreateLabel ();
             ifStmt.Condition.Visit (this);
             Context.CurrentMethod.EmitInstruction (ifStmt.Body.Location, Opcode.JumpIfFalse, elseLabel);
             ifStmt.Body.Visit (this);
@@ -673,8 +673,8 @@ namespace Iodine.Compiler
 
         public override void Accept (WhileStatement whileStmt)
         {
-            Label whileLabel = Context.CurrentMethod.CreateLabel ();
-            Label breakLabel = Context.CurrentMethod.CreateLabel ();
+            var whileLabel = Context.CurrentMethod.CreateLabel ();
+            var breakLabel = Context.CurrentMethod.CreateLabel ();
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (whileLabel);
@@ -699,8 +699,8 @@ namespace Iodine.Compiler
 
         public override void Accept (DoStatement doStmt)
         {
-            Label doLabel = Context.CurrentMethod.CreateLabel ();
-            Label breakLabel = Context.CurrentMethod.CreateLabel ();
+            var doLabel = Context.CurrentMethod.CreateLabel ();
+            var breakLabel = Context.CurrentMethod.CreateLabel ();
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (doLabel);
@@ -722,9 +722,9 @@ namespace Iodine.Compiler
 
         public override void Accept (ForStatement forStmt)
         {
-            Label forLabel = Context.CurrentMethod.CreateLabel ();
-            Label breakLabel = Context.CurrentMethod.CreateLabel ();
-            Label skipAfterThought = Context.CurrentMethod.CreateLabel ();
+            var forLabel = Context.CurrentMethod.CreateLabel ();
+            var breakLabel = Context.CurrentMethod.CreateLabel ();
+            var skipAfterThought = Context.CurrentMethod.CreateLabel ();
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (forLabel);
@@ -751,9 +751,9 @@ namespace Iodine.Compiler
 
         public override void Accept (ForeachStatement foreachStmt)
         {
-            Label foreachLabel = Context.CurrentMethod.CreateLabel ();
-            Label breakLabel = Context.CurrentMethod.CreateLabel ();
-            int tmp = CreateTemporary (); 
+            var foreachLabel = Context.CurrentMethod.CreateLabel ();
+            var breakLabel = Context.CurrentMethod.CreateLabel ();
+            var tmp = CreateTemporary (); 
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (foreachLabel);
@@ -805,7 +805,7 @@ namespace Iodine.Compiler
 
         private void CompileForeachWithAutounpack (List<string> identifiers)
         {
-            int local = CreateTemporary ();
+            var local = CreateTemporary ();
 
             Context.CurrentMethod.EmitInstruction (Opcode.StoreLocal, local);
 
@@ -906,7 +906,7 @@ namespace Iodine.Compiler
 
         private void CompileAssignWithAutoUnpack (AssignStatement assignStmt)
         {
-            int tmp = CreateTemporary ();
+            var tmp = CreateTemporary ();
 
             assignStmt.Expressions [0].Visit (this);
 
@@ -966,7 +966,7 @@ namespace Iodine.Compiler
             if (binop.Operation == BinaryOperation.Assign) {
                 binop.Right.Visit (this);
                 if (binop.Left is NameExpression) {
-                    NameExpression ident = (NameExpression)binop.Left;
+                    var ident = (NameExpression)binop.Left;
                     bool isGlobal = Context.SymbolTable.IsInGlobalScope || Context.SymbolTable.IsGlobal (ident.Value);
                     if (!isGlobal) {
 
@@ -982,14 +982,14 @@ namespace Iodine.Compiler
                         Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalIndex);
                     }
                 } else if (binop.Left is MemberExpression) {
-                    MemberExpression getattr = binop.Left as MemberExpression;
+                    var getattr = binop.Left as MemberExpression;
                     getattr.Target.Visit (this);
-                    int attrIndex = Context.CurrentModule.DefineConstant (new IodineName (getattr.Field));
+                    var attrIndex = Context.CurrentModule.DefineConstant (new IodineName (getattr.Field));
                     Context.CurrentMethod.EmitInstruction (getattr.Location, Opcode.StoreAttribute, attrIndex);
                     getattr.Target.Visit (this);
                     Context.CurrentMethod.EmitInstruction (getattr.Location, Opcode.LoadAttribute, attrIndex);
                 } else if (binop.Left is IndexerExpression) {
-                    IndexerExpression indexer = binop.Left as IndexerExpression;
+                    var indexer = binop.Left as IndexerExpression;
                     indexer.Target.Visit (this);
                     indexer.Index.Visit (this);
                     Context.CurrentMethod.EmitInstruction (indexer.Location, Opcode.StoreIndex);
@@ -1045,9 +1045,9 @@ namespace Iodine.Compiler
                 return;
             }
 
-            Label shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
-            Label shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
-            Label endLabel = Context.CurrentMethod.CreateLabel ();
+            var shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
+            var shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
+            var endLabel = Context.CurrentMethod.CreateLabel ();
             binop.Left.Visit (this);
 
             /*
@@ -1200,8 +1200,8 @@ namespace Iodine.Compiler
 
         public override void Accept (TernaryExpression ternaryExpr)
         {
-            Label elseLabel = Context.CurrentMethod.CreateLabel ();
-            Label endLabel = Context.CurrentMethod.CreateLabel ();
+            var elseLabel = Context.CurrentMethod.CreateLabel ();
+            var endLabel = Context.CurrentMethod.CreateLabel ();
             ternaryExpr.Condition.Visit (this);
             Context.CurrentMethod.EmitInstruction (ternaryExpr.Expression.Location, Opcode.JumpIfFalse, elseLabel);
             ternaryExpr.Expression.Visit (this);
@@ -1220,17 +1220,17 @@ namespace Iodine.Compiler
 
         public override void Accept (GeneratorExpression genExpr)
         {
-            CodeBuilder anonMethod = new CodeBuilder ();
+            var anonMethod = new CodeBuilder ();
 
             CreateContext (anonMethod);
 
             Context.SymbolTable.EnterScope ();
 
-            Label foreachLabel = Context.CurrentMethod.CreateLabel ();
-            Label breakLabel = Context.CurrentMethod.CreateLabel ();
-            Label predicateSkip = Context.CurrentMethod.CreateLabel ();
+            var foreachLabel = Context.CurrentMethod.CreateLabel ();
+            var breakLabel = Context.CurrentMethod.CreateLabel ();
+            var predicateSkip = Context.CurrentMethod.CreateLabel ();
 
-            int tmp = CreateTemporary (); 
+            var tmp = CreateTemporary (); 
 
             genExpr.Iterator.Visit (this);
 
@@ -1290,12 +1290,12 @@ namespace Iodine.Compiler
 
         public override void Accept (ListCompExpression list)
         {
-            Label foreachLabel = Context.CurrentMethod.CreateLabel ();
-            Label breakLabel = Context.CurrentMethod.CreateLabel ();
-            Label predicateSkip = Context.CurrentMethod.CreateLabel ();
+            var foreachLabel = Context.CurrentMethod.CreateLabel ();
+            var breakLabel = Context.CurrentMethod.CreateLabel ();
+            var predicateSkip = Context.CurrentMethod.CreateLabel ();
 
-            int tmp = CreateTemporary (); 
-            int set = CreateTemporary ();
+            var tmp = CreateTemporary (); 
+            var set = CreateTemporary ();
 
             Context.CurrentMethod.EmitInstruction (list.Iterator.Location, Opcode.BuildList, 0);
 
@@ -1391,20 +1391,20 @@ namespace Iodine.Compiler
 
         public override void Accept (MatchExpression match)
         {
-            AstNode value = match.Expression;
+            var value = match.Expression;
             value.Visit (this);
-            int temporary = CreateTemporary ();
+            var temporary = CreateTemporary ();
             Context.CurrentMethod.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
 
-            Label nextLabel = Context.CurrentMethod.CreateLabel ();
-            Label endLabel = Context.CurrentMethod.CreateLabel ();
+            var nextLabel = Context.CurrentMethod.CreateLabel ();
+            var endLabel = Context.CurrentMethod.CreateLabel ();
 
             for (int i = 0; i < match.MatchCases.Count; i++) {
                 if (i > 0) {
                     Context.CurrentMethod.MarkLabelPosition (nextLabel);
                     nextLabel = Context.CurrentMethod.CreateLabel ();
                 }
-                CaseExpression clause = match.MatchCases [i] as CaseExpression;
+                var clause = match.MatchCases [i] as CaseExpression;
 
                 CreatePatternContext (temporary);
 
@@ -1436,9 +1436,9 @@ namespace Iodine.Compiler
 
         public override void Accept (PatternExpression expression)
         {
-            Label shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
-            Label shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
-            Label endLabel = Context.CurrentMethod.CreateLabel ();
+            var shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
+            var shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
+            var endLabel = Context.CurrentMethod.CreateLabel ();
             expression.Left.Visit (this);
 
             /*
@@ -1477,8 +1477,8 @@ namespace Iodine.Compiler
 
         public override void Accept (PatternExtractExpression extractExpression)
         {
-            Label notInstance = Context.CurrentMethod.CreateLabel ();
-            Label isInstance = Context.CurrentMethod.CreateLabel ();
+            var notInstance = Context.CurrentMethod.CreateLabel ();
+            var isInstance = Context.CurrentMethod.CreateLabel ();
 
             CreateContext (Context.IsInClassBody);
 

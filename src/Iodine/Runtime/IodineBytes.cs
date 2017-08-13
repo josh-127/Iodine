@@ -64,10 +64,10 @@ namespace Iodine.Runtime
 
                 iter.IterReset (vm);
 
-                List<byte> bytes = new List<byte> ();
+                var bytes = new List<byte> ();
 
                 while (iter.IterMoveNext (vm)) {
-                    IodineInteger b = iter.IterGetCurrent (vm) as IodineInteger;
+                    var b = iter.IterGetCurrent (vm) as IodineInteger;
 
                     if (b == null) {
                         vm.RaiseException (new IodineException ("Int"));
@@ -122,7 +122,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
-            IodineBytes str = right as IodineBytes;
+            var str = right as IodineBytes;
 
             if (str == null) {
                 vm.RaiseException ("Right hand value must be of type Bytes!");
@@ -137,7 +137,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
-            IodineBytes str = right as IodineBytes;
+            var str = right as IodineBytes;
             if (str == null) {
                 return base.Equals (vm, right);
             }
@@ -146,7 +146,7 @@ namespace Iodine.Runtime
 
         public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
         {
-            IodineBytes str = right as IodineBytes;
+            var str = right as IodineBytes;
             if (str == null) {
                 return base.NotEquals (vm, right);
             }
@@ -165,7 +165,7 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            IodineInteger index = key as IodineInteger;
+            var index = key as IodineInteger;
             if (index == null) {
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return null;
@@ -211,7 +211,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-            int val = ConvertToByte (args [0]);
+            var val = ConvertToByte (args [0]);
 
             if (val < 0) {
                 vm.RaiseException (new IodineTypeException ("Int"));
@@ -237,7 +237,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-            int val = ConvertToByte (args [0]);
+
+            var val = ConvertToByte (args [0]);
 
             if (val < 0) {
                 vm.RaiseException (new IodineTypeException ("Int"));
@@ -267,15 +268,15 @@ namespace Iodine.Runtime
             }
 
             if (args.Length == 1) {
-                IodineInteger i1 = args [0] as IodineInteger;
+                var i1 = args [0] as IodineInteger;
                 if (i1 == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
                     return null;
                 }
                 return Substring (vm, i1);
             } else {
-                IodineInteger i1 = args [0] as IodineInteger;
-                IodineInteger i2 = args [1] as IodineInteger;
+                var i1 = args [0] as IodineInteger;
+                var i2 = args [1] as IodineInteger;
 
                 if (i1 == null || i2 == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
@@ -323,7 +324,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            IodineBytes needle = args [0] as IodineBytes;
+            var needle = args [0] as IodineBytes;
 
             if (needle == null) {
                 vm.RaiseException (new IodineTypeException ("Bytes"));
@@ -355,7 +356,7 @@ namespace Iodine.Runtime
             } 
 
             if (obj is IodineString) {
-                string val = obj.ToString ();
+                var val = obj.ToString ();
                 if (val.Length == 1) {
                     return (byte)val [0];
                 }

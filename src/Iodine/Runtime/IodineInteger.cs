@@ -51,7 +51,7 @@ namespace Iodine.Runtime
                 }
 
                 if (args [0] is IodineFloat) {
-                    IodineFloat fp = args [0] as IodineFloat;
+                    var fp = args [0] as IodineFloat;
                     return new IodineInteger ((long)fp.Value);
                 }
 
@@ -59,7 +59,7 @@ namespace Iodine.Runtime
                 NumberStyles style = NumberStyles.AllowLeadingSign;
 
                 if (args.Length > 1) {
-                    IodineInteger basen = args [1] as IodineInteger;
+                    var basen = args [1] as IodineInteger;
                     switch (basen.Value) {
                     case 16:
                         style = NumberStyles.HexNumber;
@@ -91,7 +91,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineInteger intVal = obj as IodineInteger;
+            var intVal = obj as IodineInteger;
 
             if (intVal != null) {
                 return intVal.Value == Value;
@@ -104,9 +104,9 @@ namespace Iodine.Runtime
 
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value + bigVal.Value);
@@ -122,9 +122,9 @@ namespace Iodine.Runtime
 
         public override IodineObject Sub (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value - bigVal.Value);
@@ -140,9 +140,9 @@ namespace Iodine.Runtime
 
         public override IodineObject Mul (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value * bigVal.Value);
@@ -158,9 +158,9 @@ namespace Iodine.Runtime
 
         public override IodineObject Div (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value / bigVal.Value);
@@ -176,8 +176,8 @@ namespace Iodine.Runtime
 
         public override IodineObject Mod (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value % bigVal.Value);
@@ -190,8 +190,8 @@ namespace Iodine.Runtime
 
         public override IodineObject And (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value & bigVal.Value);
@@ -204,8 +204,8 @@ namespace Iodine.Runtime
 
         public override IodineObject Or (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value | bigVal.Value);
@@ -218,8 +218,8 @@ namespace Iodine.Runtime
 
         public override IodineObject Xor (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value ^ bigVal.Value);
@@ -232,7 +232,7 @@ namespace Iodine.Runtime
 
         public override IodineObject LeftShift (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
+            var intVal = right as IodineInteger;
             if (intVal == null) {
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -242,7 +242,7 @@ namespace Iodine.Runtime
 
         public override IodineObject RightShift (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
+            var intVal = right as IodineInteger;
             if (intVal == null) {
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -252,9 +252,10 @@ namespace Iodine.Runtime
 
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
+
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value == bigVal.Value);
@@ -270,9 +271,9 @@ namespace Iodine.Runtime
 
         public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value != bigVal.Value);
@@ -288,9 +289,10 @@ namespace Iodine.Runtime
 
         public override IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
+
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value > bigVal.Value);
@@ -306,9 +308,9 @@ namespace Iodine.Runtime
 
         public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value >= bigVal.Value);
@@ -323,9 +325,9 @@ namespace Iodine.Runtime
 
         public override IodineObject LessThan (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value < bigVal.Value);
@@ -341,9 +343,9 @@ namespace Iodine.Runtime
 
         public override IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
-            IodineBigInt bigVal = right as IodineBigInt;
-            IodineFloat floatVal = right as IodineFloat;
+            var intVal = right as IodineInteger;
+            var bigVal = right as IodineBigInt;
+            var floatVal = right as IodineFloat;
             if (intVal == null) {
                 if (bigVal != null) {
                     return IodineBool.Create (Value <= bigVal.Value);
@@ -359,7 +361,7 @@ namespace Iodine.Runtime
 
         public override IodineObject HalfRange (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
+            var intVal = right as IodineInteger;
             if (intVal == null) {
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;
@@ -369,7 +371,7 @@ namespace Iodine.Runtime
 
         public override IodineObject ClosedRange (VirtualMachine vm, IodineObject right)
         {
-            IodineInteger intVal = right as IodineInteger;
+            var intVal = right as IodineInteger;
             if (intVal == null) {
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
                 return null;

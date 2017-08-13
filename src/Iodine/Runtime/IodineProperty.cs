@@ -38,7 +38,7 @@ namespace Iodine.Runtime
         public readonly IodineObject Setter;
         public readonly IodineObject Getter;
 
-        private IodineObject self;
+        private readonly IodineObject self;
 
         public bool HasSetter {
             get {
@@ -75,10 +75,13 @@ namespace Iodine.Runtime
         {
             if (Setter is IodineMethod) {
                 return vm.InvokeMethod ((IodineMethod)Setter, self, new IodineObject[] { value });
-            } else if (Setter is IodineBoundMethod) {
+            }
+
+            if (Setter is IodineBoundMethod) {
                 return vm.InvokeMethod (((IodineBoundMethod)Setter).Method, self,
                     new IodineObject[] { value });
             }
+
             return Setter.Invoke (vm, new IodineObject[] { value });
         }
 

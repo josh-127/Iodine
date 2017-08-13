@@ -61,9 +61,9 @@ namespace Iodine.Runtime
         {
             foreach (IodineMethod method in RequiredMethods) {
                 if (obj.HasAttribute (method.Name)) {
-                    IodineObject attr = obj.GetAttribute (method.Name);
+                    var attr = obj.GetAttribute (method.Name);
 
-                    IodineMethod objMethod = attr as IodineMethod;
+                    var objMethod = attr as IodineMethod;
 
                     if (objMethod == null) {
                         // HACK: Make builtin methods work

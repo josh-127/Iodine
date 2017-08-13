@@ -65,7 +65,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineBool boolVal = obj as IodineBool;
+            var boolVal = obj as IodineBool;
 
             if (boolVal != null) {
                 return boolVal.Value == Value;
@@ -76,7 +76,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
-            IodineBool boolVal = right as IodineBool;
+            var boolVal = right as IodineBool;
             if (boolVal == null) {
                 vm.RaiseException ("Right hand side expected to be Bool!");
                 return null;
@@ -86,7 +86,7 @@ namespace Iodine.Runtime
 
         public override IodineObject NotEquals (VirtualMachine vm, IodineObject right)
         {
-            IodineBool boolVal = right as IodineBool;
+            var boolVal = right as IodineBool;
             if (boolVal == null) {
                 vm.RaiseException ("Right hand side expected to be Bool!");
                 return null;
@@ -96,7 +96,7 @@ namespace Iodine.Runtime
 
         public override IodineObject LogicalAnd (VirtualMachine vm, IodineObject right)
         {
-            IodineBool boolVal = right as IodineBool;
+            var boolVal = right as IodineBool;
             if (boolVal == null) {
                 vm.RaiseException ("Right hand side expected to be Bool!");
                 return null;
@@ -106,7 +106,8 @@ namespace Iodine.Runtime
 
         public override IodineObject LogicalOr (VirtualMachine vm, IodineObject right)
         {
-            IodineBool boolVal = right as IodineBool;
+            var boolVal = right as IodineBool;
+
             if (boolVal == null) {
                 vm.RaiseException ("Right hand side expected to be Bool!");
                 return null;
@@ -116,7 +117,7 @@ namespace Iodine.Runtime
 
         public override IodineObject And (VirtualMachine vm, IodineObject right)
         {
-            IodineBool boolVal = right as IodineBool;
+            var boolVal = right as IodineBool;
             if (boolVal == null) {
                 vm.RaiseException ("Right hand side expected to be Bool!");
                 return null;
@@ -126,7 +127,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Or (VirtualMachine vm, IodineObject right)
         {
-            IodineBool boolVal = right as IodineBool;
+            var boolVal = right as IodineBool;
             if (boolVal == null) {
                 vm.RaiseException ("Right hand side expected to be Bool!");
                 return null;
@@ -136,7 +137,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Xor (VirtualMachine vm, IodineObject right)
         {
-            IodineBool boolVal = right as IodineBool;
+            var boolVal = right as IodineBool;
             if (boolVal == null) {
                 vm.RaiseException ("Right hand side expected to be Bool!");
                 return null;

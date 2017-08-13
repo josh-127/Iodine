@@ -43,12 +43,12 @@ namespace Iodine.Runtime
 
         public string Format (VirtualMachine vm, string format, IodineObject[] args)
         {
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
             int nextArg = 0;
             int pos = 0;
             while (pos < format.Length) {
                 if (format [pos] == '{') {
-                    string substr = format.Substring (pos + 1);
+                    var substr = format.Substring (pos + 1);
                     if (substr.IndexOf ('}') == -1) {
                         return null;
                     }
@@ -90,11 +90,13 @@ namespace Iodine.Runtime
                 return obj.ToString ();
             }
             char type = specifier [0];
-            string args = specifier.Substring (1);
+
+            var args = specifier.Substring (1);
+
             switch (char.ToLower (type)) {
             case 'd':
                 {
-                    IodineInteger intObj = obj as IodineInteger;
+                    var intObj = obj as IodineInteger;
                     int pad = args.Length == 0 ? 0 : int.Parse (args);
                     if (intObj == null)
                         return null;
@@ -102,7 +104,7 @@ namespace Iodine.Runtime
                 }
             case 'x':
                 {
-                    IodineInteger intObj = obj as IodineInteger;
+                    var intObj = obj as IodineInteger;
                     int pad = args.Length == 0 ? 0 : int.Parse (args);
                     if (intObj == null)
                         return null;

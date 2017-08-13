@@ -40,7 +40,7 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition TypeDefinition = new MapTypeDef ();
 
-        class MapTypeDef : IodineTypeDefinition
+        sealed class MapTypeDef : IodineTypeDefinition
         {
             public MapTypeDef ()
                 : base ("Dict")
@@ -68,8 +68,8 @@ namespace Iodine.Runtime
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
             {
                 if (args.Length >= 1) {
-                    IodineList inputList = args [0] as IodineList;
-                    IodineDictionary ret = new IodineDictionary ();
+                    var inputList = args [0] as IodineList;
+                    var ret = new IodineDictionary ();
                     if (inputList != null) {
                         foreach (IodineObject item in inputList.Objects) {
                             IodineTuple kv = item as IodineTuple;
@@ -89,7 +89,7 @@ namespace Iodine.Runtime
             )] 
             private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                IodineDictionary thisObj = self as IodineDictionary;
+                var thisObj = self as IodineDictionary;
                 if (args.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -99,7 +99,7 @@ namespace Iodine.Runtime
 
             private IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineDictionary thisObj = self as IodineDictionary;
+                var thisObj = self as IodineDictionary;
                 return new IodineInteger (thisObj.dict.Count);
             }
 
@@ -108,7 +108,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineDictionary thisObj = self as IodineDictionary;
+                var thisObj = self as IodineDictionary;
                 thisObj.dict.Clear ();
                 return null;
             }
@@ -120,7 +120,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Set (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineDictionary thisObj = self as IodineDictionary;
+                var thisObj = self as IodineDictionary;
                 if (arguments.Length >= 2) {
                     IodineObject key = arguments [0];
                     IodineObject val = arguments [1];
@@ -137,7 +137,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Get (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineDictionary thisObj = self as IodineDictionary;
+                var thisObj = self as IodineDictionary;
                 if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -163,7 +163,7 @@ namespace Iodine.Runtime
             )]
             private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
             {
-                IodineDictionary thisObj = self as IodineDictionary;
+                var thisObj = self as IodineDictionary;
                 if (arguments.Length >= 1) {
                     IodineObject key = arguments [0];
                     if (!thisObj.dict.ContainsKey (key)) {
@@ -260,7 +260,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineDictionary map = obj as IodineDictionary;
+            var map = obj as IodineDictionary;
 
             if (map != null) {
                 if (map.dict.Count != this.dict.Count) {
@@ -271,7 +271,8 @@ namespace Iodine.Runtime
                     if (!map.ContainsKey (key)) {
                         return false;
                     }
-                    IodineObject dictKey = map.Get (key) as IodineObject;
+
+                    var dictKey = map.Get (key) as IodineObject;
                     if (!dictKey.Equals ((IodineObject)dict [key])) {
                         return false;
                     }
@@ -284,7 +285,7 @@ namespace Iodine.Runtime
 
         public override IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
-            IodineDictionary hash = right as IodineDictionary;
+            var hash = right as IodineDictionary;
             if (hash == null) {
                 vm.RaiseException (new IodineTypeException ("HashMap"));
                 return null;

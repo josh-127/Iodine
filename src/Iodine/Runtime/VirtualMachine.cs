@@ -214,7 +214,7 @@ namespace Iodine.Runtime
                 Trace (TraceType.Function, top, currentLocation);
             }
 
-            IodineObject retVal = EvalCode (method.Bytecode);
+            var retVal = EvalCode (method.Bytecode);
            
             if (top.Yielded) {
                 top.Pop ();
@@ -286,7 +286,7 @@ namespace Iodine.Runtime
                 traceCallback (TraceType.Exception, this, Top, currentLocation);
             }
 
-            IodineExceptionHandler handler = PopCurrentExceptionHandler ();
+            var handler = PopCurrentExceptionHandler ();
 
             if (handler == null) { // No exception handler
                /*
@@ -297,7 +297,7 @@ namespace Iodine.Runtime
                 StackFrame top = Top;
                 while (top != null) {
                     while (top.DisposableObjects.Count > 0) {
-                        IodineObject obj = top.DisposableObjects.Pop ();
+                        var obj = top.DisposableObjects.Pop ();
                         try {
                             obj.Exit (this); // Call __exit__
                         } catch (UnhandledIodineExceptionException) {
@@ -340,7 +340,7 @@ namespace Iodine.Runtime
         private void UnwindStack (int frames)
         {
             for (int i = 0; i < frames; i++) {
-                StackFrame frame = this.frames.Pop ();
+                var frame = this.frames.Pop ();
                 frame.AbortExecution = true;
             }
             frameCount -= frames;
@@ -376,7 +376,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.Dup:
                 {
-                    IodineObject val = Pop ();
+                    var val = Pop ();
                     Push (val);
                     Push (val);
                     break;
@@ -443,12 +443,12 @@ namespace Iodine.Runtime
                 }
             case Opcode.StoreAttribute:
                 {
-                    IodineObject target = Pop ();
-                    IodineObject value = Pop ();
+                    var target = Pop ();
+                    var value = Pop ();
                     string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
                     if (target.Attributes.ContainsKey (attribute) &&
                         target.Attributes [attribute] is IIodineProperty) {
-                        IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
+                        var property = (IIodineProperty)target.Attributes [attribute];
                         property.Set (this, value);
                         break;
                     }
@@ -457,11 +457,11 @@ namespace Iodine.Runtime
                 }
             case Opcode.LoadAttribute:
                 {
-                    IodineObject target = Pop ();
+                    var target = Pop ();
                     string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
                     if (target.Attributes.ContainsKey (attribute) &&
                         target.Attributes [attribute] is IIodineProperty) {
-                        IIodineProperty property = (IIodineProperty)target.Attributes [attribute];
+                        var property = (IIodineProperty)target.Attributes [attribute];
                         Push (property.Get (this));
                         break;
                     }
@@ -470,7 +470,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.LoadAttributeOrNull:
                 {
-                    IodineObject target = Pop ();
+                    var target = Pop ();
                     string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
                     if (target.Attributes.ContainsKey (attribute)) {
                         Push (target.GetAttribute (this, attribute));
@@ -481,24 +481,24 @@ namespace Iodine.Runtime
                 }
             case Opcode.StoreIndex:
                 {
-                    IodineObject index = Pop ();
-                    IodineObject target = Pop ();
-                    IodineObject value = Pop ();
+                    var index = Pop ();
+                    var target = Pop ();
+                    var value = Pop ();
                     target.SetIndex (this, index, value);
                     break;
                 }
             case Opcode.LoadIndex:
                 {
-                    IodineObject index = Pop ();
-                    IodineObject target = Pop ();
+                    var index = Pop ();
+                    var target = Pop ();
                     Push (target.GetIndex (this, index));
                     break;
                 }
             case Opcode.CastLocal:
                 {
-                    IodineTypeDefinition type = Pop () as IodineTypeDefinition;
+                    var type = Pop () as IodineTypeDefinition;
                     string name = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
-                    IodineObject o = Top.LoadLocal (name);
+                    var o = Top.LoadLocal (name);
                     if (type == null) {
                         RaiseException (new IodineTypeException ("TypeDef"));
                         break;
@@ -512,8 +512,8 @@ namespace Iodine.Runtime
                 }
             case Opcode.BinOp:
                 {
-                    IodineObject op2 = Pop ();
-                    IodineObject op1 = Pop ();
+                    var op2 = Pop ();
+                    var op1 = Pop ();
                     Push (op1.PerformBinaryOperation (this,
                         (BinaryOperation)instruction.Argument,
                         op2
@@ -528,8 +528,8 @@ namespace Iodine.Runtime
                 }
             case Opcode.Invoke:
                 {
-                    IodineObject target = Pop ();
-                    IodineObject[] arguments = new IodineObject[instruction.Argument];
+                    var target = Pop ();
+                    var arguments = new IodineObject[instruction.Argument];
                     for (int i = 1; i <= instruction.Argument; i++) {
                         arguments [instruction.Argument - i] = Pop ();
                     }
@@ -538,9 +538,9 @@ namespace Iodine.Runtime
                 }
             case Opcode.InvokeVar:
                 {
-                    IodineObject target = Pop ();
-                    List<IodineObject> arguments = new List<IodineObject> ();
-                    IodineTuple tuple = Pop () as IodineTuple;
+                    var target = Pop ();
+                    var arguments = new List<IodineObject> ();
+                    var tuple = Pop () as IodineTuple;
                     if (tuple == null) {
                         RaiseException (new IodineTypeException ("Tuple"));
                         break;
@@ -554,8 +554,9 @@ namespace Iodine.Runtime
                 }
             case Opcode.InvokeSuper:
                 {
-                    IodineTypeDefinition target = Pop () as IodineTypeDefinition;
-                    IodineObject[] arguments = new IodineObject[instruction.Argument];
+                    var target = Pop () as IodineTypeDefinition;
+                    var arguments = new IodineObject[instruction.Argument];
+
                     for (int i = 1; i <= instruction.Argument; i++) {
                         arguments [instruction.Argument - i] = Pop ();
                     }
@@ -594,13 +595,13 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildClass:
                 {
-                    IodineName name = Pop () as IodineName;
-                    IodineString doc = Pop () as IodineString;
-                    IodineMethod constructor = Pop () as IodineMethod;
+                    var name = Pop () as IodineName;
+                    var doc = Pop () as IodineString;
+                    var constructor = Pop () as IodineMethod;
                     //CodeObject initializer = Pop as CodeObject;
-                    IodineTypeDefinition baseClass = Pop () as IodineTypeDefinition;
-                    IodineTuple interfaces = Pop () as IodineTuple;
-                    IodineClass clazz = new IodineClass (name.ToString (), new CodeObject (), constructor);
+                    var baseClass = Pop () as IodineTypeDefinition;
+                    var interfaces = Pop () as IodineTuple;
+                    var clazz = new IodineClass (name.ToString (), new CodeObject (), constructor);
 
                     if (baseClass != null) {
                         clazz.BaseClass = baseClass;
@@ -608,14 +609,14 @@ namespace Iodine.Runtime
                     }
 
                     for (int i = 0; i < instruction.Argument; i++) {
-                        IodineObject val = Pop ();
-                        IodineObject key = Pop ();
+                        var val = Pop ();
+                        var key = Pop ();
 
                         clazz.Attributes [val.ToString ()] = key;
                     }
 
                     foreach (IodineObject obj in interfaces.Objects) {
-                        IodineContract contract = obj as IodineContract;
+                        var contract = obj as IodineContract;
                         if (!contract.InstanceOf (clazz)) {
                             //RaiseException (new IodineTypeException (contract.Name));
                             break;
@@ -629,13 +630,13 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildMixin:
                 {
-                    IodineName name = Pop () as IodineName;
+                    var name = Pop () as IodineName;
 
-                    IodineMixin mixin = new IodineMixin (name.ToString ());
+                    var mixin = new IodineMixin (name.ToString ());
 
                     for (int i = 0; i < instruction.Argument; i++) {
-                        IodineObject val = Pop ();
-                        IodineObject key = Pop ();
+                        var val = Pop ();
+                        var key = Pop ();
 
                         mixin.Attributes [val.ToString ()] = key;
                     }
@@ -645,12 +646,12 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildEnum:
                 {
-                    IodineName name = Pop () as IodineName;
+                    var name = Pop () as IodineName;
+                    var ienum = new IodineEnum (name.ToString ());
 
-                    IodineEnum ienum = new IodineEnum (name.ToString ());
                     for (int i = 0; i < instruction.Argument; i++) {
-                        IodineInteger val = Pop () as IodineInteger;
-                        IodineName key = Pop () as IodineName;
+                        var val = Pop () as IodineInteger;
+                        var key = Pop () as IodineName;
                         ienum.AddItem (key.ToString (), (int)val.Value);
                     }
 
@@ -659,11 +660,11 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildContract:
                 {
-                    IodineName name = Pop () as IodineName;
+                    var name = Pop () as IodineName;
 
-                    IodineContract contract = new IodineContract (name.ToString ());
+                    var contract = new IodineContract (name.ToString ());
                     for (int i = 0; i < instruction.Argument; i++) {
-                        IodineMethod val = Pop () as IodineMethod;
+                        var val = Pop () as IodineMethod;
                         contract.AddMethod (val);
                     }
 
@@ -672,11 +673,11 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildTrait:
                 {
-                    IodineName name = Pop () as IodineName;
+                    var name = Pop () as IodineName;
+                    var trait = new IodineTrait (name.ToString ());
 
-                    IodineTrait trait = new IodineTrait (name.ToString ());
                     for (int i = 0; i < instruction.Argument; i++) {
-                        IodineMethod val = Pop () as IodineMethod;
+                        var val = Pop () as IodineMethod;
                         trait.AddMethod (val);
                     }
 
@@ -685,10 +686,10 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildHash:
                 {
-                    IodineDictionary hash = new IodineDictionary ();
+                    var hash = new IodineDictionary ();
                     for (int i = 0; i < instruction.Argument; i++) {
-                        IodineObject val = Pop ();
-                        IodineObject key = Pop ();
+                        var val = Pop ();
+                        var key = Pop ();
                         hash.Set (key, val);
                     }
                     Push (hash);
@@ -696,7 +697,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildList:
                 {
-                    IodineObject[] items = new IodineObject[instruction.Argument];
+                    var items = new IodineObject[instruction.Argument];
                     for (int i = 1; i <= instruction.Argument; i++) {
                         items [instruction.Argument - i] = Pop ();
                     }
@@ -705,7 +706,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildTuple:
                 {
-                    IodineObject[] items = new IodineObject[instruction.Argument];
+                    var items = new IodineObject[instruction.Argument];
                     for (int i = 1; i <= instruction.Argument; i++) {
                         items [instruction.Argument - i] = Pop ();
                     }
@@ -714,26 +715,26 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildClosure:
                 {
-                    IodineObject obj = Pop ();
-                    IodineMethod method = obj as IodineMethod;
+                    var obj = Pop ();
+                    var method = obj as IodineMethod;
                     Push (new IodineClosure (Top, method));
                     break;
                 }
 
             case Opcode.BuildGenExpr:
                 {
-                    CodeObject method = Pop () as CodeObject;
+                    var method = Pop () as CodeObject;
                     Push (new IodineGeneratorExpr (Top, method));
                     break;
                 }
             case Opcode.Slice:
                 {
-                    IodineObject target = Pop ();
+                    var target = Pop ();
 
-                    IodineInteger[] arguments = new IodineInteger[3];
+                    var arguments = new IodineInteger[3];
 
                     for (int i = 0; i < 3; i++) {
-                        IodineObject obj = Pop ();
+                        var obj = Pop ();
                         arguments [i] = obj as IodineInteger;
 
                         if (obj != IodineNull.Instance && arguments [i] == null) {
@@ -742,7 +743,7 @@ namespace Iodine.Runtime
                         }
                     }
 
-                    IodineSlice slice = new IodineSlice (arguments [0], arguments [1], arguments [2]);
+                    var slice = new IodineSlice (arguments [0], arguments [1], arguments [2]);
 
                     Push (target.Slice (this, slice));
 
@@ -750,9 +751,9 @@ namespace Iodine.Runtime
                 }
             case Opcode.MatchPattern:
                 {
-                    IodineObject collection = Pop ().GetIterator (this);
+                    var collection = Pop ().GetIterator (this);
 
-                    IodineObject[] items = new IodineObject[instruction.Argument];
+                    var items = new IodineObject[instruction.Argument];
                     for (int i = 1; i <= instruction.Argument; i++) {
                         items [instruction.Argument - i] = Pop ();
                     }
@@ -764,7 +765,7 @@ namespace Iodine.Runtime
 
                     while (collection.IterMoveNext (this) && index < items.Length) {
 
-                        IodineObject o = collection.IterGetCurrent (this);
+                        var o = collection.IterGetCurrent (this);
 
                         if (items [index] is IodineTypeDefinition) {
                             if (!o.InstanceOf (items [index] as IodineTypeDefinition)) {
@@ -787,12 +788,12 @@ namespace Iodine.Runtime
                 }
             case Opcode.Unwrap:
                 {
-                    IodineObject container = Pop ();
+                    var container = Pop ();
 
-                    IodineObject value = container.Unwrap (this);
+                    var value = container.Unwrap (this);
 
                     if (instruction.Argument > 0) {
-                        IodineInteger len = value.Len (this) as IodineInteger;
+                        var len = value.Len (this) as IodineInteger;
 
                         if (len == null || len.Value != instruction.Argument) {
                             Push (IodineBool.False);
@@ -807,7 +808,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.Unpack:
                 {
-                    IodineTuple tuple = Pop () as IodineTuple;
+                    var tuple = Pop () as IodineTuple;
 
                     if (tuple == null) {
                         RaiseException (new IodineTypeException ("Tuple"));
@@ -855,8 +856,8 @@ namespace Iodine.Runtime
                 }
             case Opcode.InstanceOf:
                 {
-                    IodineObject o = Pop ();
-                    IodineTypeDefinition type = Pop () as IodineTypeDefinition;
+                    var o = Pop ();
+                    var type = Pop () as IodineTypeDefinition;
                     if (type == null) {
                         RaiseException (new IodineTypeException ("TypeDef"));
                         break;
@@ -866,8 +867,8 @@ namespace Iodine.Runtime
                 }
             case Opcode.DynamicCast:
                 {
-                    IodineObject o = Pop ();
-                    IodineTypeDefinition type = Pop () as IodineTypeDefinition;
+                    var o = Pop ();
+                    var type = Pop () as IodineTypeDefinition;
                     if (type == null) {
                         RaiseException (new IodineTypeException ("TypeDef"));
                         break;
@@ -881,8 +882,8 @@ namespace Iodine.Runtime
                 }
             case Opcode.NullCoalesce:
                 {
-                    IodineObject o1 = Pop ();
-                    IodineObject o2 = Pop ();
+                    var o1 = Pop ();
+                    var o2 = Pop ();
                     if (o1 is IodineNull) {
                         Push (o2);
                     } else {
@@ -894,7 +895,7 @@ namespace Iodine.Runtime
                 {
                     bool rethrow = true;
                     for (int i = 1; i <= instruction.Argument; i++) {
-                        IodineTypeDefinition type = Pop () as IodineTypeDefinition;
+                        var type = Pop () as IodineTypeDefinition;
                         if (type == null) {
                             RaiseException (new IodineTypeException ("TypeDef"));
                             break;
@@ -912,7 +913,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.Raise:
                 {
-                    IodineObject e = Pop ();
+                    var e = Pop ();
                     if (e.InstanceOf (IodineException.TypeDefinition)) {
                         RaiseException (e);
                     } else {
@@ -922,11 +923,11 @@ namespace Iodine.Runtime
                 }
             case Opcode.SwitchLookup:
                 {
-                    Dictionary<int, IodineObject> lookup = new Dictionary<int, IodineObject> ();
-                    int needle = Pop ().GetHashCode ();
+                    var lookup = new Dictionary<int, IodineObject> ();
+                    var needle = Pop ().GetHashCode ();
                     for (int i = 0; i < instruction.Argument; i++) {
-                        IodineObject value = Pop ();
-                        IodineObject key = Pop ();
+                        var value = Pop ();
+                        var key = Pop ();
                         lookup [key.GetHashCode ()] = value;
                     }
                     if (lookup.ContainsKey (needle)) {
@@ -939,7 +940,7 @@ namespace Iodine.Runtime
                 }
             case Opcode.BeginWith:
                 {
-                    IodineObject obj = Pop ();
+                    var obj = Pop ();
                     obj.Enter (this);
                     Top.DisposableObjects.Push (obj);
                     break;
@@ -951,8 +952,8 @@ namespace Iodine.Runtime
                 }
             case Opcode.IncludeMixin:
                 {
-                    IodineObject obj = Pop ();
-                    IodineObject type = Pop ();
+                    var obj = Pop ();
+                    var type = Pop ();
 
                     foreach (KeyValuePair<string, IodineObject> attr in obj.Attributes) {
                         type.SetAttribute (attr.Key, attr.Value);
@@ -961,8 +962,8 @@ namespace Iodine.Runtime
                 }
             case Opcode.ApplyMixin:
                 {
-                    IodineObject type = Pop ();
-                    IodineMixin mixin = Top.Module.ConstantPool [instruction.Argument] as IodineMixin;
+                    var type = Pop ();
+                    var mixin = Top.Module.ConstantPool [instruction.Argument] as IodineMixin;
 
                     foreach (KeyValuePair<string, IodineObject> attr in mixin.Attributes) {
                         type.SetAttribute (attr.Key, attr.Value);
@@ -971,24 +972,24 @@ namespace Iodine.Runtime
                 }
             case Opcode.BuildFunction:
                 {
-                    MethodFlags flags = (MethodFlags)instruction.Argument;
+                    var flags = (MethodFlags)instruction.Argument;
 
-                    IodineString name = Pop () as IodineString;
-                    IodineString doc = Pop () as IodineString;
-                    CodeObject bytecode = Pop () as CodeObject;
-                    IodineTuple parameters = Pop () as IodineTuple;
+                    var name = Pop () as IodineString;
+                    var doc = Pop () as IodineString;
+                    var bytecode = Pop () as CodeObject;
+                    var parameters = Pop () as IodineTuple;
 
-                    IodineObject[] defaultValues = new IodineObject[] { };
+                    var defaultValues = new IodineObject[] { };
                     int defaultValuesStart = 0;
 
                     if (flags.HasFlag (MethodFlags.HasDefaultParameters)) {
-                        IodineTuple defaultValuesTuple = Pop () as IodineTuple;
-                        IodineInteger startInt = Pop () as IodineInteger;
+                        var defaultValuesTuple = Pop () as IodineTuple;
+                        var startInt = Pop () as IodineInteger;
                         defaultValues = defaultValuesTuple.Objects;
                         defaultValuesStart = (int)startInt.Value;
                     }
 
-                    IodineMethod method = new IodineMethod (
+                    var method = new IodineMethod (
                         Top.Module,
                         name,
                         bytecode,
@@ -1064,7 +1065,7 @@ namespace Iodine.Runtime
         {
             frameCount--;
             stackSize--;
-            StackFrame ret = frames.Pop ();
+            var ret = frames.Pop ();
             if (frames.Count != 0) {
                 Top = frames.Peek ();
             } else {
@@ -1075,7 +1076,7 @@ namespace Iodine.Runtime
 
         public IodineModule LoadModule (string name, bool useCache = true)
         {
-            IodineModule module = Context.LoadModule (name, useCache);
+            var module = Context.LoadModule (name, useCache);
             if (module == null) {
                 throw new ModuleNotFoundException (name, Context.SearchPath);
             }

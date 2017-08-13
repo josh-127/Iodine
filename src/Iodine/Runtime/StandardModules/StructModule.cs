@@ -59,8 +59,10 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return null;
             }
-            IodineString format = args [0] as IodineString;
-            IodineTuple tuple = args [1] as IodineTuple;
+
+            var format = args [0] as IodineString;
+            var tuple = args [1] as IodineTuple;
+
             if (format == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
                 return null;
@@ -77,7 +79,7 @@ namespace Iodine.Runtime
                 while (i < format.Value.Length) {
                     int arg = 1;
                     if (i < format.Value.Length && char.IsDigit (format.Value [i])) {
-                        StringBuilder accum = new StringBuilder ();
+                        var accum = new StringBuilder ();
                         do {
                             accum.Append (format.Value [i++]);
                         } while (i < format.Value.Length && char.IsDigit (format.Value [i]));
@@ -118,8 +120,8 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return null;
             }
-            IodineString format = args [0] as IodineString;
-            IodineBytes str = args [1] as IodineBytes;
+            var format = args [0] as IodineString;
+            var str = args [1] as IodineBytes;
 
             if (format == null) {
                 vm.RaiseException (new IodineTypeException ("Str"));
@@ -131,14 +133,15 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            List<IodineObject> items = new List<IodineObject> ();
+            var items = new List<IodineObject> ();
+
             using (MemoryStream ms = new MemoryStream (str.Value))
             using (BinaryReader br = new BinaryReader (ms)) {
                 int i = 0;
                 while (i < format.Value.Length) {
                     int arg = 1;
                     if (i < format.Value.Length && char.IsDigit (format.Value [i])) {
-                        StringBuilder accum = new StringBuilder ();
+                        var accum = new StringBuilder ();
                         do {
                             accum.Append (format.Value [i++]);
                         } while (i < format.Value.Length && char.IsDigit (format.Value [i]));
@@ -147,7 +150,7 @@ namespace Iodine.Runtime
                     if (i < format.Value.Length) {
                         char specifier = format.Value [i++];
                         if (i < format.Value.Length && char.IsDigit (format.Value [i])) {
-                            StringBuilder accum = new StringBuilder ();
+                            var accum = new StringBuilder ();
                             do {
                                 accum.Append (format.Value [i++]);
                             } while (i < format.Value.Length && char.IsDigit (format.Value [i]));
@@ -176,7 +179,7 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineArgumentException (2));
                 return null;
             }
-            IodineString format = args [0] as IodineString;
+            var format = args [0] as IodineString;
             int ret = 0;
             int i = 0;
             while (i < format.Value.Length) {
@@ -191,7 +194,7 @@ namespace Iodine.Runtime
                 if (i < format.Value.Length) {
                     char specifier = format.Value [i++];
                     if (i < format.Value.Length && char.IsDigit (format.Value [i])) {
-                        StringBuilder accum = new StringBuilder ();
+                        var accum = new StringBuilder ();
                         do {
                             accum.Append (format.Value [i++]);
                         } while (i < format.Value.Length && char.IsDigit (format.Value [i]));
@@ -213,7 +216,7 @@ namespace Iodine.Runtime
             switch (type) {
             case '?':
                 {
-                    IodineBool val = obj as IodineBool;
+                    var val = obj as IodineBool;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Bool"));
                         return false;
@@ -224,7 +227,7 @@ namespace Iodine.Runtime
                 }
             case 'b':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -235,7 +238,7 @@ namespace Iodine.Runtime
                 }
             case 'B':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -246,7 +249,7 @@ namespace Iodine.Runtime
                 }
             case 'h':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -257,7 +260,7 @@ namespace Iodine.Runtime
                 }
             case 'H':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -269,7 +272,7 @@ namespace Iodine.Runtime
             case 'l':
             case 'i':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -281,7 +284,7 @@ namespace Iodine.Runtime
             case 'I':
             case 'L':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -292,7 +295,7 @@ namespace Iodine.Runtime
                 }
             case 'q':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -303,7 +306,7 @@ namespace Iodine.Runtime
                 }
             case 'Q':
                 {
-                    IodineInteger val = obj as IodineInteger;
+                    var val = obj as IodineInteger;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return false;
@@ -315,19 +318,21 @@ namespace Iodine.Runtime
             case 'p':
             case 's':
                 {
-                    IodineString val = obj as IodineString;
+                    var val = obj as IodineString;
                     if (val == null) {
                         vm.RaiseException (new IodineTypeException ("Str"));
                         return false;
-                    } else {
-                        byte[] bytes = Encoding.ASCII.GetBytes (val.ToString ());
-                        for (int i = 0; i < arg; i++) {
-                            if (i < bytes.Length)
-                                bw.Write (bytes [i]);
-                            else
-                                bw.Write ((byte)0);
+                    }
+
+                    var bytes = Encoding.ASCII.GetBytes (val.ToString ());
+                    for (int i = 0; i < arg; i++) {
+                        if (i < bytes.Length) {
+                            bw.Write (bytes [i]);
+                        } else {
+                            bw.Write ((byte)0);
                         }
                     }
+
                     break;
                 }
             }

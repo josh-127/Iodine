@@ -46,9 +46,9 @@ namespace Iodine.Compiler.Ast
             visitor.Accept (this);
         }
 
-        public void Add (string kw, AstNode child)
+        public void Add (string keyword, AstNode child)
         {
-            Keywords [kw] = child;
+            Keywords [keyword] = child;
         }
 
         public override void VisitChildren (AstVisitor visitor)

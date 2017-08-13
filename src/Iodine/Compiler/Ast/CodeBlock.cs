@@ -34,7 +34,7 @@ namespace Iodine.Compiler.Ast
 {
     public class CodeBlock : AstNode
     {
-        private List<AstNode> children = new List<AstNode> ();
+        private readonly List<AstNode> children = new List<AstNode> ();
 
         public CodeBlock (SourceLocation location)
             : base (location)

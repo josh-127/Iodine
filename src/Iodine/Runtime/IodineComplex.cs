@@ -93,7 +93,7 @@ namespace Iodine.Runtime
 
         public override bool Equals (IodineObject obj)
         {
-            IodineComplex complexVal = obj as IodineComplex;
+            var complexVal = obj as IodineComplex;
 
             if (complexVal != null) {
                 return complexVal.Value == Value;
@@ -176,7 +176,9 @@ namespace Iodine.Runtime
             if (obj is IodineInteger) {
                 value = (double)((IodineInteger)obj).Value;
                 return true;
-            } else if (obj is IodineFloat) {
+            }
+
+            if (obj is IodineFloat) {
                 value = ((IodineFloat)obj).Value;
                 return true;
             }

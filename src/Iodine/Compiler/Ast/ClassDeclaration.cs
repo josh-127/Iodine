@@ -72,7 +72,7 @@ namespace Iodine.Compiler.Ast
              * Create an empty constructor that will call the class's super constructor
              */
 
-            FunctionDeclaration emptyCtor = new FunctionDeclaration (
+            var emptyCtor = new FunctionDeclaration (
                 location,
                 name,
                 true,
@@ -86,7 +86,12 @@ namespace Iodine.Compiler.Ast
             /*
              * This is important for insuring that the super class is properly initialized
              */
-            emptyCtor.Body.AddStatement (new SuperCallStatement (location, this, new ArgumentList (location)));
+
+
+            var callToSuper = new SuperCallStatement (location, this,
+                                                      new ArgumentList (location));
+
+            emptyCtor.Body.AddStatement (callToSuper);
 
             Constructor = emptyCtor;
         }
@@ -100,7 +105,7 @@ namespace Iodine.Compiler.Ast
             Name = name;
             Documentation = doc;
 
-            FunctionDeclaration recordCtor = new FunctionDeclaration (
+            var recordCtor = new FunctionDeclaration (
                 location,
                 name,
                 true,

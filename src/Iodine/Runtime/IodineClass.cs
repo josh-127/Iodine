@@ -90,7 +90,7 @@ namespace Iodine.Runtime
                 initializerInvoked = true;
                 //Initializer.Invoke (vm, new IodineObject[] { });
             }
-            IodineObject obj = new IodineObject (this);
+            var obj = new IodineObject (this);
             BindAttributes (obj);
 
             if (BaseClass != null) {
@@ -102,7 +102,7 @@ namespace Iodine.Runtime
 
         public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
         {
-            IodineObject obj = Invoke (vm, arguments);
+            var obj = Invoke (vm, arguments);
 
             foreach (KeyValuePair<string, IodineObject> kv in Attributes) {
                 if (!self.HasAttribute (kv.Key))

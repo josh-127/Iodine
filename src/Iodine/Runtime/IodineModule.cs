@@ -92,7 +92,7 @@ namespace Iodine.Runtime
             }
         }
 
-        public IodineModule (string name, string location = null)
+        protected IodineModule (string name, string location = null)
             : base (ModuleTypeDef)
         {
             if (name == "__init__") {
@@ -113,7 +113,7 @@ namespace Iodine.Runtime
         {
             ApplyGlobalVariables (vm.Context);
             vm.NewFrame (new StackFrame (this, null, new IodineObject[] { }, null, null, Attributes));
-            IodineObject retObj = vm.EvalCode (Initializer);
+            var retObj = vm.EvalCode (Initializer);
             vm.EndFrame ();
             return retObj;
         }
