@@ -66,11 +66,15 @@ class WhirlpoolImpl {
         bit_len     = WhirlpoolImpl.bitlength
 
         value = src_bits
-        for (i = 31; i > 0 && (carry != 0 || value != 0); i -= 1) {
+
+        i = 31
+
+        while (i > 0 && (carry != 0 || value != 0)) {
             carry += bit_len [1] + (value & 0xFF)
             bit_len [i] = carry & 0xFF
             carry >>= 8
             value >>= 8
+            i -= 1
         }
 
         # Process data
@@ -172,18 +176,18 @@ class WhirlpoolImpl {
         }
 
         if (buf_pos < WhirlpoolImpl.WBLOCK_BYTES - WhirlpoolImpl.LENGTH_BYTES) {
-            buf.clearRange (buf_pos, (WhirlpoolImpl.WBLOCK_BYTES - WhirlpoolImpl.LENGTH_BYTES) - buf_pos)
+            buf.fillrange (buf_pos, (WhirlpoolImpl.WBLOCK_BYTES - WhirlpoolImpl.LENGTH_BYTES) - buf_pos, 0)
         }
 
         buf_pos = WhirlpoolImpl.WBLOCK_BYTES - WhirlpoolImpl.LENGTH_BYTES
 
         # Append length
-        Array.copy (bit_len, 0, buf, WhirlpoolImpl.WBLOCK_BYTES - WhirlpoolImpl.LENGTH_BYTES, WhirlpoolImpl.LENGTH_BYTES)
+        Array.Copy (bit_len, 0, buf, WhirlpoolImpl.WBLOCK_BYTES - WhirlpoolImpl.LENGTH_BYTES, WhirlpoolImpl.LENGTH_BYTES)
 
         # Process block
         WhirlpoolImpl.ProcessBlock ()
 
-        for (i = 0; i < WhirlpoolImpl.DIGEST_LONG; i += 1) {
+        for (i in 0 .. WhirlpoolImpl.DIGEST_LONG) {
             digest [offset + 0] = (WhirlpoolImpl.hash [i] >> 56) & 0xFF
             digest [offset + 1] = (WhirlpoolImpl.hash [i] >> 48) & 0xFF
             digest [offset + 2] = (WhirlpoolImpl.hash [i] >> 40) & 0xFF
@@ -210,7 +214,7 @@ class WhirlpoolImpl {
         offset = 0
 
         # Create block from buffer
-        for (i = 0; i < 8; i += 1) {
+        for (i in 0 .. 8) {
             block [i] =
                  (buf [offset + 0]         << 56) ^
                 ((buf [offset + 1] & 0xFF) << 48) ^
@@ -224,13 +228,12 @@ class WhirlpoolImpl {
         }
 
         # Compute and apply K^0
-        for (x = 0; x < 8; x += 1) {
+        for (x in 0 .. 8) {
             state [x] = block [x] ^ (K [x] = WhirlpoolImpl.hash [x])
         }
 
         # Iterate over all rounds
-        for (r = 1; r <= WhirlpoolImpl.R; r += 1) {
-
+        for (r in 1 ... WhirlpoolImpl.R) {  
             # K^r = K^{r-1}
             L [0] =
                 WhirlpoolImpl.C0 [(K [0] >> 56) & 0xFF] ^
@@ -242,7 +245,7 @@ class WhirlpoolImpl {
                 WhirlpoolImpl.C6 [(K [2] >> 8 ) & 0xFF] ^
                 WhirlpoolImpl.C7 [(K [1])       & 0xFF] ^
                 WhirlpoolImpl.RC [r]
-
+          
             L [1] =
                 WhirlpoolImpl.C0 [(K [1] >> 56) & 0xFF] ^
                 WhirlpoolImpl.C1 [(K [0] >> 48) & 0xFF] ^
@@ -313,7 +316,7 @@ class WhirlpoolImpl {
                 WhirlpoolImpl.C6 [(K [1] >> 8 ) & 0xFF] ^
                 WhirlpoolImpl.C7 [(K [0])       & 0xFF]
 
-            for (x = 0; x < 8; x += 1) {
+            for (x in 0 .. 8) {
                 K [x] = L [x]
             }
 
@@ -406,13 +409,13 @@ class WhirlpoolImpl {
                 WhirlpoolImpl.C7 [(state [0])       & 0xFF] ^
                 K  [7]
 
-            for (x = 0; x < 8; x += 1) {
+            for (x in 0 .. 8) {
                 state [x] = L [x]
             }
         }
 
         # Myaguchi-Preneel function
-        for (x = 0; x < 8; x += 1) {
+        for (x in 0 .. 8) {
             WhirlpoolImpl.hash [x] ^= state [x] ^ block [x]
         }
     }
