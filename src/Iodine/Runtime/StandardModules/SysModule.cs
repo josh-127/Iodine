@@ -52,6 +52,7 @@ namespace Iodine.Runtime
             SetAttribute ("_getwarnmask", new BuiltinMethodCallback (GetWarnMask, this));
             SetAttribute ("_setwarnmask", new BuiltinMethodCallback (SetWarnMask, this));
             SetAttribute ("path", new InternalIodineProperty (GetPath, null));
+
             SetAttribute ("VERSION_MAJOR", new IodineInteger (major));
             SetAttribute ("VERSION_MINOR", new IodineInteger (minor));
             SetAttribute ("VERSION_PATCH", new IodineInteger (patch));

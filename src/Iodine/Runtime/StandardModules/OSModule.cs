@@ -41,244 +41,7 @@ namespace Iodine.Runtime
     [IodineBuiltinModule ("os")]
     public class OSModule : IodineModule
     {
-        /// <summary>
-        /// IodineProc, a process on the host operating system
-        /// </summary>
-        class IodineProc : IodineObject
-        {
-            // Note: Having this much nesting really bothers me, but, I can't
-            // really think of a better way to do this. Anonymous classes would
-            // be a cool thing in C# for singletons
-            sealed class ProcTypeDef : IodineTypeDefinition
-            {
-                public ProcTypeDef ()
-                    : base ("Process")
-                {
-                    BindAttributes (this);
-                }
-
-                public override IodineObject BindAttributes (IodineObject obj)
-                {
-                    obj.SetAttribute ("kill", new BuiltinMethodCallback (Kill, obj));
-                    return obj;
-                }
-
-                [BuiltinDocString ("Attempts to kill the associated process.")]
-                private static IodineObject Kill (
-                    VirtualMachine vm,
-                    IodineObject self,
-                    IodineObject[] args)
-                {
-                    var procObj = self as IodineProc;
-
-                    procObj.Value.Kill ();
-
-                    return null;
-                }
-            }
-
-            public static new readonly IodineTypeDefinition TypeDef = new ProcTypeDef ();
-
-            public readonly Process Value;
-
-            public IodineProc (Process proc)
-                : base (TypeDef)
-            {
-                Value = proc;
-                SetAttribute ("id", new IodineInteger (proc.Id));
-                SetAttribute ("name", new IodineString (proc.ProcessName));
-            }
-        }
-
-        /// <summary>
-        /// Subprocess, a process spawned by iodine
-        /// </summary>
-        class IodineSubprocess : IodineObject
-        {
-            sealed class SubProcessTypeDef : IodineTypeDefinition
-            {
-                public SubProcessTypeDef ()
-                    : base ("Subprocess")
-                {
-                    BindAttributes (this);
-                }
-
-                public override IodineObject BindAttributes (IodineObject obj)
-                {
-                    obj.SetAttribute ("write", new BuiltinMethodCallback (Write, obj));
-                    obj.SetAttribute ("writeln", new BuiltinMethodCallback (Writeln, obj));
-                    obj.SetAttribute ("read", new BuiltinMethodCallback (Read, obj));
-                    obj.SetAttribute ("readln", new BuiltinMethodCallback (Readln, obj));
-                    obj.SetAttribute ("kill", new BuiltinMethodCallback (Kill, obj));
-                    obj.SetAttribute ("empty", new BuiltinMethodCallback (Empty, obj));
-                    obj.SetAttribute ("alive", new BuiltinMethodCallback (Alive, obj));
-                    return base.BindAttributes (obj);
-                }
-
-                [BuiltinDocString (
-                    "@param *args" +
-                    "Writes each string passed in *args to the process's standard input stream"
-                )]
-                private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
-                {
-                    var proc = self as IodineSubprocess;
-
-                    if (proc == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
-                        return null;
-                    }
-
-                    foreach (IodineObject obj in args) {
-                        var str = obj as IodineString;
-
-                        if (str == null) {
-                            vm.RaiseException (new IodineTypeException ("Str"));
-                            return null;
-                        }
-
-                        proc.StdinWriteString (vm, str.Value);
-                    }
-                    return null;
-                }
-
-                [BuiltinDocString (
-                    "@param *args.",
-                    "Writes each string passed in *args to the process's standard input stream, and ",
-                    "appends a new line."
-                )]
-                private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
-                {
-                    var proc = self as IodineSubprocess;
-
-                    if (proc == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
-                        return null;
-                    }
-
-                    foreach (IodineObject obj in args) {
-                        var str = obj as IodineString;
-
-                        if (str == null) {
-                            vm.RaiseException (new IodineTypeException ("Str"));
-                            return null;
-                        }
-
-                        proc.StdinWriteString (vm, str.Value + "\n");
-
-                    }
-                    return null;
-                }
-
-                [BuiltinDocString (
-                    "Reads a single line from the process's standard output stream."
-                )]
-                private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject[] args)
-                {
-                    var proc = self as IodineSubprocess;
-
-                    if (proc == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
-                        return null;
-                    }
-
-                    return new IodineString (proc.Value.StandardOutput.ReadLine ());
-                }
-
-                [BuiltinDocString (
-                    "Reads all text written to the process's standard output stream."
-                )]
-                private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
-                {
-                    var proc = self as IodineSubprocess;
-
-                    if (proc == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
-                        return null;
-                    }
-
-                    return new IodineString (proc.Value.StandardOutput.ReadToEnd ());
-                }
-
-                [BuiltinDocString ("Attempts to kill the associated process.")]
-                private static IodineObject Kill (
-                    VirtualMachine vm,
-                    IodineObject self,
-                    IodineObject[] args)
-                {
-                    var procObj = self as IodineSubprocess;
-
-                    if (procObj == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
-                        return null;
-                    }
-                        
-                    procObj.Value.Kill ();
-
-                    return null;
-                }
-
-                [BuiltinDocString ("Returns true if the process is alive.")]
-                private IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
-                {
-                    var proc = self as IodineSubprocess;
-
-                    if (proc == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
-                        return null;
-                    }
-
-                    return IodineBool.Create (proc.Value.HasExited);
-                }
-
-                [BuiltinDocString ("Returns true if there is no more data to be read from stdout.")]
-                private IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject[] args)
-                {
-                    var proc = self as IodineSubprocess;
-
-                    if (proc == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
-                        return null;
-                    }
-
-                    return IodineBool.Create (proc.Value.StandardOutput.Peek () < 0);
-                }
-            }
-
-            public static new IodineTypeDefinition TypeDef = new SubProcessTypeDef ();
-
-            public readonly Process Value;
-
-            private bool canRead;
-            private bool canWrite;
-
-            public IodineSubprocess (Process proc, bool read, bool write)
-                : base (TypeDef)
-            {
-                canRead = read;
-                canWrite = write;
-                Value = proc;
-                SetAttribute ("id", new IodineInteger (proc.Id));
-                SetAttribute ("name", new IodineString (proc.ProcessName));
-            }
-
-            public override void Exit (VirtualMachine vm)
-            {
-                if (canRead) {
-                    Value.StandardOutput.Close ();
-                    Value.StandardError.Close ();
-                }
-
-                if (canWrite) {
-                    Value.StandardInput.Close ();
-                }
-            }
-
-            private void StdinWriteString (VirtualMachine vm, string str)
-            {
-                Value.StandardInput.Write (str);
-            }
-        }
-
+        
         public OSModule ()
             : base ("os")
         {
@@ -290,18 +53,13 @@ namespace Iodine.Runtime
             SetAttribute ("SEEK_CUR", new IodineInteger (IodineStream.SEEK_CUR));
             SetAttribute ("SEEK_END", new IodineInteger (IodineStream.SEEK_END));
 
-            SetAttribute ("getEnv", new BuiltinMethodCallback (GetEnv, this)); // DEPRECATED
-            SetAttribute ("setEnv", new BuiltinMethodCallback (SetEnv, this)); // DEPRECATED
+            SetAttribute ("call", new BuiltinMethodCallback (Call, this));
             SetAttribute ("putenv", new BuiltinMethodCallback (SetEnv, this));
             SetAttribute ("getenv", new BuiltinMethodCallback (GetEnv, this));
             SetAttribute ("getcwd", new BuiltinMethodCallback (GetCwd, this));
             SetAttribute ("setcwd", new BuiltinMethodCallback (SetCwd, this));
             SetAttribute ("getlogin", new BuiltinMethodCallback (GetUsername, this));
-            SetAttribute ("call", new BuiltinMethodCallback (Call, this));
-            SetAttribute ("spawn", new BuiltinMethodCallback (Spawn, this));
-            SetAttribute ("popen", new BuiltinMethodCallback (Popen, this));
             SetAttribute ("system", new BuiltinMethodCallback (System, this));
-            SetAttribute ("procs", new BuiltinMethodCallback (GetProcList, this));
             SetAttribute ("unlink", new BuiltinMethodCallback (Unlink, this));
             SetAttribute ("mkdir", new BuiltinMethodCallback (Mkdir, this));
             SetAttribute ("rmdir", new BuiltinMethodCallback (Rmdir, this));
@@ -309,15 +67,66 @@ namespace Iodine.Runtime
             SetAttribute ("list", new BuiltinMethodCallback (List, this));
         }
 
-        [BuiltinDocString ("Returns a list of processes running on the machine.")]
-        private IodineObject GetProcList (VirtualMachine vm, IodineObject self, IodineObject[] args)
+
+        [BuiltinDocString (
+            "Executes program, waiting for it to exit and returning its exit code.",
+            "@param executable The executable to run.",
+            "@param [args] Command line arguments.",
+            "@param [useShell] Should we use a shell."
+        )]
+        private IodineObject Call (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
-            var list = new IodineList (new IodineObject[] { });
-            foreach (Process proc in Process.GetProcesses ()) {
-                list.Add (new IodineProc (proc));
+            if (args.Length < 1) {
+                vm.RaiseException (new IodineArgumentException (1));
+                return null;
             }
-            return list;
+
+            var program = args [0] as IodineString;
+
+            string arguments = "";
+            bool useShell = false;
+
+            if (program == null) {
+                vm.RaiseException (new IodineTypeException ("Str"));
+                return null;
+            }
+
+            if (args.Length > 1) {
+
+                var argObj = args [1] as IodineString;
+
+                if (argObj == null) {
+                    vm.RaiseException (new IodineTypeException ("Str"));
+                    return null;
+                }
+
+                arguments = argObj.Value;
+            }
+
+            if (args.Length > 2) {
+                var useShellObj = args [1] as IodineBool;
+
+                if (useShellObj == null) {
+                    vm.RaiseException (new IodineTypeException ("Bool"));
+                    return null;
+                }
+
+                useShell = useShellObj.Value;
+            }
+
+            var info = new ProcessStartInfo ();
+            info.FileName = program.Value;
+            info.Arguments = arguments;
+            info.UseShellExecute = useShell;
+
+            var proc = Process.Start (info);
+
+            proc.WaitForExit ();
+
+            return new IodineInteger (proc.ExitCode);
+
         }
+
 
         [BuiltinDocString ("Returns the login name of the current user.")]
         private IodineObject GetUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
@@ -400,187 +209,6 @@ namespace Iodine.Runtime
             return null;
         }
 
-        [BuiltinDocString (
-            "Spawns a new process.",
-            "@param executable The executable to run",
-            "@param [args] Command line arguments",
-            "@param [wait] Should we wait to exit"
-        )]
-        private IodineObject Spawn (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length <= 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-            }
-
-            var str = args [0] as IodineString;
-
-            string cmdArgs = "";
-            bool wait = true;
-
-            if (str == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-
-            if (args.Length >= 2) {
-                var cmdArgsObj = args [1] as IodineString;
-                if (cmdArgsObj == null) {
-                    vm.RaiseException (new IodineTypeException ("Str"));
-                    return null;
-                }
-                cmdArgs = cmdArgsObj.Value;
-            }
-
-            if (args.Length >= 3) {
-                var waitObj = args [2] as IodineBool;
-                if (waitObj == null) {
-                    vm.RaiseException (new IodineTypeException ("Bool"));
-                    return null;
-                }
-                wait = waitObj.Value;
-            }
-
-            var info = new ProcessStartInfo (str.Value, cmdArgs);
-            info.UseShellExecute = false;
-
-            return new IodineProc (Process.Start (info));
-        }
-         
-        [BuiltinDocString (
-            "Executes program, waiting for it to exit and returning its exit code.",
-            "@param executable The executable to run.",
-            "@param [args] Command line arguments.",
-            "@param [useShell] Should we use a shell."
-        )]
-        private IodineObject Call (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 1) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            var program = args [0] as IodineString;
-
-            string arguments = "";
-            bool useShell = false;
-
-            if (program == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-
-            if (args.Length > 1) {
-
-                var argObj = args [1] as IodineString;
-
-                if (argObj == null) {
-                    vm.RaiseException (new IodineTypeException ("Str"));
-                    return null;
-                }
-
-                arguments = argObj.Value;
-            }
-
-            if (args.Length > 2) {
-                var useShellObj = args [1] as IodineBool;
-
-                if (useShellObj == null) {
-                    vm.RaiseException (new IodineTypeException ("Bool"));
-                    return null;
-                }
-
-                useShell = useShellObj.Value;
-            }
-
-            var info = new ProcessStartInfo ();
-            info.FileName = program.Value;
-            info.Arguments = arguments;
-            info.UseShellExecute = useShell;
-
-            var proc = Process.Start (info);
-
-            proc.WaitForExit ();
-
-            return new IodineInteger (proc.ExitCode);
-
-        }
-            
-        [BuiltinDocString (
-            "Opens up a new process, returning a Proc object.",
-            "@param commmand Command to run.",
-            "@param mode Mode to open up the process in ('r' or 'w')."
-        )]
-        private IodineObject Popen (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length < 2) {
-                vm.RaiseException (new IodineArgumentException (2));
-                return null;
-            }
-            var command = args [0] as IodineString;
-            var mode = args [1] as IodineString;
-
-            if (command == null || mode == null) {
-                vm.RaiseException (new IodineTypeException ("Str"));
-                return null;
-            }
-
-            bool read = false;
-            bool write = false;
-
-            foreach (char c in mode.Value) {
-                switch (c) {
-                case 'r':
-                    read = true;
-                    break;
-                case 'w':
-                    write = true;
-                    break;
-                }
-
-            }
-
-            bool isWindows = Environment.OSVersion.Platform == PlatformID.Win32NT
-                             || Environment.OSVersion.Platform == PlatformID.Win32S
-                             || Environment.OSVersion.Platform == PlatformID.Win32Windows
-                             || Environment.OSVersion.Platform == PlatformID.WinCE
-                             || Environment.OSVersion.Platform == PlatformID.Xbox;
-
-            if (isWindows) {
-                return new IodineSubprocess (Popen_Win32 (command.Value, read, write), read, write);
-            } else {
-                var proc = Popen_Unix (command.Value, read, write);
-                proc.Start ();
-                return new IodineSubprocess (proc, read, write);
-            }
-
-        }
-
-        private Process Popen_Win32 (string command, bool read, bool write)
-        {
-            var systemPath = Environment.GetFolderPath (Environment.SpecialFolder.System);
-            var args = String.Format ("/K \"{0}\"", command);
-            var info = new ProcessStartInfo (Path.Combine (systemPath, "cmd.exe"), args);
-            info.UseShellExecute = false;
-            info.RedirectStandardOutput = read;
-            info.RedirectStandardError = read;
-            info.RedirectStandardInput = write;
-            var proc = new Process ();
-            proc.StartInfo = info;
-            return proc;
-        }
-
-        private Process Popen_Unix (string command, bool read, bool write)
-        {
-            var args = String.Format ("-c \"{0}\"", command);
-            var info = new ProcessStartInfo ("/bin/sh", args);
-            info.UseShellExecute = false;
-            info.RedirectStandardOutput = read;
-            info.RedirectStandardError = read;
-            info.RedirectStandardInput = write;
-            var proc = new Process ();
-            proc.StartInfo = info;
-            return proc;
-        }
 
         [BuiltinDocString (
             "Executes a command using the default shell.",
@@ -611,9 +239,9 @@ namespace Iodine.Runtime
             Process proc = null;
 
             if (isWindows) {
-                proc = Popen_Win32 (command.Value, false, false);
+                proc = PsUtilsModule.Popen_Win32 (command.Value, false, false);
             } else {
-                proc = Popen_Unix (command.Value, false, false);
+                proc = PsUtilsModule.Popen_Unix (command.Value, false, false);
             }
 
             proc.Start ();

@@ -70,6 +70,13 @@ namespace Iodine.Runtime
             private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineStream;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
+
                 if (thisObj.Closed) { 
                     vm.RaiseException (new IodineIOException ("Stream has been closed!"));
                     return null;
@@ -93,6 +100,12 @@ namespace Iodine.Runtime
             private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineStream;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (thisObj.Closed) { 
                     vm.RaiseException (new IodineIOException ("Stream has been closed!"));
                     return null;

@@ -31,7 +31,7 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
-using Iodine.Compiler;
+using Iodine.Util;
 
 namespace Iodine.Runtime
 {
@@ -55,6 +55,9 @@ namespace Iodine.Runtime
             public override IodineObject BindAttributes (IodineObject newList)
             {
                 base.BindAttributes (newList);
+
+                IodineIterableMixin.ApplyMixin (newList);
+
                 newList.SetAttribute ("append", new BuiltinMethodCallback (Add, newList));
                 newList.SetAttribute ("prepend", new BuiltinMethodCallback (Prepend, newList));
                 newList.SetAttribute ("appendrange", new BuiltinMethodCallback (AddRange, newList));
@@ -67,6 +70,7 @@ namespace Iodine.Runtime
                 newList.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, newList));
                 newList.SetAttribute ("find", new BuiltinMethodCallback (Find, newList));
                 newList.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, newList));
+
                 return newList;
             }
 
@@ -491,15 +495,15 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIndex (VirtualMachine vm, IodineObject key)
         {
-            var index = key as IodineInteger;
+            long indexVal = 0;
 
-            if (index == null) {
+            if (!MarshalUtil.MarshalAsInt64 (key, out indexVal)) {
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return null;
             }
 
-            if (index.Value < Objects.Count) {
-                return Objects [(int)index.Value];
+            if (indexVal < Objects.Count) {
+                return Objects [(int)indexVal];
             }
 
             vm.RaiseException (new IodineIndexException ());
@@ -508,15 +512,15 @@ namespace Iodine.Runtime
 
         public override void SetIndex (VirtualMachine vm, IodineObject key, IodineObject value)
         {
-            var index = key as IodineInteger;
+            long indexVal = 0;
 
-            if (index == null) {
+            if (!MarshalUtil.MarshalAsInt64 (key, out indexVal)) {
                 vm.RaiseException (new IodineTypeException ("Int"));
                 return;
             }
 
-            if (index.Value < Objects.Count) {
-                Objects [(int)index.Value] = value;
+            if (indexVal < Objects.Count) {
+                Objects [(int)indexVal] = value;
             } else {
                 vm.RaiseException (new IodineIndexException ());
             }

@@ -44,6 +44,11 @@ namespace Iodine.Runtime
             {
             }
 
+            public override IodineObject BindAttributes (IodineObject obj)
+            {
+                return base.BindAttributes (obj);
+            }
+
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
             {
                 if (args.Length <= 0) {
@@ -74,6 +79,7 @@ namespace Iodine.Runtime
                     return new IodineInteger (value);
                 }
             }
+
         }
 
         public readonly long Value;

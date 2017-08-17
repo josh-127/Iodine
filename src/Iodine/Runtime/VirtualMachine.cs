@@ -210,6 +210,7 @@ namespace Iodine.Runtime
 
             StackFrame top = Top;
             top.Module = method.Module;
+
             if (traceCallback != null) {
                 Trace (TraceType.Function, top, currentLocation);
             }
@@ -336,14 +337,14 @@ namespace Iodine.Runtime
         /// <summary>
         /// Unwinds the stack n frames
         /// </summary>
-        /// <param name="frames">Frames.</param>
-        private void UnwindStack (int frames)
+        /// <param name="numFrames">Frames.</param>
+        private void UnwindStack (int numFrames)
         {
-            for (int i = 0; i < frames; i++) {
+            for (int i = 0; i < numFrames; i++) {
                 var frame = this.frames.Pop ();
                 frame.AbortExecution = true;
             }
-            frameCount -= frames;
+            frameCount -= numFrames;
             Top = this.frames.Peek ();
         }
 
@@ -394,6 +395,11 @@ namespace Iodine.Runtime
             case Opcode.LoadSelf:
                 {
                     Push (Top.Self);
+
+                    if (Top.Self == null) {
+                        RaiseException (new IodineFunctionInvocationException ());
+                    }
+
                     break;
                 }
             case Opcode.LoadTrue:
@@ -472,6 +478,7 @@ namespace Iodine.Runtime
                 {
                     var target = Pop ();
                     string attribute = ((IodineName)Top.Module.ConstantPool [instruction.Argument]).Value;
+
                     if (target.Attributes.ContainsKey (attribute)) {
                         Push (target.GetAttribute (this, attribute));
                     } else {

@@ -68,6 +68,12 @@ namespace Iodine.Runtime
             private IodineObject Append (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineStringBuilder;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 foreach (IodineObject obj in args) {
                     thisObj.Buffer.Append (obj.ToString (vm));
                 }
@@ -81,6 +87,12 @@ namespace Iodine.Runtime
             private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineStringBuilder;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 foreach (IodineObject obj in args) {
                     thisObj.Buffer.Insert (0, obj.ToString (vm));
                 }
@@ -92,7 +104,13 @@ namespace Iodine.Runtime
             )]
             private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
-                var thisObj = self as IodineStringBuilder;
+                var thisObj = self as IodineStringBuilder; 
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 thisObj.Buffer.Clear ();
                 return null;
             }

@@ -50,40 +50,42 @@ namespace Iodine.Runtime
                 );
             }
 
-            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
             {
-                if (args.Length <= 0) {
+                if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                 }
-                return new IodineString (args [0].ToString ());
+                return new IodineString (arguments [0].ToString ());
             }
                 
-            public override IodineObject BindAttributes (IodineObject newStr)
+            public override IodineObject BindAttributes (IodineObject obj)
             {
-                newStr.SetAttribute ("lower", new BuiltinMethodCallback (Lower, newStr));
-                newStr.SetAttribute ("upper", new BuiltinMethodCallback (Upper, newStr));
-                newStr.SetAttribute ("substr", new BuiltinMethodCallback (Substring, newStr));
-                newStr.SetAttribute ("index", new BuiltinMethodCallback (IndexOf, newStr));
-                newStr.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, newStr));
-                newStr.SetAttribute ("find", new BuiltinMethodCallback (Find, newStr));
-                newStr.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, newStr));
-                newStr.SetAttribute ("contains", new BuiltinMethodCallback (Contains, newStr));
-                newStr.SetAttribute ("replace", new BuiltinMethodCallback (Replace, newStr));
-                newStr.SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, newStr));
-                newStr.SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, newStr));
-                newStr.SetAttribute ("split", new BuiltinMethodCallback (Split, newStr));
-                newStr.SetAttribute ("join", new BuiltinMethodCallback (Join, newStr));
-                newStr.SetAttribute ("trim", new BuiltinMethodCallback (Trim, newStr));
-                newStr.SetAttribute ("format", new BuiltinMethodCallback (Format, newStr));
-                newStr.SetAttribute ("isalpha", new BuiltinMethodCallback (IsLetter, newStr));
-                newStr.SetAttribute ("isdigit", new BuiltinMethodCallback (IsDigit, newStr));
-                newStr.SetAttribute ("isalnum", new BuiltinMethodCallback (IsLetterOrDigit, newStr));
-                newStr.SetAttribute ("iswhitespace", new BuiltinMethodCallback (IsWhiteSpace, newStr));
-                newStr.SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, newStr));
-                newStr.SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, newStr));
-                newStr.SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, newStr));
+                IodineIterableMixin.ApplyMixin (obj);
 
-                return newStr;
+                obj.SetAttribute ("lower", new BuiltinMethodCallback (Lower, obj));
+                obj.SetAttribute ("upper", new BuiltinMethodCallback (Upper, obj));
+                obj.SetAttribute ("substr", new BuiltinMethodCallback (Substring, obj));
+                obj.SetAttribute ("index", new BuiltinMethodCallback (IndexOf, obj));
+                obj.SetAttribute ("rindex", new BuiltinMethodCallback (RightIndex, obj));
+                obj.SetAttribute ("find", new BuiltinMethodCallback (Find, obj));
+                obj.SetAttribute ("rfind", new BuiltinMethodCallback (RightFind, obj));
+                obj.SetAttribute ("contains", new BuiltinMethodCallback (Contains, obj));
+                obj.SetAttribute ("replace", new BuiltinMethodCallback (Replace, obj));
+                obj.SetAttribute ("startswith", new BuiltinMethodCallback (StartsWith, obj));
+                obj.SetAttribute ("endswith", new BuiltinMethodCallback (EndsWith, obj));
+                obj.SetAttribute ("split", new BuiltinMethodCallback (Split, obj));
+                obj.SetAttribute ("join", new BuiltinMethodCallback (Join, obj));
+                obj.SetAttribute ("trim", new BuiltinMethodCallback (Trim, obj));
+                obj.SetAttribute ("format", new BuiltinMethodCallback (Format, obj));
+                obj.SetAttribute ("isalpha", new BuiltinMethodCallback (IsLetter, obj));
+                obj.SetAttribute ("isdigit", new BuiltinMethodCallback (IsDigit, obj));
+                obj.SetAttribute ("isalnum", new BuiltinMethodCallback (IsLetterOrDigit, obj));
+                obj.SetAttribute ("iswhitespace", new BuiltinMethodCallback (IsWhiteSpace, obj));
+                obj.SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, obj));
+                obj.SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, obj));
+                obj.SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, obj));
+
+                return obj;
             }
 
             [BuiltinDocString (
@@ -92,6 +94,12 @@ namespace Iodine.Runtime
             private IodineObject Upper (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 return new IodineString (thisObj.Value.ToUpper ());
             }
 
@@ -101,6 +109,12 @@ namespace Iodine.Runtime
             private IodineObject Lower (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 return new IodineString (thisObj.Value.ToLower ());
             }
                 
@@ -113,6 +127,12 @@ namespace Iodine.Runtime
             private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -120,11 +140,13 @@ namespace Iodine.Runtime
                 int start = 0;
                 int len = 0;
                 var startObj = args [0] as IodineInteger;
+
                 if (startObj == null) {
                     vm.RaiseException (new IodineTypeException ("Int"));
                     return null;
                 }
                 start = (int)startObj.Value;
+
                 if (args.Length == 1) {
                     len = thisObj.Value.Length;
                 } else {
@@ -151,6 +173,12 @@ namespace Iodine.Runtime
             private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -181,6 +209,12 @@ namespace Iodine.Runtime
             private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -210,6 +244,12 @@ namespace Iodine.Runtime
             private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -239,6 +279,12 @@ namespace Iodine.Runtime
             private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -265,6 +311,12 @@ namespace Iodine.Runtime
             private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -279,6 +331,12 @@ namespace Iodine.Runtime
             private IodineObject StartsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -293,6 +351,12 @@ namespace Iodine.Runtime
             private IodineObject EndsWith (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -308,6 +372,12 @@ namespace Iodine.Runtime
             private IodineObject Replace (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 2) {
                     vm.RaiseException (new IodineArgumentException (2));
                     return null;
@@ -329,6 +399,12 @@ namespace Iodine.Runtime
             private IodineObject Split (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 if (args.Length < 1) {
                     vm.RaiseException (new IodineArgumentException (1));
                     return null;
@@ -356,6 +432,12 @@ namespace Iodine.Runtime
             private IodineObject Trim (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 return new IodineString (thisObj.Value.Trim ());
             }
 
@@ -366,6 +448,12 @@ namespace Iodine.Runtime
             private IodineObject Join (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 var accum = new StringBuilder ();
                 var collection = args [0].GetIterator (vm);
                 collection.IterReset (vm);
@@ -384,6 +472,12 @@ namespace Iodine.Runtime
             private IodineObject Format (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 string format = thisObj.Value;
                 var formatter = new IodineFormatter ();
                 return new IodineString (formatter.Format (vm, format, args));
@@ -395,6 +489,12 @@ namespace Iodine.Runtime
             private IodineObject IsLetter (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 bool result = thisObj.Value.Length == 0 ? false : true;
                 for (int i = 0; i < thisObj.Value.Length; i++) {
                     if (!char.IsLetter (thisObj.Value [i])) {
@@ -410,6 +510,12 @@ namespace Iodine.Runtime
             private IodineObject IsDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 bool result = thisObj.Value.Length == 0 ? false : true;
                 for (int i = 0; i < thisObj.Value.Length; i++) {
                     if (!char.IsDigit (thisObj.Value [i])) {
@@ -425,6 +531,12 @@ namespace Iodine.Runtime
             private IodineObject IsLetterOrDigit (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 bool result = thisObj.Value.Length == 0 ? false : true;
                 for (int i = 0; i < thisObj.Value.Length; i++) {
                     if (!char.IsLetterOrDigit (thisObj.Value [i])) {
@@ -440,6 +552,12 @@ namespace Iodine.Runtime
             private IodineObject IsWhiteSpace (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 bool result = thisObj.Value.Length == 0 ? false : true;
                 for (int i = 0; i < thisObj.Value.Length; i++) {
                     if (!char.IsWhiteSpace (thisObj.Value [i])) {
@@ -455,6 +573,12 @@ namespace Iodine.Runtime
             private IodineObject IsSymbol (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 bool result = thisObj.Value.Length == 0 ? false : true;
                 for (int i = 0; i < thisObj.Value.Length; i++) {
                     if (!char.IsSymbol (thisObj.Value [i])) {
@@ -472,6 +596,12 @@ namespace Iodine.Runtime
             private IodineObject PadRight (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
                 char ch = ' ';
 
                 if (args.Length == 0) {
@@ -508,6 +638,11 @@ namespace Iodine.Runtime
             private IodineObject PadLeft (VirtualMachine vm, IodineObject self, IodineObject[] args)
             {
                 var thisObj = self as IodineString;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
 
                 char ch = ' ';
 

@@ -271,6 +271,7 @@ namespace Iodine.Runtime
                 return IodineNull.Instance;
             }
 
+            var callable = args [0];
             var hash = args [1] as IodineDictionary;
             var context = new IodineContext ();
 
@@ -278,13 +279,14 @@ namespace Iodine.Runtime
 
             foreach (IodineObject key in hash.Keys) {
                 context.Globals [key.ToString ()] = hash.Get (key);
-                args [0].SetAttribute (key.ToString (), hash.Get (key));
+
+                callable.SetAttribute (key.ToString (), hash.Get (key));
             }
 
             var newVm = new VirtualMachine (context);
 
             try {
-                return args [0].Invoke (newVm, new IodineObject[]{ });
+                return callable.Invoke (newVm, new IodineObject[]{ });
             } catch (SyntaxException syntaxException) {
                 vm.RaiseException (new IodineSyntaxException (syntaxException.ErrorLog));
                 return IodineNull.Instance;

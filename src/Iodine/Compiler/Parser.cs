@@ -477,55 +477,71 @@ namespace Iodine.Compiler
         private UseStatement ParseUse ()
         {
             Expect (TokenClass.Keyword, "use");
-            bool relative = Accept (TokenClass.MemberAccess);
-            string ident = "";
+
+            var isRelative = Accept (TokenClass.MemberAccess);
+
+            var modPath = "";
 
             if (!Match (TokenClass.Operator, "*")) {
-                ident = ParseModuleName ();
+                modPath = ParseModuleName ();
             }
 
-            if (Match (TokenClass.Keyword, "from") || Match (TokenClass.Comma) ||
+            if (Match (TokenClass.Keyword, "from") ||
+                Match (TokenClass.Comma) ||
                 Match (TokenClass.Operator, "*")) {
-                List<string> items = new List<string> ();
-                bool wildcard = false;
+
+                var items = new List<string> ();
+
+                bool isWildcardImport = false;
+
                 if (!Accept (TokenClass.Operator, "*")) {
-                    items.Add (ident);
+                    items.Add (modPath);
+
                     Accept (TokenClass.Comma);
+
                     while (!Match (TokenClass.Keyword, "from")) {
-                        Token item = Expect (TokenClass.Identifier);
+                        var item = Expect (TokenClass.Identifier);
                         items.Add (item.Value);
                         if (!Accept (TokenClass.Comma)) {
                             break;
                         }
                     }
+
                 } else {
-                    wildcard = true;
+                    isWildcardImport = true;
                 }
+
                 Expect (TokenClass.Keyword, "from");
 
-                relative = Accept (TokenClass.MemberAccess);
-                string module = ParseModuleName ();
-                return new UseStatement (Location, module, items, wildcard, relative);
+                isRelative = Accept (TokenClass.MemberAccess);
+
+                var module = ParseModuleName ();
+
+                return new UseStatement (Location, module, items, isWildcardImport, isRelative);
             }
-            return new UseStatement (Location, ident, relative);
+            return new UseStatement (Location, modPath, isRelative);
         }
 
         private string ParseModuleName ()
         {
-            Token initIdent = Expect (TokenClass.Identifier);
+            var initialModule = Expect (TokenClass.Identifier);
 
             if (Match (TokenClass.MemberAccess)) {
-                StringBuilder accum = new StringBuilder ();
-                accum.Append (initIdent.Value);
+                
+                var accum = new StringBuilder ();
+
+                accum.Append (initialModule.Value);
+
                 while (Accept (TokenClass.MemberAccess)) {
-                    Token ident = Expect (TokenClass.Identifier);
+                    var submodule = Expect (TokenClass.Identifier);
                     accum.Append (Path.DirectorySeparatorChar);
-                    accum.Append (ident.Value);
+                    accum.Append (submodule.Value);
                 }
+
                 return accum.ToString ();
 
             }
-            return initIdent.Value;
+            return initialModule.Value;
         }
 
         private AstNode ParseStatement ()

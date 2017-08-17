@@ -176,7 +176,7 @@ namespace Iodine.Runtime
                     var spinlock = self as IodineLock;
 
                     if (spinlock == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        vm.RaiseException (new IodineFunctionInvocationException ());
                         return null;
                     }
 
@@ -192,7 +192,7 @@ namespace Iodine.Runtime
                     var spinlock = self as IodineLock;
 
                     if (spinlock == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        vm.RaiseException (new IodineFunctionInvocationException ());
                         return null;
                     }
 
@@ -208,7 +208,7 @@ namespace Iodine.Runtime
                     var spinlock = self as IodineLock;
 
                     if (spinlock == null) {
-                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        vm.RaiseException (new IodineFunctionInvocationException ());
                         return null;
                     }
 
@@ -258,14 +258,14 @@ namespace Iodine.Runtime
                         return new IodineSemaphore (1);
                     }
 
-                    var semaphore = args [0] as IodineInteger;
+                    var semaphoreVal = args [0] as IodineInteger;
 
-                    if (semaphore == null) {
+                    if (semaphoreVal == null) {
                         vm.RaiseException (new IodineTypeException ("Integer"));
                         return null;
                     }
 
-                    return new IodineSemaphore ((int)semaphore.Value);
+                    return new IodineSemaphore ((int)semaphoreVal.Value);
                 }
             }
 

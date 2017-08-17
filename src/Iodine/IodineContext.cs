@@ -135,8 +135,9 @@ namespace Iodine.Compiler
         public IodineContext ()
             : this (new IodineConfiguration ())
         {
-            string exeDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
-            string iodinePath = Environment.GetEnvironmentVariable ("IODINE_PATH");
+            var exeDir = Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
+
+            var iodinePath = Environment.GetEnvironmentVariable ("IODINE_PATH");
 
             SearchPath.Add (Environment.CurrentDirectory);
             SearchPath.Add (Path.Combine (exeDir, "modules"));
@@ -177,7 +178,24 @@ namespace Iodine.Compiler
             WarningType filter = type & WarningFilter;
 
             if (filter != WarningType.None) {
-                Console.Error.WriteLine ("*** WARNING {0}: {1}", type.ToString (), message);
+
+                var filePath = "";
+                var lineNumber = 0;
+
+                if (VirtualMachine.Top != null) {
+                    filePath = VirtualMachine.Top.Location.File;
+                    lineNumber = VirtualMachine.Top.Location.Line;
+                }
+
+                var forecolor = Console.ForegroundColor;
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+
+                Console.Error.Write ("WARNING ");
+
+                Console.ForegroundColor = forecolor;
+
+                Console.Error.WriteLine ("**: {0}:{1} {2}", filePath, lineNumber, message);
             }
         }
 
@@ -206,15 +224,15 @@ namespace Iodine.Compiler
 
             if (_resolveModule != null) {
                 foreach (Delegate del in _resolveModule.GetInvocationList ()) {
-                    ModuleResolveHandler handler = del as ModuleResolveHandler;
-                    IodineModule result = handler (name);
+                    var handler = del as ModuleResolveHandler;
+                    var result = handler (name);
                     if (result != null) {
                         return result;
                     }
                 }
             }
 
-            IodineModule module = LoadIodineModule (name);
+            var module = LoadIodineModule (name);
 
             if (module == null) {
                 module = LoadExtensionModule (name);
@@ -237,10 +255,10 @@ namespace Iodine.Compiler
 
         private IodineModule LoadIodineModule (string name)
         {
-            string modulePath = FindModuleSource (name);
+            var modulePath = FindModuleSource (name);
 
             if (modulePath != null) {
-                SourceUnit source = SourceUnit.CreateFromFile (modulePath);
+                var source = SourceUnit.CreateFromFile (modulePath);
                 return source.Compile (this);
             }
 

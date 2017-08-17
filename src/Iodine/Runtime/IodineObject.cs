@@ -485,10 +485,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// Addition operator (+)
         /// </summary>
-        public virtual IodineObject Add (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Add (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__add__")) {
-                return GetAttribute (vm, "__add__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__add__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -499,10 +499,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// Subtraction operator (-)
         /// </summary>
-        public virtual IodineObject Sub (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Sub (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__sub__")) {
-                return GetAttribute (vm, "__sub__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__sub__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -513,10 +513,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// Division operator (/)
         /// </summary>
-        public virtual IodineObject Div (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Div (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__div__")) {
-                return GetAttribute (vm, "__div__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__div__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -527,10 +527,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// Modulo operator (%)
         /// </summary>
-        public virtual IodineObject Mod (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Mod (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__mod__")) {
-                return GetAttribute (vm, "__mod__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__mod__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -541,10 +541,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// Multiplication operator (*)
         /// </summary>
-        public virtual IodineObject Mul (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Mul (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__mul__")) {
-                return GetAttribute (vm, "__mul__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__mul__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -555,10 +555,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// Power operator (**)
         /// </summary>
-        public virtual IodineObject Pow (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Pow (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__pow__")) {
-                return GetAttribute (vm, "__pow__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__pow__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -569,10 +569,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// And operator (&)
         /// </summary>
-        public virtual IodineObject And (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject And (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__and__")) {
-                return GetAttribute (vm, "__and__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__and__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -583,10 +583,10 @@ namespace Iodine.Runtime
         /// <summary>
         /// Exclusive or operator (^)
         /// </summary>
-        public virtual IodineObject Xor (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Xor (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__xor__")) {
-                return GetAttribute (vm, "__xor__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__xor__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -594,10 +594,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject Or (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Or (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__or__")) {
-                return GetAttribute (vm, "__or__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__or__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -605,26 +605,26 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject Equals (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject Equals (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__equals__")) {
-                return GetAttribute (vm, "__equals__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__equals__").Invoke (vm, new IodineObject[] { right });
             }
-            return IodineBool.Create (this == left);
+            return IodineBool.Create (this == right);
         }
 
-        public virtual IodineObject NotEquals (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject NotEquals (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__notequals__")) {
-                return GetAttribute (vm, "__notequals__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__notequals__").Invoke (vm, new IodineObject[] { right });
             }
-            return IodineBool.Create (this != left);
+            return IodineBool.Create (this != right);
         }
 
-        public virtual IodineObject RightShift (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject RightShift (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__rightshift__")) {
-                return GetAttribute (vm, "__rightshift__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__rightshift__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -632,10 +632,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject LeftShift (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject LeftShift (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__leftshit__")) {
-                return GetAttribute (vm, "__leftshit__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__leftshit__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -643,10 +643,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject LessThan (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject LessThan (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__lt__")) {
-                return GetAttribute (vm, "__lt__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__lt__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -654,10 +654,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject GreaterThan (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject GreaterThan (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__gt__")) {
-                return GetAttribute (vm, "__gt__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__gt__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -666,10 +666,10 @@ namespace Iodine.Runtime
         }
 
 
-        public virtual IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject LessThanOrEqual (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__lte__")) {
-                return GetAttribute (vm, "__lte__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__lte__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -677,10 +677,10 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
         {
             if (Attributes.ContainsKey ("__gte__")) {
-                return GetAttribute (vm, "__gte__").Invoke (vm, new IodineObject[] { left });
+                return GetAttribute (vm, "__gte__").Invoke (vm, new IodineObject[] { right });
             }
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -688,7 +688,7 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject LogicalAnd (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject LogicalAnd (VirtualMachine vm, IodineObject right)
         {
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -696,7 +696,7 @@ namespace Iodine.Runtime
             return null;
         }
 
-        public virtual IodineObject LogicalOr (VirtualMachine vm, IodineObject left)
+        public virtual IodineObject LogicalOr (VirtualMachine vm, IodineObject right)
         {
             vm.RaiseException (new IodineNotSupportedException (
                 "The requested binary operator has not been implemented")
@@ -752,6 +752,7 @@ namespace Iodine.Runtime
         public virtual void IterReset (VirtualMachine vm)
         {
             if (!Attributes.ContainsKey ("__iterReset__")) {
+                Console.WriteLine (this.ToString ());
                 vm.RaiseException (new IodineNotSupportedException ("__iterReset__ has not been implemented"));
                 return;
             }

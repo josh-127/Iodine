@@ -138,6 +138,7 @@ namespace Iodine.Runtime
             DefaultValuesStartIndex = defaultStart;
             DefaultValues = defaultValues;
             Name = name.ToString ();
+
             SetAttribute ("__doc__", IodineString.Empty);
             SetAttribute ("__invoke__", new BuiltinMethodCallback (invoke, this));
 

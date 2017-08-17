@@ -31,7 +31,7 @@ using System;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
-using Iodine.Compiler;
+using Iodine.Util;
 
 namespace Iodine.Runtime
 {
@@ -40,7 +40,7 @@ namespace Iodine.Runtime
         public static readonly IodineTypeDefinition TypeDefinition = new BytesTypeDef ();
 
         [BuiltinDocString (
-            "Returns a new Bytes instance and attempts to convert the supplied argument into a Bytes object.",
+            "Returns a new Bytes instance, attempting to convert the supplied argument into a Bytes object.",
             "@param value A value to convert into a bytes object."
         )]
         class BytesTypeDef : IodineTypeDefinition
@@ -50,35 +50,188 @@ namespace Iodine.Runtime
             {
             }
 
-            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
             {
-                if (args.Length <= 0) {
+                if (arguments.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
                 }
 
-                if (args [0] is IodineString) {
-                    return new IodineBytes (args [0].ToString ());
+                if (arguments [0] is IodineString) {
+                    return new IodineBytes (arguments [0].ToString ());
                 }
 
-                IodineObject iter = args [0];
+                var iter = arguments [0].GetIterator (vm);
 
                 iter.IterReset (vm);
 
                 var bytes = new List<byte> ();
 
                 while (iter.IterMoveNext (vm)) {
-                    var b = iter.IterGetCurrent (vm) as IodineInteger;
+                    var current = iter.IterGetCurrent (vm);
 
-                    if (b == null) {
-                        vm.RaiseException (new IodineException ("Int"));
+                    long byteValue;
+
+                    if (!MarshalUtil.MarshalAsInt64 (current, out byteValue)) {
+                        vm.RaiseException (new IodineTypeException ("Int"));
                         return null;
                     }
-                    bytes.Add ((byte)(b.Value & 0xFF));
+
+         
+                    bytes.Add ((byte)(byteValue & 0xFF));
                 }
 
                 return new IodineBytes (bytes.ToArray ());
             }
+
+            public override IodineObject BindAttributes (IodineObject obj)
+            {
+                IodineIterableMixin.ApplyMixin (obj);
+
+                obj.SetAttribute ("contains", new BuiltinMethodCallback (Contains, obj));
+                obj.SetAttribute ("substr", new BuiltinMethodCallback (Substring, obj));
+
+                return obj;
+            }
+
+            private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject [] args)
+            {
+                var thisObj = self as IodineBytes;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                var needle = args [0] as IodineBytes;
+
+                if (needle == null) {
+                    vm.RaiseException (new IodineTypeException ("Bytes"));
+                    return null;
+                }
+
+                for (int i = 0; i < thisObj.Value.Length; i++) {
+                    bool found = true;
+
+                    for (int sI = 0; sI < needle.Value.Length; sI++) {
+                        if (needle.Value [sI] != thisObj.Value [i]) {
+                            found = false;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        return IodineBool.True;
+                    }
+                }
+
+                return IodineBool.False;
+            }
+
+            private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject [] args)
+            {
+                var thisObj = self as IodineBytes;
+
+                if (thisObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                if (args.Length == 1) {
+                    long startingIndex;
+
+                    if (!MarshalUtil.MarshalAsInt64 (args[0], out startingIndex)) {
+                        vm.RaiseException (new IodineTypeException ("Int"));
+                        return null;
+                    }
+                    return Substring (vm, thisObj.Value, startingIndex);
+                } else {
+                    long startingIndex;
+                    long endingIndex;
+
+                    if (!MarshalUtil.MarshalAsInt64 (args[0], out startingIndex) ||
+                        !MarshalUtil.MarshalAsInt64 (args[1], out endingIndex)) 
+                    {
+                        vm.RaiseException (new IodineTypeException ("Int"));
+                        return null;
+                    }
+
+                    return Substring (vm, thisObj.Value, startingIndex, endingIndex);
+                }
+            }
+
+            private IodineObject Substring (VirtualMachine vm, byte[] value, long startingIndex)
+            {
+                byte [] newBytes = new byte [value.Length - (int)startingIndex];
+
+                int nI = 0;
+
+                for (int i = (int)startingIndex; i < newBytes.Length; i++) {
+                    newBytes [nI++] = value [i];
+                }
+
+                return new IodineBytes (newBytes);
+            }
+
+            private IodineObject Substring (VirtualMachine vm, byte [] value, long startingIndex, long endingIndex)
+            {
+                byte [] newBytes = new byte [(int)endingIndex];
+
+                int nI = 0;
+
+                for (int i = (int)startingIndex; nI < endingIndex; i++) {
+                    newBytes [nI++] = value [i];
+                }
+
+                return new IodineBytes (newBytes);
+            }
+
+
         }
+
+        class BytesIterator : IodineObject
+        {
+            static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("BytesIterator");
+
+            private byte[] value;
+
+            private int iterIndex = 0;
+
+            public BytesIterator (byte[] value)
+                : base (TypeDefinition)
+            {
+                this.value = value;
+            }
+
+            public override IodineObject IterGetCurrent (VirtualMachine vm)
+            {
+                return new IodineInteger (value [iterIndex - 1]);
+            }
+
+            public override bool IterMoveNext (VirtualMachine vm)
+            {
+                if (iterIndex >= value.Length) {
+                    return false;
+                }
+                iterIndex++;
+                return true;
+            }
+
+            public override void IterReset (VirtualMachine vm)
+            {
+                iterIndex = 0;
+            }
+        }
+
 
         private int iterIndex = 0;
 
@@ -87,11 +240,6 @@ namespace Iodine.Runtime
         public IodineBytes ()
             : base (TypeDefinition)
         {
-            SetAttribute ("index", new BuiltinMethodCallback (IndexOf, this));
-            SetAttribute ("rindex", new BuiltinMethodCallback (IndexOf, this));
-            SetAttribute ("substr", new BuiltinMethodCallback (Substring, this));
-            SetAttribute ("contains", new BuiltinMethodCallback (Contains, this));
-
             // HACK: Add __iter__ attribute to match Iterable trait
             SetAttribute ("__iter__", new BuiltinMethodCallback ((VirtualMachine vm, IodineObject self, IodineObject [] args) => {
                 return GetIterator (vm);
@@ -179,7 +327,7 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIterator (VirtualMachine vm)
         {
-            return this;
+            return new BytesIterator (Value);
         }
 
         public override IodineObject IterGetCurrent (VirtualMachine vm)
@@ -254,63 +402,6 @@ namespace Iodine.Runtime
             }
 
             return new IodineInteger (lastI);
-        }
-
-        /**
-         * Iodine Function: Bytes.substr (self, start, [length])
-         * Description: Returns the substring of this value starting at start
-         */
-        private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject[] args)
-        {
-            if (args.Length == 0) {
-                vm.RaiseException (new IodineArgumentException (1));
-                return null;
-            }
-
-            if (args.Length == 1) {
-                var i1 = args [0] as IodineInteger;
-                if (i1 == null) {
-                    vm.RaiseException (new IodineTypeException ("Int"));
-                    return null;
-                }
-                return Substring (vm, i1);
-            } else {
-                var i1 = args [0] as IodineInteger;
-                var i2 = args [1] as IodineInteger;
-
-                if (i1 == null || i2 == null) {
-                    vm.RaiseException (new IodineTypeException ("Int"));
-                    return null;
-                }
-
-                return Substring (vm, i1, i2);
-            }
-        }
-
-        private IodineObject Substring (VirtualMachine vm, IodineInteger i1)
-        {
-            byte[] newBytes = new byte[Value.Length - (int)i1.Value];
-            int nI = 0;
-
-            for (int i = (int)i1.Value; i < newBytes.Length; i++) {
-                newBytes [nI++] = Value [i];
-            }
-
-            return new IodineBytes (newBytes);
-        }
-
-        private IodineObject Substring (VirtualMachine vm, IodineInteger i1, IodineInteger i2)
-        {
-            byte[] newBytes = new byte[(int)i2.Value];
-
-            int nI = 0;
-
-            for (int i = (int)i1.Value; nI < (int)i2.Value; i++) {
-                newBytes [nI++] = Value [i];
-            }
-
-            return new IodineBytes (newBytes);
-
         }
 
         /**

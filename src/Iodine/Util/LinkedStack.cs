@@ -68,7 +68,6 @@ namespace Iodine.Util
         public void Push (T obj)
         {
             if (Count > 7278) {
-
                 throw new Exception ();
             }
             if (top == null) {

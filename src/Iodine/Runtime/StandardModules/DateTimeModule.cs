@@ -93,11 +93,13 @@ namespace Iodine.Runtime
             public override IodineObject GreaterThanOrEqual (VirtualMachine vm, IodineObject right)
             {
                 var op = right as IodineTimeStamp;
+
                 if (op == null) {
                     vm.RaiseException (new IodineTypeException (
                         "Right hand value expected to be of type TimeStamp"));
                     return null;
                 }
+
                 return IodineBool.Create (Value.CompareTo (op.Value) >= 0);
             }
 

@@ -35,10 +35,9 @@ Global
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.NoTabsAfterNonTabs = True
-		$1.EolMarker = Unix
 		$1.inheritsSet = null
 		$1.inheritsScope = text/plain
-		$1.scope = application/config+xml
+		$1.scope = application/xml
 		$0.XmlFormattingPolicy = $2
 		$2.inheritsSet = null
 		$2.inheritsScope = application/xml
