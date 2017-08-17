@@ -182,7 +182,7 @@ class Array implements Collection {
      * @returns Array The modified collection
      */
     func fill (self, filler) {
-        for (i = 0; i < self.length; i += 1) {
+        for (i in 0 .. self.length) {
             self [i] = filler
         }
         return self
@@ -196,7 +196,7 @@ class Array implements Collection {
      * @returns Array The modified collection
      */
     func fillrange (self, src_start, length, filler) {
-        for (i = 0; i < length; i += 1) {
+        for (i in 0 .. length) {
             self [src_start + i] = filler
         }
         return self
@@ -232,7 +232,7 @@ class Array implements Collection {
      * @returns Object The item at the specified index
      */
     func __getitem__ (self, i) {
-        return self.list [i]
+        return self.list [Int (i)]
     }
 
     /**
@@ -241,7 +241,7 @@ class Array implements Collection {
      * @param item : Object The item
      */
     func __setitem__ (self, i, item) {
-        self.list [i] = item
+        self.list [ Int(i)] = item
     }
     
     /**
@@ -249,13 +249,17 @@ class Array implements Collection {
      * @yields Object The items
      */
     func __iter__ (self) {
-        for (i = 0; i < self.length; i += 1) {
+        for (i in 0 .. self.length) {
             yield self.list [i]
+        }
+
+        if (self.length == 0) {
+            return []
         }
     }
 
     func Copy (src, src_start, dst, dst_start, length) {
-        for (i = 0; i < length; i += 1) {
+        for (i in 0 .. length) {
             dst [dst_start + i] = src [src_start + i]
         }
     }
@@ -471,7 +475,7 @@ class Set implements Collection {
      * @yields Object The items
      */
     func __iter__ (self) {
-        for (i = 0; i < self.cardinality; i += 1) {
+        for (i in 0 .. self.cardinality) {
             yield self.list [i]
         }
     }
@@ -670,7 +674,7 @@ class Stack implements Collection {
      * @param item : Object The element to be removed
      */
     func remove (self, item) {
-        for (i = 0; i < self.top; i += 1) {
+        for (i in 0 .. self.top) {
             if (self [i] == item) {
                 self.list.removeat (self.top - i - 1)
                 self.top -= 1
@@ -744,7 +748,7 @@ class Stack implements Collection {
      * @yields Object The items
      */
     func __iter__ (self) {
-        for (i = 0; i < self.top; i += 1) {
+        for (i in 0 .. self.top) {
             yield self [i]
         }
     }

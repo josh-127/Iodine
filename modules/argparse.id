@@ -5,7 +5,7 @@
  * @module argparse
  */
 
-use skip, take, takeWhile from iterutils;
+use skip, take, takewhile from iterutils;
 
 func __isBuiltinType (arg) {
     return arg isnot Null && arg.__type__ isnot Null;
@@ -176,7 +176,7 @@ class ArgumentParser {
                     if (nargs isnot Int) {
 
                         # Fetch elements that are not actual arguments
-                        elements = takeWhile (skip (args, i + 1), lambda (x) => !self.isArgument (x))
+                        elements = takewhile (skip (args, i + 1), lambda (x) => !self.isArgument (x))
                         for (element in elements) {
                             lst.append (element)
                         }

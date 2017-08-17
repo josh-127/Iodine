@@ -1,10 +1,10 @@
 /**
  * Provides function decorators for various purposes
  * @module functools
- * @author SplittyDev; GruntTheDivine
+ * @author SplittyDev GruntTheDivine
  */
 
-use inspect;
+use inspect
 
 /**
  * Decorator to achieve automatic memoization
@@ -13,18 +13,18 @@ use inspect;
  */
 func memoize (f) {
     func wrapper (*args) {
-        key = args;
+        key = args
         if (wrapper.cache.contains (key)) {
-            wrapper.hits += 1;
-            return wrapper.cache [key];
+            wrapper.hits += 1
+            return wrapper.cache [key]
         }
-        wrapper.misses += 1;
-        return (wrapper.cache [key] = f (*args));
+        wrapper.misses += 1
+        return (wrapper.cache [key] = f (*args))
     }
-    wrapper.cache = Dict ();
-    wrapper.hits = 0;
-    wrapper.misses = 0;
-    return wrapper;
+    wrapper.cache = Dict ()
+    wrapper.hits = 0
+    wrapper.misses = 0
+    return wrapper
 }
 
 /**
@@ -33,10 +33,10 @@ func memoize (f) {
  */
 class MultiFunc {
     func MultiFunc (self) {
-        self._dispatchTable = {};
+        self._dispatchTable = {}
         self._default = lambda (args) {
-            raise OverloadException ();
-        };
+            raise OverloadException ()
+        }
     }
 
     /**
@@ -46,7 +46,7 @@ class MultiFunc {
      * @param argc How many arguments are required for callback
      */
     func define (self, method, argc) {
-        self._dispatchTable [argc] = method;   
+        self._dispatchTable [argc] = method   
     }
 
     /**
@@ -55,15 +55,15 @@ class MultiFunc {
      * @param meth Method Callback
      */
     func defineDefault (self, meth) {
-        self._default = meth;
+        self._default = meth
     }
 
     func __invoke__ (self, *args) {
-        size = len (args);
+        size = len (args)
         if (self._dispatchTable.contains (size)) {
-            return self._dispatchTable [size] (*args);
+            return self._dispatchTable [size] (*args)
         } else {
-            return self._default (args);
+            return self._default (args)
         }   
     }
 }
@@ -75,30 +75,30 @@ class MultiFunc {
 class TypedMultiFunc {
     class TypedOverload {
         func TypedOverload (self, method, types) {
-            self._types = types;
-            self._method = method;
+            self._types = types
+            self._method = method
         }
 
 
         func isMatch (self, args) {
             if (len (args) != len (self._types)) {
-                return false;
+                return false
             }
 
             for (i in 0 .. len (args)) {
                 if (args [i] isnot self._types [i]) {
-                    return false;
+                    return false
                 }
             }
 
-            return true;
+            return true
         }
     }
 
     func TypedMultiFunc (self) {
-        self._dispatchTable = [];
+        self._dispatchTable = []
         self._default = lambda (args) {
-            raise OverloadException ();
+            raise OverloadException ()
         }
     }
     
@@ -109,15 +109,15 @@ class TypedMultiFunc {
      * @param typeList A list of types that define this signature
      */
     func define (self, method, *typeList) {
-        self._dispatchTable.append (TypedMultiFunc.TypedOverload (method, typeList));
+        self._dispatchTable.append (TypedMultiFunc.TypedOverload (method, typeList))
     }
 
     func __invoke__ (self, *args) {
-        matches = filter (self._dispatchTable, lambda (p) => p.isMatch (args));
+        matches = filter (self._dispatchTable, lambda (p) => p.isMatch (args))
         if (len (matches) == 0) {
-            return self._default (args);
+            return self._default (args)
         } else {
-            return matches [0]._method (*args);
+            return matches [0]._method (*args)
         }
     }
 }
@@ -125,33 +125,33 @@ class TypedMultiFunc {
 /*
  * Multi func registry 
  */
-_multifuncMap = {};
+_multifuncMap = {}
 
 func multi (method) {
-    argc = len (inspect.getargspec (method));
+    argc = len (inspect.getargspec (method))
     
-    qualname = "#{method.__module__}.#{method.__name__}";
+    qualname = "#{method.__module__}.#{method.__name__}"
     
     if (!_multifuncMap.contains (qualname)) {
-        _multifuncMap [qualname] = MultiFunc ();
+        _multifuncMap [qualname] = MultiFunc ()
     }
     
-    _multifuncMap [qualname].define (method, argc);
+    _multifuncMap [qualname].define (method, argc)
     
-    return _multifuncMap [qualname];
+    return _multifuncMap [qualname]
 }
 
 func typedmulti (*types) {
     func inner (method) {
-        qualname = "#{method.__module__}.#{method.__name__}";
+        qualname = "#{method.__module__}.#{method.__name__}"
 
         if (!_multifuncMap.contains (qualname)) {
-            _multifuncMap [qualname] = TypedMultiFunc ();
+            _multifuncMap [qualname] = TypedMultiFunc ()
         }
 
-        _multifuncMap [qualname].define (method, *types);
-        return _multifuncMap [qualname];
+        _multifuncMap [qualname].define (method, *types)
+        return _multifuncMap [qualname]
     }
     
-    return inner;
+    return inner
 }

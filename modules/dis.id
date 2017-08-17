@@ -71,7 +71,7 @@ _instructions = [
     "MATCH_PATTERN",
     "UNWRAP",
     "UNPACK"
-];
+]
 
 _binopLookup = [
     null,
@@ -98,13 +98,13 @@ _binopLookup = [
     null,
     null,
     null
-];
+]
 
 func _getMnemonic (opcode, argument) {
     if (opcode == 1) {
-        return _binopLookup [argument];       
+        return _binopLookup [argument]       
     }
-    return _instructions [opcode];
+    return _instructions [opcode]
 }
 
 /**
@@ -113,25 +113,25 @@ func _getMnemonic (opcode, argument) {
  */
 func disassemble (obj) {
 
-    bytecode = inspect.getbytecode (obj);
+    bytecode = inspect.getbytecode (obj)
 
-    lastLine = -1;
+    lastLine = -1
     
     for (ins in bytecode) {
 
-        buffer = StringBuffer ();
+        buffer = StringBuffer ()
         if (ins.line != lastLine) {
-            buffer.append (Str (ins.line).ljust (8));
+            buffer.append (Str (ins.line).ljust (8))
         } else {
-            buffer.append ("".rjust (8));
+            buffer.append ("".rjust (8))
         }
-        lastLine = ins.line;
-        buffer.append (_getMnemonic (ins.opcode, ins.immediate).ljust (30));
+        lastLine = ins.line
+        buffer.append (_getMnemonic (ins.opcode, ins.immediate).ljust (30))
         
-        buffer.append (ins.immediate);
+        buffer.append (ins.immediate)
         if (ins.immediateref isnot Null) {
-            buffer.append (" (#{Str (ins.immediateref)})");
+            buffer.append (" (#{Str (ins.immediateref)})")
         }
-        print (buffer);
+        print (buffer)
     }
 }

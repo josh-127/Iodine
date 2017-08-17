@@ -165,7 +165,7 @@ func zip (*iterables) {
     loop = true
     while (loop) {
         objs = []
-        for (i = 0; i < iteratorCount; i += 1) {
+        for (i in 0 .. iteratorCount) {
             if (iteratorCounts [i] == iteratorIndices [i]) {
                 loop = false
                 break

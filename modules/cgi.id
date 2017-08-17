@@ -1,5 +1,6 @@
 /**
  * Primative module for CGI
+ * @author GruntTheDivine
  */
 
 use os

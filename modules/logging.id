@@ -4,8 +4,8 @@
  * @module logging
  */
 
-use datetime;
-use threading;
+use datetime
+use threading
 
 enum LogLevel {
     NONE = 0,
@@ -17,9 +17,9 @@ enum LogLevel {
 }
 
 trait LoggerImpl {
-    func setLevel (self, logLevel);
-    func getLevel (self);
-    func log (self, logLevel, *args);
+    func setLevel (self, logLevel)
+    func getLevel (self)
+    func log (self, logLevel, *args)
 }
 
 
@@ -29,7 +29,7 @@ trait LoggerImpl {
 class IodineDefaultLogger {
 
     func IodineDefaultLogger (self) {
-        self.setLevel (LogLevel.NONE);
+        self.setLevel (LogLevel.NONE)
         self._formatStr = "[{3:d2}/{4:d2}/{5:d2} {0:d2}:{1:d2}:{2:d2}]: {6}  {7}"
     }
 
@@ -41,27 +41,27 @@ class IodineDefaultLogger {
             LogLevel.WARNING :  "WARN    ",
             LogLevel.ERROR :    "ERROR   ", 
             LogLevel.CRITICAL : "CRITICAL"  
-        };
+        }
         if (logLevel > self._logLevel) {
-            time = datetime.now ();
-            print (self._formatStr.format (*args));
+            time = datetime.now ()
+            print (self._formatStr.format (*args))
         }
     }
 
     func setLevel (self, logLevel) {
-        self._logLevel = logLevel;
+        self._logLevel = logLevel
     }
 
     func getLevel (self) {
-        return self._logLevel;
+        return self._logLevel
     }
 
     func setFormat (self, formatStr) {
-        self._formatStr = formatStr;
+        self._formatStr = formatStr
     }
 
     func getFormat (self) {
-        return self._formatStr;
+        return self._formatStr
     }
 }
 
@@ -74,12 +74,12 @@ func _logMsg (logger, logLevel, message) {
         LogLevel.WARNING :  "WARN    ",
         LogLevel.ERROR :    "ERROR   ",
         LogLevel.CRITICAL : "CRITICAL"
-    };
+    }
 
-    time = datetime.now ();
+    time = datetime.now ()
     
     if (logger.getLevel () > logLevel) {
-        return null;
+        return null
     }
 
     logger.log (logLevel,
@@ -91,36 +91,36 @@ func _logMsg (logger, logLevel, message) {
         time.year,
         prefixes [logLevel],
         message
-    );
+    )
 }
 
 func debug (message) {
     for (logger in _loggers) {
-        _logMsg (logger, LogLevel.DEBUG, message);
+        _logMsg (logger, LogLevel.DEBUG, message)
     }
 }
 
 func info (message) {
     for (logger in _loggers) {
-        _logMsg (logger, LogLevel.INFO, message);
+        _logMsg (logger, LogLevel.INFO, message)
     }
 }
 
 func warning (message) {
     for (logger in _loggers) {
-        _logMsg (logger, LogLevel.WARNING, message);
+        _logMsg (logger, LogLevel.WARNING, message)
     }
 }
 
 func error (message) {
     for (logger in _loggers) {
-        _logMsg (logger, LogLevel.ERROR, message);
+        _logMsg (logger, LogLevel.ERROR, message)
     }
 }
 
 func critical (message) {
     for (logger in _loggers) {
-        _logMsg (logger, LogLevel.CRITICAL, message);
+        _logMsg (logger, LogLevel.CRITICAL, message)
     }
 }
 
