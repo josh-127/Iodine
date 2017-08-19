@@ -25,6 +25,7 @@ echo "/usr/bin/mono $prefix/iodine/iodine.exe \"\$@\"" >> /usr/bin/iodine
 cp ./tools/iosh.id /usr/bin/iosh
 
 echo -n "export IODINE_HOME=$prefix/iodine" | tee /etc/profile.d/iodine.sh
+echo 
 
 chmod a+x /usr/bin/iodine
 
