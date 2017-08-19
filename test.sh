@@ -1,5 +1,5 @@
 mono -V
-make all
+make
 cd tests
 module_path=$(readlink -f ../modules)
 echo $module_path
