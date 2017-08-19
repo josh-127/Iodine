@@ -46,6 +46,8 @@ namespace Iodine.Runtime
         public readonly Opcode OperationCode;
 
         public readonly int Argument;
+        public readonly IodineObject ArgumentObject;
+        public readonly string ArgumentString;
 
         public Instruction (SourceLocation location, Opcode opcode)
             : this ()
@@ -61,6 +63,32 @@ namespace Iodine.Runtime
             OperationCode = opcode;
             Argument = arg;
             Location = location;
+        }
+
+        public Instruction (SourceLocation location, Opcode opcode, IodineObject obj)
+            : this ()
+        {
+            OperationCode = opcode;
+            Argument = 0;
+            Location = location;
+            ArgumentObject = obj;
+
+            if (obj is IodineName) {
+                ArgumentString = ((IodineName)obj).Value;
+            }
+        }
+
+        public Instruction (SourceLocation location, Opcode opcode, int arg, IodineObject obj)
+            : this ()
+        {
+            OperationCode = opcode;
+            Argument = arg;
+            Location = location;
+            ArgumentObject = obj;
+
+            if (obj is IodineName) {
+                ArgumentString = ((IodineName)obj).Value;
+            }
         }
     }
 }

@@ -88,7 +88,9 @@ namespace Iodine.Runtime
         /// <param name="arguments">Arguments.</param>
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
-            var frame = new StackFrame (Method.Module, 
+            var frame = new StackFrame (
+                vm,
+                Method.Module, 
                 Method,
                 vm.Top == null ? new IodineObject[]{} : vm.Top.Arguments,
                 vm.Top,

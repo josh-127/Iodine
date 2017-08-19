@@ -138,7 +138,6 @@ namespace Iodine.Runtime
             DefaultValuesStartIndex = defaultStart;
             DefaultValues = defaultValues;
             Name = name.ToString ();
-
             SetAttribute ("__doc__", IodineString.Empty);
             SetAttribute ("__invoke__", new BuiltinMethodCallback (invoke, this));
 
@@ -192,7 +191,7 @@ namespace Iodine.Runtime
              * may yield. If the method did not yield, we just return the original value
              * returned
              */
-            var frame = new StackFrame (this.Module, this, vm.Top.Arguments, vm.Top, null);
+            var frame = new StackFrame (vm, Module, this, vm.Top.Arguments, vm.Top, null);
             var initialValue = vm.InvokeMethod (this, frame, null, arguments);
 
             if (frame.Yielded) {

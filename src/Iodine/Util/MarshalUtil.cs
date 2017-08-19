@@ -58,5 +58,26 @@ namespace Iodine.Util
 
             return false;
         }
+
+        public static bool MarshalAsFloat (IodineObject obj, out double result)
+        {
+
+            var floatObj = obj as IodineFloat;
+
+            if (floatObj != null) {
+                result = floatObj.Value;
+                return true;
+            }
+
+            var intObj = obj as IodineInteger;
+
+            if (intObj != null) {
+                result = intObj.Value;
+                return true;
+            }
+
+            result = 0.0f;
+            return false;
+        }
     }
 }

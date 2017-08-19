@@ -109,12 +109,18 @@ namespace Iodine.Runtime
             Attributes ["__name__"] = new IodineString (Name);
         }
 
+
+
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
             ApplyGlobalVariables (vm.Context);
-            vm.NewFrame (new StackFrame (this, null, new IodineObject[] { }, null, null, Attributes));
+
+            vm.NewFrame (new StackFrame (vm, this, null, new IodineObject[] { }, null, null, Attributes));
+
             var retObj = vm.EvalCode (Initializer);
+
             vm.EndFrame ();
+
             return retObj;
         }
 

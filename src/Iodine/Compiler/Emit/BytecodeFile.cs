@@ -82,12 +82,6 @@ namespace Iodine.Compiler
 
             ReadCodeObject (builder.Initializer);
 
-            var constantCount = binaryReader.ReadInt32 ();
-
-            for (int i = 0; i < constantCount; i++) {
-                builder.DefineConstant (ReadConstant ());
-            }
-
             module = builder;
             return true;
         }
@@ -150,18 +144,13 @@ namespace Iodine.Compiler
 
             WriteCodeObject (builder.Initializer);
 
-            binaryWriter.Write (builder.ConstantPool.Count);
-
-            foreach (IodineObject obj in builder.ConstantPool) {
-                WriteConstant (obj);
-            }
         }
 
         private void WriteConstant (IodineObject obj)
         {
             var lookup = new Dictionary<Type, Action> ()
             {
-                { typeof (IodineNull), () =>    WriteNull () },  
+                { typeof (IodineNull),          WriteNull },  
                 { typeof (IodineBool), () =>    WriteBool (obj as IodineBool) },
                 { typeof (IodineName), () =>    WriteName (obj as IodineName) }, 
                 { typeof (IodineInteger), () => WriteInt (obj as IodineInteger) }, 
@@ -189,6 +178,12 @@ namespace Iodine.Compiler
             binaryWriter.Write ((byte)ins.OperationCode);
 
             binaryWriter.Write (ins.Argument);
+
+            if (ins.ArgumentObject == null) {
+                WriteConstant (IodineNull.Instance);
+            } else {
+                WriteConstant (ins.ArgumentObject);
+            }
 
             if (ins.Location == null) {
                 binaryWriter.Write (-1);
@@ -283,16 +278,20 @@ namespace Iodine.Compiler
         {
             var opcode = (Opcode)binaryReader.ReadByte ();
             var argument = binaryReader.ReadInt32 ();
+            var argumentObj = ReadConstant ();
+
             var line = binaryReader.ReadInt32 ();
 
             SourceLocation location = line == -1 
                 ? null
                 : new SourceLocation (line, 0, fileName);
 
+
             codeObject.EmitInstruction (
                 location,
                 opcode, 
-                argument
+                argument,
+                argumentObj
             ); 
         }
 

@@ -56,7 +56,7 @@ namespace Iodine.Compiler
 
         public readonly Stack<Label> BreakLabels = new Stack<Label> ();
         public readonly Stack<Label> ContinueLabels = new Stack<Label> ();
-        public readonly int PatternTemporary = 0;
+        public readonly IodineObject PatternTemporary;
 
         public readonly bool IsPatternExpression = false;
         public readonly bool IsInClass = false;
@@ -68,7 +68,7 @@ namespace Iodine.Compiler
             bool isInClass = false,
             bool isInClassBody = false,
             bool isPatternExpression = false,
-            int patternTempory = 0)
+            IodineObject patternTempory = null)
         {
             SymbolTable = symbolTable;
             CurrentMethod = method;

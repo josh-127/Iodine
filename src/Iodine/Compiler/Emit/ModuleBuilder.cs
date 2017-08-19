@@ -50,13 +50,13 @@ namespace Iodine.Compiler
             Attributes [method.Name] = method;
         }
 
-        public int DefineConstant (IodineObject obj)
+        public IodineObject DefineConstant (IodineObject obj)
         {
             if (!ConstantPool.Contains (obj)) {
                 ConstantPool.Add (obj);
-                return ConstantPool.Count - 1;
+                return obj;
             }
-            return ConstantPool.IndexOf (obj);
+            return ConstantPool [ConstantPool.IndexOf (obj)];
         }
     }
 }

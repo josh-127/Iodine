@@ -52,6 +52,11 @@ namespace Iodine.Runtime
         public readonly IodineObject Self;
 
         /// <summary>
+        /// The virtual machine instance that owns this stack.
+        /// </summary>
+        public readonly VirtualMachine VirtualMachine;
+
+        /// <summary>
         /// The arguments passed to the function
         /// </summary>
         public readonly IodineObject[] Arguments;
@@ -86,35 +91,38 @@ namespace Iodine.Runtime
         /// Gets or sets the source for this stack frame location.
         /// </summary>
         /// <value>The location.</value>
-        public SourceLocation Location { set; get; }
+        public SourceLocation Location { 
+        
+            get {
+                if (VirtualMachine.CurrentInstruction.Location != null) {
+                    return VirtualMachine.CurrentInstruction.Location;
+                }
+                return null;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the instruction pointer.
         /// </summary>
         /// <value>The instruction pointer.</value>
-        public int InstructionPointer { set; get; }
+        public int InstructionPointer;
 
         /// <summary>
         /// Gets the module.
         /// </summary>
         /// <value>The module.</value>
-        public IodineModule Module {
-            get;
-            set;
-        }
+        public IodineModule Module;
 
-        public AttributeDictionary Locals {
-            get {
-                return locals;
-            }
-        }
+        public AttributeDictionary Locals;
 
-        private LinkedStack<IodineObject> stack = new LinkedStack<IodineObject> ();
-        private AttributeDictionary locals;
+        public readonly LinkedStack<IodineObject> Stack = new LinkedStack<IodineObject> ();
+
+        private readonly AttributeDictionary locals;
         private AttributeDictionary arguments = new AttributeDictionary ();
         private AttributeDictionary parentLocals = null;
 
         public StackFrame (
+            VirtualMachine vm,
             IodineModule module,
             IodineMethod method,
             IodineObject[] arguments,
@@ -128,27 +136,30 @@ namespace Iodine.Runtime
             Self = self;
             Arguments = arguments;
             Parent = parent;
+            VirtualMachine = vm;
         }
 
         public StackFrame (
+            VirtualMachine vm,
             IodineModule module,
             IodineMethod method,
             IodineObject[] arguments,
             StackFrame parent,
             IodineObject self,
-            AttributeDictionary locals) : this (module, method, arguments, parent, self)
+            AttributeDictionary locals) : this (vm, module, method, arguments, parent, self)
         {
             this.locals = locals;
         }
 
         private StackFrame (
+            VirtualMachine vm,
             IodineModule module,
             IodineMethod method,
             IodineObject[] arguments,
             StackFrame parent,
             IodineObject self,
             AttributeDictionary locals,
-            AttributeDictionary parentLocals) : this (module, method, arguments, parent, self)
+            AttributeDictionary parentLocals) : this (vm, module, method, arguments, parent, self)
         {
             this.parentLocals = parentLocals;
             this.locals = locals;
@@ -187,7 +198,7 @@ namespace Iodine.Runtime
         #endif
         internal void Push (IodineObject obj)
         {
-            stack.Push (obj ?? IodineNull.Instance);
+            Stack.Push (obj ?? IodineNull.Instance);
         }
 
         #if DOTNET_45
@@ -195,7 +206,7 @@ namespace Iodine.Runtime
         #endif
         internal IodineObject Pop ()
         {
-            return stack.Pop ();
+            return Stack.Pop ();
         }
 
         #if DOTNET_45
@@ -209,7 +220,7 @@ namespace Iodine.Runtime
                 oldLocals.Add (kv.Key, kv.Value);
             }
 
-            return new StackFrame (Module, Method, Arguments, top, Self, oldLocals, locals);
+            return new StackFrame (VirtualMachine, Module, Method, Arguments, top, Self, oldLocals, locals);
         }
     }
 }

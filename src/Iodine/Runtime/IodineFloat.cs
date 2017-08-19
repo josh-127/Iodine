@@ -118,6 +118,7 @@ namespace Iodine.Runtime
                 ));
                 return null;
             }
+
             return new IodineFloat (Value / floatVal);
         }
 

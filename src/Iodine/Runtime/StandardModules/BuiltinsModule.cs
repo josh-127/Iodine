@@ -280,7 +280,7 @@ namespace Iodine.Runtime
             foreach (IodineObject key in hash.Keys) {
                 context.Globals [key.ToString ()] = hash.Get (key);
 
-                callable.SetAttribute (key.ToString (), hash.Get (key));
+                callable.Attributes [key.ToString ()] =  hash.Get (key);
             }
 
             var newVm = new VirtualMachine (context);

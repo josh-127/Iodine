@@ -119,7 +119,7 @@ namespace Iodine.Compiler
             ));
         }
 
-        private void CreatePatternContext (int temporary)
+        private void CreatePatternContext (IodineObject temporary)
         {
             emitContexts.Push (new EmitContext (Context.SymbolTable,
                 Context.CurrentModule,
@@ -136,14 +136,14 @@ namespace Iodine.Compiler
             emitContexts.Pop ();
         }
 
-        private int CreateTemporary ()
+        private IodineObject CreateTemporary ()
         {
             return Context.CurrentModule.DefineConstant (
                 new IodineName ("$tmp" + (_nextTemporary++).ToString ())
             );
         }
 
-        private int CreateName (string name)
+        private IodineObject CreateName (string name)
         {
             var i = Context.CurrentModule.DefineConstant (
                 new IodineName (name)
@@ -582,6 +582,7 @@ namespace Iodine.Compiler
                 var nextLabel = Context.CurrentMethod.CreateLabel ();
 
                 CreatePatternContext (temporary);
+
                 caseStmt.Values.Visit (this);
 
                 DestroyContext ();
@@ -973,13 +974,13 @@ namespace Iodine.Compiler
                         if (!Context.SymbolTable.IsSymbolDefined (ident.Value)) {
                             Context.SymbolTable.AddSymbol (ident.Value);
                         }
-                        int sym = CreateName (ident.Value);
-                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.StoreLocal, sym);
-                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadLocal, sym);
+                        var localName = CreateName (ident.Value);
+                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.StoreLocal, localName);
+                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadLocal, localName);
                     } else {
-                        int globalIndex = CreateName (ident.Value);
-                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.StoreGlobal, globalIndex);
-                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalIndex);
+                        var globalName = CreateName (ident.Value);
+                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.StoreGlobal, globalName);
+                        Context.CurrentMethod.EmitInstruction (ident.Location, Opcode.LoadGlobal, globalName);
                     }
                 } else if (binop.Left is MemberExpression) {
                     var getattr = binop.Left as MemberExpression;
@@ -1021,17 +1022,65 @@ namespace Iodine.Compiler
                 Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.DynamicCast);
                 return;
             case BinaryOperation.Add:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Add);
+                return;
             case BinaryOperation.Sub:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Sub);
+                return;
             case BinaryOperation.Mul:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Mul);
+                return;
             case BinaryOperation.Div:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Div);
+                return;
             case BinaryOperation.Mod:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Mod);
+                return;
             case BinaryOperation.And:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.And);
+                return;
             case BinaryOperation.Or:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Or);
+                return;
             case BinaryOperation.Xor:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Xor);
+                return;
             case BinaryOperation.GreaterThan:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.GreaterThan);
+                return;
             case BinaryOperation.GreaterThanOrEqu:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.GreaterThanOrEqu);
+                return;
             case BinaryOperation.LessThan:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.LessThan);
+                return;
             case BinaryOperation.LessThanOrEqu:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.LessThanOrEqu);
+                return;
             case BinaryOperation.ClosedRange:
             case BinaryOperation.HalfRange:
             case BinaryOperation.LeftShift:

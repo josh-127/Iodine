@@ -37,7 +37,7 @@ namespace Iodine.Util
     /// </summary>
     public class LinkedStack<T>
     {
-        class StackItem<E>
+        sealed class StackItem<E>
         {
             public readonly E Item;
             public readonly StackItem<E> Next;
@@ -54,9 +54,16 @@ namespace Iodine.Util
             }
         }
 
+        private int count = 0;
         private StackItem<T> top;
 
-        public int Count { private set; get; }
+        public T LastObject;
+
+        public int Count {
+            get {
+                return count;
+            }
+        }
 
         public LinkedStack ()
         {
@@ -67,15 +74,13 @@ namespace Iodine.Util
         #endif
         public void Push (T obj)
         {
-            if (Count > 7278) {
-                throw new Exception ();
-            }
+            LastObject = obj;
             if (top == null) {
                 top = new StackItem <T> (obj);
             } else {
                 top = new StackItem<T> (obj, top);
             }
-            Count++;
+            count++;
         }
 
         #if DOTNET_45
@@ -83,7 +88,7 @@ namespace Iodine.Util
         #endif
         public T Pop ()
         {
-            Count--;
+            count--;
             T ret = top.Item;
             top = top.Next;
             return ret;

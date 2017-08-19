@@ -100,7 +100,20 @@ namespace Iodine.Runtime
         MatchPattern = 0x3E,
         Unwrap = 0x3F,
         Unpack = 0x40,
-        TestUnwrap = 0x41
+        TestUnwrap = 0x41,
+        Add = 0x42,
+        Sub = 0x43,
+        Div = 0x44,
+        Mul = 0x45,
+        Mod = 0x46,
+        And = 0x47,
+        Or = 0x48,
+        Xor = 0x49,
+        GreaterThan = 0x4A,
+        LessThan = 0x4B,
+        GreaterThanOrEqu = 0x4C,
+        LessThanOrEqu = 0x4D,
+
     }
 }
 

@@ -201,7 +201,10 @@ namespace Iodine.Runtime
                         return null;
                     }
 
-                    return new IodineString (thisObj.Value.StandardOutput.ReadToEnd ());
+                    var stderrOutput = thisObj.Value.StandardError.ReadToEnd ();
+                    var stdoutOutput = thisObj.Value.StandardOutput.ReadToEnd ();
+
+                    return new IodineString (stderrOutput + stdoutOutput);
                 }
 
                 [BuiltinDocString ("Attempts to kill the associated process.")]

@@ -30,6 +30,7 @@
 using System;
 using System.Globalization;
 using Iodine.Compiler;
+using Iodine.Util;
 
 namespace Iodine.Runtime
 {
@@ -110,56 +111,35 @@ namespace Iodine.Runtime
 
         public override IodineObject Add (VirtualMachine vm, IodineObject right)
         {
-            var intVal = right as IodineInteger;
-            var bigVal = right as IodineBigInt;
-            var floatVal = right as IodineFloat;
-            if (intVal == null) {
-                if (bigVal != null) {
-                    return new IodineBigInt (Value + bigVal.Value);
-                }
-                if (floatVal != null) {
-                    return new IodineFloat (Value + floatVal.Value);
-                }
+            long longVal;
+
+            if (!MarshalUtil.MarshalAsInt64 (right, out longVal)) {
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-                return null;
             }
-            return new IodineInteger (Value + intVal.Value);
+
+            return new IodineInteger (Value + longVal);
         }
 
         public override IodineObject Sub (VirtualMachine vm, IodineObject right)
         {
-            var intVal = right as IodineInteger;
-            var bigVal = right as IodineBigInt;
-            var floatVal = right as IodineFloat;
-            if (intVal == null) {
-                if (bigVal != null) {
-                    return new IodineBigInt (Value - bigVal.Value);
-                }
-                if (floatVal != null) {
-                    return new IodineFloat (Value - floatVal.Value);
-                }
+            long longVal;
+
+            if (!MarshalUtil.MarshalAsInt64 (right, out longVal)) {
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-                return null;
             }
-            return new IodineInteger (Value - intVal.Value);
+
+            return new IodineInteger (Value - longVal);
         }
 
         public override IodineObject Mul (VirtualMachine vm, IodineObject right)
         {
-            var intVal = right as IodineInteger;
-            var bigVal = right as IodineBigInt;
-            var floatVal = right as IodineFloat;
-            if (intVal == null) {
-                if (bigVal != null) {
-                    return new IodineBigInt (Value * bigVal.Value);
-                }
-                if (floatVal != null) {
-                    return new IodineFloat (Value * floatVal.Value);
-                }
+            long longVal;
+
+            if (!MarshalUtil.MarshalAsInt64 (right, out longVal)) {
                 vm.RaiseException (new IodineTypeException ("Right hand side must be of type Int!"));
-                return null;
             }
-            return new IodineInteger (Value * intVal.Value);
+
+            return new IodineInteger (Value * longVal);
         }
 
         public override IodineObject Div (VirtualMachine vm, IodineObject right)
@@ -198,6 +178,9 @@ namespace Iodine.Runtime
         {
             var intVal = right as IodineInteger;
             var bigVal = right as IodineBigInt;
+
+
+
             if (intVal == null) {
                 if (bigVal != null) {
                     return new IodineBigInt (Value & bigVal.Value);
