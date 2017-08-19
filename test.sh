@@ -1,5 +1,5 @@
 mono -V
-./build_iodine.sh
+make all
 cd tests
 module_path=$(readlink -f ../modules)
 echo $module_path
