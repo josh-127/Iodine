@@ -26,7 +26,7 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-using System;
+
 using System.Collections.Generic;
 using Iodine.Compiler.Ast;
 
@@ -34,7 +34,7 @@ namespace Iodine.Compiler
 {
     public class CompilationUnit : AstNode
     {
-        private List<AstNode> children = new List<AstNode> ();
+        List<AstNode> children = new List<AstNode> ();
 
         public CompilationUnit (SourceLocation location)
             : base (location)

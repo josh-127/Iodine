@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     public class IodineProperty : IodineObject, IIodineProperty
@@ -38,7 +36,7 @@ namespace Iodine.Runtime
         public readonly IodineObject Setter;
         public readonly IodineObject Getter;
 
-        private readonly IodineObject self;
+        readonly IodineObject self;
 
         public bool HasSetter {
             get {

@@ -38,8 +38,8 @@ namespace Iodine.Runtime
     [IodineBuiltinModule ("random")]
     public class RandomModule : IodineModule
     {
-        private static Random rgn = new Random ();
-        private static RNGCryptoServiceProvider secureRand = new RNGCryptoServiceProvider ();
+        static Random rgn = new Random ();
+        static RNGCryptoServiceProvider secureRand = new RNGCryptoServiceProvider ();
 
         public RandomModule ()
             : base ("random")
@@ -54,7 +54,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Returns a random floating point number between 0 and 1."
         )]
-        private IodineObject Rand (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Rand (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return new IodineFloat (rgn.NextDouble ());
         }
@@ -64,7 +64,7 @@ namespace Iodine.Runtime
             "@param a The starting value (Or max value if b is not supplied)",
             "@param b The upper limit"
         )]
-        private IodineObject RandInt (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject RandInt (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 return new IodineInteger (rgn.Next (Int32.MinValue, Int32.MaxValue));
@@ -95,13 +95,13 @@ namespace Iodine.Runtime
         /**
          * Iodine Function: cryptoString (size)
          */
-        private IodineObject CryptoString (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject CryptoString (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
-                
+
             var count = args [0] as IodineInteger;
 
             if (count == null) {
@@ -109,7 +109,7 @@ namespace Iodine.Runtime
                 return null;
             }
 
-            var buf = new byte[(int)count.Value];
+            var buf = new byte [(int)count.Value];
             secureRand.GetBytes (buf);
             return new IodineString (Convert.ToBase64String (buf).Substring (0, (int)count.Value));
         }
@@ -119,7 +119,7 @@ namespace Iodine.Runtime
             "Chooses a random item in an iterable sequence.",
             "@param iterable The iterable to choose from"
         )]
-        private IodineObject Choice (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Choice (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));

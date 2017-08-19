@@ -39,8 +39,8 @@ namespace Iodine.Runtime
     /// </summary>
     public class InternalIodineProperty : IodineObject, IIodineProperty
     {
-        private IodineGetter getter;
-        private IodineSetter setter;
+        IodineGetter getter;
+        IodineSetter setter;
 
         public bool HasSetter {
             get {

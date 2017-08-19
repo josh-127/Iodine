@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-using System.Text;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Iodine.Util;
@@ -117,9 +115,10 @@ namespace Iodine.Runtime
 
         public readonly LinkedStack<IodineObject> Stack = new LinkedStack<IodineObject> ();
 
-        private readonly AttributeDictionary locals;
-        private AttributeDictionary arguments = new AttributeDictionary ();
-        private AttributeDictionary parentLocals = null;
+        readonly AttributeDictionary locals;
+
+        AttributeDictionary arguments = new AttributeDictionary ();
+        AttributeDictionary parentLocals = null;
 
         public StackFrame (
             VirtualMachine vm,
@@ -151,11 +150,11 @@ namespace Iodine.Runtime
             this.locals = locals;
         }
 
-        private StackFrame (
+        StackFrame (
             VirtualMachine vm,
             IodineModule module,
             IodineMethod method,
-            IodineObject[] arguments,
+            IodineObject [] arguments,
             StackFrame parent,
             IodineObject self,
             AttributeDictionary locals,
@@ -165,18 +164,18 @@ namespace Iodine.Runtime
             this.locals = locals;
         }
 
-        #if DOTNET_45
+#if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        #endif
+#endif
         internal void StoreLocalExplicit (string index, IodineObject obj)
         {
             arguments [index] = obj;
             locals [index] = obj;
         }
 
-        #if DOTNET_45
+#if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        #endif
+#endif
         internal void StoreLocal (string index, IodineObject obj)
         {
             if (parentLocals.ContainsKey (index)) {
@@ -185,33 +184,33 @@ namespace Iodine.Runtime
             locals [index] = obj;
         }
 
-        #if DOTNET_45
+#if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        #endif
+#endif
         internal IodineObject LoadLocal (string index)
         {
             return locals [index];
         }
 
-        #if DOTNET_45
+#if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        #endif
+#endif
         internal void Push (IodineObject obj)
         {
             Stack.Push (obj ?? IodineNull.Instance);
         }
 
-        #if DOTNET_45
+#if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        #endif
+#endif
         internal IodineObject Pop ()
         {
             return Stack.Pop ();
         }
 
-        #if DOTNET_45
+#if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
-        #endif
+#endif
         internal StackFrame Duplicate (StackFrame top)
         {
             var oldLocals = new AttributeDictionary ();

@@ -33,7 +33,7 @@ namespace Iodine.Runtime
 {
     public class IodineEnum : IodineTypeDefinition
     {
-        private int nextVal = 0;
+        int nextVal = 0;
 
         public IodineEnum (string name)
             : base (name)

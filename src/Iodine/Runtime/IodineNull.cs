@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     public class IodineNull : IodineObject
@@ -36,6 +34,7 @@ namespace Iodine.Runtime
         public class NullType : IodineTypeDefinition
         {
             public static readonly NullType Instance = new NullType ();
+
             private NullType () 
                 : base ("Null")
             {

@@ -78,7 +78,7 @@ namespace Iodine.Compiler
 
         public static Parser CreateParser (IodineContext context, SourceUnit source)
         {
-            Tokenizer tokenizer = new Tokenizer (
+            var tokenizer = new Tokenizer (
                 context.ErrorLog,
                 source.GetReader ()
             );
@@ -88,7 +88,7 @@ namespace Iodine.Compiler
         public CompilationUnit Parse ()
         {
             try {
-                CompilationUnit root = new CompilationUnit (Location);
+                var root = new CompilationUnit (Location);
                 while (!EndOfStream) {
                     root.Add (ParseStatement ());
                 }
@@ -120,7 +120,7 @@ namespace Iodine.Compiler
 
             string name = Expect (TokenClass.Identifier).Value;
 
-            ClassDeclaration clazz = new ClassDeclaration (Location, name, doc);
+            var clazz = new ClassDeclaration (Location, name, doc);
 
             if (Match (TokenClass.OpenParan)) {
                 bool isInstanceMethod;
@@ -128,7 +128,7 @@ namespace Iodine.Compiler
                 bool hasKeywordArgs;
                 bool hasDefaultVals;
 
-                List<NamedParameter> parameters = ParseFuncParameters (
+                var parameters = ParseFuncParameters (
                     out isInstanceMethod,
                     out isVariadic,
                     out hasKeywordArgs,
@@ -170,9 +170,9 @@ namespace Iodine.Compiler
                 while (!Match (TokenClass.CloseBrace)) {
                     if (Match (TokenClass.Keyword, "func") || Match (TokenClass.Operator,
                         "@")) {
-                        AstNode node = ParseFunction (false, clazz);
+                        var node = ParseFunction (false, clazz);
                         if (node is FunctionDeclaration) {
-                            FunctionDeclaration func = node as FunctionDeclaration;
+                            var func = node as FunctionDeclaration;
                             if (func == null) {
                                 clazz.Add (node);
                             } else if (func.Name == name) {
@@ -181,7 +181,7 @@ namespace Iodine.Compiler
                                 clazz.Add (func);
                             }
                         } else {
-                            StatementList list = node as StatementList;
+                            var list = node as StatementList;
                             clazz.Add (list.Statements [0]);
                             clazz.Add (list.Statements [1]);
                         }
@@ -207,7 +207,7 @@ namespace Iodine.Compiler
         {
             string doc = Expect (TokenClass.Keyword, "enum").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
-            EnumDeclaration decl = new EnumDeclaration (Location, name, doc);
+            var decl = new EnumDeclaration (Location, name, doc);
 
             Expect (TokenClass.OpenBrace);
 
@@ -246,13 +246,13 @@ namespace Iodine.Compiler
             string doc = Expect (TokenClass.Keyword, "contract").Value;
             string name = Expect (TokenClass.Identifier).Value;
 
-            ContractDeclaration contract = new ContractDeclaration (Location, name, doc);
+            var contract = new ContractDeclaration (Location, name, doc);
 
             Expect (TokenClass.OpenBrace);
 
             while (!Match (TokenClass.CloseBrace)) {
                 if (Match (TokenClass.Keyword, "func")) {
-                    FunctionDeclaration func = ParseFunction (true) as FunctionDeclaration;
+                    var func = ParseFunction (true) as FunctionDeclaration;
                     contract.AddMember (func);
                 } else {
                     errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
@@ -276,13 +276,13 @@ namespace Iodine.Compiler
             string doc = Expect (TokenClass.Keyword, "trait").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
 
-            TraitDeclaration trait = new TraitDeclaration (Location, name, doc);
+            var trait = new TraitDeclaration (Location, name, doc);
 
             Expect (TokenClass.OpenBrace);
 
             while (!Match (TokenClass.CloseBrace)) {
                 if (Match (TokenClass.Keyword, "func")) {
-                    FunctionDeclaration func = ParseFunction (true) as FunctionDeclaration;
+                    var func = ParseFunction (true) as FunctionDeclaration;
                     trait.AddMember (func);
                 } else {
                     errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
@@ -306,13 +306,13 @@ namespace Iodine.Compiler
             string doc = Expect (TokenClass.Keyword, "mixin").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
 
-            MixinDeclaration mixin = new MixinDeclaration (Location, name, doc);
+            var mixin = new MixinDeclaration (Location, name, doc);
 
             Expect (TokenClass.OpenBrace);
 
             while (!Match (TokenClass.CloseBrace)) {
                 if (Match (TokenClass.Keyword, "func")) {
-                    FunctionDeclaration func = ParseFunction () as FunctionDeclaration;
+                    var func = ParseFunction () as FunctionDeclaration;
                     mixin.AddMember (func);
                 } else {
                     errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
@@ -328,7 +328,7 @@ namespace Iodine.Compiler
 
         private string ParseClassName ()
         {
-            StringBuilder ret = new StringBuilder ();
+            var ret = new StringBuilder ();
             do {
                 string attr = Expect (TokenClass.Identifier).Value;
                 ret.Append (attr);
@@ -345,8 +345,8 @@ namespace Iodine.Compiler
             string doc = Current.Documentation;
 
             if (Accept (TokenClass.Operator, "@")) {
-                AstNode decorator = ParseExpression (); 
-                FunctionDeclaration originalFunc = ParseFunction (prototype, cdecl) as FunctionDeclaration;
+                var decorator = ParseExpression (); 
+                var originalFunc = ParseFunction (prototype, cdecl) as FunctionDeclaration;
                 return new DecoratedFunction (decorator.Location, decorator, originalFunc);
             }
 
@@ -357,16 +357,16 @@ namespace Iodine.Compiler
             bool hasKeywordArgs;
             bool hasDefaultVals;
 
-            Token ident = Expect (TokenClass.Identifier);
+            var ident = Expect (TokenClass.Identifier);
 
-            List<NamedParameter> parameters = ParseFuncParameters (
+            var parameters = ParseFuncParameters (
               out isInstanceMethod,
               out isVariadic,
               out hasKeywordArgs,
               out hasDefaultVals
             );
 
-            FunctionDeclaration decl = new FunctionDeclaration (Location, ident != null ?
+            var decl = new FunctionDeclaration (Location, ident != null ?
                 ident.Value : "",
                 isInstanceMethod,
                 isVariadic,
@@ -382,7 +382,7 @@ namespace Iodine.Compiler
                     decl.AddStatement (new ReturnStatement (Location, ParseExpression ()));
                 } else {
                     Expect (TokenClass.OpenBrace);
-                    StatementList scope = new StatementList (Location);
+                    var scope = new StatementList (Location);
 
                     if (Match (TokenClass.Keyword, "super")) {
                         scope.AddStatement (ParseSuperCall (cdecl));
@@ -414,7 +414,7 @@ namespace Iodine.Compiler
             hasKeywordArgs = false;
             isInstanceMethod = false;
             hasDefaultValues = false;
-            List<NamedParameter> ret = new List<NamedParameter> ();
+            var ret = new List<NamedParameter> ();
             Expect (TokenClass.OpenParan);
             if (Accept (TokenClass.Keyword, "self")) {
                 isInstanceMethod = true;
@@ -428,18 +428,18 @@ namespace Iodine.Compiler
 
                 if (!hasKeywordArgs && Accept (TokenClass.Operator, "**")) {
                     hasKeywordArgs = true;
-                    Token ident = Expect (TokenClass.Identifier);
+                    var ident = Expect (TokenClass.Identifier);
                     ret.Add (new NamedParameter (ident.Value));
                 } else if (hasKeywordArgs) {
                     errorLog.Add (Errors.ArgumentAfterKeywordArgs, Location);
                 } else if (!isVariadic && Accept (TokenClass.Operator, "*")) {
                     isVariadic = true;
-                    Token ident = Expect (TokenClass.Identifier);
+                    var ident = Expect (TokenClass.Identifier);
                     ret.Add (new NamedParameter (ident.Value));
                 } else if (isVariadic) {
                     errorLog.Add (Errors.ArgumentAfterVariadicArgs, Location);
                 } else {
-                    Token param = Expect (TokenClass.Identifier);
+                    var param = Expect (TokenClass.Identifier);
 
                     AstNode type = null;
                     AstNode value = null;
@@ -619,7 +619,7 @@ namespace Iodine.Compiler
             } else if (PeekToken (1) != null && PeekToken (1).Class == TokenClass.Comma) {
                 return ParseAssignStatement ();
             } else {
-                AstNode node = ParseExpression ();
+                var node = ParseExpression ();
                 if (node == null) {
                     MakeError ();
                 }
@@ -629,7 +629,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseBlock ()
         {
-            CodeBlock ret = new CodeBlock (Location);
+            var ret = new CodeBlock (Location);
             Expect (TokenClass.OpenBrace);
 
             while (!Match (TokenClass.CloseBrace)) {
@@ -648,9 +648,9 @@ namespace Iodine.Compiler
         private AstNode ParseExtend ()
         {
             Expect (TokenClass.Keyword, "extend");
-            AstNode clazz = ParseExpression ();
+            var clazz = ParseExpression ();
 
-            ExtendStatement statement = new ExtendStatement (clazz.Location, clazz, "");
+            var statement = new ExtendStatement (clazz.Location, clazz, "");
 
             if (Accept (TokenClass.Keyword, "use")) {
                 do {
@@ -679,24 +679,24 @@ namespace Iodine.Compiler
         {
             string exceptionVariable = null;
             Expect (TokenClass.Keyword, "try");
-            AstNode tryBody = ParseStatement ();
-            ArgumentList typeList = new ArgumentList (Location);
+            var tryBody = ParseStatement ();
+            var typeList = new ArgumentList (Location);
             Expect (TokenClass.Keyword, "except");
             if (Accept (TokenClass.OpenParan)) {
-                Token ident = Expect (TokenClass.Identifier);
+                var ident = Expect (TokenClass.Identifier);
                 if (Accept (TokenClass.Operator, "as")) {
                     typeList = ParseTypeList ();
                 }
                 Expect (TokenClass.CloseParan);
                 exceptionVariable = ident.Value;
             }
-            AstNode exceptBody = ParseStatement ();
+            var exceptBody = ParseStatement ();
             return new TryExceptStatement (Location, exceptionVariable, tryBody, exceptBody, typeList);
         }
 
         private ArgumentList ParseTypeList ()
         {
-            ArgumentList argList = new ArgumentList (Location);
+            var argList = new ArgumentList (Location);
             while (!Match (TokenClass.CloseParan)) {
                 argList.AddArgument (ParseExpression ());
                 if (!Accept (TokenClass.Comma)) {
@@ -716,7 +716,7 @@ namespace Iodine.Compiler
                 Expect (TokenClass.Keyword, "local");
             }
 
-            Token ident = Expect (TokenClass.Identifier);
+            var ident = Expect (TokenClass.Identifier);
             AstNode value = null;
             if (Accept (TokenClass.Operator, "=")) {
                 value = new BinaryExpression (Location,
@@ -739,11 +739,11 @@ namespace Iodine.Compiler
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "given");
             Expect (TokenClass.OpenParan);
-            AstNode value = ParseExpression ();
+            var value = ParseExpression ();
             Expect (TokenClass.CloseParan);
             Expect (TokenClass.OpenBrace);
             AstNode defaultBlock = new CompilationUnit (Location);
-            List<WhenStatement> whenStatements = new List<WhenStatement> ();
+            var whenStatements = new List<WhenStatement> ();
             while (!EndOfStream && !Match (TokenClass.CloseBrace)) {
                 whenStatements.Add (ParseWhen ());
                 if (Accept (TokenClass.Keyword, "default")) {
@@ -764,8 +764,8 @@ namespace Iodine.Compiler
         {
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "when");
-            AstNode value = ParseExpression ();
-            AstNode body = ParseStatement ();
+            var value = ParseExpression ();
+            var body = ParseStatement ();
 
             return new WhenStatement (location, value, body);
         }
@@ -783,9 +783,9 @@ namespace Iodine.Compiler
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "if");
             Expect (TokenClass.OpenParan);
-            AstNode predicate = ParseExpression ();
+            var predicate = ParseExpression ();
             Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement ();
+            var body = ParseStatement ();
             AstNode elseBody = null;
             if (Accept (TokenClass.Keyword, "else")) {
                 elseBody = ParseStatement ();
@@ -817,11 +817,11 @@ namespace Iodine.Compiler
             Expect (TokenClass.OpenParan);
             AstNode initializer = new Expression (Location, ParseExpression ());
             Expect (TokenClass.SemiColon);
-            AstNode condition = ParseExpression ();
+            var condition = ParseExpression ();
             Expect (TokenClass.SemiColon);
             AstNode afterThought = new Expression (Location, ParseExpression ());
             Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement ();
+            var body = ParseStatement ();
 
             return new ForStatement (location, initializer, condition, afterThought, body);
         }
@@ -845,17 +845,17 @@ namespace Iodine.Compiler
             }
             Expect (TokenClass.OpenParan);
             bool anotherValue = false;
-            List<string> identifiers = new List<string> ();
+            var identifiers = new List<string> ();
             do {
-                Token identifier = Expect (TokenClass.Identifier);
+                var identifier = Expect (TokenClass.Identifier);
                 anotherValue = Accept (TokenClass.Comma);
                 identifiers.Add (identifier.Value);
             } while (anotherValue);
 
             Expect (TokenClass.Keyword, "in");
-            AstNode expr = ParseExpression ();
+            var expr = ParseExpression ();
             Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement ();
+            var body = ParseStatement ();
             return new ForeachStatement (Location, identifiers, expr, body);
         }
 
@@ -868,10 +868,10 @@ namespace Iodine.Compiler
         {
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "do");
-            AstNode body = ParseStatement ();
+            var body = ParseStatement ();
             Expect (TokenClass.Keyword, "while");
             Expect (TokenClass.OpenParan);
-            AstNode condition = ParseExpression ();
+            var condition = ParseExpression ();
             Expect (TokenClass.CloseParan);
             return new DoStatement (location, condition, body);
         }
@@ -885,9 +885,9 @@ namespace Iodine.Compiler
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "while");
             Expect (TokenClass.OpenParan);
-            AstNode condition = ParseExpression ();
+            var condition = ParseExpression ();
             Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement ();
+            var body = ParseStatement ();
             return new WhileStatement (location, condition, body);
         }
 
@@ -900,9 +900,9 @@ namespace Iodine.Compiler
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "with");
             Expect (TokenClass.OpenParan);
-            AstNode value = ParseExpression ();
+            var value = ParseExpression ();
             Expect (TokenClass.CloseParan);
-            AstNode body = ParseStatement ();
+            var body = ParseStatement ();
             return new WithStatement (location, value, body);
         }
 
@@ -942,7 +942,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseAssignStatement ()
         {
-            List<string> identifiers = new List<string> ();
+            var identifiers = new List<string> ();
 
             bool isGlobal = false;
 
@@ -955,7 +955,7 @@ namespace Iodine.Compiler
             SourceLocation location = Location;
 
             while (!Match (TokenClass.Operator, "=") && !EndOfStream) {
-                Token ident = Expect (TokenClass.Identifier);
+                var ident = Expect (TokenClass.Identifier);
                 identifiers.Add (ident.Value);
 
                 if (!Match (TokenClass.Operator, "=")) {
@@ -967,7 +967,7 @@ namespace Iodine.Compiler
 
             bool isPacked = false;
 
-            List<AstNode> expressions = new List<AstNode> ();
+            var expressions = new List<AstNode> ();
 
             do {
                 expressions.Add (ParseExpression ());
@@ -991,7 +991,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseGeneratorExpression ()
         {
-            AstNode expr = ParseAssign ();
+            var expr = ParseAssign ();
 
             bool isGenExpr = Match (TokenClass.Keyword, "for")
                 && PeekToken (1) != null
@@ -1001,7 +1001,7 @@ namespace Iodine.Compiler
                 Expect (TokenClass.Keyword, "for");
                 string ident = Expect (TokenClass.Identifier).Value;
                 Expect (TokenClass.Keyword, "in");
-                AstNode iterator = ParseExpression ();
+                var iterator = ParseExpression ();
                 AstNode predicate = null;
                 if (Accept (TokenClass.Keyword, "if")) {
                     predicate = ParseExpression ();
@@ -1013,7 +1013,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseAssign ()
         {
-            AstNode expr = ParseTernaryIfElse ();
+            var expr = ParseTernaryIfElse ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case "=":
@@ -1110,14 +1110,14 @@ namespace Iodine.Compiler
 
         private AstNode ParseTernaryIfElse ()
         {
-            AstNode expr = ParseRange ();
+            var expr = ParseRange ();
 
             int backup = position;
 
             if (Accept (TokenClass.Keyword, "when")) {
-                AstNode condition = ParseExpression ();
+                var condition = ParseExpression ();
                 if (Accept (TokenClass.Keyword, "else")) {
-                    AstNode altValue = ParseTernaryIfElse ();
+                    var altValue = ParseTernaryIfElse ();
                     expr = new TernaryExpression (expr.Location, condition, expr, altValue);
                 } else {
                     position = backup;
@@ -1128,7 +1128,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseRange ()
         {
-            AstNode expr = ParseBoolOr ();
+            var expr = ParseBoolOr ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case "...":
@@ -1159,7 +1159,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseBoolOr ()
         {
-            AstNode expr = ParseBoolAnd ();
+            var expr = ParseBoolAnd ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case "||":
@@ -1182,7 +1182,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseBoolAnd ()
         {
-            AstNode expr = ParseOr ();
+            var expr = ParseOr ();
             while (Accept (TokenClass.Operator, "&&")) {
                 expr = new BinaryExpression (Location, BinaryOperation.BoolAnd, expr, ParseOr ());
             }
@@ -1191,7 +1191,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseOr ()
         {
-            AstNode expr = ParseXor ();
+            var expr = ParseXor ();
             while (Accept (TokenClass.Operator, "|")) {
                 expr = new BinaryExpression (Location, BinaryOperation.Or, expr, ParseXor ());
             }
@@ -1200,7 +1200,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseXor ()
         {
-            AstNode expr = ParseAnd ();
+            var expr = ParseAnd ();
             while (Accept (TokenClass.Operator, "^")) {
                 expr = new BinaryExpression (Location, BinaryOperation.Xor, expr, ParseAnd ());
             }
@@ -1209,7 +1209,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseAnd ()
         {
-            AstNode expr = ParseEquals ();
+            var expr = ParseEquals ();
             while (Accept (TokenClass.Operator, "&")) {
                 expr = new BinaryExpression (Location, BinaryOperation.And, expr,
                     ParseEquals ());
@@ -1219,7 +1219,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseEquals ()
         {
-            AstNode expr = ParseRelationalOp ();
+            var expr = ParseRelationalOp ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case "==":
@@ -1242,7 +1242,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseRelationalOp ()
         {
-            AstNode expr = ParseBitshift ();
+            var expr = ParseBitshift ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case ">":
@@ -1311,7 +1311,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseBitshift ()
         {
-            AstNode expr = ParseAdditive ();
+            var expr = ParseAdditive ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case "<<":
@@ -1334,7 +1334,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseAdditive ()
         {
-            AstNode expr = ParseMultiplicative ();
+            var expr = ParseMultiplicative ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case "+":
@@ -1357,7 +1357,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseMultiplicative ()
         {
-            AstNode expr = ParseUnary ();
+            var expr = ParseUnary ();
             while (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
                 case "**":
@@ -1440,7 +1440,7 @@ namespace Iodine.Compiler
                 return ParseSlice (lvalue, null);
             }
 
-            AstNode index = ParseExpression ();
+            var index = ParseExpression ();
 
             if (Accept (TokenClass.Colon)) {
                 return ParseSlice (lvalue, index);
@@ -1453,25 +1453,25 @@ namespace Iodine.Compiler
         private AstNode ParseGetExpression (AstNode lvalue)
         {
             Expect (TokenClass.MemberAccess);
-            Token ident = Expect (TokenClass.Identifier);
+            var ident = Expect (TokenClass.Identifier);
             return new MemberExpression (Location, lvalue, ident.Value);
         }
 
         private AstNode ParseGetOrNullExpression (AstNode lvalue)
         {
             Expect (TokenClass.MemberDefaultAccess);
-            Token ident = Expect (TokenClass.Identifier);
+            var ident = Expect (TokenClass.Identifier);
             return new MemberDefaultExpression (Location, lvalue, ident.Value);
         }
 
         private AstNode ParseMatchExpression ()
         {
             if (Accept (TokenClass.Keyword, "match")) {
-                MatchExpression expr = new MatchExpression (Location, ParseExpression ());
+                var expr = new MatchExpression (Location, ParseExpression ());
                 Expect (TokenClass.OpenBrace);
                 while (Accept (TokenClass.Keyword, "case")) {
                     AstNode condition = null;
-                    AstNode pattern = ParsePattern ();
+                    var pattern = ParsePattern ();
                     if (Accept (TokenClass.Keyword, "when")) {
                         condition = ParseExpression ();
                     }
@@ -1511,7 +1511,7 @@ namespace Iodine.Compiler
 
         private AstNode ParsePatternOr ()
         {
-            AstNode expr = ParsePatternAnd ();
+            var expr = ParsePatternAnd ();
             while (Match (TokenClass.Operator, "|")) {
                 Accept (TokenClass.Operator);
                 expr = new PatternExpression (Location,
@@ -1525,7 +1525,7 @@ namespace Iodine.Compiler
 
         private AstNode ParsePatternAnd ()
         {
-            AstNode expr = ParsePatternExtractor ();
+            var expr = ParsePatternExtractor ();
             while (Match (TokenClass.Operator, "&")) {
                 Accept (TokenClass.Operator);
                 expr = new PatternExpression (Location,
@@ -1539,13 +1539,13 @@ namespace Iodine.Compiler
 
         private AstNode ParsePatternExtractor ()
         {
-            AstNode ret = ParsePatternTerm ();
+            var ret = ParsePatternTerm ();
 
             if (Accept (TokenClass.OpenParan)) {
                 ret = new PatternExtractExpression (Location, ret);
 
                 while (!Match (TokenClass.CloseParan)) {
-                    Token capture = Expect (TokenClass.Identifier);
+                    var capture = Expect (TokenClass.Identifier);
 
                     ((PatternExtractExpression)ret).Captures.Add (capture.Value);
 
@@ -1573,14 +1573,14 @@ namespace Iodine.Compiler
                 bool acceptsKwargs;
                 bool hasDefaultVals;
 
-                List<NamedParameter> parameters = ParseFuncParameters (
+                var parameters = ParseFuncParameters (
                     out isInstanceMethod,
                     out isVariadic,
                     out acceptsKwargs,
                     out hasDefaultVals
                 );
 
-                LambdaExpression decl = new LambdaExpression (
+                var decl = new LambdaExpression (
                     Location, 
                     isInstanceMethod, 
                     isVariadic, 
@@ -1615,7 +1615,7 @@ namespace Iodine.Compiler
                 return ParseHashLiteral ();
             case TokenClass.OpenParan:
                 ReadToken ();
-                AstNode expr = ParseExpression ();
+                var expr = ParseExpression ();
                 if (Accept (TokenClass.Comma)) {
                     return ParseTupleLiteral (expr);
                 }
@@ -1629,13 +1629,13 @@ namespace Iodine.Compiler
         private AstNode ParseListLiteral ()
         {
             Expect (TokenClass.OpenBracket);
-            ListExpression ret = new ListExpression (Location);
+            var ret = new ListExpression (Location);
             while (!Match (TokenClass.CloseBracket)) {
-                AstNode expr = ParseAssign ();
+                var expr = ParseAssign ();
                 if (Accept (TokenClass.Keyword, "for")) {
                     string ident = Expect (TokenClass.Identifier).Value;
                     Expect (TokenClass.Keyword, "in");
-                    AstNode iterator = ParseExpression ();
+                    var iterator = ParseExpression ();
                     AstNode predicate = null;
                     if (Accept (TokenClass.Keyword, "if")) {
                         predicate = ParseExpression ();
@@ -1655,11 +1655,11 @@ namespace Iodine.Compiler
         private AstNode ParseHashLiteral ()
         {
             Expect (TokenClass.OpenBrace);
-            HashExpression ret = new HashExpression (Location);
+            var ret = new HashExpression (Location);
             while (!Match (TokenClass.CloseBrace)) {
-                AstNode key = ParseExpression ();
+                var key = ParseExpression ();
                 Expect (TokenClass.Colon);
-                AstNode value = ParseExpression ();
+                var value = ParseExpression ();
                 ret.AddItem (key, value);
                 if (!Accept (TokenClass.Comma)) {
                     break;
@@ -1671,7 +1671,7 @@ namespace Iodine.Compiler
 
         private AstNode ParseTupleLiteral (AstNode firstVal)
         {
-            TupleExpression tuple = new TupleExpression (Location);
+            var tuple = new TupleExpression (Location);
             tuple.AddItem (firstVal);
             while (!Match (TokenClass.CloseParan)) {
                 tuple.AddItem (ParseExpression ());
@@ -1706,7 +1706,7 @@ namespace Iodine.Compiler
                 return new FloatExpression (Location, double.Parse (
                     ReadToken ().Value));
             case TokenClass.InterpolatedStringLiteral:
-                AstNode val = ParseString (Location, ReadToken ().Value);
+                var val = ParseString (Location, ReadToken ().Value);
                 if (val == null) {
                     MakeError ();
                     return new StringExpression (Location, "");
@@ -1766,7 +1766,7 @@ namespace Iodine.Compiler
         {
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "super");
-            ArgumentList argumentList = ParseArgumentList ();
+            var argumentList = ParseArgumentList ();
             while (Accept (TokenClass.SemiColon))
                 ;
             return new SuperCallStatement (location, parent, argumentList);
@@ -1774,7 +1774,7 @@ namespace Iodine.Compiler
 
         private ArgumentList ParseArgumentList ()
         {
-            ArgumentList argList = new ArgumentList (Location);
+            var argList = new ArgumentList (Location);
             Expect (TokenClass.OpenParan);
             KeywordArgumentList kwargs = null;
             while (!Match (TokenClass.CloseParan)) {
@@ -1783,13 +1783,13 @@ namespace Iodine.Compiler
                     argList.AddArgument (ParseExpression ());
                     break;
                 }
-                AstNode arg = ParseExpression ();
+                var arg = ParseExpression ();
                 if (Accept (TokenClass.Colon)) {
                     if (kwargs == null) {
                         kwargs = new KeywordArgumentList (arg.Location);
                     }
-                    NameExpression ident = arg as NameExpression;
-                    AstNode val = ParseExpression ();
+                    var ident = arg as NameExpression;
+                    var val = ParseExpression ();
                     if (ident == null) {
                         errorLog.Add (Errors.ExpectedIdentifier, Location);
                     } else {
@@ -1818,10 +1818,10 @@ namespace Iodine.Compiler
              */
             int pos = 0;
             string accum = "";
-            List<string> subExpressions = new List<string> ();
+            var subExpressions = new List<string> ();
             while (pos < str.Length) {
                 if (str [pos] == '#' && str.Length != pos + 1 && str [pos + 1] == '{') {
-                    string substr = str.Substring (pos + 2);
+                    var substr = str.Substring (pos + 2);
                     if (substr.IndexOf ('}') == -1)
                         return null;
                     substr = substr.Substring (0, substr.IndexOf ('}'));
@@ -1834,15 +1834,15 @@ namespace Iodine.Compiler
                 }
             }
 
-            StringExpression ret = new StringExpression (loc, accum);
+            var ret = new StringExpression (loc, accum);
 
             foreach (string name in subExpressions) {
-                Tokenizer tokenizer = new Tokenizer (
+                var tokenizer = new Tokenizer (
                     errorLog,
                     SourceUnit.CreateFromSource (name).GetReader ()
                 );
 
-                Parser parser = new Parser (context, tokenizer.Scan ());
+                var parser = new Parser (context, tokenizer.Scan ());
                 var expression = parser.ParseExpression ();
                 ret.AddSubExpression (expression);
             }
@@ -1856,7 +1856,7 @@ namespace Iodine.Compiler
         public void Synchronize ()
         {
             while (Current != null) {
-                Token tok = ReadToken ();
+                var tok = ReadToken ();
                 switch (tok.Class) {
                 case TokenClass.CloseBracket:
                 case TokenClass.SemiColon:
@@ -1937,7 +1937,7 @@ namespace Iodine.Compiler
                 return ret;
             }
 
-            Token offender = ReadToken ();
+            var offender = ReadToken ();
 
             if (offender != null) {
                 errorLog.Add (Errors.UnexpectedToken, offender.Location, offender.Value);
@@ -1950,13 +1950,13 @@ namespace Iodine.Compiler
 
         public Token Expect (TokenClass clazz, string val)
         {
-            Token ret = PeekToken ();
+            var ret = PeekToken ();
 
             if (Accept (clazz, val)) {
                 return ret;
             }
 
-            Token offender = ReadToken ();
+            var offender = ReadToken ();
 
             if (offender != null) {
                 errorLog.Add (Errors.UnexpectedToken, offender.Location, offender.Value);

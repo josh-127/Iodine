@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     /// <summary>
@@ -36,7 +34,7 @@ namespace Iodine.Runtime
     /// </summary>
     public class IodineName : IodineObject
     {
-        private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Name");
+        static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Name");
 
         public readonly string Value;
 

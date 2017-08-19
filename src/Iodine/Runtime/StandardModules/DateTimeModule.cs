@@ -28,7 +28,6 @@
 **/
 
 using System;
-using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
@@ -63,7 +62,7 @@ namespace Iodine.Runtime
                 SetAttribute ("utc", new BuiltinMethodCallback (ToUtc, null));
             }
 
-            private IodineObject ToUtc (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            IodineObject ToUtc (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 return new IodineTimeStamp (Value.ToUniversalTime ());
             }
@@ -135,7 +134,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Returns the current time"
         )]
-        private static IodineObject Now (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        static IodineObject Now (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return new IodineTimeStamp (DateTime.Now);
         }

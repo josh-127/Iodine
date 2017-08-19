@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     /// <summary>
@@ -36,38 +34,38 @@ namespace Iodine.Runtime
     /// </summary>
     public class IodineGenerator : IodineObject
     {
-        private static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Generator");
+        static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Generator");
 
         /*
          * Initial access is set after the first attempt to iterate over this generator
          */
-        private bool initialAccess = false;
+        bool initialAccess = false;
 
         /*
          * The method that created this generator
          */
-        private IodineMethod baseMethod;
+        IodineMethod baseMethod;
 
         /*
          * self pointer if baseMethod is an instance method
          */
-        private IodineObject self;
+        IodineObject self;
 
         /*
          * Initial value created by the first yield statement, we return this on the
          * first iteration
          */
-        private IodineObject value;
+        IodineObject value;
 
         /*
          * Arguments originally passed to the method
          */
-        private IodineObject[] arguments;
+        IodineObject [] arguments;
 
         /*
          * The stack frame we are operating from
          */
-        private StackFrame stackFrame;
+        StackFrame stackFrame;
 
         public IodineGenerator (StackFrame frame,
             IodineMethod baseMethod,

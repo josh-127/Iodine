@@ -27,18 +27,12 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class MemberExpression : AstNode
     {
         public readonly string Field;
-
-        public AstNode Target {
-            private set;
-            get;
-        }
+        public readonly AstNode Target;
 
         public MemberExpression (SourceLocation location, AstNode target, string field)
             : base (location)

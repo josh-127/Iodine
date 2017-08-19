@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Collections.Generic;
 
 namespace Iodine.Runtime
@@ -37,7 +36,7 @@ namespace Iodine.Runtime
     /// </summary>
     public class IodineClass : IodineTypeDefinition
     {
-        private bool initializerInvoked = false;
+        bool initializerInvoked = false;
 
         public CodeObject Initializer { internal set; get; }
 
@@ -84,7 +83,7 @@ namespace Iodine.Runtime
             return true;
         }
 
-        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject [] arguments)
         {
             if (!initializerInvoked) {
                 initializerInvoked = true;
@@ -100,7 +99,7 @@ namespace Iodine.Runtime
             return obj;
         }
 
-        public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+        public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
         {
             var obj = Invoke (vm, arguments);
 

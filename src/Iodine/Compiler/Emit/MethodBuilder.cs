@@ -26,18 +26,17 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-using System;
+
 using System.Collections.Generic;
 using Iodine.Runtime;
-using Iodine.Util;
 
 namespace Iodine.Compiler 
 {
     public class CodeBuilder : CodeObject
     {
-        private static int nextLabelID = 0;
+        static int nextLabelID = 0;
 
-        private readonly Dictionary<int, Label> labelReferences = new Dictionary<int, Label> ();
+        readonly Dictionary<int, Label> labelReferences = new Dictionary<int, Label> ();
 
         protected List<Instruction> instructions = new List<Instruction> ();
 
@@ -107,7 +106,6 @@ namespace Iodine.Compiler
                 );
             }
             Instructions = instructions.ToArray ();
-           
         }
     }
 }

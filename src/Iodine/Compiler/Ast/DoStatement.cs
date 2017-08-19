@@ -27,21 +27,12 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class DoStatement : AstNode
     {
-        public AstNode Condition {
-            private set;
-            get;
-        }
-
-        public AstNode Body {
-            private set;
-            get;
-        }
+        public readonly AstNode Condition;
+        public readonly AstNode Body;
 
         public DoStatement (SourceLocation location, AstNode condition, AstNode body)
             : base (location)

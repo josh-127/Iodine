@@ -40,8 +40,8 @@ namespace Iodine.Util
     {
         protected override bool KeyEquals (object item, object key)
         {
-            IodineObject ioItem = item as IodineObject;
-            IodineObject ioKey = key as IodineObject;
+            var ioItem = item as IodineObject;
+            var ioKey = key as IodineObject;
 
             return ioItem.Equals (ioKey);
         }

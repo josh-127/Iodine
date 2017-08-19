@@ -27,22 +27,14 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
     public class GivenStatement : AstNode
     {
-        public AstNode GivenValue {
-            private set;
-            get;
-        }
-
-        public AstNode DefaultStatement {
-            private set;
-            get;
-        }
+        public readonly AstNode GivenValue;
+        public readonly AstNode DefaultStatement;
 
         public readonly List<WhenStatement> WhenStatements = new List<WhenStatement> ();
 

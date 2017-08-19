@@ -93,7 +93,7 @@ namespace Iodine.Runtime
                 return obj;
             }
 
-            private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject [] args)
+            IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 var thisObj = self as IodineBytes;
 
@@ -132,7 +132,7 @@ namespace Iodine.Runtime
                 return IodineBool.False;
             }
 
-            private IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject [] args)
+            IodineObject Substring (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 var thisObj = self as IodineBytes;
 
@@ -149,7 +149,7 @@ namespace Iodine.Runtime
                 if (args.Length == 1) {
                     long startingIndex;
 
-                    if (!MarshalUtil.MarshalAsInt64 (args[0], out startingIndex)) {
+                    if (!MarshalUtil.MarshalAsInt64 (args [0], out startingIndex)) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return null;
                     }
@@ -158,9 +158,8 @@ namespace Iodine.Runtime
                     long startingIndex;
                     long endingIndex;
 
-                    if (!MarshalUtil.MarshalAsInt64 (args[0], out startingIndex) ||
-                        !MarshalUtil.MarshalAsInt64 (args[1], out endingIndex)) 
-                    {
+                    if (!MarshalUtil.MarshalAsInt64 (args [0], out startingIndex) ||
+                        !MarshalUtil.MarshalAsInt64 (args [1], out endingIndex)) {
                         vm.RaiseException (new IodineTypeException ("Int"));
                         return null;
                     }
@@ -169,7 +168,7 @@ namespace Iodine.Runtime
                 }
             }
 
-            private IodineObject Substring (VirtualMachine vm, byte[] value, long startingIndex)
+            IodineObject Substring (VirtualMachine vm, byte [] value, long startingIndex)
             {
                 byte [] newBytes = new byte [value.Length - (int)startingIndex];
 
@@ -182,7 +181,7 @@ namespace Iodine.Runtime
                 return new IodineBytes (newBytes);
             }
 
-            private IodineObject Substring (VirtualMachine vm, byte [] value, long startingIndex, long endingIndex)
+            IodineObject Substring (VirtualMachine vm, byte [] value, long startingIndex, long endingIndex)
             {
                 byte [] newBytes = new byte [(int)endingIndex];
 
@@ -202,9 +201,9 @@ namespace Iodine.Runtime
         {
             static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("BytesIterator");
 
-            private byte[] value;
+            byte [] value;
 
-            private int iterIndex = 0;
+            int iterIndex = 0;
 
             public BytesIterator (byte[] value)
                 : base (TypeDefinition)
@@ -233,7 +232,7 @@ namespace Iodine.Runtime
         }
 
 
-        private int iterIndex = 0;
+        int iterIndex = 0;
 
         public byte[] Value { private set; get; }
 
@@ -353,7 +352,7 @@ namespace Iodine.Runtime
          * Iodine Function: Bytes.indexOf (self, value)
          * Description: Returns the first position of value
          */
-        private IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject IndexOf (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -379,7 +378,7 @@ namespace Iodine.Runtime
          * Iodine Function: Bytes.lastIndexOf (self, value)
          * Description: Returns the last position of value
          */
-        private IodineObject LastIndexOf (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject LastIndexOf (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -408,7 +407,7 @@ namespace Iodine.Runtime
          * Iodine Function: Bytes.contains (self, value)
          * Description: Returns true if this byte string contains value
          */
-        private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -440,11 +439,11 @@ namespace Iodine.Runtime
             return IodineBool.False;
         }
 
-        private static int ConvertToByte (IodineObject obj)
+        static int ConvertToByte (IodineObject obj)
         {
             if (obj is IodineInteger) {
                 return (byte)((IodineInteger)obj).Value;
-            } 
+            }
 
             if (obj is IodineString) {
                 var val = obj.ToString ();

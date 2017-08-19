@@ -27,9 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-using Iodine.Compiler;
-
 namespace Iodine.Compiler.Ast
 {
     public class Statement : AstNode

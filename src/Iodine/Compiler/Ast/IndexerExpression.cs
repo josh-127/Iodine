@@ -27,21 +27,12 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class IndexerExpression : AstNode
     {
-        public AstNode Target {
-            private set;
-            get;
-        }
-
-        public AstNode Index {
-            private set;
-            get;
-        }
+        public readonly AstNode Target;
+        public readonly AstNode Index;
 
         public IndexerExpression (SourceLocation location, AstNode lvalue, AstNode index)
             : base (location)

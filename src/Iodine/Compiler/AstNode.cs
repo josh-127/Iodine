@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
@@ -39,7 +37,7 @@ namespace Iodine.Compiler.Ast
 
         public abstract void Visit (AstVisitor visitor);
 
-        public AstNode (SourceLocation location)
+        protected AstNode (SourceLocation location)
         {
             Location = location;
         }

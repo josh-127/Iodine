@@ -62,10 +62,10 @@ namespace Iodine.Runtime
 
         class TupleIterable : IodineObject
         {
-            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("TupleIterator");
+            static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("TupleIterator");
 
-            private int iterIndex = 0;
-            private IodineObject[] objects;
+            int iterIndex = 0;
+            IodineObject [] objects;
 
             public TupleIterable (IodineObject[] objects)
                 : base (TypeDefinition)
@@ -142,7 +142,7 @@ namespace Iodine.Runtime
             );
         }
 
-        private IodineTuple Subtuple (int start, int end, int stride, bool defaultStart, bool defaultEnd)
+        IodineTuple Subtuple (int start, int end, int stride, bool defaultStart, bool defaultEnd)
         {
             int actualStart = start >= 0 ? start : Objects.Length - (start + 2);
             int actualEnd = end >= 0 ? end : Objects.Length - (end + 2);

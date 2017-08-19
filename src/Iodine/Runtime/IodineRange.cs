@@ -27,24 +27,21 @@
   * DAMAGE.
 **/
 
-using System;
-using Iodine.Compiler;
-
 namespace Iodine.Runtime
 {
     public class IodineRange : IodineObject
     {
-        private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Range");
+        static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Range");
 
         class RangeIterator : IodineObject
         {
-            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
+            static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("RangeIterator");
 
-            private long iterIndex = 0;
+            long iterIndex = 0;
 
-            private readonly long min;
-            private readonly long end;
-            private readonly long step;
+            readonly long min;
+            readonly long end;
+            readonly long step;
 
             public RangeIterator (long min, long max, long step)
                 : base (TypeDefinition)
@@ -74,9 +71,9 @@ namespace Iodine.Runtime
             }
         }
 
-        private long min;
-        private long end;
-        private long step;
+        readonly long min;
+        readonly long end;
+        readonly long step;
 
         public IodineRange (long min, long max, long step)
             : base (TypeDefinition)

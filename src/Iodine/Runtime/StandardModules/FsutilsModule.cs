@@ -27,9 +27,7 @@
   * DAMAGE.
 **/
 
-using System;
 using System.IO;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Iodine.Runtime
@@ -61,7 +59,7 @@ namespace Iodine.Runtime
             "@param src The source file.",
             "@param dest The destination file."
         )]
-        private IodineObject Copy (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Copy (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 2) {
                 vm.RaiseException (new IodineArgumentException (2));
@@ -91,7 +89,7 @@ namespace Iodine.Runtime
             "@param src The source directory.",
             "@param dest The destination directory."
         )]
-        private IodineObject Copytree (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Copytree (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 2) {
                 vm.RaiseException (new IodineArgumentException (2));
@@ -110,12 +108,12 @@ namespace Iodine.Runtime
 
             return null;
         }
-            
+
         [BuiltinDocString (
             "Returns true if a file or directory exist.",
             "@param path The file name."
         )]
-        private IodineObject Exists (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Exists (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -136,7 +134,7 @@ namespace Iodine.Runtime
             "Returns true if a path string is a directory.",
             "@param path The path to test."
         )]
-        private IodineObject IsDir (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject IsDir (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -157,7 +155,7 @@ namespace Iodine.Runtime
             "Returns true if a path string is a file.",
             "@param path The path to test."
         )]
-        private IodineObject IsFile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject IsFile (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -178,7 +176,7 @@ namespace Iodine.Runtime
             "Reads all text from a file, returning a string.",
             "@param path The file to read."
         )]
-        private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -199,12 +197,12 @@ namespace Iodine.Runtime
 
             return new IodineString (File.ReadAllText (path.Value));
         }
-       
+
         [BuiltinDocString (
             "Reads all bytes from a file, returning a byte string.",
             "@param path The file to read."
         )]
-        private IodineObject ReadBytes (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject ReadBytes (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -230,7 +228,7 @@ namespace Iodine.Runtime
             "Reads all lines from a file, returning a new list.",
             "@param path The file to read."
         )]
-        private IodineObject ReadLines (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject ReadLines (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -262,7 +260,7 @@ namespace Iodine.Runtime
             "Returns the time this file was last accessed.",
             "@param file The file in question."
         )]
-        private IodineObject GetModifiedTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetModifiedTime (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -285,7 +283,7 @@ namespace Iodine.Runtime
             "Returns the time this file was created.",
             "@param file The file in question."
         )]
-        private IodineObject GetCreationTime (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetCreationTime (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -304,7 +302,7 @@ namespace Iodine.Runtime
             return new DateTimeModule.IodineTimeStamp (File.GetCreationTime (args [0].ToString ()));
         }
 
-        private static bool CopyDir (string src, string dest, bool recurse)
+        static bool CopyDir (string src, string dest, bool recurse)
         {
             var dir = new DirectoryInfo (src);
             var dirs = dir.GetDirectories ();

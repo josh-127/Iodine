@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
@@ -37,7 +36,7 @@ namespace Iodine.Compiler.Ast
         public readonly string Name;
         public readonly string Documentation;
 
-        public Dictionary<string, int> Items { private set; get; }
+        public readonly Dictionary<string, int> Items;
 
         public EnumDeclaration (SourceLocation location, string name, string doc)
             : base (location)

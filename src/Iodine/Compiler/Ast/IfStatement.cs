@@ -27,26 +27,13 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class IfStatement : AstNode
     {
-        public AstNode Condition { 
-            private set;
-            get;
-        }
-
-        public AstNode Body {
-            private set;
-            get;
-        }
-
-        public AstNode ElseBody {
-            private set;
-            get;
-        }
+        public readonly AstNode Condition;
+        public readonly AstNode Body;
+        public readonly AstNode ElseBody;
 
         public IfStatement (SourceLocation location, AstNode condition, AstNode body, AstNode elseBody = null)
             : base (location)

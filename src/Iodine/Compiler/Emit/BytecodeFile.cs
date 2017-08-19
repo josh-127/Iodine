@@ -37,7 +37,7 @@ namespace Iodine.Compiler
     /// <summary>
     /// Cached Iodine bytecode file
     /// </summary>
-    internal class BytecodeFile
+    class BytecodeFile
     {
         enum DataType
         {
@@ -57,9 +57,9 @@ namespace Iodine.Compiler
         const byte MAGIC_3 = 0x49;
         const byte MAGIC_4 = 0x5A;
 
-        private BinaryWriter binaryWriter;
-        private BinaryReader binaryReader;
-        private string fileName;
+        BinaryWriter binaryWriter;
+        BinaryReader binaryReader;
+        string fileName;
 
         public BytecodeFile (FileStream stream, string originalFile)
         {
@@ -67,7 +67,7 @@ namespace Iodine.Compiler
             binaryWriter = new BinaryWriter (stream);
             binaryReader = new BinaryReader (stream);
         }
-            
+
         public bool TryReadModule (ref IodineModule module)
         {
             if (!ReadHeader ()) {
@@ -86,7 +86,7 @@ namespace Iodine.Compiler
             return true;
         }
 
-        private bool ReadHeader ()
+        bool ReadHeader ()
         {
             var mag0 = binaryReader.ReadByte ();
             var mag1 = binaryReader.ReadByte ();
@@ -146,24 +146,24 @@ namespace Iodine.Compiler
 
         }
 
-        private void WriteConstant (IodineObject obj)
+        void WriteConstant (IodineObject obj)
         {
             var lookup = new Dictionary<Type, Action> ()
             {
-                { typeof (IodineNull),          WriteNull },  
+                { typeof (IodineNull),          WriteNull },
                 { typeof (IodineBool), () =>    WriteBool (obj as IodineBool) },
-                { typeof (IodineName), () =>    WriteName (obj as IodineName) }, 
-                { typeof (IodineInteger), () => WriteInt (obj as IodineInteger) }, 
-                { typeof (IodineFloat), () =>   WriteFloat (obj as IodineFloat) }, 
+                { typeof (IodineName), () =>    WriteName (obj as IodineName) },
+                { typeof (IodineInteger), () => WriteInt (obj as IodineInteger) },
+                { typeof (IodineFloat), () =>   WriteFloat (obj as IodineFloat) },
                 { typeof (IodineBigInt), () =>  WriteBigInt (obj as IodineBigInt) },
-                { typeof (IodineString), () =>  WriteString (obj as IodineString) }, 
-                { typeof (CodeBuilder), () =>   WriteCodeObject (obj as CodeBuilder) }, 
+                { typeof (IodineString), () =>  WriteString (obj as IodineString) },
+                { typeof (CodeBuilder), () =>   WriteCodeObject (obj as CodeBuilder) },
             };
 
             lookup [obj.GetType ()] ();
         }
 
-        private void WriteCodeObject (CodeBuilder codeObject)
+        void WriteCodeObject (CodeBuilder codeObject)
         {
             binaryWriter.Write ((byte)DataType.CodeObject);
             binaryWriter.Write (codeObject.Instructions.Length);
@@ -173,7 +173,7 @@ namespace Iodine.Compiler
             }
         }
 
-        private void WriteInstruction (Instruction ins)
+        void WriteInstruction (Instruction ins)
         {
             binaryWriter.Write ((byte)ins.OperationCode);
 
@@ -192,37 +192,37 @@ namespace Iodine.Compiler
             }
         }
 
-        private void WriteName (IodineName name)
+        void WriteName (IodineName name)
         {
             binaryWriter.Write ((byte)DataType.NameObject);
             binaryWriter.Write (name.Value);
         }
 
-        private void WriteString (IodineString str)
+        void WriteString (IodineString str)
         {
             binaryWriter.Write ((byte)DataType.StringObject);
             binaryWriter.Write (str.Value);
         }
 
-        private void WriteInt (IodineInteger integer)
+        void WriteInt (IodineInteger integer)
         {
             binaryWriter.Write ((byte)DataType.IntObject);
             binaryWriter.Write (integer.Value);
         }
 
-        private void WriteFloat (IodineFloat realnum)
+        void WriteFloat (IodineFloat realnum)
         {
             binaryWriter.Write ((byte)DataType.FloatObject);
             binaryWriter.Write (realnum.Value);
         }
 
-        private void WriteBool (IodineBool boolean)
+        void WriteBool (IodineBool boolean)
         {
             binaryWriter.Write ((byte)DataType.BoolObject);
             binaryWriter.Write (boolean.Value);
         }
 
-        private void WriteBigInt (IodineBigInt bigint)
+        void WriteBigInt (IodineBigInt bigint)
         {
             binaryWriter.Write ((byte)DataType.BigIntObject);
             var bytes = bigint.Value.ToByteArray ();
@@ -230,12 +230,12 @@ namespace Iodine.Compiler
             binaryWriter.Write (bytes);
         }
 
-        private void WriteNull ()
+        void WriteNull ()
         {
             binaryWriter.Write ((byte)DataType.NullObject);
         }
 
-        private IodineObject ReadConstant ()
+        IodineObject ReadConstant ()
         {
             var type = (DataType)binaryReader.ReadByte ();
 
@@ -261,7 +261,7 @@ namespace Iodine.Compiler
             return null;
         }
 
-        private CodeBuilder ReadCodeObject (CodeBuilder codeObject)
+        CodeBuilder ReadCodeObject (CodeBuilder codeObject)
         {
             var instructionCount = binaryReader.ReadInt32 ();
 
@@ -274,7 +274,7 @@ namespace Iodine.Compiler
             return codeObject;
         }
 
-        private void ReadInstruction (CodeBuilder codeObject)
+        void ReadInstruction (CodeBuilder codeObject)
         {
             var opcode = (Opcode)binaryReader.ReadByte ();
             var argument = binaryReader.ReadInt32 ();
@@ -282,17 +282,17 @@ namespace Iodine.Compiler
 
             var line = binaryReader.ReadInt32 ();
 
-            SourceLocation location = line == -1 
+            SourceLocation location = line == -1
                 ? null
                 : new SourceLocation (line, 0, fileName);
 
 
             codeObject.EmitInstruction (
                 location,
-                opcode, 
+                opcode,
                 argument,
                 argumentObj
-            ); 
+            );
         }
 
         public IodineObject ReadName ()

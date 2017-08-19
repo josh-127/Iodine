@@ -27,23 +27,15 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class BinaryExpression : AstNode
     {
         public readonly BinaryOperation Operation;
 
-        public AstNode Left {
-            private set;
-            get;
-        }
+        public readonly AstNode Left;
 
-        public AstNode Right {
-            private set;
-            get;
-        }
+        public readonly AstNode Right;
 
         public BinaryExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
             : base (location)
@@ -55,7 +47,7 @@ namespace Iodine.Compiler.Ast
 
         public override void Visit (AstVisitor visitor)
         {
-            AstNode reduced = Reduce ();
+            var reduced = Reduce ();
 
             if (reduced != this) {
                 reduced.Visit (visitor);

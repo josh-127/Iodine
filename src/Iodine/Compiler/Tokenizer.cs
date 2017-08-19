@@ -42,10 +42,10 @@ namespace Iodine.Compiler
     {
         const string OperatorChars = "+-*/=<>~!&^|%@?.";
 
-        private SourceReader source;
+        string lastDocStr;
 
-        private string lastDocStr = null;
-        private ErrorSink errorLog;
+        readonly SourceReader source;
+        readonly ErrorSink errorLog;
 
         public Tokenizer (ErrorSink errorLog, SourceReader sourceReader)
         {
@@ -55,12 +55,12 @@ namespace Iodine.Compiler
 
         public IEnumerable<Token> Scan ()
         {
-            List<Token> tokens = new List<Token> ();
+            var tokens = new List<Token> ();
 
             source.SkipWhitespace ();
 
             while (source.See ()) {
-                Token nextToken = NextToken ();
+                var nextToken = NextToken ();
 
                 if (nextToken != null) {
                     tokens.Add (nextToken);
@@ -77,9 +77,9 @@ namespace Iodine.Compiler
             return tokens;
         }
 
-        private Token NextToken ()
+        Token NextToken ()
         {
-            char ch = source.Peek ();
+            var ch = source.Peek ();
 
             if (source.Peeks (2) == "0x") {
                 return ReadHexNumber ();
@@ -125,7 +125,7 @@ namespace Iodine.Compiler
             };
 
             if (punctuators.ContainsKey (source.Peek ())) {
-                char punctuator = source.Read ();
+                var punctuator = source.Read ();
 
                 return new Token (
                     punctuators [punctuator],
@@ -148,9 +148,9 @@ namespace Iodine.Compiler
             return null;
         }
 
-        private Token ReadNumber ()
+        Token ReadNumber ()
         {
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
 
             while (source.See () && char.IsDigit (source.Peek ())) {
                 accum.Append (source.Read ());
@@ -162,9 +162,9 @@ namespace Iodine.Compiler
 
             bool isBigInt = source.Peek () == 'L';
 
-            string val = accum.ToString ();
+            var val = accum.ToString ();
             bool fitsInInteger;
-           
+
             if (isBigInt) {
                 source.Skip ();
                 BigInteger valBig;
@@ -189,9 +189,9 @@ namespace Iodine.Compiler
             return new Token (tokenClass, accum.ToString (), lastDocStr, source.Location);
         }
 
-        private Token ReadHexNumber ()
+        Token ReadHexNumber ()
         {
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
 
             source.Skip (2);
 
@@ -199,7 +199,7 @@ namespace Iodine.Compiler
                 accum.Append (source.Read ());
             }
 
-            string val = accum.ToString ();
+            var val = accum.ToString ();
 
             bool isBigInt = source.Peek () == 'L';
 
@@ -243,18 +243,18 @@ namespace Iodine.Compiler
             return new Token (tokenClass, val, lastDocStr, source.Location);
         }
 
-        private static bool IsHexNumber (char c)
+        static bool IsHexNumber (char c)
         {
             return "ABCDEFabcdef0123456789".Contains (c.ToString ());
         }
 
-        private Token ReadFloat (StringBuilder buffer)
+        Token ReadFloat (StringBuilder buffer)
         {
             SourceLocation location = source.Location;
 
             source.Skip (); // .
             buffer.Append (".");
-            char ch = source.Peek ();
+            var ch = source.Peek ();
             do {
                 buffer.Append (source.Read ());
                 ch = source.Peek ();
@@ -263,15 +263,15 @@ namespace Iodine.Compiler
             return new Token (TokenClass.FloatLiteral, buffer.ToString (), lastDocStr, location);
         }
 
-        private Token ReadStringLiteral (bool binary = false)
+        Token ReadStringLiteral (bool binary = false)
         {
             SourceLocation location = source.Location;
 
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
 
-            char delimiter = source.Read ();
+            var delimiter = source.Read ();
 
-            char ch = source.Peek ();
+            var ch = source.Peek ();
 
             while (source.See () && ch != delimiter) {
                 if (ch == '\\') {
@@ -297,7 +297,7 @@ namespace Iodine.Compiler
                 );
             }
 
-            return new Token (ch == '"' ? 
+            return new Token (ch == '"' ?
                 TokenClass.InterpolatedStringLiteral :
                 TokenClass.StringLiteral,
                 accum.ToString (),
@@ -306,7 +306,7 @@ namespace Iodine.Compiler
             );
         }
 
-        private char ParseEscapeCode ()
+        char ParseEscapeCode ()
         {
             switch (source.Read ()) {
             case '\'':
@@ -332,31 +332,31 @@ namespace Iodine.Compiler
             return char.MinValue;
         }
 
-        private Token ReadIdentifier ()
+        Token ReadIdentifier ()
         {
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
 
-            char ch = source.Peek ();
+            var ch = source.Peek ();
 
             while (char.IsLetterOrDigit (ch) || ch == '_') {
                 accum.Append (source.Read ());
                 ch = source.Peek ();
             }
 
-            string identValue = accum.ToString ();
+            var identValue = accum.ToString ();
 
-            string[] keywords = new string[] {
+            var keywords = new string [] {
                 "if", "else", "while", "do", "for", "func",
                 "class", "use", "self", "foreach", "in",
                 "true", "false", "null", "lambda", "try",
                 "except", "break", "from", "continue", "super",
-                "enum", "raise", "contract", "trait", "mixin", 
-                "given", "case", "yield", "default", "return", 
+                "enum", "raise", "contract", "trait", "mixin",
+                "given", "case", "yield", "default", "return",
                 "match", "when", "var", "with", "global",
                 "extend", "extends", "implements"
             };
 
-            string[] operators = new string[] { "in", "is", "isnot", "as" };
+            var operators = new string [] { "in", "is", "isnot", "as" };
 
             if (keywords.Contains (identValue)) {
                 return new Token (TokenClass.Keyword, accum.ToString (), lastDocStr, source.Location);
@@ -369,7 +369,7 @@ namespace Iodine.Compiler
             return new Token (TokenClass.Identifier, accum.ToString (), lastDocStr, source.Location);
         }
 
-        private Token ReadOperator ()
+        Token ReadOperator ()
         {
             var operators = new Dictionary<string, TokenClass> {
                 { ">>", TokenClass.Operator },
@@ -440,7 +440,7 @@ namespace Iodine.Compiler
             );
         }
 
-        private void ReadLineComment ()
+        void ReadLineComment ()
         {
             while (source.See ()) {
                 if (source.Peeks (2) == "*/") {
@@ -453,9 +453,9 @@ namespace Iodine.Compiler
             errorLog.Add (Errors.UnexpectedEndOfFile, source.Location);
         }
 
-        private void ReadDocComment ()
+        void ReadDocComment ()
         {
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
 
             source.Skip (3);
 
@@ -464,7 +464,7 @@ namespace Iodine.Compiler
 
                     source.Skip (2);
 
-                    string doc = accum.ToString ();
+                    var doc = accum.ToString ();
                     var lines = doc.Split ('\n')
                         .Select (p => p.Trim ())
                         .Where (p => p.StartsWith ("*"))

@@ -28,7 +28,6 @@
 **/
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using Iodine.Util;
 using Iodine.Compiler;
@@ -46,7 +45,7 @@ namespace Iodine.Runtime
         /*
          * This is just a unique value for each Iodine object instance 
          */
-        private static long _nextID = 0x00;
+        static long _nextID = 0x00;
 
         public AttributeDictionary Attributes {
             get;

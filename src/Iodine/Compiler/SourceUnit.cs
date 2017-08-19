@@ -30,9 +30,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using Iodine.Util;
 using Iodine.Runtime;
-using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
@@ -45,12 +43,12 @@ namespace Iodine.Compiler
         public readonly string Path;
 
         public bool HasPath {
-            get { 
+            get {
                 return Path != null;
             }
         }
 
-        private SourceUnit (string source, string path = null)
+        SourceUnit (string source, string path = null)
         {
             Text = source;
             Path = path;
@@ -59,7 +57,7 @@ namespace Iodine.Compiler
         public static SourceUnit CreateFromFile (string path)
         {
             return new SourceUnit (
-                File.ReadAllText (path), 
+                File.ReadAllText (path),
                 System.IO.Path.GetFullPath (path)
             );
         }
@@ -82,10 +80,10 @@ namespace Iodine.Compiler
 
             string moduleName = Path == null ? "__anonymous__"
                 : System.IO.Path.GetFileNameWithoutExtension (Path);
-            
+
             if (HasPath) {
-                string wd = System.IO.Path.GetDirectoryName (Path);
-                string depPath = System.IO.Path.Combine (wd, ".deps");
+                var wd = System.IO.Path.GetDirectoryName (Path);
+                var depPath = System.IO.Path.Combine (wd, ".deps");
 
                 if (!context.SearchPath.Contains (wd)) {
                     context.SearchPath.Add (wd);
@@ -102,16 +100,16 @@ namespace Iodine.Compiler
                 }
             }
 
-            Parser parser = Parser.CreateParser (context, this);
+            var parser = Parser.CreateParser (context, this);
 
-            CompilationUnit root = parser.Parse ();
+            var root = parser.Parse ();
 
-            IodineCompiler compiler = IodineCompiler.CreateCompiler (context, root);
+            var compiler = IodineCompiler.CreateCompiler (context, root);
 
-            IodineModule module = compiler.Compile (moduleName, Path);
+            var module = compiler.Compile (moduleName, Path);
 
             if (Path == null) {
-                foreach (KeyValuePair <string, IodineObject> kv in module.Attributes) {
+                foreach (KeyValuePair<string, IodineObject> kv in module.Attributes) {
                     context.InteractiveLocals [kv.Key] = kv.Value;
                 }
                 module.Attributes = context.InteractiveLocals;
@@ -122,9 +120,9 @@ namespace Iodine.Compiler
             return module;
         }
 
-        private bool LoadCachedModule (ref IodineModule module)
+        bool LoadCachedModule (ref IodineModule module)
         {
-            string cacheDir = System.IO.Path.Combine (
+            var cacheDir = System.IO.Path.Combine (
                 System.IO.Path.GetDirectoryName (Path),
                 ".iodine_cache"
             );
@@ -133,7 +131,7 @@ namespace Iodine.Compiler
                 return false;
             }
 
-            string filePath = System.IO.Path.Combine (
+            var filePath = System.IO.Path.Combine (
                 cacheDir,
                 System.IO.Path.GetFileNameWithoutExtension (Path) + ".bytecode"
             );
@@ -143,15 +141,15 @@ namespace Iodine.Compiler
             }
 
             using (FileStream fs = new FileStream (filePath, FileMode.Open)) {
-                BytecodeFile testFile = new BytecodeFile (fs, Path);
+                var testFile = new BytecodeFile (fs, Path);
                 return testFile.TryReadModule (ref module);
             }
         }
 
-        private void CacheModule (IodineModule module)
+        void CacheModule (IodineModule module)
         {
             try {
-                string cacheDir = System.IO.Path.Combine (
+                var cacheDir = System.IO.Path.Combine (
                     System.IO.Path.GetDirectoryName (Path),
                     ".iodine_cache"
                 );
@@ -160,13 +158,13 @@ namespace Iodine.Compiler
                     Directory.CreateDirectory (cacheDir);
                 }
 
-                string filePath = System.IO.Path.Combine (
+                var filePath = System.IO.Path.Combine (
                     cacheDir,
                     System.IO.Path.GetFileNameWithoutExtension (Path) + ".bytecode"
                 );
 
                 using (FileStream fs = new FileStream (filePath, FileMode.OpenOrCreate)) {
-                    BytecodeFile testFile = new BytecodeFile (fs, Path);
+                    var testFile = new BytecodeFile (fs, Path);
                     testFile.WriteModule (module as ModuleBuilder);
                 }
             } catch (UnauthorizedAccessException) {

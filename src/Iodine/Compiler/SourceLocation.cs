@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler
 {
     /// <summary>
@@ -43,7 +41,7 @@ namespace Iodine.Compiler
         public readonly string File;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Iodine.Location"/> struct.
+        /// Initializes a new instance of the <see cref="Iodine.Compiler.SourceLocation"/> struct.
         /// </summary>
         /// <param name="line">Line.</param>
         /// <param name="column">Column.</param>

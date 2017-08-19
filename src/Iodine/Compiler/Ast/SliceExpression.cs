@@ -27,31 +27,14 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class SliceExpression : AstNode
     {
-        public AstNode Target {
-            private set;
-            get;
-        }
-
-        public AstNode Start {
-            private set;
-            get;
-        }
-
-        public AstNode Stop {
-            private set;
-            get;
-        }
-
-        public AstNode Step {
-            private set;
-            get;
-        }
+        public readonly AstNode Target;
+        public readonly AstNode Start;
+        public readonly AstNode Stop;
+        public readonly AstNode Step;
 
         public SliceExpression (SourceLocation location,
             AstNode lvalue,

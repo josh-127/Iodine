@@ -32,12 +32,9 @@ using Iodine.Runtime;
 
 namespace Iodine.Compiler
 {
-    public class EmitContext
+    public sealed class EmitContext
     {
-        public SymbolTable SymbolTable {
-            private set;
-            get;
-        }
+        public readonly SymbolTable SymbolTable;
 
         public CodeBuilder CurrentMethod {
             private set;

@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -54,7 +53,7 @@ namespace Iodine.Compiler
 
         class Scope
         {
-            private List<Symbol> symbols = new List<Symbol> ();
+            List<Symbol> symbols = new List<Symbol> ();
 
             public int GetSymbol (string name)
             {
@@ -72,9 +71,9 @@ namespace Iodine.Compiler
             }
         }
 
-        private Scope globalScope = new Scope ();
-        private Stack<Scope> scopes = new Stack<Scope> ();
-        private int nextIndex = 0;
+        Scope globalScope = new Scope ();
+        Stack<Scope> scopes = new Stack<Scope> ();
+        int nextIndex = 0;
 
         public bool IsInGlobalScope {
             get {

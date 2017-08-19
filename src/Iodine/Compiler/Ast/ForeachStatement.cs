@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
@@ -36,15 +35,9 @@ namespace Iodine.Compiler.Ast
     {
         public readonly List<string> Items = new List<string> ();
 
-        public AstNode Iterator {
-            private set;
-            get;
-        }
+        public readonly AstNode Iterator;
 
-        public AstNode Body {
-            private set;
-            get;
-        }
+        public readonly AstNode Body;
 
         public ForeachStatement (SourceLocation location, IEnumerable<string> items, AstNode iterator, AstNode body)
             : base (location)

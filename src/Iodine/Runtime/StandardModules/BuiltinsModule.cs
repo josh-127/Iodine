@@ -30,7 +30,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Diagnostics;
 using System.Collections.Generic;
 using Iodine.Compiler;
 
@@ -112,7 +111,7 @@ namespace Iodine.Runtime
             "object.",
             "@param source The source code to compile."
         )]
-        private IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -133,7 +132,7 @@ namespace Iodine.Runtime
             "Reloads an iodine module.",
             "@param module The module to reload."
         )]
-        private IodineObject Reload (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Reload (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -154,7 +153,7 @@ namespace Iodine.Runtime
             "Loads an iodine module.",
             "@param name The name of the module to load."
         )]
-        private IodineObject LoadModule (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject LoadModule (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -175,7 +174,7 @@ namespace Iodine.Runtime
             "@param getter The getter for this property.",
             "@param setter The setter for this property."
         )]
-        private IodineObject Property (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Property (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -185,11 +184,11 @@ namespace Iodine.Runtime
             IodineObject setter = args.Length > 1 ? args [1] : null;
             return new IodineProperty (getter, setter, null);
         }
-            
+
         [BuiltinDocString (
             "Internal function used by the 'use' statement, do not call this directly."
         )]
-        private IodineObject Require (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Require (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -218,7 +217,7 @@ namespace Iodine.Runtime
                     VirtualMachine.ModuleCache [fullPath] = module;
 
                     if (module.Initializer != null) {
-                        module.Invoke (vm, new IodineObject[] { });
+                        module.Invoke (vm, new IodineObject [] { });
                     }
                 }
             } else {
@@ -236,12 +235,12 @@ namespace Iodine.Runtime
                     module = vm.LoadModule (name);
                     VirtualMachine.ModuleCache [fullPath] = module;
                     if (module.Initializer != null) {
-                        module.Invoke (vm, new IodineObject[] { });
+                        module.Invoke (vm, new IodineObject [] { });
                     }
                 }
 
                 vm.Top.StoreLocal (Path.GetFileNameWithoutExtension (fullPath), module);
-                
+
                 if (names.Objects.Length > 0) {
                     foreach (IodineObject item in names.Objects) {
                         vm.Top.StoreLocal (
@@ -264,7 +263,7 @@ namespace Iodine.Runtime
             "@param callable The calalble to be invoked",
             "@param dict The global symbol table to be used"
         )]
-        private IodineObject Invoke (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Invoke (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
@@ -280,13 +279,13 @@ namespace Iodine.Runtime
             foreach (IodineObject key in hash.Keys) {
                 context.Globals [key.ToString ()] = hash.Get (key);
 
-                callable.Attributes [key.ToString ()] =  hash.Get (key);
+                callable.Attributes [key.ToString ()] = hash.Get (key);
             }
 
             var newVm = new VirtualMachine (context);
 
             try {
-                return callable.Invoke (newVm, new IodineObject[]{ });
+                return callable.Invoke (newVm, new IodineObject [] { });
             } catch (SyntaxException syntaxException) {
                 vm.RaiseException (new IodineSyntaxException (syntaxException.ErrorLog));
                 return IodineNull.Instance;
@@ -299,7 +298,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Returns a dictionary of all local variables."
         )]
-        private IodineObject Locals (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Locals (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return vm.Top.Locals.ToIodineDictionary ();
         }
@@ -307,7 +306,7 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Returns a dictionary of all global variables."
         )]
-        private IodineObject Globals (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Globals (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return vm.Top.Module.Attributes.ToIodineDictionary ();
         }
@@ -316,7 +315,7 @@ namespace Iodine.Runtime
             "Returns the character representation of a specified integer.",
             "@param num The numerical UTF-16 code"
         )]
-        private IodineObject Chr (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Chr (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -330,7 +329,7 @@ namespace Iodine.Runtime
             "Returns the numeric representation of a character.",
             "@param char The character"
         )]
-        private IodineObject Ord (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Ord (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -351,9 +350,9 @@ namespace Iodine.Runtime
             "supports both Bytes and Str objects.",
             "@param obj The object to convert into a hex string."
         )]
-        private IodineObject Hex (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Hex (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
-            var lut = new string[] { 
+            var lut = new string [] {
                 "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0a", "0b", "0c", "0d", "0e", "0f",
                 "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1a", "1b", "1c", "1d", "1e", "1f",
                 "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2a", "2b", "2c", "2d", "2e", "2f",
@@ -424,7 +423,7 @@ namespace Iodine.Runtime
             "Returns a unique identifier for the supplied argument. ",
             "@param obj The object whose unique identifier will be returned."
         )]
-        private IodineObject GetId (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetId (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -439,7 +438,7 @@ namespace Iodine.Runtime
             "an AttributeNotFoundException is raised.",
             "@param countable The object whose length is to be determined."
         )]
-        private IodineObject Len (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Len (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -452,7 +451,7 @@ namespace Iodine.Runtime
             "Evaluates a string of Iodine source code.",
             "@param source The source code to be evaluated."
         )]
-        private IodineObject Eval (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Eval (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -478,7 +477,7 @@ namespace Iodine.Runtime
             return Eval (vm, str.ToString (), map);
         }
 
-        private IodineObject Eval (VirtualMachine host, string source, IodineDictionary dict)
+        IodineObject Eval (VirtualMachine host, string source, IodineDictionary dict)
         {
             VirtualMachine vm = host;
 
@@ -504,14 +503,14 @@ namespace Iodine.Runtime
                 vm.RaiseException (new IodineSyntaxException (ex.ErrorLog));
                 return IodineNull.Instance;
             }
-            return module.Invoke (vm, new IodineObject[] { });
+            return module.Invoke (vm, new IodineObject [] { });
         }
 
         [BuiltinDocString (
             "Returns the type definition of the specified object.",
             "@param object The object whose type is to be determined."
         )]
-        private IodineObject Typeof (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Typeof (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -527,7 +526,7 @@ namespace Iodine.Runtime
             "@param type The type to be tested against",
             "@param object The object to be tested"
         )]
-        private IodineObject Typecast (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Typecast (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
@@ -552,7 +551,7 @@ namespace Iodine.Runtime
             "and appends a newline character.",
             "@param *object The objects to print"
         )]
-        private IodineObject Print (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Print (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             foreach (IodineObject arg in args) {
                 Console.WriteLine (arg.ToString ());
@@ -564,7 +563,7 @@ namespace Iodine.Runtime
             "Reads from the standard input stream. Optionally displays the specified prompt.",
             "@param prompt Optional prompt to display"
         )]
-        private IodineObject Input (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Input (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             foreach (IodineObject arg in args) {
                 Console.Write (arg.ToString ());
@@ -577,7 +576,7 @@ namespace Iodine.Runtime
          * Iodine Function: Object ()
          * Description: Returns a new Iodine Object with no associated type information
          */
-        private IodineObject Object (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Object (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return new IodineObject (IodineObject.ObjectTypeDef);
         }
@@ -589,7 +588,7 @@ namespace Iodine.Runtime
             "its default string representation is returned.",
             "@param object The object to be represented"
         )]
-        private IodineObject Repr (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Repr (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -604,14 +603,14 @@ namespace Iodine.Runtime
             "iterable object.",
             "@param iterable An iterable object"
         )]
-        private IodineObject Enumerate (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Enumerate (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return IodineNull.Instance;
             }
 
-            var list = new IodineList (new IodineObject[]{ });
+            var list = new IodineList (new IodineObject [] { });
             var collection = args [0].GetIterator (vm);
 
             collection.IterReset (vm);
@@ -620,7 +619,7 @@ namespace Iodine.Runtime
 
             while (collection.IterMoveNext (vm)) {
                 var o = collection.IterGetCurrent (vm);
-                list.Add (new IodineTuple (new IodineObject[] {
+                list.Add (new IodineTuple (new IodineObject [] {
                     new IodineInteger (counter++),
                     o
                 }));
@@ -635,21 +634,21 @@ namespace Iodine.Runtime
             "@param iterable The iterable to be iterated over.",
             "@param callable The callable to be used for filtering."
         )]
-        private IodineObject Filter (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Filter (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
                 return IodineNull.Instance;
             }
 
-            var list = new IodineList (new IodineObject[]{ });
+            var list = new IodineList (new IodineObject [] { });
             var collection = args [0].GetIterator (vm);
             IodineObject func = args [1];
             collection.IterReset (vm);
 
             while (collection.IterMoveNext (vm)) {
                 var o = collection.IterGetCurrent (vm);
-                if (func.Invoke (vm, new IodineObject[] { o }).IsTrue ()) {
+                if (func.Invoke (vm, new IodineObject [] { o }).IsTrue ()) {
                     list.Add (o);
                 }
             }
@@ -662,21 +661,21 @@ namespace Iodine.Runtime
             "@param iterable The iterable to be iterated over.",
             "@param callable The callable to be used for mapping."
         )]
-        private IodineObject Map (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Map (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
                 return IodineNull.Instance;
             }
 
-            var list = new IodineList (new IodineObject[]{ });
+            var list = new IodineList (new IodineObject [] { });
             var collection = args [0].GetIterator (vm);
             var func = args [1];
 
             collection.IterReset (vm);
             while (collection.IterMoveNext (vm)) {
                 var o = collection.IterGetCurrent (vm);
-                list.Add (func.Invoke (vm, new IodineObject[] { o }));
+                list.Add (func.Invoke (vm, new IodineObject [] { o }));
             }
             return list;
         }
@@ -689,7 +688,7 @@ namespace Iodine.Runtime
             "@param callable The callable to be used for reduced.",
             "@param default The default item."
         )]
-        private IodineObject Reduce (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Reduce (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (2));
@@ -705,7 +704,7 @@ namespace Iodine.Runtime
                 var o = collection.IterGetCurrent (vm);
                 if (result == null)
                     result = o;
-                result = func.Invoke (vm, new IodineObject[] { result, o });
+                result = func.Invoke (vm, new IodineObject [] { result, o });
             }
             return result;
         }
@@ -715,22 +714,22 @@ namespace Iodine.Runtime
             "that is then appended to a list which is returned to the caller.",
             "@param iterables The iterables to be zipped"
         )]
-        private IodineObject Zip (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Zip (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return IodineNull.Instance;
             }
 
-            var result = new IodineList (new IodineObject[0]);
-            IodineObject[] iterators = new IodineObject[args.Length];
+            var result = new IodineList (new IodineObject [0]);
+            IodineObject [] iterators = new IodineObject [args.Length];
             for (int i = 0; i < args.Length; i++) {
                 iterators [i] = args [i].GetIterator (vm);
                 iterators [i].IterReset (vm);
             }
 
             while (true) {
-                IodineObject[] objs = new IodineObject[iterators.Length];
+                IodineObject [] objs = new IodineObject [iterators.Length];
                 for (int i = 0; i < iterators.Length; i++) {
                     if (!iterators [i].IterMoveNext (vm))
                         return result;
@@ -746,7 +745,7 @@ namespace Iodine.Runtime
             "@param iterable The iterable to be summed up",
             "@param default The default item (Optional)"
         )]
-        private IodineObject Sum (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Sum (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -770,7 +769,7 @@ namespace Iodine.Runtime
             "@param iterable The iterable to be sorted",
             "@param [key] The function which will return a key (Optional)"
         )]
-        private IodineObject Sort (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Sort (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -795,8 +794,8 @@ namespace Iodine.Runtime
 
             items.Sort ((x, y) => {
                 if (func != null) {
-                    x = func.Invoke (vm, new IodineObject[] { x });
-                    y = func.Invoke (vm, new IodineObject[] { y });
+                    x = func.Invoke (vm, new IodineObject [] { x });
+                    y = func.Invoke (vm, new IodineObject [] { y });
                 }
                 var i = x.Compare (vm, y) as IodineInteger;
                 return (int)i.Value;
@@ -812,7 +811,7 @@ namespace Iodine.Runtime
             "@param end Last number in the sequence (Optional)",
             "@param step By how much the current number increases every step to reach [end] (Optional)"
         )]
-        private IodineObject Range (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Range (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             long start = 0;
             long end = 0;
@@ -863,7 +862,7 @@ namespace Iodine.Runtime
             "@param file The filename",
             "@param mode The mode."
         )]
-        private IodineObject Open (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Open (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 2) {
                 vm.RaiseException (new IodineArgumentException (2));

@@ -27,12 +27,10 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using Iodine.Util;
-using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
@@ -86,8 +84,8 @@ namespace Iodine.Runtime
             [BuiltinDocString (
                 "Tests to see if the dictionary contains a key, returning true if it does.",
                 "@param key The key to test if this dictionary contains."
-            )] 
-            private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            )]
+            IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 var thisObj = self as IodineDictionary;
                 if (args.Length <= 0) {
@@ -97,7 +95,7 @@ namespace Iodine.Runtime
                 return IodineBool.Create (thisObj.dict.ContainsKey (args [0]));
             }
 
-            private IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject GetSize (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineDictionary;
                 return new IodineInteger (thisObj.dict.Count);
@@ -106,7 +104,7 @@ namespace Iodine.Runtime
             [BuiltinDocString (
                 "Clears the dictionary, removing all items."
             )]
-            private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineDictionary;
                 thisObj.dict.Clear ();
@@ -118,7 +116,7 @@ namespace Iodine.Runtime
                 "@param key The key of the specified value",
                 "@param value The value associated with [key]"
             )]
-            private IodineObject Set (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Set (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineDictionary;
                 if (arguments.Length >= 2) {
@@ -135,7 +133,7 @@ namespace Iodine.Runtime
                 "Returns the value specified by [key], raising a KeyNotFound exception if the given key does not exist.",
                 "@param key The key whose value will be returned."
             )]
-            private IodineObject Get (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Get (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineDictionary;
                 if (arguments.Length <= 0) {
@@ -161,7 +159,7 @@ namespace Iodine.Runtime
                 "Removes a specified entry from the dictionary, raising a KeyNotFound exception if the given key does not exist.",
                 "@param key The key which is to be removed."
             )]
-            private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineDictionary;
                 if (arguments.Length >= 1) {
@@ -180,9 +178,9 @@ namespace Iodine.Runtime
 
         class DictIterator : IodineObject
         {
-            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("DictIterator");
+            static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("DictIterator");
 
-            private IDictionaryEnumerator enumerator;
+            IDictionaryEnumerator enumerator;
 
             public DictIterator (ObjectDictionary dict)
                 : base (TypeDefinition)
@@ -209,7 +207,7 @@ namespace Iodine.Runtime
             }
         }
 
-        private ObjectDictionary dict;
+        ObjectDictionary dict;
 
         public IEnumerable<IodineObject> Keys {
             get {

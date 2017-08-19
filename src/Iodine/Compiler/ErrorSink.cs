@@ -36,9 +36,9 @@ namespace Iodine.Compiler
     /// <summary>
     /// Error log.
     /// </summary>
-    public sealed class ErrorSink : IEnumerable <Error>
+    public sealed class ErrorSink : IEnumerable<Error>
     {
-        private List<Error> errors = new List<Error> ();
+        List<Error> errors = new List<Error> ();
 
         /// <summary>
         /// Gets the error count.
@@ -68,7 +68,7 @@ namespace Iodine.Compiler
         /// <param name="error">Error.</param>
         /// <param name="location">Location.</param>
         /// <param name="args">Arguments.</param>
-        public void Add (Errors error, SourceLocation location, params object[] args)
+        public void Add (Errors error, SourceLocation location, params object [] args)
         {
             errors.Add (new Error (error, location, args));
             ErrorCount++;
@@ -88,7 +88,7 @@ namespace Iodine.Compiler
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>The enumerator.</returns>
-        public IEnumerator <Error> GetEnumerator ()
+        public IEnumerator<Error> GetEnumerator ()
         {
             return errors.GetEnumerator ();
         }

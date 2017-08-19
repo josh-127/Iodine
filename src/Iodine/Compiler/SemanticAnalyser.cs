@@ -32,10 +32,10 @@ using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
 {
-    internal class SemanticAnalyser : AstVisitor
+    class SemanticAnalyser : AstVisitor
     {
-        private ErrorSink errorLog;
-        private SymbolTable symbolTable = new SymbolTable ();
+        ErrorSink errorLog;
+        SymbolTable symbolTable = new SymbolTable ();
 
         public SemanticAnalyser (ErrorSink errorLog)
         {
@@ -48,9 +48,9 @@ namespace Iodine.Compiler
             return symbolTable;
         }
 
-        public override void Accept (ClassDeclaration declaration)
+        public override void Accept (ClassDeclaration classDecl)
         {
-            symbolTable.AddSymbol (declaration.Name);
+            symbolTable.AddSymbol (classDecl.Name);
         }
 
         public override void Accept (EnumDeclaration enumDecl)
@@ -58,22 +58,22 @@ namespace Iodine.Compiler
             symbolTable.AddSymbol (enumDecl.Name);
         }
 
-        public override void Accept (ContractDeclaration idecl)
+        public override void Accept (ContractDeclaration interfaceDecl)
         {
-            symbolTable.AddSymbol (idecl.Name);
+            symbolTable.AddSymbol (interfaceDecl.Name);
         }
 
-        public override void Accept (FunctionDeclaration decl)
+        public override void Accept (FunctionDeclaration funcDecl)
         {
-            symbolTable.AddSymbol (decl.Name);
+            symbolTable.AddSymbol (funcDecl.Name);
 
             symbolTable.EnterScope ();
 
-            foreach (NamedParameter param in decl.Parameters) {
+            foreach (NamedParameter param in funcDecl.Parameters) {
                 symbolTable.AddSymbol (param.Name);
             }
 
-            decl.VisitChildren (this);
+            funcDecl.VisitChildren (this);
 
             symbolTable.ExitScope ();
 
@@ -91,9 +91,9 @@ namespace Iodine.Compiler
             stmtList.VisitChildren (this);
         }
 
-        public override void Accept (IfStatement ifstmt)
+        public override void Accept (IfStatement ifStmt)
         {
-            ifstmt.VisitChildren (this);
+            ifStmt.VisitChildren (this);
         }
 
         public override void Accept (ForStatement forStmt)
@@ -101,14 +101,14 @@ namespace Iodine.Compiler
             forStmt.VisitChildren (this);
         }
 
-        public override void Accept (ForeachStatement stmt)
+        public override void Accept (ForeachStatement foreachStmt)
         {
-            stmt.VisitChildren (this);
+            foreachStmt.VisitChildren (this);
         }
 
-        public override void Accept (WhileStatement stmt)
+        public override void Accept (WhileStatement whileStmt)
         {
-            stmt.VisitChildren (this);
+            whileStmt.VisitChildren (this);
         }
 
         public override void Accept (DoStatement doStmt)
@@ -116,9 +116,9 @@ namespace Iodine.Compiler
             doStmt.VisitChildren (this);
         }
 
-        public override void Accept (GivenStatement givenStmt)
+        public override void Accept (GivenStatement switchStmt)
         {
-            givenStmt.VisitChildren (this);
+            switchStmt.VisitChildren (this);
         }
 
         public override void Accept (SuperCallStatement super)
@@ -136,9 +136,9 @@ namespace Iodine.Compiler
             expr.VisitChildren (this);
         }
 
-        public override void Accept (CallExpression callExpr)
+        public override void Accept (CallExpression call)
         {
-            callExpr.VisitChildren (this);
+            call.VisitChildren (this);
         }
 
         public override void Accept (ArgumentList arglist)
@@ -166,16 +166,16 @@ namespace Iodine.Compiler
             ifExpr.VisitChildren (this);
         }
 
-        public override void Accept (BinaryExpression expression)
+        public override void Accept (BinaryExpression binop)
         {
-            if (expression.Operation == BinaryOperation.Assign &&
-                expression.Left is NameExpression) {
-                NameExpression name = expression.Left as NameExpression;
+            if (binop.Operation == BinaryOperation.Assign &&
+                binop.Left is NameExpression) {
+                NameExpression name = binop.Left as NameExpression;
                 if (!symbolTable.IsSymbolDefined (name.Value)) {
                     symbolTable.AddSymbol (name.Value);
                 }
             }
-            expression.VisitChildren (this);
+            binop.VisitChildren (this);
         }
 
         public override void Accept (ListCompExpression list)
@@ -218,11 +218,11 @@ namespace Iodine.Compiler
             with.VisitChildren (this);
         }
 
-        public override void Accept (PatternExtractExpression patternExtract)
+        public override void Accept (PatternExtractExpression extractExpression)
         {
-            patternExtract.Target.Visit (this);
+            extractExpression.Target.Visit (this);
 
-            foreach (string capture in patternExtract.Captures) {
+            foreach (string capture in extractExpression.Captures) {
                 symbolTable.AddSymbol (capture);
             }
         }

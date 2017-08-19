@@ -26,7 +26,7 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-using System;
+
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
@@ -41,10 +41,7 @@ namespace Iodine.Compiler.Ast
         /// Whether or not the value is packed
         /// </summary>
         /// <value><c>true</c> if packed; otherwise, <c>false</c>.</value>
-        public bool Packed {
-            private set;
-            get;
-        }
+        public readonly bool Packed;
 
         public AssignStatement (
             SourceLocation location,

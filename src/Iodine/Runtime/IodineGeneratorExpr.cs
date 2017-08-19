@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     public class IodineGeneratorExpr : IodineObject
@@ -36,8 +34,9 @@ namespace Iodine.Runtime
         public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("GenExpr");
 
         public readonly CodeObject Target;
-        private StackFrame frame;
-        private IodineObject value;
+
+        StackFrame frame;
+        IodineObject value;
 
         public IodineGeneratorExpr (StackFrame frame, CodeObject target)
             : base (TypeDefinition)

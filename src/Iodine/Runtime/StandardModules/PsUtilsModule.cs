@@ -29,9 +29,7 @@
 
 using System;
 using System.IO;
-using System.Text;
 using System.Diagnostics;
-using System.Collections.Generic;
 
 namespace Iodine.Runtime
 {
@@ -64,7 +62,7 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString ("Attempts to kill the associated process.")]
-                private static IodineObject Kill (
+                static IodineObject Kill (
                     VirtualMachine vm,
                     IodineObject self,
                     IodineObject [] args)
@@ -124,7 +122,7 @@ namespace Iodine.Runtime
                     "@param *args" +
                     "Writes each string passed in *args to the process's standard input stream"
                 )]
-                private IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thisObj = self as IodineSubprocess;
 
@@ -151,7 +149,7 @@ namespace Iodine.Runtime
                     "Writes each string passed in *args to the process's standard input stream, and ",
                     "appends a new line."
                 )]
-                private IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thisObj = self as IodineSubprocess;
 
@@ -177,7 +175,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString (
                     "Reads a single line from the process's standard output stream."
                 )]
-                private IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                IodineObject Readln (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thisObj = self as IodineSubprocess;
 
@@ -192,7 +190,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString (
                     "Reads all text written to the process's standard output stream."
                 )]
-                private IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                IodineObject Read (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thisObj = self as IodineSubprocess;
 
@@ -208,7 +206,7 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString ("Attempts to kill the associated process.")]
-                private static IodineObject Kill (
+                static IodineObject Kill (
                     VirtualMachine vm,
                     IodineObject self,
                     IodineObject [] args)
@@ -226,7 +224,7 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString ("Returns true if the process is alive.")]
-                private IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thisObj = self as IodineSubprocess;
 
@@ -239,7 +237,7 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString ("Returns true if there is no more data to be read from stdout.")]
-                private IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                IodineObject Empty (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thisObj = self as IodineSubprocess;
 
@@ -256,8 +254,8 @@ namespace Iodine.Runtime
 
             public readonly Process Value;
 
-            private bool canRead;
-            private bool canWrite;
+            bool canRead;
+            bool canWrite;
 
             public IodineSubprocess (Process proc, bool read, bool write)
                 : base (TypeDef)
@@ -281,7 +279,7 @@ namespace Iodine.Runtime
                 }
             }
 
-            private void StdinWriteString (VirtualMachine vm, string str)
+            void StdinWriteString (VirtualMachine vm, string str)
             {
                 Value.StandardInput.Write (str);
             }
@@ -297,7 +295,7 @@ namespace Iodine.Runtime
         }
 
         [BuiltinDocString ("Returns a list of processes running on the machine.")]
-        private IodineObject GetProcList (VirtualMachine vm)
+        IodineObject GetProcList (VirtualMachine vm)
         {
             var list = new IodineList (new IodineObject [] { });
             foreach (Process proc in Process.GetProcesses ()) {
@@ -319,7 +317,7 @@ namespace Iodine.Runtime
             "@param [args] Command line arguments",
             "@param [wait] Should we wait to exit"
         )]
-        private IodineObject Spawn (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        IodineObject Spawn (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -365,7 +363,7 @@ namespace Iodine.Runtime
             "@param commmand Command to run.",
             "@param mode Mode to open up the process in ('r' or 'w')."
         )]
-        private IodineObject Popen (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        IodineObject Popen (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 2) {
                 vm.RaiseException (new IodineArgumentException (2));

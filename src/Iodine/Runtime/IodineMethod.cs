@@ -28,10 +28,8 @@
 **/
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
@@ -50,11 +48,11 @@ namespace Iodine.Runtime
     /// </summary>
     public class IodineMethod : IodineObject
     {
-        private static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
+        static readonly IodineTypeDefinition MethodTypeDef = new IodineTypeDefinition ("Method");
 
         public readonly CodeObject Bytecode;
 
-        private string name;
+        string name;
 
         /// <summary>
         /// The name of the method
@@ -153,7 +151,7 @@ namespace Iodine.Runtime
         }
 
 
-        private void SetParameters (IodineTuple tuple)
+        void SetParameters (IodineTuple tuple)
         {
             for (int i = 0; i < tuple.Objects.Length; i++) {
                 Parameters.Add (tuple.Objects [i].ToString ());

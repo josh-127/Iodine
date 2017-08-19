@@ -27,9 +27,7 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Collections.Generic;
-using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {

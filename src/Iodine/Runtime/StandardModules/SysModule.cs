@@ -28,7 +28,6 @@
 **/
 
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -59,7 +58,7 @@ namespace Iodine.Runtime
             SetAttribute ("VERSION_STR", new IodineString (String.Format ("v{0}.{1}.{2}", major, minor, patch)));
         }
 
-        private IodineObject GetPath (VirtualMachine vm)
+        IodineObject GetPath (VirtualMachine vm)
         {
             return new IodineTuple (vm.Context.SearchPath.Select (p => new IodineString (p)).ToArray ());
         }
@@ -68,7 +67,7 @@ namespace Iodine.Runtime
             "Forcefully terminates the current process (Including the Iodine host).",
             "@param code The exit code."
         )]
-        private IodineObject Exit (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Exit (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -90,7 +89,7 @@ namespace Iodine.Runtime
             "Returns the nth stack frame.",
             "@param n Stack frame index, relative to the current frame."
         )]
-        private IodineObject GetFrame (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetFrame (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -123,7 +122,7 @@ namespace Iodine.Runtime
          * Description: Internal low level function for issuing warnings
          * See modules/warnings.id
          */
-        private IodineObject Warn (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Warn (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -153,7 +152,7 @@ namespace Iodine.Runtime
          * Description: Internal low level function for obtaining the current warning mask
          * See modules/warnings.id
          */
-        private IodineObject GetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetWarnMask (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return new IodineInteger ((long)vm.Context.WarningFilter);
         }
@@ -163,7 +162,7 @@ namespace Iodine.Runtime
          * Description: Internal low level function for settings the current warning mask
          * See modules/warnings.id
          */
-        private IodineObject SetWarnMask (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject SetWarnMask (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));

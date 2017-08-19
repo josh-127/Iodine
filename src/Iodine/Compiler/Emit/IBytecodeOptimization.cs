@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using Iodine.Runtime;
 
 namespace Iodine.Compiler

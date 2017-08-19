@@ -29,7 +29,6 @@
 
 using System;
 using System.IO;
-using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 
@@ -74,7 +73,7 @@ namespace Iodine.Runtime
             "@param [args] Command line arguments.",
             "@param [useShell] Should we use a shell."
         )]
-        private IodineObject Call (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        IodineObject Call (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -129,13 +128,13 @@ namespace Iodine.Runtime
 
 
         [BuiltinDocString ("Returns the login name of the current user.")]
-        private IodineObject GetUsername (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetUsername (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return new IodineString (Environment.UserName);
         }
 
         [BuiltinDocString ("Returns the current working directory.")]
-        private IodineObject GetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetCwd (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return new IodineString (Environment.CurrentDirectory);
         }
@@ -144,7 +143,7 @@ namespace Iodine.Runtime
             "Sets the current working directory.",
             "@param cwd The new current working directory."
         )]
-        private IodineObject SetCwd (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject SetCwd (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -166,7 +165,7 @@ namespace Iodine.Runtime
             "Returns the value of an environmental variable.",
             "@param env The name of the environmental variable."
         )]
-        private IodineObject GetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject GetEnv (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -192,7 +191,7 @@ namespace Iodine.Runtime
             "@param env The name of the environmental variable.",
             "@param value The value to set the environmental variable."
         )]
-        private IodineObject SetEnv (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject SetEnv (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 2) {
                 vm.RaiseException (new IodineArgumentException (2));
@@ -214,7 +213,7 @@ namespace Iodine.Runtime
             "Executes a command using the default shell.",
             "@param commmand Command to run."
         )]
-        private IodineObject System (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject System (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -255,7 +254,7 @@ namespace Iodine.Runtime
             "Removes a file from the filesystem.",
             "@param path The file to delete."
         )]
-        private IodineObject Unlink (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Unlink (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -282,7 +281,7 @@ namespace Iodine.Runtime
             "Creates a new directory.",
             "@param path The directory to create."
         )]
-        private IodineObject Mkdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Mkdir (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -301,7 +300,7 @@ namespace Iodine.Runtime
             "Removes an empty directory.",
             "@param path The directory to remove."
         )]
-        private IodineObject Rmdir (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Rmdir (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -331,7 +330,7 @@ namespace Iodine.Runtime
             "Removes an directory, deleting all subfiles.",
             "@param path The directory to remove."
         )]
-        private IodineObject Rmtree (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Rmtree (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -360,7 +359,7 @@ namespace Iodine.Runtime
         /*
          * Recurisively remove a directory
          */
-        private static bool RemoveRecursive (string target)
+        static bool RemoveRecursive (string target)
         {
             var dir = new DirectoryInfo (target);
             var dirs = dir.GetDirectories ();
@@ -387,7 +386,7 @@ namespace Iodine.Runtime
             "Returns a list of all subfiles in a directory.",
             "@param path The directory to list."
         )]
-        private IodineObject List (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject List (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length < 1) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -411,7 +410,7 @@ namespace Iodine.Runtime
             items.AddRange (Directory.GetFiles (dir.Value));
             items.AddRange (Directory.GetDirectories (dir.Value));
 
-            var retList = new IodineList (new IodineObject[] { });
+            var retList = new IodineList (new IodineObject [] { });
 
             items.ForEach (p => retList.Add (new IodineString (p)));
 

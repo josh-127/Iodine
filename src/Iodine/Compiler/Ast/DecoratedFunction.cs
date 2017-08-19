@@ -27,15 +27,12 @@
   * DAMAGE.
 **/
 
-using System;
-using System.Diagnostics;
-
 namespace Iodine.Compiler.Ast
 {
     public class DecoratedFunction : AstNode
     {
-        public AstNode Decorator;
-        public FunctionDeclaration Function;
+        public readonly AstNode Decorator;
+        public readonly FunctionDeclaration Function;
 
         public DecoratedFunction (SourceLocation location, AstNode decorator, FunctionDeclaration decl)
             : base (location)

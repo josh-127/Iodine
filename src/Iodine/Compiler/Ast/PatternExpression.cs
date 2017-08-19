@@ -26,7 +26,6 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-using System;
 
 namespace Iodine.Compiler.Ast
 {
@@ -34,15 +33,9 @@ namespace Iodine.Compiler.Ast
     {
         public readonly BinaryOperation Operation;
 
-        public AstNode Left {
-            private set;
-            get;
-        }
+        public readonly AstNode Left;
 
-        public AstNode Right {
-            private set;
-            get;
-        }
+        public readonly AstNode Right;
 
         public PatternExpression (SourceLocation location, BinaryOperation op, AstNode left, AstNode right)
             : base (location)

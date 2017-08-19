@@ -45,8 +45,6 @@ namespace Iodine.Runtime
             public ListTypeDef ()
                 : base ("List")
             {
-                BindAttributes (this);
-
                 SetDocumentation (
                     "A mutable sequence of objects"
                 );
@@ -94,7 +92,7 @@ namespace Iodine.Runtime
                 "Appends each argument to the end of the list",
                 "@param *args The objects to be appended to the list"
             )]
-            private IodineObject Add (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Add (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -111,7 +109,7 @@ namespace Iodine.Runtime
                 "Iterates through the supplied arguments, adding each item to the end of the list.",
                 "@param iterable The iterable object to be used."
             )]
-            private IodineObject AddRange (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject AddRange (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -131,7 +129,7 @@ namespace Iodine.Runtime
                 "Prepends an item to the beginning of the list.",
                 "@param item The item to be inserted into the beginning of the list."
             )]
-            private IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Prepend (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -146,7 +144,7 @@ namespace Iodine.Runtime
                 "Removes an item from the list, returning true if success, otherwise, false.",
                 "@param item The item to be discarded."
             )]
-            private IodineObject Discard (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Discard (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -167,7 +165,7 @@ namespace Iodine.Runtime
                 "Removes an item from the list, raising a KeyNotFound exception if the list does not contain [item].",
                 "@param item The item to be discarded."
             )]
-            private IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Remove (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -187,7 +185,7 @@ namespace Iodine.Runtime
                 "Removes an item at a specified index.",
                 "@param index The 0 based index of the item which is to be removed."
             )]
-            private IodineObject RemoveAt (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject RemoveAt (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -212,7 +210,7 @@ namespace Iodine.Runtime
                 "Returns true if the supplied argument can be fund within the list.",
                 "@param item The item to test whether or not this list contains."
             )]
-            private IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Contains (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -228,7 +226,7 @@ namespace Iodine.Runtime
                 return IodineBool.Create (found);
             }
 
-            private IodineObject Splice (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Splice (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 if (arguments.Length <= 0) {
@@ -260,7 +258,7 @@ namespace Iodine.Runtime
                 if (end < 0)
                     end = thisObj.Objects.Count - end;
 
-                var retList = new IodineList (new IodineObject[]{ });
+                var retList = new IodineList (new IodineObject [] { });
 
                 for (int i = start; i < end; i++) {
                     if (i < 0 || i > thisObj.Objects.Count) {
@@ -276,7 +274,7 @@ namespace Iodine.Runtime
             [BuiltinDocString (
                 "Clears the list, removing all items from it."
             )]
-            private IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject[] arguments)
+            IodineObject Clear (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
             {
                 var thisObj = self as IodineList;
                 thisObj.Objects.Clear ();
@@ -288,7 +286,7 @@ namespace Iodine.Runtime
                 " if the supplied argument cannot be found.",
                 "@param item The whose index will be returned."
             )]
-            private IodineObject Index (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            IodineObject Index (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 var thisObj = self as IodineList;
                 if (args.Length == 0) {
@@ -310,7 +308,7 @@ namespace Iodine.Runtime
                 " if the supplied argument cannot be found.",
                 "@param item The whose index will be returned."
             )]
-            private IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            IodineObject RightIndex (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 var thisObj = self as IodineList;
                 if (args.Length == 0) {
@@ -325,7 +323,7 @@ namespace Iodine.Runtime
                     return null;
                 }
                 return new IodineInteger (thisObj.Objects.FindLastIndex (o => o.Equals (item)));
-            } 
+            }
 
 
             [BuiltinDocString (
@@ -333,7 +331,7 @@ namespace Iodine.Runtime
                 " if the supplied argument cannot be found.",
                 "@param item The whose index will be returned."
             )]
-            private IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            IodineObject Find (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 var thisObj = self as IodineList;
                 if (args.Length == 0) {
@@ -354,7 +352,7 @@ namespace Iodine.Runtime
                 " if the supplied argument cannot be found.",
                 "@param item The whose index will be returned."
             )]
-            private IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            IodineObject RightFind (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 var thisObj = self as IodineList;
 
@@ -375,10 +373,10 @@ namespace Iodine.Runtime
 
         class ListIterator : IodineObject
         {
-            private static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("ListIterator");
+            static IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("ListIterator");
 
-            private int iterIndex = 0;
-            private List<IodineObject> objects;
+            int iterIndex = 0;
+            List<IodineObject> objects;
 
             public ListIterator (List<IodineObject> objects)
                 : base (TypeDefinition)
@@ -455,7 +453,7 @@ namespace Iodine.Runtime
             );
         }
 
-        private IodineList Sublist (int start, int end, int stride, bool defaultStart, bool defaultEnd)
+        IodineList Sublist (int start, int end, int stride, bool defaultStart, bool defaultEnd)
         {
             int actualStart = start >= 0 ? start : Objects.Count - (start + 2);
             int actualEnd = end >= 0 ? end : Objects.Count - (end + 2);
@@ -558,7 +556,7 @@ namespace Iodine.Runtime
             Objects.Add (obj);
         }
 
-        private bool Compare (IodineList list1, IodineList list2)
+        bool Compare (IodineList list1, IodineList list2)
         {
             if (list1.Objects.Count != list2.Objects.Count) {
                 return false;

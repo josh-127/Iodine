@@ -27,13 +27,11 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class UnaryExpression : AstNode
     {
-        public UnaryOperation Operation { private set; get; }
+        public readonly UnaryOperation Operation;
 
         public readonly AstNode Value;
 

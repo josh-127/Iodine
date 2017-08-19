@@ -27,14 +27,9 @@
   * DAMAGE.
 **/
 
-using System;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Collections.Generic;
 using Iodine.Compiler;
-using Iodine.Compiler.Ast;
-using Iodine.Util;
 
 namespace Iodine.Runtime
 {
@@ -43,7 +38,7 @@ namespace Iodine.Runtime
     /// </summary>
     public abstract class IodineModule : IodineObject
     {
-        private static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
+        static readonly IodineTypeDefinition ModuleTypeDef = new IodineTypeDefinition ("Module");
 
         public readonly string Name;
 
@@ -77,10 +72,10 @@ namespace Iodine.Runtime
                 return this.constantPool;
             }
         }
-            
-        private CodeObject initializer;
 
-        private List<IodineObject> constantPool = new List<IodineObject> ();
+        CodeObject initializer;
+
+        List<IodineObject> constantPool = new List<IodineObject> ();
 
         public CodeObject Initializer {
             protected set {
@@ -110,7 +105,6 @@ namespace Iodine.Runtime
         }
 
 
-
         public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
         {
             ApplyGlobalVariables (vm.Context);
@@ -129,9 +123,9 @@ namespace Iodine.Runtime
             return string.Format ("<Module {0}>", Name);
         }
 
-        private void ApplyGlobalVariables (IodineContext context)
+        void ApplyGlobalVariables (IodineContext context)
         {
-            foreach (KeyValuePair <string, IodineObject> kv in context.Globals) {
+            foreach (KeyValuePair<string, IodineObject> kv in context.Globals) {
                 if (!HasAttribute (kv.Key)) {
                     SetAttribute (kv.Key, kv.Value);
                 }

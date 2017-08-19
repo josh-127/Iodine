@@ -27,14 +27,13 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
     public class CodeBlock : AstNode
     {
-        private readonly List<AstNode> children = new List<AstNode> ();
+        readonly List<AstNode> children = new List<AstNode> ();
 
         public CodeBlock (SourceLocation location)
             : base (location)

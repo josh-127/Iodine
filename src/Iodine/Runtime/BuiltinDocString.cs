@@ -32,7 +32,7 @@ using System.Linq;
 namespace Iodine.Runtime
 {
     [AttributeUsage (AttributeTargets.Class | AttributeTargets.Method)]
-    public class BuiltinDocString : System.Attribute
+    public class BuiltinDocString : Attribute
     {
         public readonly string DocumentationString;
 
@@ -40,12 +40,12 @@ namespace Iodine.Runtime
         {
             var reducedLines = doc.Split ('\n').Select (p => p.Trim ());
 
-            DocumentationString = String.Join ("\n", reducedLines).Trim ();
+            DocumentationString = string.Join ("\n", reducedLines).Trim ();
         }
 
         public BuiltinDocString (params string[] args)
         {
-            DocumentationString = String.Join ("\n", args).Trim ();
+            DocumentationString = string.Join ("\n", args).Trim ();
         }
     }
 }

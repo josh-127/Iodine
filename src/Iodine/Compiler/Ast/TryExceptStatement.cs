@@ -27,13 +27,11 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class TryExceptStatement : AstNode
     {
-        public string ExceptionIdentifier { private set; get; }
+        public readonly string ExceptionIdentifier;
 
         public readonly AstNode TryBody;
 

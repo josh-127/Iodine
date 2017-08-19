@@ -27,9 +27,7 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Threading;
-using System.Security.Cryptography;
 
 namespace Iodine.Runtime
 {
@@ -58,7 +56,7 @@ namespace Iodine.Runtime
                     return obj;
                 }
 
-                public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+                public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
                 {
                     if (args.Length <= 0) {
                         vm.RaiseException (new IodineArgumentException (1));
@@ -70,7 +68,7 @@ namespace Iodine.Runtime
 
                     var t = new Thread (() => {
                         try {
-                            func.Invoke (newVm, new IodineObject[] { }); 
+                            func.Invoke (newVm, new IodineObject [] { });
                         } catch (UnhandledIodineExceptionException ex) {
                             vm.RaiseException (ex.OriginalException);
                         }
@@ -81,7 +79,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString (
                     "Starts the thread."
                 )]
-                private static IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                static IodineObject Start (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thread = self as IodineThread;
 
@@ -99,7 +97,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString (
                     "Terminates the thread."
                 )]
-                private static IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                static IodineObject Abort (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thread = self as IodineThread;
 
@@ -116,7 +114,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString (
                     "Returns true if this thread is alive, false if it is not."
                 )]
-                private static IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                static IodineObject Alive (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var thread = self as IodineThread;
 
@@ -163,7 +161,7 @@ namespace Iodine.Runtime
                     return obj;
                 }
 
-                public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+                public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
                 {
                     return new IodineLock ();
                 }
@@ -171,7 +169,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString (
                     "Enters the critical section, blocking all threads until release the lock is released."
                 )]
-                private static IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                static IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var spinlock = self as IodineLock;
 
@@ -187,7 +185,7 @@ namespace Iodine.Runtime
                 [BuiltinDocString (
                     "Releases the lock, allowing any threads blocked by this lock to continue."
                 )]
-                private static IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                static IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var spinlock = self as IodineLock;
 
@@ -198,12 +196,12 @@ namespace Iodine.Runtime
 
                     spinlock.Release ();
                     return null;
-                } 
+                }
 
                 [BuiltinDocString (
                     "Returns true if a thread has acquired this lock, false if not."
                 )]
-                private static IodineObject Locked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+                static IodineObject Locked (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     var spinlock = self as IodineLock;
 
@@ -216,7 +214,7 @@ namespace Iodine.Runtime
                 }
             }
 
-            private volatile bool _lock = false;
+            volatile bool _lock = false;
 
             public IodineLock ()
                 : base (TypeDefinition)
@@ -252,7 +250,7 @@ namespace Iodine.Runtime
                 {
                 }
 
-                public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+                public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
                 {
                     if (args.Length == 0) {
                         return new IodineSemaphore (1);
@@ -269,7 +267,7 @@ namespace Iodine.Runtime
                 }
             }
 
-            private volatile int semaphore = 1;
+            volatile int semaphore = 1;
 
             public IodineSemaphore (int semaphore)
                 : base (TypeDefinition)
@@ -284,7 +282,7 @@ namespace Iodine.Runtime
              * Iodine Method: Semaphore.acquire (self)
              * Description: Decrements the semaphore
              */
-            private IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 semaphore--;
                 while (semaphore < 0) {
@@ -297,16 +295,16 @@ namespace Iodine.Runtime
              * Iodine Method: Semaphore.release (self)
              * Description: Increments the semaphore
              */
-            private IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 semaphore++;
                 return null;
             }
 
-           /**
-            * Returns true if the semaphore is less than 0
-            */
-            private IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject[] args)
+            /**
+             * Returns true if the semaphore is less than 0
+             */
+            IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject [] args)
             {
                 return IodineBool.Create (semaphore < 0);
             }
@@ -325,7 +323,7 @@ namespace Iodine.Runtime
             "Suspends the current thread for t milliseconds.",
             "@param t How many milliseconds to suspend the thread for"
         )]
-        private IodineObject Sleep (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Sleep (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));

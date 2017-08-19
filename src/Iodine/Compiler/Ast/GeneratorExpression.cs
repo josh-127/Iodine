@@ -27,13 +27,11 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class GeneratorExpression : AstNode
     {
-        public string Identifier { private set; get; }
+        public readonly string Identifier;
 
         public readonly AstNode Expression;
 

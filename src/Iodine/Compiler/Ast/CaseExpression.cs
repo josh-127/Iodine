@@ -27,28 +27,15 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class CaseExpression : AstNode
     {
         public readonly bool IsStatement;
 
-        public AstNode Pattern {
-            private set;
-            get;
-        }
-
-        public AstNode Condition {
-            private set;
-            get;
-        }
-
-        public AstNode Value {
-            private set;
-            get;
-        }
+        public readonly AstNode Pattern;
+        public readonly AstNode Condition;
+        public readonly AstNode Value;
 
         public CaseExpression (SourceLocation location,
             AstNode pattern,

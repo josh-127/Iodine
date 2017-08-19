@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Security.Cryptography;
 
 namespace Iodine.Runtime
@@ -48,14 +47,14 @@ namespace Iodine.Runtime
          * Iodine Function: sha256 (data)
          * Description: Returns the SHA256 digest of data
          */
-        private IodineObject Sha256 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Sha256 (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
 
-            byte[] hash = null;
+            byte [] hash = null;
 
             var shaAlgol = new SHA256Managed ();
 
@@ -72,14 +71,14 @@ namespace Iodine.Runtime
          * Iodine Function: sha1 (data)
          * Description: Returns the SHA1 digest of data
          */
-        private IodineObject Sha1 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Sha1 (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
 
-            byte[] hash = null;
+            byte [] hash = null;
 
             var shaAlgol = new SHA1Managed ();
 
@@ -97,14 +96,14 @@ namespace Iodine.Runtime
          * Iodine Function: sha512 (data)
          * Description: Returns the SHA512 digest of data
          */
-        private IodineObject Sha512 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Sha512 (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
 
-            byte[] hash = null;
+            byte [] hash = null;
 
             var shaAlgol = new SHA512Managed ();
 
@@ -121,14 +120,14 @@ namespace Iodine.Runtime
          * Iodine Function: md5 (data)
          * Description: Returns the MD5 digest of data
          */
-        private IodineObject Md5 (VirtualMachine vm, IodineObject self, IodineObject[] args)
+        IodineObject Md5 (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length <= 0) {
                 vm.RaiseException (new IodineArgumentException (1));
                 return null;
             }
 
-            byte[] hash = null;
+            byte [] hash = null;
 
             var md5Algol = MD5.Create ();
 
@@ -141,7 +140,7 @@ namespace Iodine.Runtime
             return null;
         }
 
-        private static byte[] GetBytes (IodineObject obj)
+        static byte [] GetBytes (IodineObject obj)
         {
             if (obj is IodineString) {
                 return System.Text.Encoding.UTF8.GetBytes (obj.ToString ());
@@ -153,7 +152,7 @@ namespace Iodine.Runtime
             return null;
         }
 
-        private static byte[] PreformHash (VirtualMachine vm, IodineObject obj, HashAlgorithm algol)
+        static byte [] PreformHash (VirtualMachine vm, IodineObject obj, HashAlgorithm algol)
         {
             if (obj is IodineString || obj is IodineBytes) {
                 var data = GetBytes (obj);

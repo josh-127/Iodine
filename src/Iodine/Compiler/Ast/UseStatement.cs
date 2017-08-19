@@ -27,22 +27,18 @@
   * DAMAGE.
 **/
 
-using System;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
 
 namespace Iodine.Compiler.Ast
 {
     public class UseStatement : AstNode
     {
-        public string Module { private set; get; }
+        public readonly string Module;
 
-        public List<string> Imports { private set; get; }
+        public readonly List<string> Imports;
 
-        public bool Wildcard { private set; get; }
-
-        public bool Relative { private set; get; }
+        public readonly bool Wildcard;
+        public readonly bool Relative;
 
         public UseStatement (SourceLocation location, string module, bool relative = false)
             : base (location)

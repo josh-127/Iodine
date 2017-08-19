@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     /// <summary>
@@ -40,7 +38,8 @@ namespace Iodine.Runtime
         public static readonly IodineTypeDefinition TypeDefinition = new IodineTypeDefinition ("Closure");
 
         public readonly IodineMethod Target;
-        private StackFrame frame;
+
+        StackFrame frame;
 
         public IodineClosure (StackFrame frame, IodineMethod target)
             : base (TypeDefinition)
@@ -54,7 +53,7 @@ namespace Iodine.Runtime
             return true;
         }
 
-        public override IodineObject Invoke (VirtualMachine vm, IodineObject[] arguments)
+        public override IodineObject Invoke (VirtualMachine vm, IodineObject [] arguments)
         {
             var newFrame = frame.Duplicate (vm.Top);
             var initialValue = vm.InvokeMethod (Target, newFrame, frame.Self, arguments);

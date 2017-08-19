@@ -54,7 +54,7 @@ namespace Iodine.Runtime
             "Iterates through each element in the collection.",
             "@param func The function to call for each element in the collection"
         )]
-        private static IodineObject Each (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        static IodineObject Each (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
 
             if (args.Length == 0) {
@@ -81,7 +81,7 @@ namespace Iodine.Runtime
             "to the caller.",
             "@param callable The callable to be used for filtering."
         )]
-        private static IodineObject Filter (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        static IodineObject Filter (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));
@@ -109,7 +109,7 @@ namespace Iodine.Runtime
             "callable. The result of the specified callable is added to a list that is returned to the caller.",
             "@param callable The callable to be used for mapping."
         )]
-        private static IodineObject Map (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        static IodineObject Map (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
 
             if (args.Length == 0) {
@@ -136,7 +136,7 @@ namespace Iodine.Runtime
             "@param callable The callable to be used for reduced.",
             "@param default The default item."
         )]
-        private static IodineObject Reduce (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        static IodineObject Reduce (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             if (args.Length == 0) {
                 vm.RaiseException (new IodineArgumentException (1));

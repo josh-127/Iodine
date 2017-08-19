@@ -26,21 +26,22 @@
 //   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 //   * DAMAGE.
 // /**
-using System;
+
 using System.Text;
 
 namespace Iodine.Compiler
 {
     public class SourceReader
     {
-        private int position;
-        private string source;
-        private int sourceLength;
+        int position;
+        int sourceLength;
 
 
-        private int line;
-        private int column;
-        private string file;
+        int line;
+        int column;
+
+        string file;
+        string source;
 
         public SourceLocation Location => new SourceLocation (line, column, file);
 
@@ -99,7 +100,7 @@ namespace Iodine.Compiler
 
         public string Peeks (int chars)
         {
-            StringBuilder accum = new StringBuilder ();
+            var accum = new StringBuilder ();
 
             for (int i = 0; i < chars && See (i); i++) {
                 accum.Append (Peek (i));    
@@ -116,7 +117,7 @@ namespace Iodine.Compiler
 
         public string Reads (int chars)
         {
-            string ret = Peeks (chars);
+            var ret = Peeks (chars);
             Skip (chars);
             return ret;
         }

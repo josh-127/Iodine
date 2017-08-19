@@ -27,13 +27,11 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Compiler.Ast
 {
     public class IntegerExpression : AstNode
     {
-        public long Value { private set; get; }
+        public readonly long Value;
 
         public IntegerExpression (SourceLocation location, long value)
             : base (location)

@@ -26,7 +26,7 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-using System;
+
 using Iodine.Runtime;
 
 namespace Iodine.Compiler
@@ -48,15 +48,6 @@ namespace Iodine.Compiler
         public void AddMethod (IodineMethod method)
         {
             Attributes [method.Name] = method;
-        }
-
-        public IodineObject DefineConstant (IodineObject obj)
-        {
-            if (!ConstantPool.Contains (obj)) {
-                ConstantPool.Add (obj);
-                return obj;
-            }
-            return ConstantPool [ConstantPool.IndexOf (obj)];
         }
     }
 }

@@ -27,14 +27,13 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Numerics;
 
 namespace Iodine.Compiler.Ast
 {
     public class BigIntegerExpression : AstNode
     {
-        public BigInteger Value { private set; get; }
+        public readonly BigInteger Value;
 
         public BigIntegerExpression (SourceLocation location, BigInteger value)
             : base (location)

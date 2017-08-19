@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 using System;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Collections.Generic;
@@ -69,15 +67,15 @@ namespace Iodine.Runtime
             }
         }
 
-        private int frameCount = 0;
-        private int stackSize = 0;
+        int frameCount = 0;
+        int stackSize = 0;
 
-        private TraceCallback traceCallback = null;
-        private IodineObject lastException = null;
+        TraceCallback traceCallback = null;
+        IodineObject lastException = null;
 
-        private Instruction instruction;
-        private LinkedStack<StackFrame> frames = new LinkedStack<StackFrame> ();
-        private ManualResetEvent pauseVirtualMachine = new ManualResetEvent (true);
+        Instruction instruction;
+        LinkedStack<StackFrame> frames = new LinkedStack<StackFrame> ();
+        ManualResetEvent pauseVirtualMachine = new ManualResetEvent (true);
 
         public StackFrame Top;
 
@@ -175,7 +173,7 @@ namespace Iodine.Runtime
         /*
          * Internal implementation of Invoke
          */
-        private IodineObject Invoke (IodineMethod method, IodineObject [] arguments)
+        IodineObject Invoke (IodineMethod method, IodineObject [] arguments)
         {
             if (method.Bytecode.Instructions.Length > 0) {
                 instruction = method.Bytecode.Instructions [0];
@@ -969,7 +967,7 @@ namespace Iodine.Runtime
             traceCallback = callback;
         }
 
-        private void Trace (TraceType type, StackFrame frame, SourceLocation location)
+        void Trace (TraceType type, StackFrame frame, SourceLocation location)
         {
             pauseVirtualMachine.WaitOne ();
             if (traceCallback != null && traceCallback (type, this, frame, location)) {
@@ -981,7 +979,7 @@ namespace Iodine.Runtime
         /// Unwinds the stack n frames
         /// </summary>
         /// <param name="numFrames">Frames.</param>
-        private void UnwindStack (int numFrames)
+        void UnwindStack (int numFrames)
         {
             for (int i = 0; i < numFrames; i++) {
                 var frame = this.frames.Pop ();
@@ -991,7 +989,7 @@ namespace Iodine.Runtime
             Top = this.frames.Peek ();
         }
 
-        private IodineExceptionHandler PopCurrentExceptionHandler ()
+        IodineExceptionHandler PopCurrentExceptionHandler ()
         {
             StackFrame current = Top;
             while (current != null) {
@@ -1017,7 +1015,7 @@ namespace Iodine.Runtime
 #if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]
 #endif
-        private void NewFrame (IodineMethod method, IodineObject [] args, IodineObject self)
+        void NewFrame (IodineMethod method, IodineObject [] args, IodineObject self)
         {
             frameCount++;
             stackSize++;

@@ -54,8 +54,8 @@ namespace Iodine.Util
             }
         }
 
-        private int count = 0;
-        private StackItem<T> top;
+        int count = 0;
+        StackItem<T> top;
 
         public T LastObject;
 
@@ -65,9 +65,6 @@ namespace Iodine.Util
             }
         }
 
-        public LinkedStack ()
-        {
-        }
 
         #if DOTNET_45
         [MethodImpl (MethodImplOptions.AggressiveInlining)]

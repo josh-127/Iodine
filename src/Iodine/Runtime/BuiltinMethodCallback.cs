@@ -43,7 +43,7 @@ namespace Iodine.Runtime
     /// </summary>
     public class BuiltinMethodCallback : IodineObject
     {
-        private static readonly IodineTypeDefinition InternalMethodTypeDef = new IodineTypeDefinition ("Builtin");
+        static readonly IodineTypeDefinition InternalMethodTypeDef = new IodineTypeDefinition ("Builtin");
 
         public IodineObject Self {
             get;
@@ -84,7 +84,7 @@ namespace Iodine.Runtime
             return true;
         }
 
-        private IodineObject Invoke (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        IodineObject Invoke (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
             return Invoke (vm, args);
         }

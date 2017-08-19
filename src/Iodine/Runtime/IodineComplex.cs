@@ -42,15 +42,13 @@ namespace Iodine.Runtime
             {
             }
 
-            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
             {
                 switch (args.Length) {
-                case 0:
-                    {
+                case 0: {
                         return new IodineComplex (0d, 0d);
                     }
-                case 1:
-                    {
+                case 1: {
                         double real;
 
                         if (!ConvertToDouble (args [0], out real)) {
@@ -60,8 +58,7 @@ namespace Iodine.Runtime
 
                         return new IodineComplex (real, 0d);
                     }
-                default:
-                    {
+                default: {
                         double real;
                         double imaginary;
 
@@ -171,7 +168,7 @@ namespace Iodine.Runtime
             return Value.ToString ();
         }
 
-        private static bool ConvertToDouble (IodineObject obj, out double value)
+        static bool ConvertToDouble (IodineObject obj, out double value)
         {
             if (obj is IodineInteger) {
                 value = (double)((IodineInteger)obj).Value;
