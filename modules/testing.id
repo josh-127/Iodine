@@ -15,7 +15,7 @@ class ConsoleFrontendBase {
 
     func _print(self, message) {
         indentation = ''
-        for (i = 0 i < self.indent i += 1) {
+        for (i in 0 .. self.indent) {
             indentation += '    '
         }
 
@@ -24,7 +24,7 @@ class ConsoleFrontendBase {
 
     func _printIndent(self) {
         indentation = ''
-        for (i = 0 i < self.indent i += 1) {
+        for (i in 0 .. self.indent) {
             indentation += '    '
         }
 
