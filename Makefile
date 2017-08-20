@@ -1,4 +1,4 @@
-.PHONY: clean
+.PHONY: clean all
 
 PREFIX = /usr/local/lib
 
@@ -30,11 +30,8 @@ IODINE_MODS += ./modules/_whirlpool.id
 IODINE_NETMODS += ./modules/net/http.id
 IODINE_NETMODS += ./modules/net/dns.id
 
-all: $(OUTPUT_DIR) $(IODINE)
-
-$(OUTPUT_DIR):
+all:
 	mkdir -p $(OUTPUT_DIR)
-$(IODINE) $(IODINE_DEPS):
 	cd ./src/Iodine && nuget restore
 	xbuild ./src/Iodine/Iodine.sln /p:Configuration=Release /p:DefineConstants="COMPILE_EXTRAS" /t:Build "/p:Mono=true;BaseConfiguration=Release"
 install:
