@@ -275,6 +275,8 @@ class BaseHttpServer {
         
         reqObj = HttpRequest ();
         reqObj.headers = headers;        
+        reqObj.method = requestType
+
         content = "";
         
         if (headers.contains ("Content-Length")) {
