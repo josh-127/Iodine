@@ -1,7 +1,10 @@
 .PHONY: clean
 
 PREFIX = /usr/local/lib
-IODINE = ./bin/iodine.exe
+
+OUTPUT_DIR = ./bin
+
+IODINE = $(OUTPUT_DIR)/iodine.exe
 
 IODINE_DEPS += ./bin/LibIodine.dll
 
@@ -27,8 +30,11 @@ IODINE_MODS += ./modules/_whirlpool.id
 IODINE_NETMODS += ./modules/net/http.id
 IODINE_NETMODS += ./modules/net/dns.id
 
+all: $(OUTPUT_DIR) $(IODINE)
 
-all: $(IODINE) $(IODINE_DEPS)
+$(OUTPUT_DIR):
+	mkdir -p $(OUTPUT_DIR)
+$(IODINE) $(IODINE_DEPS):
 	cd ./src/Iodine && nuget restore
 	xbuild ./src/Iodine/Iodine.sln /p:Configuration=Release /p:DefineConstants="COMPILE_EXTRAS" /t:Build "/p:Mono=true;BaseConfiguration=Release"
 install:
