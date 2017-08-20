@@ -40,6 +40,7 @@ install:
 	cp $(IODINE) $(PREFIX)/iodine/iodine.exe
 	cp -f $(IODINE_DEPS) $(PREFIX)/iodine
 	cp -f $(IODINE_MODS) $(PREFIX)/iodine/modules
+	cp -f ./bin/extensions/*.dll $(PREFIX)/iodine/extensions
 	cp -f $(IODINE_NETMODS) $(PREFIX)/iodine/modules/net
 	echo "#! /bin/bash" > /bin/iodine
 	echo "/usr/bin/mono $(PREFIX)/iodine/iodine.exe \"\$$@\"" >> /usr/bin/iodine
