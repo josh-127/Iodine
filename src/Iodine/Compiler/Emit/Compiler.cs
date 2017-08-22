@@ -475,11 +475,13 @@ namespace Iodine.Compiler
             string import = !useStmt.Relative ? useStmt.Module : Path.Combine (
                 Path.GetDirectoryName (useStmt.Location.File),
                 useStmt.Module);
+
             /*
              * Implementation detail: The use statement in all reality is simply an 
              * alias for the function require (); Here we translate the use statement
              * into a call to the require function
              */
+
             if (useStmt.Wildcard) {
                 Context.CurrentModule.Initializer.EmitInstruction (
                     useStmt.Location,
@@ -541,11 +543,27 @@ namespace Iodine.Compiler
                 }
             }
 
-            Context.CurrentMethod.EmitInstruction (Opcode.LoadConst, CreateName ("__anonymous__"));
 
-            Context.CurrentMethod.EmitInstruction (Opcode.BuildMixin, exten.Members.Count);
+            /*
+             * LOAD_CONST       __anonymous__
+             * BUILD_MIXEN
+             * INCLUDE_MIXEN
+             */
 
-            Context.CurrentMethod.EmitInstruction (exten.Location, Opcode.IncludeMixin);
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.LoadConst,
+                CreateName ("__anonymous__")
+            );
+
+            Context.CurrentMethod.EmitInstruction (
+                Opcode.BuildMixin,
+                exten.Members.Count
+            );
+
+            Context.CurrentMethod.EmitInstruction (
+                exten.Location,
+                Opcode.IncludeMixin
+            );
 
             foreach (AstNode node in exten.Mixins) {
                 node.Visit (this);
@@ -561,6 +579,10 @@ namespace Iodine.Compiler
             stmt.VisitChildren (this);
         }
 
+        /*
+         * TODO: This should be removed, 'given' has been replaced by pattern
+         * matching.
+         */
         public override void Accept (GivenStatement switchStmt)
         {
             switchStmt.GivenValue.Visit (this);
@@ -603,26 +625,74 @@ namespace Iodine.Compiler
             var exceptLabel = Context.CurrentMethod.CreateLabel ();
             var endLabel = Context.CurrentMethod.CreateLabel ();
 
-            Context.CurrentMethod.EmitInstruction (tryCatch.Location, Opcode.PushExceptionHandler, exceptLabel);
+            /*
+             * PUSH_EXCEPTION_HANDLER   exceptLabel
+             * <try body>
+             * POP_EXCEPTION_HANDLER
+             * JUMP                     endLabel
+             */
+
+            Context.CurrentMethod.EmitInstruction (
+                tryCatch.Location,
+                Opcode.PushExceptionHandler,
+                exceptLabel
+            );
 
             tryCatch.TryBody.Visit (this);
 
-            Context.CurrentMethod.EmitInstruction (tryCatch.TryBody.Location, Opcode.PopExceptionHandler);
-            Context.CurrentMethod.EmitInstruction (tryCatch.TryBody.Location, Opcode.Jump, endLabel);
+            Context.CurrentMethod.EmitInstruction (
+                tryCatch.TryBody.Location,
+                Opcode.PopExceptionHandler
+            );
+
+
+            Context.CurrentMethod.EmitInstruction (
+                tryCatch.TryBody.Location,
+                Opcode.Jump,
+                endLabel
+            );
+
+            /*
+             * exceptLabel: 
+             */
+
             Context.CurrentMethod.MarkLabelPosition (exceptLabel);
 
-            tryCatch.TypeList.Visit (this);
+            tryCatch.TypeList.Visit (this); // except e as <type list>
 
             if (tryCatch.TypeList.Arguments.Count > 0) {
-                Context.CurrentMethod.EmitInstruction (tryCatch.ExceptBody.Location,
+
+                /*
+                 * <except type list>
+                 * BEGIN_EXCEPT             TypeList.Arguments.Count
+                 * 
+                 * FYI: This instructiion basically list matches the current
+                 * exception with the list of types that have been pushed
+                 * onto the stack, to see whether or not this exception handler
+                 * is valid for the thrown exception
+                 */
+
+                Context.CurrentMethod.EmitInstruction (
+                    tryCatch.ExceptBody.Location,
                     Opcode.BeginExcept,
                     tryCatch.TypeList.Arguments.Count
                 );
             }
 
             if (tryCatch.ExceptionIdentifier != null) {
+
+                /*
+                 * LOAD_EXCEPTION
+                 * STORE_LOCAL              <try ExceptionIdentifier>
+                 */
+
                 Context.SymbolTable.AddSymbol (tryCatch.ExceptionIdentifier);
-                Context.CurrentMethod.EmitInstruction (tryCatch.ExceptBody.Location, Opcode.LoadException);
+
+                Context.CurrentMethod.EmitInstruction (
+                    tryCatch.ExceptBody.Location,
+                    Opcode.LoadException
+                );
+
                 Context.CurrentMethod.EmitInstruction (tryCatch.ExceptBody.Location,
                     Opcode.StoreLocal,
                     CreateName (tryCatch.ExceptionIdentifier)
@@ -631,6 +701,10 @@ namespace Iodine.Compiler
 
             tryCatch.ExceptBody.Visit (this);
 
+            /*
+             * endLabel:
+             */
+
             Context.CurrentMethod.MarkLabelPosition (endLabel);
         }
 
@@ -638,13 +712,29 @@ namespace Iodine.Compiler
         {
             Context.SymbolTable.EnterScope ();
 
+            /*
+             * BEGIN_WITH
+             * <with expression>
+             */
+
             with.Expression.Visit (this);
 
-            Context.CurrentMethod.EmitInstruction (with.Location, Opcode.BeginWith);
+            Context.CurrentMethod.EmitInstruction (
+                with.Location,
+                Opcode.BeginWith
+            );
+
+            /*
+             * <with body>
+             * END_WITH
+             */
 
             with.Body.Visit (this);
 
-            Context.CurrentMethod.EmitInstruction (with.Location, Opcode.EndWith);
+            Context.CurrentMethod.EmitInstruction (
+                with.Location,
+                Opcode.EndWith
+            );
 
             Context.SymbolTable.ExitScope ();
         }
@@ -653,19 +743,49 @@ namespace Iodine.Compiler
         {
             var elseLabel = Context.CurrentMethod.CreateLabel ();
             var endLabel = Context.CurrentMethod.CreateLabel ();
+
+            /*
+             * <if condition>
+             * JUMP_IF_FALSE        elseLabel
+             */
+
             ifStmt.Condition.Visit (this);
-            Context.CurrentMethod.EmitInstruction (ifStmt.Body.Location, Opcode.JumpIfFalse, elseLabel);
+
+            Context.CurrentMethod.EmitInstruction (
+                ifStmt.Body.Location,
+                Opcode.JumpIfFalse,
+                elseLabel
+            );
+
+            /*
+             * <if body>
+             * JUMP                 endLabel
+             */
+
             ifStmt.Body.Visit (this);
+
             Context.CurrentMethod.EmitInstruction (ifStmt.ElseBody != null
                 ? ifStmt.ElseBody.Location
                 : ifStmt.Location,
                 Opcode.Jump,
                 endLabel
             );
+
+            /*
+             * elseLabel:
+             * <if else-body>
+             */
+
             Context.CurrentMethod.MarkLabelPosition (elseLabel);
+
             if (ifStmt.ElseBody != null) {
                 ifStmt.ElseBody.Visit (this);
             }
+
+            /*
+             * endLabel:
+             */
+
             Context.CurrentMethod.MarkLabelPosition (endLabel);
         }
 
@@ -679,16 +799,36 @@ namespace Iodine.Compiler
 
             Context.CurrentMethod.MarkLabelPosition (whileLabel);
 
+            /*
+             * whileLabel:
+             * <while condition>
+             */
+
             whileStmt.Condition.Visit (this);
+
+            /*
+             * JUMP_IF_FALSE    breakLabel
+             */
 
             Context.CurrentMethod.EmitInstruction (whileStmt.Condition.Location,
                 Opcode.JumpIfFalse,
                 breakLabel
             );
 
+            /*
+             * <while body>
+             * JUMP             whileLabel
+             * breakLabel:
+             */
+
             whileStmt.Body.Visit (this);
 
-            Context.CurrentMethod.EmitInstruction (whileStmt.Body.Location, Opcode.Jump, whileLabel);
+            Context.CurrentMethod.EmitInstruction (
+                whileStmt.Body.Location,
+                Opcode.Jump,
+                whileLabel
+            );
+
             Context.CurrentMethod.MarkLabelPosition (breakLabel);
 
             Context.BreakLabels.Pop ();
@@ -705,13 +845,23 @@ namespace Iodine.Compiler
 
             Context.CurrentMethod.MarkLabelPosition (doLabel);
 
+            /*
+             * doLabel:
+             */
+
             doStmt.Body.Visit (this);
+
             doStmt.Condition.Visit (this);
 
             Context.CurrentMethod.EmitInstruction (doStmt.Condition.Location,
                 Opcode.JumpIfTrue,
                 doLabel
             );
+
+            /*
+             * JUMP_IF_FALSE        doLabel
+             */
+
             Context.CurrentMethod.MarkLabelPosition (breakLabel);
 
             Context.BreakLabels.Pop ();
@@ -729,6 +879,10 @@ namespace Iodine.Compiler
 
             forStmt.Initializer.Visit (this);
 
+            /*
+             * JUMP         skipAfterThought
+             */
+
             Context.CurrentMethod.EmitInstruction (forStmt.Location, Opcode.Jump, skipAfterThought);
             Context.CurrentMethod.MarkLabelPosition (forLabel);
 
@@ -738,20 +892,45 @@ namespace Iodine.Compiler
 
             forStmt.Condition.Visit (this);
 
-            Context.CurrentMethod.EmitInstruction (forStmt.Condition.Location, Opcode.JumpIfFalse, breakLabel);
+            /*
+             * <for initializer>
+             * JUMP skipAfterThought
+             * <for afterthought>
+             * skipAfterThought:
+             * <for condition>
+             * JUMP_IF_FALSE    breakLabel
+             * <for body>
+             * <for afterthought>
+             * JUMP
+             */
+
+            Context.CurrentMethod.EmitInstruction (
+                forStmt.Condition.Location,
+                Opcode.JumpIfFalse,
+                breakLabel
+            );
+
             forStmt.Body.Visit (this);
             forStmt.AfterThought.Visit (this);
-            Context.CurrentMethod.EmitInstruction (forStmt.AfterThought.Location, Opcode.Jump, skipAfterThought);
+
+            Context.CurrentMethod.EmitInstruction (
+                forStmt.AfterThought.Location,
+                Opcode.Jump,
+                skipAfterThought
+            )
+                   ;
             Context.CurrentMethod.MarkLabelPosition (breakLabel);
+
             Context.BreakLabels.Pop ();
             Context.ContinueLabels.Pop ();
         }
 
         public override void Accept (ForeachStatement foreachStmt)
         {
-            var foreachLabel = Context.CurrentMethod.CreateLabel ();
-            var breakLabel = Context.CurrentMethod.CreateLabel ();
             var tmp = CreateTemporary ();
+
+            var breakLabel = Context.CurrentMethod.CreateLabel (); // End of foreach
+            var foreachLabel = Context.CurrentMethod.CreateLabel (); // beginning of foreach
 
             Context.BreakLabels.Push (breakLabel);
             Context.ContinueLabels.Push (foreachLabel);
@@ -760,13 +939,29 @@ namespace Iodine.Compiler
 
             Context.SymbolTable.EnterScope ();
 
+            /*
+             * foreachloop:
+             * 
+             * GET_ITER
+             * DUP
+             * STORE_LOCAL      tmp
+             * ITER_RESET
+             * LOAD_LOCAL       tmp
+             * ITER_MOVE_NEXT
+             * JUMP_IF_FALSE    breakFromLoop
+             * LOAD_LOCAL       tmp
+             * ITER_GET_NEXT
+             */
+
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.GetIter);
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.Dup);
+
             Context.CurrentMethod.EmitInstruction (
                 foreachStmt.Iterator.Location,
                 Opcode.StoreLocal,
                 tmp
             );
+
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterReset);
             Context.CurrentMethod.MarkLabelPosition (foreachLabel);
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
@@ -775,22 +970,34 @@ namespace Iodine.Compiler
                 Opcode.JumpIfFalse,
                 breakLabel
             );
+            
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.LoadLocal, tmp);
             Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location, Opcode.IterGetNext);
 
             if (foreachStmt.Items.Count == 1) {
                 Context.SymbolTable.AddSymbol (foreachStmt.Items [0]);
 
+                /*
+                 * STORE_LOCAL      foreachStmt.Items [0]
+                 */
+
                 Context.CurrentMethod.EmitInstruction (foreachStmt.Iterator.Location,
                     Opcode.StoreLocal,
                     CreateName (foreachStmt.Items [0])
                 );
             } else {
-
+                /*
+                 * Requires tuple unpacking...
+                 */
                 CompileForeachWithAutounpack (foreachStmt.Items);
             }
 
             foreachStmt.Body.Visit (this);
+
+            /*
+             * JUMP             foreachLoop
+             * breakFromLoop:
+             */
 
             Context.CurrentMethod.EmitInstruction (foreachStmt.Body.Location, Opcode.Jump, foreachLabel);
             Context.CurrentMethod.MarkLabelPosition (breakLabel);
