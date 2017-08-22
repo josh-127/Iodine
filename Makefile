@@ -16,6 +16,7 @@ IODINE_MODS += ./modules/base64.id
 IODINE_MODS += ./modules/cryptoutils.id
 IODINE_MODS += ./modules/collections.id
 IODINE_MODS += ./modules/configfile.id
+IODINE_MODS += ./modules/dis.id
 IODINE_MODS += ./modules/events.id
 IODINE_MODS += ./modules/ints.id
 IODINE_MODS += ./modules/iterutils.id
