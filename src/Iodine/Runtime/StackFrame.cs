@@ -34,6 +34,13 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+
+    delegate int GetInstructionPointerCallback ();
+
+    delegate void SetInstructionPointerCallback (int newIp);
+
+    delegate SourceLocation GetSourceLocationCallback ();
+
     /// <summary>
     /// Represents a single frame (Activation record) for an Iodine method
     /// </summary>
@@ -57,7 +64,7 @@ namespace Iodine.Runtime
         /// <summary>
         /// The arguments passed to the function
         /// </summary>
-        public readonly IodineObject[] Arguments;
+        public readonly IodineObject [] Arguments;
 
         /// <summary>
         /// These are objects which were used with the 'with' statement
@@ -89,13 +96,9 @@ namespace Iodine.Runtime
         /// Gets or sets the source for this stack frame location.
         /// </summary>
         /// <value>The location.</value>
-        public SourceLocation Location { 
-        
+        public SourceLocation Location {
             get {
-                if (VirtualMachine.CurrentInstruction.Location != null) {
-                    return VirtualMachine.CurrentInstruction.Location;
-                }
-                return null;
+                return locationGetter ();
             }
         }
 
@@ -103,19 +106,43 @@ namespace Iodine.Runtime
         /// Gets or sets the instruction pointer.
         /// </summary>
         /// <value>The instruction pointer.</value>
-        public int InstructionPointer;
+        public int InstructionPointer {
+            get {
+                if (instructionPointerGetter == null) {
+                    return 0;
+                }
+                return instructionPointerGetter ();
+            }
+
+            set {
+                instructionPointerSetter (value);
+            }
+        }
 
         /// <summary>
         /// Gets the module.
         /// </summary>
         /// <value>The module.</value>
-        public IodineModule Module;
+        public IodineModule Module {
+            internal set;
+            get;
+        }
 
-        public AttributeDictionary Locals;
+
+        public AttributeDictionary Locals {
+            get {
+                return locals;
+            }
+        }
 
         public readonly LinkedStack<IodineObject> Stack = new LinkedStack<IodineObject> ();
 
         readonly AttributeDictionary locals;
+
+        GetSourceLocationCallback  locationGetter;
+
+        GetInstructionPointerCallback instructionPointerGetter;
+        SetInstructionPointerCallback instructionPointerSetter;
 
         AttributeDictionary arguments = new AttributeDictionary ();
         AttributeDictionary parentLocals = null;
@@ -124,7 +151,7 @@ namespace Iodine.Runtime
             VirtualMachine vm,
             IodineModule module,
             IodineMethod method,
-            IodineObject[] arguments,
+            IodineObject [] arguments,
             StackFrame parent,
             IodineObject self)
         {
@@ -142,7 +169,7 @@ namespace Iodine.Runtime
             VirtualMachine vm,
             IodineModule module,
             IodineMethod method,
-            IodineObject[] arguments,
+            IodineObject [] arguments,
             StackFrame parent,
             IodineObject self,
             AttributeDictionary locals) : this (vm, module, method, arguments, parent, self)
@@ -162,6 +189,19 @@ namespace Iodine.Runtime
         {
             this.parentLocals = parentLocals;
             this.locals = locals;
+        }
+
+        internal void SetLocationAccessor (GetSourceLocationCallback getter)
+        {
+            locationGetter = getter;
+        }
+
+        internal void SetInstructionPointerAccessor (
+            GetInstructionPointerCallback getter,
+            SetInstructionPointerCallback setter)
+        {
+            instructionPointerGetter = getter;
+            instructionPointerSetter = setter;
         }
 
 #if DOTNET_45

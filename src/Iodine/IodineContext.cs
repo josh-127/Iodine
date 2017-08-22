@@ -258,8 +258,19 @@ namespace Iodine.Compiler
             var modulePath = FindModuleSource (name);
 
             if (modulePath != null) {
+
+                if (moduleCache.ContainsKey (modulePath)) {
+                    return moduleCache [modulePath];
+                }
+
+
                 var source = SourceUnit.CreateFromFile (modulePath);
-                return source.Compile (this);
+
+                var module = source.Compile (this);
+
+                moduleCache [modulePath] = module;
+
+                return module;
             }
 
             return null;

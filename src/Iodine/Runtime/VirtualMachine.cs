@@ -216,7 +216,7 @@ namespace Iodine.Runtime
             top.Module = method.Module;
 
             if (traceCallback != null) {
-                Trace (TraceType.Function, top, top.Location);
+                Trace (TraceType.Function, top, instruction.Location);
             }
 
             var retVal = EvalCode (method.Bytecode);
@@ -257,11 +257,23 @@ namespace Iodine.Runtime
         {
             int insCount = bytecode.Instructions.Length;
 
+            int pc = Top.InstructionPointer;
+
             StackFrame top = Top;
             IodineObject selfReference = null;
 
-            while (top.InstructionPointer < insCount && !top.AbortExecution && !top.Yielded) {
-                instruction = bytecode.Instructions [top.InstructionPointer++]; 
+            top.SetLocationAccessor (() => {
+                return instruction.Location;
+            });
+
+            top.SetInstructionPointerAccessor (
+                () => { return pc; },
+                (newIp) => { pc = newIp; }
+            );
+
+            while (pc < insCount && !top.AbortExecution && !top.Yielded) {
+                instruction = bytecode.Instructions [pc++];
+
 
                 switch (instruction.OperationCode) {
                 case Opcode.Pop: {
@@ -395,13 +407,28 @@ namespace Iodine.Runtime
                         }
                         break;
                     }
-                case Opcode.BinOp: {
-                        var op2 = top.Pop ();
-                        var op1 = top.Pop ();
-                        top.Push (op1.PerformBinaryOperation (this,
-                            (BinaryOperation)instruction.Argument,
-                            op2
-                        ));
+                case Opcode.Equals: {
+                        top.Push (top.Pop ().Equals (this, top.Pop ()));
+                        break;
+                    }
+                case Opcode.NotEquals: {
+                        top.Push (top.Pop ().NotEquals (this, top.Pop ()));
+                        break;
+                    }
+                case Opcode.BoolAnd: {
+                        var left = top.Pop ();
+                        var right = top.Pop ();
+
+                        top.Push (left.LogicalAnd (this, right));
+
+                        break;
+                    }
+                case Opcode.BoolOr: {
+                        var left = top.Pop ();
+                        var right = top.Pop ();
+
+                        top.Push (left.LogicalOr (this, right));
+
                         break;
                     }
                 case Opcode.Add: {
@@ -436,6 +463,14 @@ namespace Iodine.Runtime
                         top.Push (top.Pop ().Or (this, top.Pop ()));
                         break;
                     }
+                case Opcode.LeftShift: {
+                        top.Push (top.Pop ().LeftShift (this, top.Pop ()));
+                        break;
+                    }
+                case Opcode.RightShift: {
+                        top.Push (top.Pop ().RightShift (this, top.Pop ()));
+                        break;
+                    }
                 case Opcode.GreaterThan: {
                         top.Push (top.Pop ().GreaterThan (this, top.Pop ()));
                         break;
@@ -450,6 +485,14 @@ namespace Iodine.Runtime
                     }
                 case Opcode.LessThanOrEqu: {
                         top.Push (top.Pop ().LessThanOrEqual (this, top.Pop ()));
+                        break;
+                    }
+                case Opcode.HalfRange: {
+                        top.Push (top.Pop ().HalfRange (this, top.Pop ()));
+                        break;
+                    }
+                case Opcode.ClosedRange: {
+                        top.Push (top.Pop ().ClosedRange (this, top.Pop ()));
                         break;
                     }
                 case Opcode.UnaryOp: {
@@ -493,7 +536,7 @@ namespace Iodine.Runtime
                         break;
                     }
                 case Opcode.Return: {
-                        Top.InstructionPointer = int.MaxValue;
+                        pc = int.MaxValue;
                         break;
                     }
                 case Opcode.Yield: {
@@ -502,18 +545,18 @@ namespace Iodine.Runtime
                     }
                 case Opcode.JumpIfTrue: {
                         if (top.Pop ().IsTrue ()) {
-                            Top.InstructionPointer = instruction.Argument;
+                            pc = instruction.Argument;
                         }
                         break;
                     }
                 case Opcode.JumpIfFalse: {
                         if (!top.Pop ().IsTrue ()) {
-                            Top.InstructionPointer = instruction.Argument;
+                            pc = instruction.Argument;
                         }
                         break;
                     }
                 case Opcode.Jump: {
-                        Top.InstructionPointer = instruction.Argument;
+                        pc = instruction.Argument;
                         break;
                     }
                 case Opcode.BuildClass: {
@@ -929,11 +972,11 @@ namespace Iodine.Runtime
             var handler = PopCurrentExceptionHandler ();
 
             if (handler == null) { // No exception handler
-               /*
-                * The program has gone haywire and we ARE going to crash, however
-                * we must attempt to properly dispose any objects created inside 
-                * Iodine's with statement
-                */
+                                   /*
+                                    * The program has gone haywire and we ARE going to crash, however
+                                    * we must attempt to properly dispose any objects created inside 
+                                    * Iodine's with statement
+                                    */
                 StackFrame top = Top;
 
                 while (top != null) {

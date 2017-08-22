@@ -1232,8 +1232,6 @@ namespace Iodine.Compiler
                     expr = new BinaryExpression (Location, BinaryOperation.NotEquals, expr,
                         ParseRelationalOp ());
                     continue;
-                default:
-                    break;
                 }
                 break;
             }

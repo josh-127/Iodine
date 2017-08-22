@@ -187,7 +187,7 @@ namespace Iodine.Compiler
 
         }
 
-        private void CompileContract (ContractDeclaration contractDecl)
+        void CompileContract (ContractDeclaration contractDecl)
         {
             Context.SymbolTable.AddSymbol (contractDecl.Name);
 
@@ -1079,21 +1079,41 @@ namespace Iodine.Compiler
                 Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.LessThanOrEqu);
                 return;
             case BinaryOperation.ClosedRange:
-            case BinaryOperation.HalfRange:
-            case BinaryOperation.LeftShift:
-            case BinaryOperation.RightShift:
-                binop.Left.Visit (this);
                 binop.Right.Visit (this);
-                Context.CurrentMethod.EmitInstruction (binop.Location,
-                    Opcode.BinOp,
-                    (int)binop.Operation
-                );
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.ClosedRange);
+                return;
+            case BinaryOperation.HalfRange:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.HalfRange);
+                return;
+            case BinaryOperation.LeftShift:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.LeftShift);
+                return;
+            case BinaryOperation.RightShift:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.RightShift);
+                return;
+            case BinaryOperation.Equals:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Equals);
+                return;
+            case BinaryOperation.NotEquals:
+                binop.Right.Visit (this);
+                binop.Left.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.NotEquals);
                 return;
             }
 
             var shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
             var shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
             var endLabel = Context.CurrentMethod.CreateLabel ();
+
             binop.Left.Visit (this);
 
             /*
@@ -1104,16 +1124,18 @@ namespace Iodine.Compiler
                 Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Dup);
                 Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.JumpIfFalse,
                     shortCircuitFalseLabel);
+                binop.Right.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.BoolAnd);
                 break;
             case BinaryOperation.BoolOr:
                 Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Dup);
                 Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.JumpIfTrue,
                     shortCircuitTrueLabel);
+                binop.Right.Visit (this);
+                Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.BoolOr);
                 break;
             }
-            binop.Right.Visit (this);
 
-            Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.BinOp, (int)binop.Operation);
             Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Jump, endLabel);
             Context.CurrentMethod.MarkLabelPosition (shortCircuitTrueLabel);
             Context.CurrentMethod.EmitInstruction (binop.Location, Opcode.Pop);
@@ -1197,11 +1219,7 @@ namespace Iodine.Compiler
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (
-                    getAttr.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
-                );
+                Context.CurrentMethod.EmitInstruction (getAttr.Location, Opcode.Equals);
             } else {
                 getAttr.Target.Visit (this);
 
@@ -1228,10 +1246,7 @@ namespace Iodine.Compiler
                     Context.PatternTemporary
                 );
 
-                Context.CurrentMethod.EmitInstruction (getAttr.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
-                );
+                Context.CurrentMethod.EmitInstruction (getAttr.Location, Opcode.Equals);
             }
         }
 
@@ -1488,6 +1503,7 @@ namespace Iodine.Compiler
             var shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
             var shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
             var endLabel = Context.CurrentMethod.CreateLabel ();
+
             expression.Left.Visit (this);
 
             /*
@@ -1500,6 +1516,8 @@ namespace Iodine.Compiler
                     Opcode.JumpIfFalse,
                     shortCircuitFalseLabel
                 );
+                expression.Right.Visit (this);
+                Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.BoolAnd);
                 break;
             case BinaryOperation.Or:
                 Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Dup);
@@ -1507,11 +1525,15 @@ namespace Iodine.Compiler
                     Opcode.JumpIfTrue,
                     shortCircuitTrueLabel
                 );
+                expression.Right.Visit (this);
+                Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.BoolOr);
+                break;
+            default:
+                System.Console.WriteLine ("Missing operator! Yikes");
                 break;
             }
-            expression.Right.Visit (this);
 
-            Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.BinOp, (int)expression.Operation);
+
             Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Jump, endLabel);
             Context.CurrentMethod.MarkLabelPosition (shortCircuitTrueLabel);
             Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Pop);
@@ -1669,8 +1691,7 @@ namespace Iodine.Compiler
                 );
                 Context.CurrentMethod.EmitInstruction (
                     integer.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
+                    Opcode.Equals
                 );
             }
         }
@@ -1689,8 +1710,7 @@ namespace Iodine.Compiler
                 );
                 Context.CurrentMethod.EmitInstruction (
                     integer.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
+                    Opcode.Equals
                 );
             }
         }
@@ -1706,10 +1726,7 @@ namespace Iodine.Compiler
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (dec.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
-                );
+                Context.CurrentMethod.EmitInstruction (dec.Location, Opcode.Equals);
             }
         }
 
@@ -1738,10 +1755,7 @@ namespace Iodine.Compiler
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (stringConst.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
-                );
+                Context.CurrentMethod.EmitInstruction (stringConst.Location, Opcode.Equals);
             }
         }
 
@@ -1759,10 +1773,7 @@ namespace Iodine.Compiler
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (nil.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
-                );
+                Context.CurrentMethod.EmitInstruction (nil.Location, Opcode.Equals);
             }
         }
 
@@ -1775,10 +1786,8 @@ namespace Iodine.Compiler
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (ntrue.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
-                );
+                Context.CurrentMethod.EmitInstruction (ntrue.Location, Opcode.Equals);
+
             }
         }
 
@@ -1791,10 +1800,7 @@ namespace Iodine.Compiler
                     Opcode.LoadLocal,
                     Context.PatternTemporary
                 );
-                Context.CurrentMethod.EmitInstruction (nfalse.Location,
-                    Opcode.BinOp,
-                    (int)BinaryOperation.Equals
-                );
+                Context.CurrentMethod.EmitInstruction (nfalse.Location, Opcode.Equals);
             }
         }
         #endregion

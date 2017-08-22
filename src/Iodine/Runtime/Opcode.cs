@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     /// <summary>
@@ -37,7 +35,6 @@ namespace Iodine.Runtime
     public enum Opcode
     {
         Nop = 0,
-        BinOp = 1,
         UnaryOp = 2,
         Pop = 3,
         Dup = 4,
@@ -113,7 +110,14 @@ namespace Iodine.Runtime
         LessThan = 0x4B,
         GreaterThanOrEqu = 0x4C,
         LessThanOrEqu = 0x4D,
-
+        HalfRange = 0x4E,
+        ClosedRange = 0x4F,
+        LeftShift = 0x50,
+        RightShift = 0x51,
+        BoolAnd = 0x52,
+        BoolOr = 0x53,
+        Equals = 0x54,
+        NotEquals = 0x55
     }
 }
 

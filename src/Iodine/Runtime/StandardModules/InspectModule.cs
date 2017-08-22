@@ -84,8 +84,6 @@ namespace Iodine.Runtime
             {
                 Instruction ins = this.Instruction;
                 switch (this.Instruction.OperationCode) {
-                case Opcode.BinOp:
-                    return ((BinaryOperation)ins.Argument).ToString ();
                 case Opcode.UnaryOp:
                     return ((UnaryOperation)ins.Argument).ToString ();
                 case Opcode.LoadConst:
@@ -122,7 +120,7 @@ namespace Iodine.Runtime
             // kept for compatibility
             SetAttribute ("getinterfaces", new BuiltinMethodCallback (GetInterfaces, this));
             SetAttribute ("getargspec", new BuiltinMethodCallback (GetArgSpec, this));
-            SetAttribute ("loadModule", new BuiltinMethodCallback (LoadModule, this));
+            SetAttribute ("loadmodule", new BuiltinMethodCallback (LoadModule, this));
             SetAttribute ("isclass", new BuiltinMethodCallback (IsClass, this));
             SetAttribute ("istype", new BuiltinMethodCallback (IsType, this));
             SetAttribute ("ismethod", new BuiltinMethodCallback (IsMethod, this));
