@@ -44,7 +44,7 @@ namespace Iodine.Runtime
     /// <summary>
     /// Represents a single frame (Activation record) for an Iodine method
     /// </summary>
-    public class StackFrame
+    public sealed class StackFrame
     {
         /// <summary>
         /// Iodine Method which this stack frame is for
