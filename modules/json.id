@@ -82,8 +82,8 @@ class JsonFile {
         func parseItem () {
             token = tokens [position];
             ret = null;
-            given (token.type) {
-                when JsonFile.JsonTokenType.BEGIN_ARRAY {
+            
+                if (token.type ==  JsonFile.JsonTokenType.BEGIN_ARRAY) {
                     ret = [];
                     expect (JsonFile.JsonTokenType.BEGIN_ARRAY);
                     while (position < size && !matchToken (JsonFile.JsonTokenType.END_ARRAY)) {
@@ -95,7 +95,7 @@ class JsonFile {
                     }
                     expect (JsonFile.JsonTokenType.END_ARRAY);
                 }
-                when JsonFile.JsonTokenType.BEGIN_OBJECT {
+                else if (token.type == JsonFile.JsonTokenType.BEGIN_OBJECT) {
                     ret = {};
                     expect (JsonFile.JsonTokenType.BEGIN_OBJECT);
                     while (position < size && !matchToken (JsonFile.JsonTokenType.END_OBJECT)) {
@@ -110,28 +110,28 @@ class JsonFile {
                     }
                     expect (JsonFile.JsonTokenType.END_OBJECT);
                 }
-                when JsonFile.JsonTokenType.NUMBER_LITERAL {
+                else if (token.type == JsonFile.JsonTokenType.NUMBER_LITERAL) {
                     ret = consumeToken ().value;
                 }
-                when JsonFile.JsonTokenType.STRING_LITERAL {
+                else if (token.type == JsonFile.JsonTokenType.STRING_LITERAL) {
                     ret = consumeToken ().value;
                 }
-                when JsonFile.JsonTokenType.TRUE_LITERAL {
+                else if (token.type == JsonFile.JsonTokenType.TRUE_LITERAL) {
                     consumeToken ();
                     ret = true;
                 }
-                when JsonFile.JsonTokenType.FALSE_LITERAL {
+                else if (token.type == JsonFile.JsonTokenType.FALSE_LITERAL) {
                     consumeToken ();
                     ret = false;
                 }
-                when JsonFile.JsonTokenType.NULL_LITERAL {
+                else if (token.type == JsonFile.JsonTokenType.NULL_LITERAL) {
                     consumeToken ();
                     ret = null;
                 }
-                default {
+                else {
                     raise InvalidJsonException ();
                 }
-            }
+            
             return ret;
         }
         
@@ -163,14 +163,14 @@ class JsonFile {
             while (peekChar ().isalpha ()) {
                 accum += readChar ();
             }
-            given (accum) {
-                when "true" {
+            match accum {
+                case "true" {
                     result = JsonFile.JsonToken (JsonFile.JsonTokenType.TRUE_LITERAL, true);
                 }
-                when "false" {
+                case "false" {
                     result = JsonFile.JsonToken (JsonFile.JsonTokenType.FALSE_LITERAL, false);
                 }
-                when "null" {
+                case "null" {
                     result = JsonFile.JsonToken (JsonFile.JsonTokenType.NULL_LITERAL, null);
                 }
             }
@@ -229,36 +229,39 @@ class JsonFile {
         while (position < self.length) {
             last = len (tokens);
             ch = peekChar ();
-            given (ch) {
-                when "{" {
+            match ch {
+                case "{" {
                     readChar ();
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_OBJECT, "{"));
                 }
-                when "}" {
+                case "}" {
                     readChar ();
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.END_OBJECT, "}"));
                 }
-                when "[" {
+                case "[" {
                     readChar ();
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.BEGIN_ARRAY, "["));
                 }
-                when "]" {
+                case "]" {
                     readChar ();
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.END_ARRAY, "]"));
                 }
-                when ":" {
+                case ":" {
                     readChar ();
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.NAME_SEPERATOR, ":"));
                 }
-                when "," {
+                case "," {
                     readChar ();
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.VALUE_SEPERATOR, ","));
                 }
-                when "-" {
+                case "-" {
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.NUMBER_LITERAL, scanNumber ()));
                 }
-                when "\"" {
+                case "\"" {
                     tokens.append (JsonFile.JsonToken (JsonFile.JsonTokenType.STRING_LITERAL, scanString ()));
+                }
+                case _ {
+
                 }
             }
 
