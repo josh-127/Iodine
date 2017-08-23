@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
@@ -114,11 +113,6 @@ namespace Iodine.Compiler
         public override void Accept (DoStatement doStmt)
         {
             doStmt.VisitChildren (this);
-        }
-
-        public override void Accept (GivenStatement switchStmt)
-        {
-            switchStmt.VisitChildren (this);
         }
 
         public override void Accept (SuperCallStatement super)
@@ -240,11 +234,6 @@ namespace Iodine.Compiler
         public override void Accept (ExtendStatement exten)
         {
             exten.VisitChildren (this);
-        }
-
-        public override void Accept (WhenStatement caseStmt)
-        {
-            caseStmt.VisitChildren (this);
         }
 
         public override void Accept (LambdaExpression lambda)

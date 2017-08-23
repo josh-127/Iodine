@@ -151,7 +151,6 @@
     <Compile Include="Compiler\Ast\ForeachStatement.cs" />
     <Compile Include="Compiler\Ast\ForStatement.cs" />
     <Compile Include="Compiler\Ast\FunctionDeclaration.cs" />
-    <Compile Include="Compiler\Ast\GivenStatement.cs" />
     <Compile Include="Compiler\Ast\HashExpression.cs" />
     <Compile Include="Compiler\Ast\IfStatement.cs" />
     <Compile Include="Compiler\Ast\IndexerExpression.cs" />
@@ -180,7 +179,6 @@
     <Compile Include="Compiler\Ast\UnaryExpression.cs" />
     <Compile Include="Compiler\Ast\UseStatement.cs" />
     <Compile Include="Compiler\Ast\VariableDeclaration.cs" />
-    <Compile Include="Compiler\Ast\WhenStatement.cs" />
     <Compile Include="Compiler\Ast\WhileStatement.cs" />
     <Compile Include="Compiler\Ast\WithStatement.cs" />
     <Compile Include="Compiler\Ast\YieldStatement.cs" />

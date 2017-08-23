@@ -839,8 +839,10 @@ namespace Iodine.Runtime
                     }
                 case Opcode.BeginExcept: {
                         bool rethrow = true;
+
                         for (int i = 1; i <= instruction.Argument; i++) {
                             var type = top.Pop () as IodineTypeDefinition;
+
                             if (type == null) {
                                 RaiseException (new IodineTypeException ("TypeDef"));
                                 break;
@@ -851,6 +853,7 @@ namespace Iodine.Runtime
                                 break;
                             }
                         }
+
                         if (rethrow) {
                             RaiseException (lastException);
                         }

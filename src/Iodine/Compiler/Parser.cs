@@ -574,8 +574,6 @@ namespace Iodine.Compiler
                     return ParseFunction ();
                 case "if":
                     return ParseIf ();
-                case "given":
-                    return ParseGiven ();
                 case "for":
                     return ParseFor ();
                 case "foreach":
@@ -728,47 +726,6 @@ namespace Iodine.Compiler
             return new VariableDeclaration (Location, global, ident.Value, value);
         }
 
-        /*
-         * given <condition> {
-         *     when <expression>
-         *         <statement>
-         * }
-         */
-        private AstNode ParseGiven ()
-        {
-            SourceLocation location = Location;
-            Expect (TokenClass.Keyword, "given");
-            Expect (TokenClass.OpenParan);
-            var value = ParseExpression ();
-            Expect (TokenClass.CloseParan);
-            Expect (TokenClass.OpenBrace);
-            AstNode defaultBlock = new CompilationUnit (Location);
-            var whenStatements = new List<WhenStatement> ();
-            while (!EndOfStream && !Match (TokenClass.CloseBrace)) {
-                whenStatements.Add (ParseWhen ());
-                if (Accept (TokenClass.Keyword, "default")) {
-                    defaultBlock = ParseStatement (); 
-                }
-            }
-            Expect (TokenClass.CloseBrace);
-            return new GivenStatement (location, value, whenStatements, defaultBlock);
-        }
-
-        /*
-         * given <condition> {
-         *     when <expression>
-         *         <statement>
-         * }
-         */
-        private WhenStatement ParseWhen ()
-        {
-            SourceLocation location = Location;
-            Expect (TokenClass.Keyword, "when");
-            var value = ParseExpression ();
-            var body = ParseStatement ();
-
-            return new WhenStatement (location, value, body);
-        }
 
         /*
          * if (<expression> 
@@ -782,11 +739,13 @@ namespace Iodine.Compiler
         {
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "if");
-            Expect (TokenClass.OpenParan);
+
             var predicate = ParseExpression ();
-            Expect (TokenClass.CloseParan);
+
             var body = ParseStatement ();
+
             AstNode elseBody = null;
+
             if (Accept (TokenClass.Keyword, "else")) {
                 elseBody = ParseStatement ();
             }
@@ -804,9 +763,8 @@ namespace Iodine.Compiler
         {
             SourceLocation location = Location;
 
-            if (Match (3, TokenClass.Keyword, "in") || Match (3, TokenClass.Comma)) {
-                return ParseForeach ();
-            }
+            return ParseForeach ();
+
 
             context.Warn (
                 WarningType.SyntaxWarning,
@@ -814,13 +772,13 @@ namespace Iodine.Compiler
             );
 
             Expect (TokenClass.Keyword, "for");
-            Expect (TokenClass.OpenParan);
+
             AstNode initializer = new Expression (Location, ParseExpression ());
             Expect (TokenClass.SemiColon);
             var condition = ParseExpression ();
             Expect (TokenClass.SemiColon);
             AstNode afterThought = new Expression (Location, ParseExpression ());
-            Expect (TokenClass.CloseParan);
+
             var body = ParseStatement ();
 
             return new ForStatement (location, initializer, condition, afterThought, body);
@@ -843,9 +801,13 @@ namespace Iodine.Compiler
                     "'foreach' keyword is deprecated! Use 'for' instead."
                 );
             }
-            Expect (TokenClass.OpenParan);
+
+
+            var isParanExpected = Accept (TokenClass.OpenParan);
+
             bool anotherValue = false;
             var identifiers = new List<string> ();
+
             do {
                 var identifier = Expect (TokenClass.Identifier);
                 anotherValue = Accept (TokenClass.Comma);
@@ -853,9 +815,15 @@ namespace Iodine.Compiler
             } while (anotherValue);
 
             Expect (TokenClass.Keyword, "in");
+
             var expr = ParseExpression ();
-            Expect (TokenClass.CloseParan);
+
+            if (isParanExpected) {
+                Expect (TokenClass.CloseParan);
+            }
+
             var body = ParseStatement ();
+
             return new ForeachStatement (Location, identifiers, expr, body);
         }
 
@@ -999,7 +967,9 @@ namespace Iodine.Compiler
             
             if (isGenExpr) {
                 Expect (TokenClass.Keyword, "for");
+
                 string ident = Expect (TokenClass.Identifier).Value;
+
                 Expect (TokenClass.Keyword, "in");
                 var iterator = ParseExpression ();
                 AstNode predicate = null;

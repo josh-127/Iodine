@@ -579,47 +579,6 @@ namespace Iodine.Compiler
             stmt.VisitChildren (this);
         }
 
-        /*
-         * TODO: This should be removed, 'given' has been replaced by pattern
-         * matching.
-         */
-        public override void Accept (GivenStatement switchStmt)
-        {
-            switchStmt.GivenValue.Visit (this);
-
-            var temporary = CreateTemporary ();
-
-            Context.CurrentMethod.EmitInstruction (
-                switchStmt.GivenValue.Location,
-                Opcode.StoreLocal,
-                temporary
-            );
-
-            var endSwitch = Context.CurrentMethod.CreateLabel ();
-
-            foreach (WhenStatement caseStmt in switchStmt.WhenStatements) {
-                var nextLabel = Context.CurrentMethod.CreateLabel ();
-
-                CreatePatternContext (temporary);
-
-                caseStmt.Values.Visit (this);
-
-                DestroyContext ();
-
-                Context.CurrentMethod.EmitInstruction (caseStmt.Values.Location, Opcode.JumpIfFalse, nextLabel);
-
-                caseStmt.Body.Visit (this);
-
-                Context.CurrentMethod.EmitInstruction (caseStmt.Body.Location, Opcode.Jump, endSwitch);
-
-                Context.CurrentMethod.MarkLabelPosition (nextLabel);
-            }
-
-            switchStmt.DefaultStatement.Visit (this);
-
-            Context.CurrentMethod.MarkLabelPosition (endSwitch);
-        }
-
         public override void Accept (TryExceptStatement tryCatch)
         {
             var exceptLabel = Context.CurrentMethod.CreateLabel ();

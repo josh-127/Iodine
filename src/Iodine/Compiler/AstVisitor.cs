@@ -118,14 +118,6 @@ namespace Iodine.Compiler
         {
         }
 
-        public virtual void Accept (GivenStatement switchStmt)
-        {
-        }
-
-        public virtual void Accept (WhenStatement caseStmt)
-        {
-        }
-
         public virtual void Accept (FunctionDeclaration funcDecl)
         {
         }

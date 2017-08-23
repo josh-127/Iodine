@@ -67,12 +67,14 @@ namespace Iodine.Runtime
                 }
                 switch (instruction.OperationCode) {
                 case Opcode.LoadConst:
+                case Opcode.LoadLocal:
+                case Opcode.StoreLocal:
                 case Opcode.StoreGlobal:
                 case Opcode.LoadGlobal:
                 case Opcode.StoreAttribute:
                 case Opcode.LoadAttribute:
                 case Opcode.LoadAttributeOrNull:
-                    SetAttribute ("immediateref", method.Module.ConstantPool [instruction.Argument]);
+                    SetAttribute ("immediateref", instruction.ArgumentObject);
                     break;
                 default:
                     SetAttribute ("immediateref", IodineNull.Instance);
@@ -89,8 +91,6 @@ namespace Iodine.Runtime
                 case Opcode.LoadConst:
                 case Opcode.Invoke:
                 case Opcode.BuildList:
-                case Opcode.LoadLocal:
-                case Opcode.StoreLocal:
                 case Opcode.Jump:
                 case Opcode.JumpIfTrue:
                 case Opcode.JumpIfFalse:
@@ -99,8 +99,9 @@ namespace Iodine.Runtime
                 case Opcode.LoadAttribute:
                 case Opcode.LoadGlobal:
                 case Opcode.StoreGlobal:
-                    return String.Format ("{0} {1} ({2})", ins.OperationCode, ins.Argument, 
-                        parentMethod.Module.ConstantPool [ins.Argument].ToString ());
+                case Opcode.LoadLocal:
+                case Opcode.StoreLocal:
+                    return String.Format ("{0} ({1})", ins.OperationCode, ins.ArgumentString);
                 default:
                     return ins.OperationCode.ToString ();
                 }
