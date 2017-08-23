@@ -375,17 +375,7 @@ func run_tests (test) {
         });
 
         test.describe('Keyword', lambda(test) {
-            test.describe('for', lambda(test) {
-                test.it('should take a start, end and step value', lambda() {
-                    j = 0;
-                    for (i = 0; i < 10; i += 1) {
-                        j += 1;
-                    }
-
-                    expect(j).to.equal(10);
-                });
-            });
-
+            
             test.describe('return', lambda(test) {
                 test.it('should end the function', lambda() {
                     y = lambda() {
@@ -430,7 +420,7 @@ func run_tests (test) {
 
                 test.it('should exit a for loop', lambda() {
                     i = 0;
-                    for (i = 0; i < 10; i += 1) {
+                    for (i in 0 .. 10) {
                         if (i == 5) {
                             break;
                         }
@@ -443,7 +433,7 @@ func run_tests (test) {
             test.describe('continue', lambda(test) {
                 test.it('should skip an iteration of a for loop', lambda() {
                     j = 0;
-                    for (i = 0; i < 10; i += 1) {
+                    for (i in 0 .. 10) {
                         # TODO: FIX
                         continue;
                         j += 1;
