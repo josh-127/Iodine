@@ -45,6 +45,7 @@ namespace Iodine.Runtime
                 : base ("Str")
             {
                 BindAttributes (this);
+
                 SetDocumentation (
                     "An immutable string of UTF-16 characters"
                 );
@@ -84,6 +85,8 @@ namespace Iodine.Runtime
                 obj.SetAttribute ("issymbol", new BuiltinMethodCallback (IsSymbol, obj));
                 obj.SetAttribute ("ljust", new BuiltinMethodCallback (PadRight, obj));
                 obj.SetAttribute ("rjust", new BuiltinMethodCallback (PadLeft, obj));
+
+                base.BindAttributes (obj);
 
                 return obj;
             }

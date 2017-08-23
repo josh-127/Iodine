@@ -792,16 +792,7 @@ namespace Iodine.Compiler
          */
         private AstNode ParseForeach ()
         {
-            if (Match (TokenClass.Keyword, "for")) {
-                Expect (TokenClass.Keyword, "for");
-            } else {
-                Expect (TokenClass.Keyword, "foreach");
-                context.Warn (
-                    WarningType.SyntaxWarning,
-                    "'foreach' keyword is deprecated! Use 'for' instead."
-                );
-            }
-
+            Expect (TokenClass.Keyword, "for");
 
             var isParanExpected = Accept (TokenClass.OpenParan);
 
@@ -1439,10 +1430,13 @@ namespace Iodine.Compiler
                 Expect (TokenClass.OpenBrace);
                 while (Accept (TokenClass.Keyword, "case")) {
                     AstNode condition = null;
+
                     var pattern = ParsePattern ();
+
                     if (Accept (TokenClass.Keyword, "when")) {
                         condition = ParseExpression ();
                     }
+
                     AstNode value = null;
 
                     if (Accept (TokenClass.Operator, "=>")) {

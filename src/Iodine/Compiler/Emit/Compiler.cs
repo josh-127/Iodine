@@ -1677,7 +1677,10 @@ namespace Iodine.Compiler
              */
             switch (expression.Operation) {
             case BinaryOperation.And:
-                Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Dup);
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.Dup
+                );
                 Context.CurrentMethod.EmitInstruction (expression.Location,
                     Opcode.JumpIfFalse,
                     shortCircuitFalseLabel
@@ -1692,6 +1695,7 @@ namespace Iodine.Compiler
                     shortCircuitTrueLabel
                 );
                 expression.Right.Visit (this);
+
                 Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.BoolOr);
                 break;
             default:
