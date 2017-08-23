@@ -241,7 +241,7 @@ class Array implements Collection {
      * @param item : Object The item
      */
     func __setitem__ (self, i, item) {
-        self.list [ Int(i)] = item
+        self.list [i] = item
     }
     
     /**

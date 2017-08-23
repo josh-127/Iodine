@@ -63,6 +63,7 @@ _instructions = [
     "INCLUDE_MIXIN",
     "APPLY_MIXIN",
     "BUILD_FUNCTION",
+    null,
     "BUILD_CLASS",
     "BUILD_ENUM",
     "BUILD_CONTRACT",
@@ -70,40 +71,33 @@ _instructions = [
     "BUILD_TRAIT",
     "MATCH_PATTERN",
     "UNWRAP",
-    "UNPACK"
-]
-
-_binopLookup = [
-    null,
-    null,
-    null,
+    "UNPACK",
+    "TEST_UNWRAP",
+    "BINARY_ADD",
+    "BINARY_SUB",
+    "BINARY_DIV",
+    "BINARY_MUL",
+    "BINARY_MOD",
+    "BINARY_AND",
     "BINARY_OR",
     "BINARY_XOR",
-    "BINARY_AND",
-    "BINARY_EQUALS",
-    "BINARY_NOT_EQUALS",
-    "BINARY_LEFT_SHIFT",
-    "BINARY_RIGHT_SHIFT",
     "BINARY_GREATER_THAN",
     "BINARY_LESS_THAN",
     "BINARY_GREATER_THAN_OR_EQU",
     "BINARY_LESS_THAN_OR_EQU",
-    "BINARY_ADD",
-    "BINARY_SUB",
-    "BINARY_MUL",
-    "BINARY_DIV",
-    "BINARY_MOD",
-    null,
-    null,
-    null,
-    null,
-    null
+    "BINARY_HALF_RANGE",
+    "BINARY_CLOSED_RANGE",
+    "BINARY_LEFT_SHIFT",
+    "BINARY_RIGHT_SHIFT",
+    "BINARY_LOGICAL_AND",
+    "BINARY_LOGICAL_OR",
+    "BINARY_EQUALS",
+    "BINARY_NOT_EQUALS"
 ]
 
+
 func _getMnemonic (opcode, argument) {
-    if (opcode == 1) {
-        return _binopLookup [argument]       
-    }
+    
     return _instructions [opcode]
 }
 

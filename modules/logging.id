@@ -35,13 +35,6 @@ class IodineDefaultLogger {
 
     func log (self, logLevel, *args) {
 
-        prefixes = {
-            LogLevel.DEBUG :    "DEBUG   ",
-            LogLevel.INFO :     "INFO    ",
-            LogLevel.WARNING :  "WARN    ",
-            LogLevel.ERROR :    "ERROR   ", 
-            LogLevel.CRITICAL : "CRITICAL"  
-        }
         if (logLevel > self._logLevel) {
             time = datetime.now ()
             print (self._formatStr.format (*args))

@@ -2,7 +2,7 @@ use Whirlpool from . _whirlpool
 
 
 _algorithms = {
-    "whirlpool" : Whirlpool()
+    "whirlpool" : Whirlpool
 }
 
 
@@ -13,9 +13,9 @@ _algorithms = {
  * @param value The value whose digest will be returned
  */
 func hash (algo, value) {
-    hashAlgol = _algorithms [algo]
+    hashAlgol = _algorithms [algo] (value)
 
-    hashAlgol.update (value)
+    #hashAlgol.update (value)
 
     return hashAlgol.hexdigest ()
 }
