@@ -85,7 +85,24 @@ namespace Iodine.Compiler
 
         public readonly Errors ErrorID;
 
+        public readonly Token Token;
+
         public readonly SourceLocation Location;
+
+
+        public bool HasToken {
+            get {
+                return Token != null;
+            }
+        }
+
+        public Error (Errors error, SourceLocation location, Token offendingToken, params object [] args)
+        {
+            Token = offendingToken;
+            Text = String.Format (errorStringLookup [(int)error], args);
+            Location = location;
+            ErrorID = error;
+        }
 
         public Error (Errors error, SourceLocation location, params object[] args)
         {

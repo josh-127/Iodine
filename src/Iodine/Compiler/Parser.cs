@@ -1902,11 +1902,17 @@ namespace Iodine.Compiler
             var offender = ReadToken ();
 
             if (offender != null) {
-                errorLog.Add (Errors.UnexpectedToken, offender.Location, offender.Value);
+                errorLog.Add (
+                    Errors.UnexpectedToken,
+                    offender,
+                    offender.Location,
+                    offender.Value
+                );
                 throw new SyntaxException (errorLog);
             }
 
             errorLog.Add (Errors.UnexpectedEndOfFile, Location);
+
             throw new EndOfFileException ();
         }
 
@@ -1921,7 +1927,13 @@ namespace Iodine.Compiler
             var offender = ReadToken ();
 
             if (offender != null) {
-                errorLog.Add (Errors.UnexpectedToken, offender.Location, offender.Value);
+                errorLog.Add (
+                    Errors.UnexpectedToken,
+                    offender,
+                    offender.Location,
+                    offender.Value
+                );
+
                 throw new SyntaxException (errorLog);
             }
 

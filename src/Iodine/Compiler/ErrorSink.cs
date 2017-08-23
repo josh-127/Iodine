@@ -75,6 +75,15 @@ namespace Iodine.Compiler
         }
 
 
+        public void Add (Errors error,
+                         Token offender,
+                         SourceLocation location,
+                         params object [] args)
+        {
+            errors.Add (new Error (error, location, offender, args));
+            ErrorCount++;
+        }
+
         /// <summary>
         /// clears all errors
         /// </summary>
