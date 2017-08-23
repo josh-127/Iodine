@@ -183,6 +183,7 @@ class HttpRequest {
     func HttpRequest (self) {
         self.parameters = {};
         self.postData = {};
+        self.method = ""
     }
 }
 
@@ -284,8 +285,8 @@ class BaseHttpServer {
             content = client.read (Int (n));
         }
         
-        given (requestType) {
-            when "GET" {
+        match requestType {
+            case "GET" {
                 path = reqArgs [1];
                 if (path.contains ("?")) {
                     path = path.substr (0, path.find ("?"));
@@ -294,7 +295,7 @@ class BaseHttpServer {
                 }
                 self.servePage (client, path, reqObj);
             }
-            when "POST" {
+            case "POST" {
                 if (reqArgs [0].contains ("?")) {
                     path = reqArgs [0].substr (0, reqArgs [0].find ("?"));
                     queryStr = reqArgs [0].substr (reqArgs [0].find ("?") + 1);
@@ -303,7 +304,9 @@ class BaseHttpServer {
                 reqObj.postData = parseQueryString (content);
                 self.servePage (client, reqArgs [1], reqObj);
             }
-            
+            case _ {
+                # Oh no! 
+            }
         }
     }
     
