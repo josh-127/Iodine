@@ -60,7 +60,6 @@ namespace Iodine.Runtime
 
         public readonly IodineContext Context;
 
-
         internal Instruction CurrentInstruction {
             get {
                 return instruction;

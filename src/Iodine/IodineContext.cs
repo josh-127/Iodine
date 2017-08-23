@@ -115,9 +115,9 @@ namespace Iodine.Compiler
             set;
         }
 
-        private Dictionary<string, IodineModule> moduleCache = new Dictionary<string, IodineModule> ();
+        Dictionary<string, IodineModule> moduleCache = new Dictionary<string, IodineModule> ();
 
-        private ModuleResolveHandler _resolveModule;
+        ModuleResolveHandler _resolveModule;
 
         /// <summary>
         /// Occurs before a module is resolved
@@ -246,6 +246,21 @@ namespace Iodine.Compiler
         }
 
         /// <summary>
+        /// Exposes an iodine module by name to this context's module resolver
+        /// </summary>
+        /// <param name="moduleName">Module name.</param>
+        /// <param name="module">Module.</param>
+        public void ExposeModule (string moduleName, IodineModule module)
+        {
+            ResolveModule += (name) => {
+                if (name == moduleName) {
+                    return module;
+                }
+                return null;
+            };
+        }
+
+        /// <summary>
         /// Creates a new Iodine context
         /// </summary>
         public static IodineContext Create ()
@@ -253,7 +268,7 @@ namespace Iodine.Compiler
             return new IodineContext ();
         }
 
-        private IodineModule LoadIodineModule (string name)
+        IodineModule LoadIodineModule(string name)
         {
             var modulePath = FindModuleSource (name);
 
@@ -276,42 +291,44 @@ namespace Iodine.Compiler
             return null;
         }
 
-        private IodineModule LoadExtensionModule (string name)
+        IodineModule LoadExtensionModule(string name)
         {
-            string extPath = FindExtension (name);
+            var extPath = FindExtension (name);
+
             if (extPath != null) {
                 return LoadLibrary (name, extPath);
             }
+
             return null;
         }
 
-        private static IodineModule LoadLibrary (string module, string dll)
+        static IodineModule LoadLibrary (string module, string dll)
         {
-            Assembly extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
+            var extension = Assembly.Load (AssemblyName.GetAssemblyName (dll));
 
             foreach (Type type in extension.GetTypes ()) {
                 if (type.IsDefined (typeof(IodineBuiltinModule), false)) {
-                    IodineBuiltinModule attr = (IodineBuiltinModule)type.GetCustomAttributes (
+                    var attr = (IodineBuiltinModule)type.GetCustomAttributes (
                         typeof(IodineBuiltinModule), false).First ();
                     if (attr.Name == module) {
-                        return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[]{ });
+                        return (IodineModule)type.GetConstructor (new Type[] { }).Invoke (new object[] { });
                     }
                 }
             }
             return null;
         }
 
-        private string FindModuleSource (string moduleName)
+        string FindModuleSource(string moduleName)
         {
             return FileFile (moduleName, ".id");
         }
 
-        private string FindExtension (string extensionName)
+        string FindExtension(string extensionName)
         {
             return FileFile (extensionName, ".dll");
         }
 
-        private string FileFile (string moduleName, string fileExtension)
+        string FileFile(string moduleName, string fileExtension)
         {
             /*
              * Iodine module search algorithm
@@ -327,15 +344,15 @@ namespace Iodine.Compiler
             if (VirtualMachine.Top == null || VirtualMachine.Top.Module.Location == null) {
                 return FindInSearchPath (moduleName, fileExtension);
             }
-            string moduleDir = Path.GetDirectoryName (VirtualMachine.Top.Module.Location);
+            var moduleDir = Path.GetDirectoryName (VirtualMachine.Top.Module.Location);
 
-            string file = FindInDirectory (moduleDir, moduleName, fileExtension);
+            var file = FindInDirectory (moduleDir, moduleName, fileExtension);
 
             if (file != null) {
                 return file;
             }
 
-            int pathCharCount = moduleDir.Count (
+            var pathCharCount = moduleDir.Count (
                 p => p == Path.PathSeparator ? true : false
             );
 
@@ -354,7 +371,7 @@ namespace Iodine.Compiler
             return FindInSearchPath (moduleName, fileExtension);
         }
 
-        private string FindInDirectory (
+        string FindInDirectory(
             string directory,
             string moduleName,
             string fileExtension)
@@ -389,10 +406,10 @@ namespace Iodine.Compiler
             return null;
         }
 
-        private string FindInSearchPath (string moduleName, string fileExtension)
+        string FindInSearchPath(string moduleName, string fileExtension)
         {
             foreach (string path in SearchPath) {
-                string file = FindInDirectory (path, moduleName, fileExtension);
+                var file = FindInDirectory (path, moduleName, fileExtension);
                 if (file != null) {
                     return file;
                 }
