@@ -35,7 +35,7 @@ namespace Iodine.Runtime
     {
         public readonly int NumericValue;
 
-        IodineEnum baseEnum;
+        readonly IodineEnum baseEnum;
 
         public IodineEnumValue (IodineEnum baseType, int value)
             : base (baseType)

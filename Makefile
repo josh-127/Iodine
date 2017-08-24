@@ -32,12 +32,13 @@ IODINE_NETMODS += ./modules/net/dns.id
 
 all:
 	mkdir -p $(OUTPUT_DIR)
-	cd ./src/Iodine && nuget restore
-	xbuild ./src/Iodine/Iodine.sln /p:Configuration=Release /p:DefineConstants="COMPILE_EXTRAS" /t:Build "/p:Mono=true;BaseConfiguration=Release"
+	nuget restore
+	xbuild ./Iodine.sln /p:Configuration=Release /p:DefineConstants="COMPILE_EXTRAS" /t:Build "/p:Mono=true;BaseConfiguration=Release"
+
 clean:
 	rm -rf bin
 	rm -rf src/bin
-	xbuild ./src/Iodine/Iodine.sln /t:Clean
+	xbuild ./Iodine.sln /t:Clean
 install:
 	mkdir -p $(PREFIX)/iodine/modules/net
 	mkdir -p $(PREFIX)/iodine/extensions
