@@ -90,6 +90,7 @@ namespace Iodine.Runtime
                 //Initializer.Invoke (vm, new IodineObject[] { });
             }
             var obj = new IodineObject (this);
+
             BindAttributes (obj);
 
             if (BaseClass != null) {

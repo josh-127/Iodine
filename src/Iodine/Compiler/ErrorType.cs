@@ -58,7 +58,7 @@ namespace Iodine.Compiler
     public sealed class Error
     {
 
-        static string[] errorStringLookup = new string[] {
+        static readonly string[] errorStringLookup = new string[] {
             "Internal error",
             "Illegal syntax",
             "Illegal pattern expression",
@@ -96,17 +96,20 @@ namespace Iodine.Compiler
             }
         }
 
-        public Error (Errors error, SourceLocation location, Token offendingToken, params object [] args)
+        public Error (Errors error,
+                      SourceLocation location,
+                      Token offendingToken,
+                      params object [] args)
         {
             Token = offendingToken;
-            Text = String.Format (errorStringLookup [(int)error], args);
+            Text = string.Format (errorStringLookup [(int)error], args);
             Location = location;
             ErrorID = error;
         }
 
         public Error (Errors error, SourceLocation location, params object[] args)
         {
-            Text = String.Format (errorStringLookup [(int)error], args);
+            Text = string.Format (errorStringLookup [(int)error], args);
             Location = location;
             ErrorID = error;
         }

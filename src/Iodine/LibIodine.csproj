@@ -243,6 +243,7 @@
     <Compile Include="Runtime\IodineIterableMixin.cs" />
     <Compile Include="Runtime\StandardModules\PsUtilsModule.cs" />
     <Compile Include="Util\MarshalUtil.cs" />
+    <Compile Include="Runtime\IodineEnumValue.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

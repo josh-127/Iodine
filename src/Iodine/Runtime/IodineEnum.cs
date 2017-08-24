@@ -27,8 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
-
 namespace Iodine.Runtime
 {
     public class IodineEnum : IodineTypeDefinition
@@ -42,12 +40,14 @@ namespace Iodine.Runtime
 
         public void AddItem (string name)
         {
-            SetAttribute (name, new IodineInteger (nextVal++));
+            var obj = new IodineObject (this);
+
+            SetAttribute (name, new IodineEnumValue (this, nextVal++));
         }
 
         public void AddItem (string name, int val)
         {
-            SetAttribute (name, new IodineInteger (val));
+            SetAttribute (name, new IodineEnumValue (this, val));
         }
 
         public override string ToString ()

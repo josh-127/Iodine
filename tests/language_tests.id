@@ -473,15 +473,11 @@ func run_tests (test) {
             test.it('should be created using the enum keyword', lambda() {
                 val = Test.BAD;
                 expect(val).to.equal(Test.BAD);
-                expect(val).to.be.an('Int');
+                expect(val).to.be.an(Test);
             });
 
             test.it('should assign each value a unique integer', lambda() {
                 expect(Test.BAD).not().to.equal(Test.OK);
-            });
-
-            test.it('should respect values assigned explicitly', lambda() {
-                expect(AnotherTest.BAD).to.equal(1);
             });
 
             test.it('should be able to work as a bitmask', lambda() {

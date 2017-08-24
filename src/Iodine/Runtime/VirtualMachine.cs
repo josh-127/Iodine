@@ -96,7 +96,9 @@ namespace Iodine.Runtime
         public string GetStackTrace ()
         {
             var accum = new StringBuilder ();
+
             StackFrame top = Top;
+
             while (top != null) {
                 accum.AppendFormat (" at {0} (Module: {1}, Line: {2})\n",
                     top.Method != null ? top.Method.Name : "",
@@ -921,6 +923,7 @@ namespace Iodine.Runtime
                         var parameters = top.Pop () as IodineTuple;
 
                         var defaultValues = new IodineObject [] { };
+
                         int defaultValuesStart = 0;
 
                         if (flags.HasFlag (MethodFlags.HasDefaultParameters)) {
@@ -974,11 +977,11 @@ namespace Iodine.Runtime
             var handler = PopCurrentExceptionHandler ();
 
             if (handler == null) { // No exception handler
-                                   /*
-                                    * The program has gone haywire and we ARE going to crash, however
-                                    * we must attempt to properly dispose any objects created inside 
-                                    * Iodine's with statement
-                                    */
+               /*
+                * The program has gone haywire and we ARE going to crash, however
+                * we must attempt to properly dispose any objects created inside 
+                * Iodine's with statement
+                */
                 StackFrame top = Top;
 
                 while (top != null) {
