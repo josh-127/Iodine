@@ -219,6 +219,7 @@ namespace Iodine.Compiler
             foreach (string capture in extractExpression.Captures) {
                 symbolTable.AddSymbol (capture);
             }
+
         }
 
         public override void Accept (CompilationUnit ast)
@@ -239,6 +240,48 @@ namespace Iodine.Compiler
         public override void Accept (LambdaExpression lambda)
         {
             lambda.VisitChildren (this);
+        }
+
+        public override void Accept (MatchExpression match)
+        {
+            bool hasCatchall = false;
+            bool hasTruePattern = false;
+            bool hasFalsePattern = false;
+
+            foreach (AstNode node in match.MatchCases) {
+                var matchCase = node as CaseExpression;
+
+
+                if (matchCase != null) {
+                    var nameExpr = matchCase.Pattern as NameExpression;
+
+                    if (nameExpr != null && nameExpr.Value == "_") {
+                        hasCatchall = true;
+                    }
+
+                    var trueExpr = matchCase.Pattern as TrueExpression;
+
+                    if (trueExpr != null) {
+                        hasTruePattern = true;
+                    }
+
+                    var falseExpr = matchCase.Pattern as FalseExpression;
+
+
+                    if (falseExpr != null) {
+                        hasFalsePattern = true;
+                    }
+                }
+            }
+
+            bool isLegal = hasCatchall || (hasTruePattern && hasFalsePattern);
+
+            if (!isLegal) {
+                errorLog.Add (Errors.MatchDoesNotAccountForAllConditions,
+                              match.Location);
+            }
+
+            base.Accept (match);
         }
     }
 }

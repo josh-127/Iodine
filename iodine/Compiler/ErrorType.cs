@@ -53,6 +53,7 @@ namespace Iodine.Compiler
         RecordCantHaveVargs = 0x11,
         RecordCantHaveKwargs = 0x12,
         RecordCantHaveSelf = 0x13,
+        MatchDoesNotAccountForAllConditions = 0x14
     }
 
     public sealed class Error
@@ -78,7 +79,8 @@ namespace Iodine.Compiler
             "Integer value exceeds the maximum bounds of a 64 bit integer",
             "Record cannot have variable length arguments!",
             "Record cannot have keyword aguments!",
-            "Self keyword invalid in record field list!"
+            "Self keyword invalid in record field list!",
+            "match expression does not account for all possible values"
         };
 
         public readonly string Text;

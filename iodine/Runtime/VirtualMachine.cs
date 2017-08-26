@@ -900,7 +900,7 @@ namespace Iodine.Runtime
                         var obj = top.Pop ();
                         var type = top.Pop ();
 
-                        foreach (KeyValuePair<string, IodineObject> attr in obj.Attributes) {
+                        foreach (var attr in obj.Attributes) {
                             type.SetAttribute (attr.Key, attr.Value);
                         }
                         break;
@@ -909,7 +909,7 @@ namespace Iodine.Runtime
                         var type = top.Pop ();
                         var mixin = instruction.ArgumentObject as IodineMixin;
 
-                        foreach (KeyValuePair<string, IodineObject> attr in mixin.Attributes) {
+                        foreach (var attr in mixin.Attributes) {
                             type.SetAttribute (attr.Key, attr.Value);
                         }
                         break;
@@ -987,6 +987,7 @@ namespace Iodine.Runtime
                 while (top != null) {
                     while (top.DisposableObjects.Count > 0) {
                         var obj = top.DisposableObjects.Pop ();
+
                         try {
                             obj.Exit (this); // Call __exit__
                         } catch (UnhandledIodineExceptionException) {
@@ -1002,7 +1003,9 @@ namespace Iodine.Runtime
             ex.SetAttribute ("stacktrace", new IodineString (GetStackTrace ()));
 
             UnwindStack (frameCount - handler.Frame);
+
             lastException = ex;
+
             Top.InstructionPointer = handler.InstructionPointer;
         }
 
@@ -1018,6 +1021,7 @@ namespace Iodine.Runtime
         void Trace (TraceType type, StackFrame frame, SourceLocation location)
         {
             pauseVirtualMachine.WaitOne ();
+
             if (traceCallback != null && traceCallback (type, this, frame, location)) {
                 pauseVirtualMachine.Reset ();
             }
@@ -1030,11 +1034,13 @@ namespace Iodine.Runtime
         void UnwindStack (int numFrames)
         {
             for (int i = 0; i < numFrames; i++) {
-                var frame = this.frames.Pop ();
+                var frame = frames.Pop ();
                 frame.AbortExecution = true;
             }
+
             frameCount -= numFrames;
-            Top = this.frames.Peek ();
+
+            Top = frames.Peek ();
         }
 
         IodineExceptionHandler PopCurrentExceptionHandler ()
