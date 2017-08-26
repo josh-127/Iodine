@@ -49,5 +49,9 @@ install:
 	cp -f $(IODINE_NETMODS) $(PREFIX)/iodine/modules/net
 	echo "#! /bin/bash" > /bin/iodine
 	echo "/usr/bin/mono $(PREFIX)/iodine/iodine.exe \"\$$@\"" >> /usr/bin/iodine
+	grep -v "IODINE" /etc/environment | cat > /tmp/environment
+	mv /tmp/environment /etc/environment
+	echo "IODINE_HOME=\"$(PREFIX)/iodine\"" >> /etc/environment
+	echo "IODINE_MODULES=\"$(PREFIX)/iodine/modules\"" >> /etc/environment
 	chmod +x /bin/iodine
 
