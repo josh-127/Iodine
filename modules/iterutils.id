@@ -138,6 +138,7 @@ func sum (iterable, **kwargs) {
     for (key in kwargs) {
         match (key) {
             case "start" => result = kwargs [key]
+            case _ { }
         }
     }
     for (item in iterable) {
@@ -195,6 +196,7 @@ func reduce (iterable: Iterable, callback, **kwargs) {
     for (key in kwargs) {
         match (key) {
             case "start" => result = kwargs [key]
+            case _ { }
         }
     }
     for (item in iterable) {
