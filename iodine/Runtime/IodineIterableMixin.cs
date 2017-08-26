@@ -46,7 +46,9 @@ namespace Iodine.Runtime
         {
             obj.SetAttribute ("each", new BuiltinMethodCallback (Each, obj));
             obj.SetAttribute ("filter", new BuiltinMethodCallback (Filter, obj));
+            obj.SetAttribute ("first", new BuiltinMethodCallback (First, obj));
             obj.SetAttribute ("map", new BuiltinMethodCallback (Map, obj));
+            obj.SetAttribute ("last", new BuiltinMethodCallback (Last, obj));
             obj.SetAttribute ("reduce", new BuiltinMethodCallback (Reduce, obj));
         }
 
@@ -105,6 +107,30 @@ namespace Iodine.Runtime
         }
 
         [BuiltinDocString (
+            "Returns the first item in this collection.",
+            "@param value The default value to use if this collection is empty"
+        )]
+        static IodineObject First (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        {
+
+            IodineObject defaultObject = IodineNull.Instance;
+
+            if (args.Length > 0) {
+                defaultObject = args [0];
+            }
+
+            var iterator = self.GetIterator (vm);
+
+            iterator.IterReset (vm);
+
+            if (iterator.IterMoveNext (vm)) {
+                return iterator.IterGetCurrent (vm);
+            }
+
+            return defaultObject;
+        }
+
+        [BuiltinDocString (
             "Iterates over the specified iterable, passing the result of each iteration to the specified ",
             "callable. The result of the specified callable is added to a list that is returned to the caller.",
             "@param callable The callable to be used for mapping."
@@ -127,6 +153,30 @@ namespace Iodine.Runtime
                 list.Add (func.Invoke (vm, new IodineObject [] { o }));
             }
             return list;
+        }
+
+        [BuiltinDocString (
+            "Returns the last item in this collection.",
+            "@param value The default value to use if this collection is empty"
+        )]
+        static IodineObject Last (VirtualMachine vm, IodineObject self, IodineObject [] args)
+        {
+
+            IodineObject returnObject = IodineNull.Instance;
+
+            if (args.Length > 0) {
+                returnObject = args [0];
+            }
+
+            var iterator = self.GetIterator (vm);
+
+            iterator.IterReset (vm);
+
+            while (iterator.IterMoveNext (vm)) {
+                returnObject = iterator.IterGetCurrent (vm);
+            }
+
+            return returnObject;
         }
 
         [BuiltinDocString (

@@ -708,6 +708,27 @@ namespace Iodine.Runtime
 
                         break;
                     }
+                case Opcode.RangeCheck: {
+                        var range = top.Pop () as IodineRange;
+                        var matchee = top.Pop ();
+
+
+                        long longVal;
+
+
+                        if (!MarshalUtil.MarshalAsInt64 (matchee, out longVal) ||
+                            range == null) {
+                            top.Stack.Push (IodineBool.False);
+                            break;
+                        }
+
+                        top.Stack.Push (IodineBool.Create (
+                            range.LowerBound <= longVal &&
+                            range.UpperBound >= longVal
+                        ));
+
+                        break;
+                    }
                 case Opcode.MatchPattern: {
                         var collection = top.Pop ().GetIterator (this);
 
@@ -730,6 +751,23 @@ namespace Iodine.Runtime
                                     top.Push (IodineBool.False);
                                     break;
                                 }
+                            } else if (items [index] is IodineRange) {
+                                var range = items [index] as IodineRange;
+
+                                long longValue;
+
+                                if (MarshalUtil.MarshalAsInt64 (o, out longValue)) {
+                                    if (longValue > range.UpperBound ||
+                                        longValue < range.LowerBound) {
+
+                                        top.Push (IodineBool.False);
+                                        break;
+                                    }
+                                } else {
+                                    top.Push (IodineBool.False);
+                                    break;
+                                }
+
                             } else {
                                 if (!o.Equals (items [index])) {
                                     top.Push (IodineBool.False);

@@ -117,7 +117,8 @@ namespace Iodine.Runtime
         BoolAnd = 0x52,
         BoolOr = 0x53,
         Equals = 0x54,
-        NotEquals = 0x55
+        NotEquals = 0x55,
+        RangeCheck = 0x56
     }
 }
 

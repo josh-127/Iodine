@@ -203,6 +203,7 @@ namespace Iodine.Runtime
             }
 
             string name = path.Value;
+
             var fullPath = Path.GetFullPath (name);
 
             if (args.Length == 1) {

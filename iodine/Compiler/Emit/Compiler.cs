@@ -1019,7 +1019,12 @@ namespace Iodine.Compiler
              * JUMP         skipAfterThought
              */
 
-            Context.CurrentMethod.EmitInstruction (forStmt.Location, Opcode.Jump, skipAfterThought);
+            Context.CurrentMethod.EmitInstruction (
+                forStmt.Location,
+                Opcode.Jump,
+                skipAfterThought
+            );
+
             Context.CurrentMethod.MarkLabelPosition (forLabel);
 
             forStmt.AfterThought.Visit (this);
@@ -1799,8 +1804,12 @@ namespace Iodine.Compiler
         public override void Accept (MatchExpression match)
         {
             var value = match.Expression;
+
             value.Visit (this);
+
             var temporary = CreateTemporary ();
+
+
             Context.CurrentMethod.EmitInstruction (match.Location, Opcode.StoreLocal, temporary);
 
             var nextLabel = Context.CurrentMethod.CreateLabel ();
@@ -1811,6 +1820,7 @@ namespace Iodine.Compiler
                     Context.CurrentMethod.MarkLabelPosition (nextLabel);
                     nextLabel = Context.CurrentMethod.CreateLabel ();
                 }
+
                 var clause = match.MatchCases [i] as CaseExpression;
 
                 CreatePatternContext (temporary);
@@ -1821,22 +1831,37 @@ namespace Iodine.Compiler
 
                 DestroyContext ();
 
-                Context.CurrentMethod.EmitInstruction (match.Location, Opcode.JumpIfFalse, nextLabel);
+                Context.CurrentMethod.EmitInstruction (
+                    match.Location,
+                    Opcode.JumpIfFalse,
+                    nextLabel
+                );
 
                 if (clause.Condition != null) {
                     clause.Condition.Visit (this);
-                    Context.CurrentMethod.EmitInstruction (match.Location, Opcode.JumpIfFalse, nextLabel);
+                    Context.CurrentMethod.EmitInstruction (
+                        match.Location,
+                        Opcode.JumpIfFalse,
+                        nextLabel
+                    );
                 }
 
                 clause.Value.Visit (this);
 
                 if (clause.IsStatement) {
-                    Context.CurrentMethod.EmitInstruction (match.Location, Opcode.LoadNull);
+                    Context.CurrentMethod.EmitInstruction (
+                        match.Location,
+                        Opcode.LoadNull
+                    );
                 }
 
                 Context.SymbolTable.ExitScope ();
 
-                Context.CurrentMethod.EmitInstruction (match.Location, Opcode.Jump, endLabel);
+                Context.CurrentMethod.EmitInstruction (
+                    match.Location,
+                    Opcode.Jump,
+                    endLabel
+                );
             }
             Context.CurrentMethod.MarkLabelPosition (endLabel);
         }
@@ -1845,7 +1870,64 @@ namespace Iodine.Compiler
         {
             var shortCircuitTrueLabel = Context.CurrentMethod.CreateLabel ();
             var shortCircuitFalseLabel = Context.CurrentMethod.CreateLabel ();
+
             var endLabel = Context.CurrentMethod.CreateLabel ();
+
+
+            if (expression.Operation == BinaryOperation.HalfRange) {
+
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadLocal,
+                    Context.PatternTemporary
+                );
+
+                CreateContext (Context.CurrentMethod);
+
+                expression.Right.Visit (this);
+                expression.Left.Visit (this);
+
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.HalfRange
+                );
+
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.RangeCheck
+                );
+
+                DestroyContext ();
+
+                return;
+            }
+
+
+            if (expression.Operation == BinaryOperation.ClosedRange) {
+
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadLocal,
+                    Context.PatternTemporary
+                );
+
+                CreateContext (Context.CurrentMethod);
+
+                expression.Right.Visit (this);
+                expression.Left.Visit (this);
+
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.ClosedRange
+                );
+
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.RangeCheck
+                );
+
+                DestroyContext ();
+
+                return;
+            }
 
             expression.Left.Visit (this);
 
@@ -1858,22 +1940,37 @@ namespace Iodine.Compiler
                     expression.Location,
                     Opcode.Dup
                 );
+
                 Context.CurrentMethod.EmitInstruction (expression.Location,
                     Opcode.JumpIfFalse,
                     shortCircuitFalseLabel
                 );
+                
                 expression.Right.Visit (this);
-                Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.BoolAnd);
+
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.BoolAnd
+                );
                 break;
             case BinaryOperation.Or:
-                Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Dup);
-                Context.CurrentMethod.EmitInstruction (expression.Location,
+
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.Dup
+                );
+
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
                     Opcode.JumpIfTrue,
                     shortCircuitTrueLabel
                 );
                 expression.Right.Visit (this);
 
-                Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.BoolOr);
+                Context.CurrentMethod.EmitInstruction (
+                    expression.Location,
+                    Opcode.BoolOr
+                );
                 break;
             default:
                 System.Console.WriteLine ("Missing operator! Yikes");
@@ -1881,14 +1978,42 @@ namespace Iodine.Compiler
             }
 
 
-            Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Jump, endLabel);
+            Context.CurrentMethod.EmitInstruction (
+                expression.Location,
+                Opcode.Jump,
+                endLabel
+            );
+
             Context.CurrentMethod.MarkLabelPosition (shortCircuitTrueLabel);
-            Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Pop);
-            Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.LoadTrue);
-            Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Jump, endLabel);
+
+            Context.CurrentMethod.EmitInstruction (
+                expression.Location,
+                Opcode.Pop
+            );
+
+            Context.CurrentMethod.EmitInstruction (
+                expression.Location,
+                Opcode.LoadTrue
+            );
+
+            Context.CurrentMethod.EmitInstruction (
+                expression.Location,
+                Opcode.Jump,
+                endLabel
+            );
+
             Context.CurrentMethod.MarkLabelPosition (shortCircuitFalseLabel);
-            Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.Pop);
-            Context.CurrentMethod.EmitInstruction (expression.Location, Opcode.LoadFalse);
+
+            Context.CurrentMethod.EmitInstruction (
+                expression.Location,
+                Opcode.Pop
+            );
+
+            Context.CurrentMethod.EmitInstruction (
+                expression.Location,
+                Opcode.LoadFalse
+            );
+
             Context.CurrentMethod.MarkLabelPosition (endLabel);
         }
 

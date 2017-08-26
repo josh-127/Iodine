@@ -71,17 +71,17 @@ namespace Iodine.Runtime
             }
         }
 
-        readonly long min;
-        readonly long end;
+        public readonly long LowerBound;
+        public readonly long UpperBound;
         readonly long step;
 
         public IodineRange (long min, long max, long step)
             : base (TypeDefinition)
         {
-            end = max;
+            UpperBound = max;
 
             this.step = step;
-            this.min = min;
+            this.LowerBound = min;
 
 
             IodineIterableMixin.ApplyMixin (this);
@@ -94,15 +94,15 @@ namespace Iodine.Runtime
 
         public override IodineObject GetIterator (VirtualMachine vm)
         {
-            return new RangeIterator (min, end, step);
+            return new RangeIterator (LowerBound, UpperBound, step);
         }
 
         public override string ToString ()
         {
             if (step == 1) {
-                return string.Format ("{0} .. {1}", min, end);
+                return string.Format ("{0} .. {1}", LowerBound, UpperBound);
             }
-            return string.Format ("range ({0}, {1}, {2})", min, end, step);
+            return string.Format ("range ({0}, {1}, {2})", LowerBound, UpperBound, step);
         }
     }
 }

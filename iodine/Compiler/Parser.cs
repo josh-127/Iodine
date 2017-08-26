@@ -1425,8 +1425,10 @@ namespace Iodine.Compiler
 
         private AstNode ParseMatchExpression ()
         {
+            var matchLocation = Location;
+
             if (Accept (TokenClass.Keyword, "match")) {
-                var expr = new MatchExpression (Location, ParseExpression ());
+                var expr = new MatchExpression (matchLocation, ParseExpression ());
                 Expect (TokenClass.OpenBrace);
                 while (Accept (TokenClass.Keyword, "case")) {
                     AstNode condition = null;
@@ -1501,7 +1503,7 @@ namespace Iodine.Compiler
 
         private AstNode ParsePatternExtractor ()
         {
-            var ret = ParsePatternTerm ();
+            var ret = ParsePatternRange ();
 
             if (Accept (TokenClass.OpenParan)) {
                 ret = new PatternExtractExpression (Location, ret);
@@ -1520,6 +1522,38 @@ namespace Iodine.Compiler
             }
 
             return ret;
+        }
+
+        private AstNode ParsePatternRange ()
+        {
+            var expr = ParsePatternClosedRange ();
+
+            while (Match (TokenClass.Operator, "..")) {
+                Accept (TokenClass.Operator);
+                expr = new PatternExpression (
+                    Location,
+                    BinaryOperation.HalfRange,
+                    expr,
+                    ParsePatternClosedRange ()
+                );
+            }
+            return expr;
+        }
+
+        private AstNode ParsePatternClosedRange ()
+        {
+            var expr = ParsePatternTerm ();
+
+            while (Match (TokenClass.Operator, "...")) {
+                Accept (TokenClass.Operator);
+                expr = new PatternExpression (
+                    Location,
+                    BinaryOperation.ClosedRange,
+                    expr,
+                    ParsePatternTerm ()
+                );
+            }
+            return expr;
         }
 
         private AstNode ParsePatternTerm ()
@@ -1552,7 +1586,10 @@ namespace Iodine.Compiler
                 );
 
                 if (Accept (TokenClass.Operator, "=>")) {
-                    decl.AddStatement (new ReturnStatement (Location, ParseExpression ()));
+                    decl.AddStatement (new ReturnStatement (
+                        Location,
+                        ParseExpression ()
+                    ));
                 } else {
                     decl.AddStatement (ParseStatement ());
                 }
