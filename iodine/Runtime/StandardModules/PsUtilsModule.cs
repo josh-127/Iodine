@@ -52,6 +52,8 @@ namespace Iodine.Runtime
                 public ProcTypeDef ()
                     : base ("Process")
                 {
+                    SetDocumentation ("An active process",
+                                      "Note: This class cannot be instantiated directly");
                     BindAttributes (this);
                 }
 
@@ -103,6 +105,8 @@ namespace Iodine.Runtime
                 public SubProcessTypeDef ()
                     : base ("Subprocess")
                 {
+                    SetDocumentation ("A subprocess spawned from ```psutils.popen```",
+                                      "**Note**: This class cannot be instantiated directly");
                     BindAttributes (this);
                 }
 
@@ -119,8 +123,8 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString (
-                    "@param *args" +
-                    "Writes each string passed in *args to the process's standard input stream"
+                    "Writes each string passed in *args to the process's standard input stream",
+                    "@param *args Arguments to be written to this process's standard input"
                 )]
                 IodineObject Write (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
@@ -145,9 +149,8 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString (
-                    "@param *args.",
-                    "Writes each string passed in *args to the process's standard input stream, and ",
-                    "appends a new line."
+                    "Writes each string passed in *args to the process's standard input stream and appends a new line",
+                    "@param *args Arguments to be written to this process's standard input"
                 )]
                 IodineObject Writeln (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
@@ -292,6 +295,8 @@ namespace Iodine.Runtime
             SetAttribute ("spawn", new BuiltinMethodCallback (Spawn, this));
             SetAttribute ("popen", new BuiltinMethodCallback (Popen, this));
             SetAttribute ("proctable", new InternalIodineProperty (GetProcList, null));
+            SetAttribute ("Subprocess", IodineSubprocess.TypeDef);
+            SetAttribute ("Process", IodineProc.TypeDef);
         }
 
         [BuiltinDocString ("Returns a list of processes running on the machine.")]

@@ -41,6 +41,8 @@ namespace Iodine.Runtime
             public StringBuilderTypeDef ()
                 : base ("StringBuffer")
             {
+                BindAttributes (this);
+
                 SetDocumentation (
                     "A mutable string of UTF-16 characters"
                 );

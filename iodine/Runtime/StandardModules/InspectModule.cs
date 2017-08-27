@@ -28,14 +28,12 @@
 **/
 
 using System;
-using System.Linq;
-using System.Security.Cryptography;
 using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
     [BuiltinDocString (
-        "Provides functions for inspecting live objects."
+        "Provides functions for inspecting and manipulating live objects."
     )]
     [IodineBuiltinModule ("inspect")]
     public class ReflectionModule : IodineModule

@@ -43,6 +43,9 @@ namespace Iodine.Runtime
             public BigIntTypeDef ()
                 : base ("BigInt")
             {
+                SetDocumentation (
+                    "An arbitrary size integer"
+                );
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)

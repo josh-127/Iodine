@@ -49,6 +49,10 @@ namespace Iodine.Runtime
                 : base ("File")
             {
                 BindAttributes (this);
+
+                SetDocumentation (
+                    "An object supporting read or write operations (Typically a file)"
+                );
             }
 
             public override IodineObject BindAttributes (IodineObject newFile)

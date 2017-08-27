@@ -35,6 +35,9 @@ using Iodine.Compiler;
 
 namespace Iodine.Runtime
 {
+    [BuiltinDocString (
+        "Provides access to iodine builtin functions and classes."
+    )]
     [IodineBuiltinModule ("__builtins__")]
     public class BuiltinsModule : IodineModule
     {

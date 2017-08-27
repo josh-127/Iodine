@@ -45,6 +45,8 @@ namespace Iodine.Runtime
             public ListTypeDef ()
                 : base ("List")
             {
+                BindAttributes (this);
+
                 SetDocumentation (
                     "A mutable sequence of objects"
                 );

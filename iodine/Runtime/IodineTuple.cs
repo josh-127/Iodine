@@ -37,11 +37,15 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition TypeDefinition = new TupleTypeDef ();
 
-        class TupleTypeDef : IodineTypeDefinition
+        sealed class TupleTypeDef : IodineTypeDefinition
         {
             public TupleTypeDef ()
                 : base ("Tuple")
             {
+                BindAttributes (this);
+
+                SetDocumentation ("An immutable collection of objects");
+
             }
 
             public override IodineObject BindAttributes (IodineObject obj)

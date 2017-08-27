@@ -44,6 +44,16 @@ namespace Iodine.Runtime
             NumericValue = value;
         }
 
+        public override int GetHashCode ()
+        {
+            return NumericValue.GetHashCode ();
+        }
+
+        public override bool Equals (object obj)
+        {
+            return Equals (obj as IodineObject);
+        }
+
         public override bool Equals (IodineObject obj)
         {
             var value = obj as IodineEnumValue;

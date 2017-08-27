@@ -70,8 +70,8 @@ namespace Iodine.Runtime
         [BuiltinDocString (
             "Executes program, waiting for it to exit and returning its exit code.",
             "@param executable The executable to run.",
-            "@param [args] Command line arguments.",
-            "@param [useShell] Should we use a shell."
+            "@optional args Command line arguments.",
+            "@optional useShell Should the OS shell be used to invoke the executable."
         )]
         IodineObject Call (VirtualMachine vm, IodineObject self, IodineObject [] args)
         {
@@ -83,6 +83,7 @@ namespace Iodine.Runtime
             var program = args [0] as IodineString;
 
             string arguments = "";
+
             bool useShell = false;
 
             if (program == null) {

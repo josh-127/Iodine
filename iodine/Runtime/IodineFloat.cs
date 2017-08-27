@@ -42,6 +42,7 @@ namespace Iodine.Runtime
             public FloatTypeDef ()
                 : base ("Float")
             {
+                SetDocumentation ("A double precision floating point");
             }
 
             public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)

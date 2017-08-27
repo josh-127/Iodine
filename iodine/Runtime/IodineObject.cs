@@ -802,7 +802,7 @@ namespace Iodine.Runtime
 
         public override string ToString ()
         {
-            return TypeDef.Name;
+            return string.Format ("<{0}:0x{1:x8}>", TypeDef.Name, Id);
         }
     }
 }

@@ -35,7 +35,7 @@ using System.Collections.Generic;
 namespace Iodine.Runtime
 {
     [BuiltinDocString (
-        "Provides functions for converting Iodine types to C structs."
+        "Provides functions for converting iodine types to C structs."
     )]
     [IodineBuiltinModule ("struct")]
     public class StructModule : IodineModule

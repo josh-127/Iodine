@@ -38,15 +38,19 @@ namespace Iodine.Runtime
     {
         public static readonly IodineTypeDefinition TypeDefinition = new IntTypeDef ();
 
-        class IntTypeDef : IodineTypeDefinition
+        sealed class IntTypeDef : IodineTypeDefinition
         {
             public IntTypeDef ()
                 : base ("Int")
             {
+                BindAttributes (this);
+
+                SetDocumentation ("A 64 bit signed integer");
             }
 
             public override IodineObject BindAttributes (IodineObject obj)
             {
+                SetAttribute ("times", new BuiltinMethodCallback (Times, obj));
                 return base.BindAttributes (obj);
             }
 
@@ -79,6 +83,35 @@ namespace Iodine.Runtime
                 } else {
                     return new IodineInteger (value);
                 }
+            }
+
+            [BuiltinDocString (
+                "Invokes the supplied callable n times, with n being the value of this integer",
+                "@param callable The callable to invoke"
+            )]
+            static IodineObject Times (VirtualMachine vm, IodineObject self, IodineObject [] args)
+            {
+                var selfObj = self as IodineInteger;
+
+                if (selfObj == null) {
+                    vm.RaiseException (new IodineFunctionInvocationException ());
+                    return null;
+                }
+
+
+                if (args.Length == 0) {
+                    vm.RaiseException (new IodineArgumentException (1));
+                    return null;
+                }
+
+                var func = args [0];
+                var emptyArgs = new IodineObject [] { };
+
+                for (int i = 0; i < selfObj.Value; i++) {
+                    func.Invoke (vm, emptyArgs);
+                }
+
+                return null;
             }
 
         }
