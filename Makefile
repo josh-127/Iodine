@@ -19,6 +19,7 @@ IODINE_MODS += ./modules/configfile.id
 IODINE_MODS += ./modules/dis.id
 IODINE_MODS += ./modules/events.id
 IODINE_MODS += ./modules/ints.id
+IODINE_MODS += ./modules/iododoc.id
 IODINE_MODS += ./modules/iterutils.id
 IODINE_MODS += ./modules/functools.id
 IODINE_MODS += ./modules/json.id
