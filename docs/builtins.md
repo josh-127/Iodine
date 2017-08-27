@@ -1,40 +1,82 @@
-### class ```BigInt``` ()
+## ```__builtins__``` module
+
+Provides access to iodine builtins functions and classes.
+### Functions
+| Name          | Arguments         | Description |
+| ----------------------- | ----------------- | ----------- |
+|chr| num |Returns the character representation of a specified integer.|
+|compile| source |Compiles a string of iodine code, returning a callable object.|
+|enumerate| iterable |Maps an iterable object to a list, with each element in the list being a tuple containing an index and the object associated with that index in the supplied iterable object.|
+|eval| source |Evaluates a string of Iodine source code.|
+|filter| iterable, callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
+|globals| **None** |Returns a dictionary of all global variables.|
+|hex| obj |Returns hexadecimal representation of a specified object,supports both Bytes and Str objects.|
+|id| obj |Returns a unique identifier for the supplied argument. |
+|input| prompt |Reads from the standard input stream. Optionally displays the specified prompt.|
+|invoke| callable, dict |Invokes the specified callable under a new Iodine context.Optionally uses the specified dict as the instance's global symbol table.|
+|len| countable |Returns the length of the specified object. If the object does not implement __len__, an AttributeNotFoundException is raised.|
+|loadmodule| name |Loads an iodine module.|
+|locals| **None** |Returns a dictionary of all local variables.|
+|map| iterable, callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. The result of the specified callable is added to a list that is returned to the caller.|
+|open| file, mode |Opens up a file using the specified mode, returning a new stream object.<br><strong>Supported modes</strong><br><li> r - Read<li> w - Write<li> a - Append<li> b - Binary |
+|ord| char |Returns the numeric representation of a character.|
+|print| *object |Prints a string to the standard output streamand appends a newline character.|
+|property| getter, setter |Returns a new Property object.|
+|range| start, end, step |Returns an iterable sequence containing [n] items, starting with 0 and incrementing by 1, until [n] is reached.|
+|reduce| iterable, callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
+|reload| module |Reloads an iodine module.|
+|repr| object |Returns a string representation of the specified object, which is obtained by calling its __repr__ function. If the object does not implement the __repr__ function, its default string representation is returned.|
+|require| **None** |Internal function used by the 'use' statement, do not call this directly.|
+|sort| iterable, [key] |Returns an sorted tuple created from an iterable sequence. An optional function can be provided that can be used to sort the iterable sequence.|
+|sum| iterable, default |Reduces the iterable by adding each item together, starting with [default].|
+|type| object |Returns the type definition of the specified object.|
+|typecast| type, object |Performs a sanity check, verifying that the specified [object] is an instance of [type]. If the test fails, a TypeCastException is raised.|
+|zip| iterables |Iterates over each iterable in [iterables], appending every item to a tuple, that is then appended to a list which is returned to the caller.|
+
+#### class ```BigInt``` ()
 ___
 An arbitrary size integer
 
-| Functions Name          | Arguments         | Description |
-| ----------------------- | ----------------- | ----------- |
 
-### class ```Dict``` ([values])
+#### class ```Dict``` ([values])
 ___
 A dictionary containing a list of unique keys and an associated value
-
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
-|clear|  |Clears the dictionary, removing all items.|
+|clear| **None** |Clears the dictionary, removing all items.|
 |get| key |Returns the value specified by [key], raising a KeyNotFound exception if the given key does not exist.|
 |remove| key |Removes a specified entry from the dictionary, raising a KeyNotFound exception if the given key does not exist.|
 |contains| key |Tests to see if the dictionary contains a key, returning true if it does.|
 |set| key, value |Sets a key to a specified value, if the key does not exist, it will be created.|
 
-### class ```File``` ()
+
+#### class ```File``` ()
 ___
 An object supporting read or write operations (Typically a file)
-
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
-|readln|  |Reads a single line from the underlying stream.|
+|readln| **None** |Reads a single line from the underlying stream.|
 |writeln| obj |Writes an object to the stream, appending a new line character to the end of the file.|
 |write| obj |Writes an object to the underlying stream.|
-|readall|  |Reads all text.|
+|readall| **None** |Reads all text.|
 |read| n |Reads [n] bytes from the underlying stream.|
-|close|  |Closes the stream.|
-|flush|  |Flushes the underlying stream.|
+|close| **None** |Closes the stream.|
+|flush| **None** |Flushes the underlying stream.|
 
-### class ```List``` ()
+
+#### class ```Float``` ()
+___
+A double precision floating point
+
+
+#### class ```Int``` ()
+___
+A 64 bit signed integer
+
+
+#### class ```List``` ()
 ___
 A mutable sequence of objects
-
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |reduce| callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
@@ -51,59 +93,59 @@ A mutable sequence of objects
 |removeat| index |Removes an item at a specified index.|
 |index| item |Returns the index of the first occurance of the supplied argument, raising a KeyNotFound exception  if the supplied argument cannot be found.|
 |first| value |Returns the first item in this collection.|
-|clear|  |Clears the list, removing all items from it.|
+|clear| **None** |Clears the list, removing all items from it.|
 |rindex| item |Returns the index of the last occurance of the supplied argument, raising a KeyNotFound exception  if the supplied argument cannot be found.|
 |appendrange| iterable |Iterates through the supplied arguments, adding each item to the end of the list.|
 |discard| item |Removes an item from the list, returning true if success, otherwise, false.|
 
-### class ```Str``` ()
+
+#### class ```Str``` ()
 ___
 An immutable string of UTF-16 characters
-
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
-|isalpha|  |Returns true if all characters in this string are letters.|
+|isalpha| **None** |Returns true if all characters in this string are letters.|
 |replace| str1, str2 |Returns a new string where call occurances of [str1] have been replaced with [str2].|
 |index| substring |Returns the index of the first occurance of a string within this string. Raises KeyNotFound exception if the specified substring does not exist.|
-|isalnum|  |Returns true if all characters in this string are letters or digits.|
-|issymbol|  |Returns true if all characters in this string are symbols.|
+|isalnum| **None** |Returns true if all characters in this string are letters or digits.|
+|issymbol| **None** |Returns true if all characters in this string are symbols.|
 |join| *args |Joins all arguments together, returning a string where this string has been placed between all supplied arguments|
 |startswith| value |Returns true if the string starts with the specified value.|
 |rindex| substring |Returns the index of the last occurance of a string within this string. Raises KeyNotFound exception if the specified substring does not exist.|
-|trim|  |Returns a string where all leading whitespace characters have been removed.|
+|trim| **None** |Returns a string where all leading whitespace characters have been removed.|
 |map| callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. The result of the specified callable is added to a list that is returned to the caller.|
 |endswith| value |Returns true if the string ends with the specified value.|
 |each| func |Iterates through each element in the collection.|
 |substr| start, [end] |Returns a substring contained within this string.@returns The substring between start and end|
-|upper|  |Returns the uppercase representation of this string|
+|upper| **None** |Returns the uppercase representation of this string|
 |rjust| n, [c] |Returns a string that has been justified by [n] characters to left.|
 |contains| value |Returns true if the string contains the specified value. |
-|lower|  |Returns the lowercase representation of this string|
+|lower| **None** |Returns the lowercase representation of this string|
 |filter| callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
 |rfind| substring |Returns the index of the last occurance of a string within this string. Returns -1 if the specified substring does not exist.|
-|isdigit|  |Returns true if all characters in this string are digits.|
+|isdigit| **None** |Returns true if all characters in this string are digits.|
 |last| value |Returns the last item in this collection.|
-|iswhitespace|  |Returns true if all characters in this string are white space characters.|
+|iswhitespace| **None** |Returns true if all characters in this string are white space characters.|
 |split| seperator |Returns a list containing every substring between [seperator].|
 |find| substring |Returns the index of the first occurance of a string within this string. Returns -1 if the specified substring does not exist.|
 |reduce| callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |ljust| n, [c] |Returns a string that has been justified by [n] characters to right.|
 |first| value |Returns the first item in this collection.|
 
-### class ```StringBuffer``` ()
+
+#### class ```StringBuffer``` ()
 ___
 A mutable string of UTF-16 characters
-
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |prepend| item |Prepends text to the beginning of the string buffer.|
-|clear|  |Clears the string buffer.|
+|clear| **None** |Clears the string buffer.|
 |append| *args |Appends each argument to the end of the string buffer.|
 
-### class ```Tuple``` ()
+
+#### class ```Tuple``` ()
 ___
 An immutable collection of objects
-
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |filter| callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
@@ -114,33 +156,4 @@ An immutable collection of objects
 |each| func |Iterates through each element in the collection.|
 
 
-| Functions Name          | Arguments         | Description |
-| ----------------------- | ----------------- | ----------- |
-|chr| num |Returns the character representation of a specified integer.|
-|compile| source |Compiles a string of iodine code, returning a callable object.|
-|enumerate| iterable |Maps an iterable object to a list, with each element in the list being a tuple containing an index and the object associated with that index in the supplied iterable object.|
-|eval| source |Evaluates a string of Iodine source code.|
-|filter| iterable, callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
-|globals|  |Returns a dictionary of all global variables.|
-|hex| obj |Returns hexadecimal representation of a specified object,supports both Bytes and Str objects.|
-|id| obj |Returns a unique identifier for the supplied argument. |
-|input| prompt |Reads from the standard input stream. Optionally displays the specified prompt.|
-|invoke| callable, dict |Invokes the specified callable under a new Iodine context.Optionally uses the specified dict as the instance's global symbol table.|
-|len| countable |Returns the length of the specified object. If the object does not implement __len__, an AttributeNotFoundException is raised.|
-|loadmodule| name |Loads an iodine module.|
-|locals|  |Returns a dictionary of all local variables.|
-|map| iterable, callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. The result of the specified callable is added to a list that is returned to the caller.|
-|open| file, mode |Opens up a file using the specified mode, returning a new stream object.<br><strong>Supported modes</strong><br><li> r - Read<li> w - Write<li> a - Append<li> b - Binary |
-|ord| char |Returns the numeric representation of a character.|
-|print| *object |Prints a string to the standard output streamand appends a newline character.|
-|property| getter, setter |Returns a new Property object.|
-|range| start, end, step |Returns an iterable sequence containing [n] items, starting with 0 and incrementing by 1, until [n] is reached.|
-|reduce| iterable, callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
-|reload| module |Reloads an iodine module.|
-|repr| object |Returns a string representation of the specified object, which is obtained by calling its __repr__ function. If the object does not implement the __repr__ function, its default string representation is returned.|
-|require|  |Internal function used by the 'use' statement, do not call this directly.|
-|sort| iterable, [key] |Returns an sorted tuple created from an iterable sequence. An optional function can be provided that can be used to sort the iterable sequence.|
-|sum| iterable, default |Reduces the iterable by adding each item together, starting with [default].|
-|type| object |Returns the type definition of the specified object.|
-|typecast| type, object |Performs a sanity check, verifying that the specified [object] is an instance of [type]. If the test fails, a TypeCastException is raised.|
-|zip| iterables |Iterates over each iterable in [iterables], appending every item to a tuple, that is then appended to a list which is returned to the caller.|
+
