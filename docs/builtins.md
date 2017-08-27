@@ -96,6 +96,7 @@ An arbitrary size integer
 #### class ```Dict``` ([values])
 ___
 A dictionary containing a list of unique keys and an associated value
+##### Methods
 
 | Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
@@ -109,6 +110,7 @@ A dictionary containing a list of unique keys and an associated value
 #### class ```File``` ()
 ___
 An object supporting read or write operations (Typically a file)
+##### Methods
 
 | Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
@@ -134,6 +136,7 @@ A 64 bit signed integer
 #### class ```List``` ()
 ___
 A mutable sequence of objects
+##### Methods
 
 | Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
@@ -160,6 +163,7 @@ A mutable sequence of objects
 #### class ```Str``` ()
 ___
 An immutable string of UTF-16 characters
+##### Methods
 
 | Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
@@ -195,6 +199,7 @@ An immutable string of UTF-16 characters
 #### class ```StringBuffer``` ()
 ___
 A mutable string of UTF-16 characters
+##### Methods
 
 | Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
@@ -206,6 +211,7 @@ A mutable string of UTF-16 characters
 #### class ```Tuple``` ()
 ___
 An immutable collection of objects
+##### Methods
 
 | Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
@@ -215,5 +221,6 @@ An immutable collection of objects
 |last| value |Returns the last item in this collection.|
 |reduce| callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |each| func |Iterates through each element in the collection.|
+
 
 
