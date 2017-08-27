@@ -1,4 +1,4 @@
-.PHONY: clean all
+.PHONY: clean all docs
 
 PREFIX = /usr/local/lib
 
@@ -7,6 +7,13 @@ OUTPUT_DIR = ./bin
 IODINE = $(OUTPUT_DIR)/iodine.exe
 
 IODINE_DEPS += ./bin/LibIodine.dll
+
+IODINE_DOCS += __builtins__
+IODINE_DOCS += sys
+IODINE_DOCS += os
+IODINE_DOCS += fsutils
+IODINE_DOCS += psutils
+IODINE_DOCS += threading
 
 # These are the only CANONICAL modules in ./modules
 # Anything else is experimental or outdated
@@ -35,7 +42,12 @@ all:
 	mkdir -p $(OUTPUT_DIR)
 	nuget restore
 	xbuild ./Iodine.sln /p:Configuration=Release /p:DefineConstants="COMPILE_EXTRAS" /t:Build "/p:Mono=true;BaseConfiguration=Release"
+define make-doc
+iodine ./tools/mkiododoc.id $(1) -f markdown -o ./docs/modules/$(1).md ; 
+endef
 
+docs:
+	$(foreach mod, $(IODINE_DOCS), $(call make-doc,$(mod)))
 clean:
 	rm -rf bin
 	rm -rf src/bin
