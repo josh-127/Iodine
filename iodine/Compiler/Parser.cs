@@ -413,9 +413,15 @@ namespace Iodine.Compiler
             isVariadic = false;
             hasKeywordArgs = false;
             isInstanceMethod = false;
+
             hasDefaultValues = false;
+
             var ret = new List<NamedParameter> ();
-            Expect (TokenClass.OpenParan);
+
+            if (!Accept (TokenClass.OpenParan)) {
+                return ret;
+            }
+
             if (Accept (TokenClass.Keyword, "self")) {
                 isInstanceMethod = true;
                 if (!Accept (TokenClass.Comma)) {

@@ -54,6 +54,7 @@ namespace Iodine.Runtime
                     obj.SetAttribute ("start", new BuiltinMethodCallback (Start, obj));
                     obj.SetAttribute ("abort", new BuiltinMethodCallback (Abort, obj));
                     obj.SetAttribute ("alive", new BuiltinMethodCallback (Alive, obj));
+                    obj.SetAttribute ("join", new BuiltinMethodCallback (Join, obj));
                     return obj;
                 }
 
@@ -131,6 +132,24 @@ namespace Iodine.Runtime
 
                     return IodineBool.Create (thread.Value.IsAlive);
                 }
+
+                [BuiltinDocString (
+                    "Joins this thread with the calling thread"
+                )]
+                static IodineObject Join (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                {
+                    var thread = self as IodineThread;
+
+                    if (thread == null) {
+                        vm.RaiseException (new IodineTypeException (TypeDefinition.Name));
+                        return null;
+                    }
+
+
+                    thread.Value.Join ();
+
+                    return null;
+                }
             }
 
             public static readonly IodineTypeDefinition TypeDefinition = new ThreadTypeDefinition ();
@@ -192,7 +211,6 @@ namespace Iodine.Runtime
                         vm.RaiseException (new IodineFunctionInvocationException ());
                         return null;
                     }
-
 
                     if (args.Length == 0) {
                         vm.RaiseException (new IodineArgumentException (1));
