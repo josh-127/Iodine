@@ -37,8 +37,17 @@ namespace Iodine.Runtime
         {
         }
 
+        public override void Inherit (VirtualMachine vm, IodineObject self, IodineObject [] arguments)
+        {
+            ApplyMixin (self);
+
+            base.Inherit (vm, self, arguments);
+        }
+
         public override IodineObject BindAttributes (IodineObject obj)
         {
+            ApplyMixin (obj);
+
             return base.BindAttributes (obj);
         }
 

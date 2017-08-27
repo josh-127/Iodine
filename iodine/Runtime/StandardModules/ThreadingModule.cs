@@ -42,6 +42,7 @@ namespace Iodine.Runtime
                     : base ("Thread")
                 {
                     BindAttributes (this);
+
                     SetDocumentation (
                         "Creates and controls a thread.",
                         "@param func The function to invoke when this thread is created."
@@ -64,16 +65,21 @@ namespace Iodine.Runtime
                     }
 
                     var func = args [0];
+
                     var newVm = new VirtualMachine (vm.Context);
+
+
+                    var threadStart = new ManualResetEvent (false);
 
                     var t = new Thread (() => {
                         try {
+                            threadStart.Set ();
                             func.Invoke (newVm, new IodineObject [] { });
                         } catch (UnhandledIodineExceptionException ex) {
                             vm.RaiseException (ex.OriginalException);
                         }
                     });
-                    return new IodineThread (t);
+                    return new IodineThread (threadStart, t);
                 }
 
                 [BuiltinDocString (
@@ -89,7 +95,7 @@ namespace Iodine.Runtime
                     }
 
 
-                    thread.Value.Start ();
+                    thread.Start ();
 
                     return null;
                 }
@@ -129,27 +135,135 @@ namespace Iodine.Runtime
 
             public static readonly IodineTypeDefinition TypeDefinition = new ThreadTypeDefinition ();
 
-            public Thread Value { private set; get; }
+            public readonly Thread Value;
 
-            public IodineThread (Thread t)
+            readonly ManualResetEvent startEvent;
+
+            public IodineThread (ManualResetEvent startEvent, Thread t)
                 : base (TypeDefinition)
             {
                 Value = t;
+                this.startEvent = startEvent;
+            }
+
+            public void Start ()
+            {
+                Value.Start ();
+
+                startEvent.WaitOne ();
             }
         }
 
-        class IodineLock : IodineObject
-        {
-            public static readonly IodineTypeDefinition TypeDefinition = new LockTypeDefinition ();
 
-            sealed class LockTypeDefinition : IodineTypeDefinition
+        class IodineConditionVariable : IodineObject
+        {
+            public static readonly IodineTypeDefinition TypeDefinition = new ConditionVariableTypeDefinition ();
+
+            sealed class ConditionVariableTypeDefinition : IodineTypeDefinition
             {
-                public LockTypeDefinition ()
-                    : base ("Lock")
+                public ConditionVariableTypeDefinition ()
+                    : base ("ConditionVariable")
+                {
+                    BindAttributes (this);
+                }
+
+                public override IodineObject BindAttributes (IodineObject obj)
+                {
+                    obj.SetAttribute ("wait", new BuiltinMethodCallback (Wait, obj));
+                    obj.SetAttribute ("signal", new BuiltinMethodCallback (Signal, obj));
+                    return obj;
+                }
+
+                public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
+                {
+                    return new IodineConditionVariable ();
+                }
+
+                [BuiltinDocString (
+                    "Waits the condition variable to be signaled and releases the ",
+                    "supplied mutex.",
+                    "@param mutex The mutex"
+                )]
+                static IodineObject Wait (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                {
+                    var cv = self as IodineConditionVariable;
+
+                    if (cv == null) {
+                        vm.RaiseException (new IodineFunctionInvocationException ());
+                        return null;
+                    }
+
+
+                    if (args.Length == 0) {
+                        vm.RaiseException (new IodineArgumentException (1));
+                        return null;
+                    }
+
+                    var mutex = args [0] as IodineMutex;
+
+                    if (mutex == null) {
+                        vm.RaiseException (new IodineTypeException ("Mutex"));
+                        return null;
+                    }
+
+                    mutex.Release ();
+
+                    cv.Wait ();
+
+                    mutex.Acquire ();
+
+                    return null;
+                }
+
+                [BuiltinDocString (
+                    "Signals the first thread waiting for this condition variable."
+                )]
+                static IodineObject Signal (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                {
+                    var cv = self as IodineConditionVariable;
+
+                    if (cv == null) {
+                        vm.RaiseException (new IodineFunctionInvocationException ());
+                        return null;
+                    }
+
+                    cv.Signal ();
+
+                    return null;
+                }
+
+            }
+
+            readonly ManualResetEvent resetEvent = new ManualResetEvent (false);
+
+            public IodineConditionVariable ()
+                : base (TypeDefinition)
+            {
+            }
+
+            public void Wait ()
+            {
+                resetEvent.WaitOne ();
+            }
+
+            public void Signal ()
+            {
+                resetEvent.Set ();
+            }
+        }
+
+        class IodineMutex : IodineObject
+        {
+            public static readonly IodineTypeDefinition TypeDefinition = new MutexTypeDefinition ();
+
+            sealed class MutexTypeDefinition : IodineTypeDefinition
+            {
+                public MutexTypeDefinition ()
+                    : base ("Mutex")
                 {
                     BindAttributes (this);
                     SetDocumentation (
-                        "Creates and controls a simple spinlock."
+                        "A simple mutual exclusion lock."
                     );
                 }
 
@@ -157,13 +271,13 @@ namespace Iodine.Runtime
                 {
                     obj.SetAttribute ("acquire", new BuiltinMethodCallback (Acquire, obj));
                     obj.SetAttribute ("release", new BuiltinMethodCallback (Release, obj));
-                    obj.SetAttribute ("locked", new BuiltinMethodCallback (Locked, obj));
+                    obj.SetAttribute ("synchronize", new BuiltinMethodCallback (Synchronize, obj));
                     return obj;
                 }
 
                 public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
                 {
-                    return new IodineLock ();
+                    return new IodineMutex ();
                 }
 
                 [BuiltinDocString (
@@ -171,7 +285,7 @@ namespace Iodine.Runtime
                 )]
                 static IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
-                    var spinlock = self as IodineLock;
+                    var spinlock = self as IodineMutex;
 
                     if (spinlock == null) {
                         vm.RaiseException (new IodineFunctionInvocationException ());
@@ -183,11 +297,11 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString (
-                    "Releases the lock, allowing any threads blocked by this lock to continue."
+                    "Releases the mutex, allowing any threads blocked by this lock to continue."
                 )]
                 static IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
-                    var spinlock = self as IodineLock;
+                    var spinlock = self as IodineMutex;
 
                     if (spinlock == null) {
                         vm.RaiseException (new IodineFunctionInvocationException ());
@@ -197,125 +311,64 @@ namespace Iodine.Runtime
                     spinlock.Release ();
                     return null;
                 }
-
                 [BuiltinDocString (
-                    "Returns true if a thread has acquired this lock, false if not."
+                    "Acquires a lock, then executes the supplied argument before releasing the lock.",
+                    "@param callable The function to synchronize"
                 )]
-                static IodineObject Locked (VirtualMachine vm, IodineObject self, IodineObject [] args)
+                static IodineObject Synchronize (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
-                    var spinlock = self as IodineLock;
+                    var mutex = self as IodineMutex;
 
-                    if (spinlock == null) {
+                    if (mutex == null) {
                         vm.RaiseException (new IodineFunctionInvocationException ());
                         return null;
                     }
 
-                    return IodineBool.Create (spinlock.IsLocked ());
+                    if (args.Length == 0) {
+                        vm.RaiseException (new IodineArgumentException (1));
+                        return null;
+                    }
+
+                    var func = args [0];
+
+                    mutex.Acquire ();
+
+                    func.Invoke (vm, new IodineObject [] { });
+
+                    mutex.Release ();
+
+                    return null;
                 }
             }
 
-            volatile bool _lock = false;
+            readonly Mutex mutex;
 
-            public IodineLock ()
+            public IodineMutex ()
                 : base (TypeDefinition)
             {
+                mutex = new Mutex ();
             }
 
             public void Acquire ()
             {
-                while (_lock)
-                    ;
-                _lock = true;
+                mutex.WaitOne ();
             }
 
             public void Release ()
             {
-                _lock = false;
+                mutex.ReleaseMutex ();
             }
 
-            public bool IsLocked ()
-            {
-                return _lock;
-            }
         }
 
-        class IodineSemaphore : IodineObject
-        {
-            public static readonly IodineTypeDefinition TypeDefinition = new SemaphoreTypeDefinition ();
 
-            class SemaphoreTypeDefinition : IodineTypeDefinition
-            {
-                public SemaphoreTypeDefinition ()
-                    : base ("Semaphore")
-                {
-                }
-
-                public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
-                {
-                    if (args.Length == 0) {
-                        return new IodineSemaphore (1);
-                    }
-
-                    var semaphoreVal = args [0] as IodineInteger;
-
-                    if (semaphoreVal == null) {
-                        vm.RaiseException (new IodineTypeException ("Integer"));
-                        return null;
-                    }
-
-                    return new IodineSemaphore ((int)semaphoreVal.Value);
-                }
-            }
-
-            volatile int semaphore = 1;
-
-            public IodineSemaphore (int semaphore)
-                : base (TypeDefinition)
-            {
-                this.semaphore = semaphore;
-                SetAttribute ("aquire", new BuiltinMethodCallback (Acquire, this));
-                SetAttribute ("release", new BuiltinMethodCallback (Release, this));
-                SetAttribute ("locked", new BuiltinMethodCallback (IsLocked, this));
-            }
-
-            /**
-             * Iodine Method: Semaphore.acquire (self)
-             * Description: Decrements the semaphore
-             */
-            IodineObject Acquire (VirtualMachine vm, IodineObject self, IodineObject [] args)
-            {
-                semaphore--;
-                while (semaphore < 0) {
-                    // Spin
-                }
-                return null;
-            }
-
-            /**
-             * Iodine Method: Semaphore.release (self)
-             * Description: Increments the semaphore
-             */
-            IodineObject Release (VirtualMachine vm, IodineObject self, IodineObject [] args)
-            {
-                semaphore++;
-                return null;
-            }
-
-            /**
-             * Returns true if the semaphore is less than 0
-             */
-            IodineObject IsLocked (VirtualMachine vm, IodineObject self, IodineObject [] args)
-            {
-                return IodineBool.Create (semaphore < 0);
-            }
-        }
 
         public ThreadingModule ()
             : base ("threading")
         {
             SetAttribute ("Thread", IodineThread.TypeDefinition);
-            SetAttribute ("Lock", IodineLock.TypeDefinition);
-            SetAttribute ("Semaphore", IodineSemaphore.TypeDefinition);
+            SetAttribute ("Mutex", IodineMutex.TypeDefinition);
+            SetAttribute ("ConditionVariable", IodineConditionVariable.TypeDefinition);
             SetAttribute ("sleep", new BuiltinMethodCallback (Sleep, this));
         }
 

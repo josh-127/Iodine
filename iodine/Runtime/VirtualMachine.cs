@@ -179,7 +179,6 @@ namespace Iodine.Runtime
             if (method.Bytecode.Instructions.Length > 0) {
                 instruction = method.Bytecode.Instructions [0];
             }
-
             int insCount = method.Bytecode.Instructions.Length;
             int prevStackSize = stackSize;
             int i = 0;
