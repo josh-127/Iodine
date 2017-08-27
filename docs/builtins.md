@@ -1,37 +1,92 @@
 ## ```__builtins__``` module
 
-Provides access to iodine builtins functions and classes.
+Provides access to iodine builtin functions and classes.
 ### Functions
-| Name          | Arguments         | Description |
-| ----------------------- | ----------------- | ----------- |
-|chr| num |Returns the character representation of a specified integer.|
-|compile| source |Compiles a string of iodine code, returning a callable object.|
-|enumerate| iterable |Maps an iterable object to a list, with each element in the list being a tuple containing an index and the object associated with that index in the supplied iterable object.|
-|eval| source |Evaluates a string of Iodine source code.|
-|filter| iterable, callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
-|globals| **None** |Returns a dictionary of all global variables.|
-|hex| obj |Returns hexadecimal representation of a specified object,supports both Bytes and Str objects.|
-|id| obj |Returns a unique identifier for the supplied argument. |
-|input| prompt |Reads from the standard input stream. Optionally displays the specified prompt.|
-|invoke| callable, dict |Invokes the specified callable under a new Iodine context.Optionally uses the specified dict as the instance's global symbol table.|
-|len| countable |Returns the length of the specified object. If the object does not implement __len__, an AttributeNotFoundException is raised.|
-|loadmodule| name |Loads an iodine module.|
-|locals| **None** |Returns a dictionary of all local variables.|
-|map| iterable, callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. The result of the specified callable is added to a list that is returned to the caller.|
-|open| file, mode |Opens up a file using the specified mode, returning a new stream object.<br><strong>Supported modes</strong><br><li> r - Read<li> w - Write<li> a - Append<li> b - Binary |
-|ord| char |Returns the numeric representation of a character.|
-|print| *object |Prints a string to the standard output streamand appends a newline character.|
-|property| getter, setter |Returns a new Property object.|
-|range| start, end, step |Returns an iterable sequence containing [n] items, starting with 0 and incrementing by 1, until [n] is reached.|
-|reduce| iterable, callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
-|reload| module |Reloads an iodine module.|
-|repr| object |Returns a string representation of the specified object, which is obtained by calling its __repr__ function. If the object does not implement the __repr__ function, its default string representation is returned.|
-|require| **None** |Internal function used by the 'use' statement, do not call this directly.|
-|sort| iterable, [key] |Returns an sorted tuple created from an iterable sequence. An optional function can be provided that can be used to sort the iterable sequence.|
-|sum| iterable, default |Reduces the iterable by adding each item together, starting with [default].|
-|type| object |Returns the type definition of the specified object.|
-|typecast| type, object |Performs a sanity check, verifying that the specified [object] is an instance of [type]. If the test fails, a TypeCastException is raised.|
-|zip| iterables |Iterates over each iterable in [iterables], appending every item to a tuple, that is then appended to a list which is returned to the caller.|
+
+#### func ```chr``` (num)
+___
+Returns the character representation of a specified integer.
+#### func ```compile``` (source)
+___
+Compiles a string of iodine code, returning a callable object.
+#### func ```enumerate``` (iterable)
+___
+Maps an iterable object to a list, with each element in the list being a tuple containing an index and the object associated with that index in the supplied iterable object.
+#### func ```eval``` (source)
+___
+Evaluates a string of Iodine source code.
+#### func ```filter``` (iterable, callable)
+___
+Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.
+#### func ```globals``` ()
+___
+Returns a dictionary of all global variables.
+#### func ```hex``` (obj)
+___
+Returns hexadecimal representation of a specified object,supports both Bytes and Str objects.
+#### func ```id``` (obj)
+___
+Returns a unique identifier for the supplied argument. 
+#### func ```input``` (prompt)
+___
+Reads from the standard input stream. Optionally displays the specified prompt.
+#### func ```invoke``` (callable, dict)
+___
+Invokes the specified callable under a new Iodine context.Optionally uses the specified dict as the instance's global symbol table.
+#### func ```len``` (countable)
+___
+Returns the length of the specified object. If the object does not implement __len__, an AttributeNotFoundException is raised.
+#### func ```loadmodule``` (name)
+___
+Loads an iodine module.
+#### func ```locals``` ()
+___
+Returns a dictionary of all local variables.
+#### func ```map``` (iterable, callable)
+___
+Iterates over the specified iterable, passing the result of each iteration to the specified callable. The result of the specified callable is added to a list that is returned to the caller.
+#### func ```open``` (file, mode)
+___
+Opens up a file using the specified mode, returning a new stream object.<br><strong>Supported modes</strong><br><li> r - Read<li> w - Write<li> a - Append<li> b - Binary 
+#### func ```ord``` (char)
+___
+Returns the numeric representation of a character.
+#### func ```print``` (*object)
+___
+Prints a string to the standard output streamand appends a newline character.
+#### func ```property``` (getter, setter)
+___
+Returns a new Property object.
+#### func ```range``` (start, end, step)
+___
+Returns an iterable sequence containing [n] items, starting with 0 and incrementing by 1, until [n] is reached.
+#### func ```reduce``` (iterable, callable, default)
+___
+Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.
+#### func ```reload``` (module)
+___
+Reloads an iodine module.
+#### func ```repr``` (object)
+___
+Returns a string representation of the specified object, which is obtained by calling its __repr__ function. If the object does not implement the __repr__ function, its default string representation is returned.
+#### func ```require``` ()
+___
+Internal function used by the 'use' statement, do not call this directly.
+#### func ```sort``` (iterable, [key])
+___
+Returns an sorted tuple created from an iterable sequence. An optional function can be provided that can be used to sort the iterable sequence.
+#### func ```sum``` (iterable, default)
+___
+Reduces the iterable by adding each item together, starting with [default].
+#### func ```type``` (object)
+___
+Returns the type definition of the specified object.
+#### func ```typecast``` (type, object)
+___
+Performs a sanity check, verifying that the specified [object] is an instance of [type]. If the test fails, a TypeCastException is raised.
+#### func ```zip``` (iterables)
+___
+Iterates over each iterable in [iterables], appending every item to a tuple, that is then appended to a list which is returned to the caller.
 
 #### class ```BigInt``` ()
 ___
@@ -42,7 +97,7 @@ An arbitrary size integer
 ___
 A dictionary containing a list of unique keys and an associated value
 
-| Functions Name          | Arguments         | Description |
+| Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |clear| **None** |Clears the dictionary, removing all items.|
 |get| key |Returns the value specified by [key], raising a KeyNotFound exception if the given key does not exist.|
@@ -55,7 +110,7 @@ A dictionary containing a list of unique keys and an associated value
 ___
 An object supporting read or write operations (Typically a file)
 
-| Functions Name          | Arguments         | Description |
+| Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |readln| **None** |Reads a single line from the underlying stream.|
 |writeln| obj |Writes an object to the stream, appending a new line character to the end of the file.|
@@ -80,7 +135,7 @@ A 64 bit signed integer
 ___
 A mutable sequence of objects
 
-| Functions Name          | Arguments         | Description |
+| Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |reduce| callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |each| func |Iterates through each element in the collection.|
@@ -106,7 +161,7 @@ A mutable sequence of objects
 ___
 An immutable string of UTF-16 characters
 
-| Functions Name          | Arguments         | Description |
+| Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |isalpha| **None** |Returns true if all characters in this string are letters.|
 |replace| str1, str2 |Returns a new string where call occurances of [str1] have been replaced with [str2].|
@@ -141,7 +196,7 @@ An immutable string of UTF-16 characters
 ___
 A mutable string of UTF-16 characters
 
-| Functions Name          | Arguments         | Description |
+| Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |prepend| item |Prepends text to the beginning of the string buffer.|
 |clear| **None** |Clears the string buffer.|
@@ -152,7 +207,7 @@ A mutable string of UTF-16 characters
 ___
 An immutable collection of objects
 
-| Functions Name          | Arguments         | Description |
+| Name                    | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |filter| callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
 |first| value |Returns the first item in this collection.|
@@ -160,6 +215,5 @@ An immutable collection of objects
 |last| value |Returns the last item in this collection.|
 |reduce| callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |each| func |Iterates through each element in the collection.|
-
 
 
