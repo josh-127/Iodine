@@ -1,0 +1,45 @@
+#! /usr/bin/iodine
+
+use sys
+use fsutils
+use iododoc
+use argparse
+
+func main (args) {
+    if (len (args) == 0) {
+        print ("Usage iododoc <module>")
+        sys.exit (-1)
+    }
+    
+    parser = argparse.ArgumentParser ()
+
+    parser.add ("module")
+    parser.add ("-f", nargs=1, fallback="markdown")
+    parser.add ("-o", nargs=1, fallback="#{args[0]}.md")
+
+    result = parser.parse (args)
+
+
+    module = result ["module"]
+
+    format = result ["f"]
+    ofile = result ["o"]
+   
+     
+    try {
+        code = loadmodule (module)
+        
+        items = iododoc.compiledoc (code)
+        
+        buffer = StringBuffer ()
+        
+        doc = iododoc.MarkdownFormatter ()
+
+        with (output = open (ofile, "w")) {
+            doc.format_module (output, module, code.__doc__, items)            
+        }
+    } except (e) {
+        print (Str (e))
+        print (e.stacktrace)
+    }
+}
