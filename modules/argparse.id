@@ -18,7 +18,7 @@ func __keyName (self, key) {
         match (c) {
             case '-' when !strip => accum.append ('_')
             case '-' => null
-            case Something {
+            case _ {
                 strip = false;
                 accum.append (c);
             }
@@ -44,6 +44,9 @@ class ArgumentParser {
                 case "epilog"   => self.epilog  = typecast (Str, current)
                 case "program"  => self.program = typecast (Str, current)
                 case "version"  => self.version = typecast (Str, current)
+                case _ {
+                
+                }
             }
         }
     }
@@ -86,6 +89,9 @@ class ArgumentParser {
                 case "fallback" => argdef.setDefault (current)
                 case "dest"     => argdef.setName (current)
                 case "const"    => argdef.setConst (current)
+                case _ {
+                
+                }
             }
         }
         self.defs.append (argdef)
