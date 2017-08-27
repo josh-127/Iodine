@@ -1,6 +1,7 @@
 ### class ```BigInt``` ()
 ___
 An arbitrary size integer
+
 | Functions Name | Description |
 | ----------- | ----------- |
 
@@ -19,6 +20,7 @@ A dictionary containing a list of unique keys and an associated value
 ### class ```File``` ()
 ___
 An object supporting read or write operations (Typically a file)
+
 | Functions Name | Description |
 | ----------- | ----------- |
 |```readln``` ()|Reads a single line from the underlying stream.|
@@ -32,6 +34,7 @@ An object supporting read or write operations (Typically a file)
 ### class ```List``` ()
 ___
 A mutable sequence of objects
+
 | Functions Name | Description |
 | ----------- | ----------- |
 |```reduce``` (callable, default)|Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
@@ -56,6 +59,7 @@ A mutable sequence of objects
 ### class ```Str``` ()
 ___
 An immutable string of UTF-16 characters
+
 | Functions Name | Description |
 | ----------- | ----------- |
 |```isalpha``` ()|Returns true if all characters in this string are letters.|
@@ -89,6 +93,7 @@ An immutable string of UTF-16 characters
 ### class ```StringBuffer``` ()
 ___
 A mutable string of UTF-16 characters
+
 | Functions Name | Description |
 | ----------- | ----------- |
 |```prepend``` (item)|Prepends text to the beginning of the string buffer.|
@@ -98,6 +103,7 @@ A mutable string of UTF-16 characters
 ### class ```Tuple``` ()
 ___
 An immutable collection of objects
+
 | Functions Name | Description |
 | ----------- | ----------- |
 |```filter``` (callable)|Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
@@ -106,6 +112,7 @@ An immutable collection of objects
 |```last``` (value)|Returns the last item in this collection.|
 |```reduce``` (callable, default)|Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |```each``` (func)|Iterates through each element in the collection.|
+
 
 | Functions Name | Description |
 | ----------- | ----------- |
@@ -137,3 +144,4 @@ An immutable collection of objects
 |```type``` (object)|Returns the type definition of the specified object.|
 |```typecast``` (type, object)|Performs a sanity check, verifying that the specified [object] is an instance of [type]. If the test fails, a TypeCastException is raised.|
 |```zip``` (iterables)|Iterates over each iterable in [iterables], appending every item to a tuple, that is then appended to a list which is returned to the caller.|
+
