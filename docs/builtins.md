@@ -2,15 +2,15 @@
 ___
 An arbitrary size integer
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 
 ### class ```Dict``` ([values])
 ___
 A dictionary containing a list of unique keys and an associated value
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 |```clear``` ()|Clears the dictionary, removing all items.|
 |```get``` (key)|Returns the value specified by [key], raising a KeyNotFound exception if the given key does not exist.|
 |```remove``` (key)|Removes a specified entry from the dictionary, raising a KeyNotFound exception if the given key does not exist.|
@@ -21,8 +21,8 @@ A dictionary containing a list of unique keys and an associated value
 ___
 An object supporting read or write operations (Typically a file)
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 |```readln``` ()|Reads a single line from the underlying stream.|
 |```writeln``` (obj)|Writes an object to the stream, appending a new line character to the end of the file.|
 |```write``` (obj)|Writes an object to the underlying stream.|
@@ -35,8 +35,8 @@ An object supporting read or write operations (Typically a file)
 ___
 A mutable sequence of objects
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 |```reduce``` (callable, default)|Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |```each``` (func)|Iterates through each element in the collection.|
 |```last``` (value)|Returns the last item in this collection.|
@@ -60,8 +60,8 @@ A mutable sequence of objects
 ___
 An immutable string of UTF-16 characters
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 |```isalpha``` ()|Returns true if all characters in this string are letters.|
 |```replace``` (str1, str2)|Returns a new string where call occurances of [str1] have been replaced with [str2].|
 |```index``` (substring)|Returns the index of the first occurance of a string within this string. Raises KeyNotFound exception if the specified substring does not exist.|
@@ -94,8 +94,8 @@ An immutable string of UTF-16 characters
 ___
 A mutable string of UTF-16 characters
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 |```prepend``` (item)|Prepends text to the beginning of the string buffer.|
 |```clear``` ()|Clears the string buffer.|
 |```append``` (*args)|Appends each argument to the end of the string buffer.|
@@ -104,8 +104,8 @@ A mutable string of UTF-16 characters
 ___
 An immutable collection of objects
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 |```filter``` (callable)|Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
 |```first``` (value)|Returns the first item in this collection.|
 |```map``` (callable)|Iterates over the specified iterable, passing the result of each iteration to the specified callable. The result of the specified callable is added to a list that is returned to the caller.|
@@ -114,8 +114,8 @@ An immutable collection of objects
 |```each``` (func)|Iterates through each element in the collection.|
 
 
-| Functions Name | Description |
-| ----------- | ----------- |
+| Functions Name          | Description |
+| ----------------------- | ----------- |
 |```chr``` (num)|Returns the character representation of a specified integer.|
 |```compile``` (source)|Compiles a string of iodine code, returning a callable object.|
 |```enumerate``` (iterable)|Maps an iterable object to a list, with each element in the list being a tuple containing an index and the object associated with that index in the supplied iterable object.|
@@ -144,4 +144,3 @@ An immutable collection of objects
 |```type``` (object)|Returns the type definition of the specified object.|
 |```typecast``` (type, object)|Performs a sanity check, verifying that the specified [object] is an instance of [type]. If the test fails, a TypeCastException is raised.|
 |```zip``` (iterables)|Iterates over each iterable in [iterables], appending every item to a tuple, that is then appended to a list which is returned to the caller.|
-
