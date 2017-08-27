@@ -3,6 +3,7 @@ ___
 An arbitrary size integer
 | Functions Name | Description |
 | ----------- | ----------- |
+
 ### class ```Dict``` ([values])
 ___
 A dictionary containing a list of unique keys and an associated value
@@ -13,6 +14,7 @@ A dictionary containing a list of unique keys and an associated value
 |```remove``` (key)|Removes a specified entry from the dictionary, raising a KeyNotFound exception if the given key does not exist.|
 |```contains``` (key)|Tests to see if the dictionary contains a key, returning true if it does.|
 |```set``` (key, value)|Sets a key to a specified value, if the key does not exist, it will be created.|
+
 ### class ```File``` ()
 ___
 An object supporting read or write operations (Typically a file)
@@ -25,6 +27,7 @@ An object supporting read or write operations (Typically a file)
 |```read``` (n)|Reads [n] bytes from the underlying stream.|
 |```close``` ()|Closes the stream.|
 |```flush``` ()|Flushes the underlying stream.|
+
 ### class ```List``` ()
 ___
 A mutable sequence of objects
@@ -48,6 +51,7 @@ A mutable sequence of objects
 |```rindex``` (item)|Returns the index of the last occurance of the supplied argument, raising a KeyNotFound exception  if the supplied argument cannot be found.|
 |```appendrange``` (iterable)|Iterates through the supplied arguments, adding each item to the end of the list.|
 |```discard``` (item)|Removes an item from the list, returning true if success, otherwise, false.|
+
 ### class ```Str``` ()
 ___
 An immutable string of UTF-16 characters
@@ -80,6 +84,7 @@ An immutable string of UTF-16 characters
 |```reduce``` (callable, default)|Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |```ljust``` (n, [c])|Returns a string that has been justified by [n] characters to right.|
 |```first``` (value)|Returns the first item in this collection.|
+
 ### class ```StringBuffer``` ()
 ___
 A mutable string of UTF-16 characters
@@ -88,6 +93,7 @@ A mutable string of UTF-16 characters
 |```prepend``` (item)|Prepends text to the beginning of the string buffer.|
 |```clear``` ()|Clears the string buffer.|
 |```append``` (*args)|Appends each argument to the end of the string buffer.|
+
 ### class ```Tuple``` ()
 ___
 An immutable collection of objects
@@ -99,6 +105,7 @@ An immutable collection of objects
 |```last``` (value)|Returns the last item in this collection.|
 |```reduce``` (callable, default)|Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
 |```each``` (func)|Iterates through each element in the collection.|
+
 | Functions Name | Description |
 | ----------- | ----------- |
 |```chr``` (num)|Returns the character representation of a specified integer.|
