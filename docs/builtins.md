@@ -7,6 +7,7 @@ An arbitrary size integer
 ### class ```Dict``` ([values])
 ___
 A dictionary containing a list of unique keys and an associated value
+
 | Functions Name | Description |
 | ----------- | ----------- |
 |```clear``` ()|Clears the dictionary, removing all items.|
