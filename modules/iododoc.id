@@ -3,90 +3,81 @@
  * @author GruntTheDivine
  */
  
-use inspect;
-use __builtins__;
+use inspect
+use __builtins__
 
 contract DocumentationFormatter {
-    func formatDoc (documentation);
+    func formatDoc (documentation)
 }
 
-enum ElementType {
-    FUNCTION = 0,
-    CLASS = 1,
-    CONTRACT = 2,
-    TRAIT = 3,
-    ENUM = 4,
-    MODULE = 5,
-}
-
-class Element {
-    func Element (self, ElementType, str) {
-        self.ElementType = ElementType;
-        self.str = str;
-        self.description = "";
-        self.params = [];
+class FunctionDocumentation {
+    func FunctionDocumentation (self, name) {
+        self.parameters = []
+        self.optional_parameters = []
+        self.description = ""
+        self.name = name
+    }    
+    
+    func add_parameter (self, name, description) {
+        self.parameters.append ((name, description))
+    }
+            
+    func add_optional_parameter (self, name, description) {
+        self.optional_parameters.append ((name, description))
     }
     
-    func parseDocumentation (self, docstr) {
-        _parseDoc (self, docstr.split ('\n'));
+    func set_description (self, description) {
+        self.description = description
     }
 }
 
-class FuncElement extends Element {
-    func FuncElement (self, name, item) {
-        super (ElementType.FUNCTION, item.__doc__);
-        self.name = name;
-        self.params = [];
-        self.parseDocumentation (item.__doc__);
-    }
-}
-
-class ClassElement extends Element {
-    func ClassElement (self, name, c) {
-        super (ElementType.CLASS, c.__doc__);
-        self.name = name;
-        self.params = [];
-        self.parseDocumentation (c.__doc__);
-        self.items = [];
-        _compileAttributes (self.items, inspect.getmembers (c));
-    }
-}
-
-class ParamTag {
-    func ParamTag (self, name, type, description, optional, kwarg) {
-        self.name = name;
-        self.type = type;
-        self.description = description;
-        self.optional = optional;
-        self.kwarg = kwarg;
+class ClassDocumentation {
+    func ClassDocumentation (self, name) {
+        self.parameters = []
+        self.optional_parameters = []
+        self.description = ""
+        self.name = name
     }
     
-    func __str__ (self) {
-        return self.name;
+    func add_parameter (self, name, description) {
+        self.parameters.append ((name, description))
+    }
+        
+    func add_optional_parameter (self, name, description) {
+        self.optional_parameters.append ((name, description))
+    }
+    
+    func set_description (self, description) {
+        self.description = description
     }
 }
 
-func _parseDoc (obj, docLines) {
-    description = StringBuffer ();
-    for (str in docLines) {
-        if (str.startswith ("@param")) {
-            obj.params.append (_parseParamTag (str, false, false));
+
+func _parse_function_doc (obj, lines) {
+    
+    text = StringBuffer ();
+    
+    for (line in lines) {
+        if (line.startswith ("@param")) {
+            name, type, description = _parse_param_tag (line)
+            
+            obj.add_parameter (name, description)
+            
         }
-        else if (str.startswith ("@optional")) {
-            obj.params.append (_parseParamTag (str, true, false));
-        }
-        else if (str.startswith ("@kwparam")) {
-            obj.params.append (_parseParamTag (str, false, true));
+        else if (line.startswith ("@optional")) {
+            name, type, description = _parse_param_tag (line)
+            
+            obj.add_optional_parameter (name, description)
         }
         else {
-            description.append (str);
+            text.append (line)
         }
     }
     
-    obj.description = Str (description);
+    obj.set_description (Str (text))
 }
 
-func _parseParamTag (line, optional, kwarg) {
+func _parse_param_tag (line) {
     tokens = line.split (' ');
     
     if (len (line) > 2) {
@@ -108,8 +99,8 @@ func _parseParamTag (line, optional, kwarg) {
             description = " ".join (tokens [2::1]);
         }
         
-        return ParamTag (name, type, description, optional, kwarg);
-    }
+        return (name, type, description);
+    }       
     raise Exception ("Invalid param tag");
 }
 
@@ -118,94 +109,165 @@ class HtmlFormatter {
         self.indentLevel = 0;
     }
     
-    func format (self, items, output) {
-        for (item in items) {
-            self.formatItem (item, output);
-        }
+    
+    func format_func (self, function) {
+        
+    }
+}
+
+class MarkdownFormatter {
+    
+    func MarkdownFormatter (self) {
+        self.headingLevel = 2
     }
     
-    func formatItem (self, item, output) {
-        given (item.ElementType) {
-            when ElementType.FUNCTION {
-                self.formatFunc (item, output);
-            }
-            when ElementType.CLASS {
-                self.formatClass (item, output);
-            }
-            when ElementType.Contract {
-                
-            }
-            when ElementType.TRAIT {
-                
-            }
-            when ElementType.MODULE {
-                
-            }
+    
+    func format_module (self, output, moduleName, moduleDoc, items) {
+        
+        output.writeln ("## ```#{moduleName}``` module")
+        output.writeln ("")
+        
+        if (len (moduleDoc) > 0) {
+            output.writeln (moduleDoc)
         }
+        
+        classes = items.filter (lambda (p) => p is ClassDocumentation)
+        
+        funcs = items.filter (lambda (p) => p is FunctionDocumentation)
+        
+       if (len  (funcs) > 0) { 
+        
+            output.writeln ("### Functions")
+            output.writeln ("")
+            funcs.each (lambda (funcDoc) {
+                self.format_module_func (output, funcDoc)
+            })
+        
+        }
+        output.writeln ("")
+        
+        classes.each (lambda (classdoc) {
+            self.format_class (output, classdoc)
+
+        })
+        
+        output.writeln ("")
     }
     
-    func formatFunc (self, doc, output) {
-        output.append ("<strong><code>#{doc.name}</code></strong> (");
-        output.append (", ".join (doc.params));
-        output.append (")<br>\n");
-        output.append ("<div style='position: relative; padding-left:50px;'>\n");
-        output.append (doc.description);
-        output.append ("<br>\n");
-        output.append ("<table>");
-        if (len (doc.params) > 0) {
-            output.append ("<th>Parameters</th>");
+    func format (self, output, items) {
+        
+        classes = items.filter (lambda (p) => p is ClassDocumentation)
+        
+        funcs = items.filter (lambda (p) => p is FunctionDocumentation)
+        
+       if (len  (funcs) > 0) { 
+        
+            output.writeln ("##### Methods")
+            output.writeln ("")
+            
+            output.writeln ("| Name                    | Arguments         | Description |")
+            output.writeln ("| ----------------------- | ----------------- | ----------- |")
+            
+            funcs.each (lambda (funcDoc) {
+                self.format_func (output, funcDoc)
+            })
+        
         }
-        for (param in doc.params) {
-            output.append ("<tr>");
-            output.append ("<td><code>#{param.name}</code></td>");
-            output.append ("<td>#{param.description}</td>\n");
-            output.append ("</tr></br>");
-        }
-        output.append ("</table>");
-        output.append ("</div>");
-        output.append ("<br/>");
+        output.writeln ("")
+        
+        classes.each (lambda (classdoc) {
+            self.format_class (output, classdoc)
+
+        })
+        
+        output.writeln ("")
+
     }
     
-    func formatClass (self, doc, output) {
-        output.append ("class <strong><code>#{doc.name}</code></strong> (");
-        output.append (", ".join (doc.params));
-        output.append (")<br>\n");
-        output.append ("<div style='position: relative; padding-left:50px;'>\n");
-        output.append (doc.description);
-        output.append ("<br>\n");
-        if (len (doc.params) > 0) {
-            output.append ("<b>Parameters</b>");
-        }
-        output.append ("<table>");
-        for (param in doc.params) {
-            output.append ("<tr>");
-            output.append ("<td><code>#{param.name}</code></td>");
-            output.append ("<td>#{param.description}</td>\n");
-            output.append ("</tr></br>");
-        }
+    func format_class (self, output, classdecl) {
+
+        output.write ("#### class ```#{classdecl.name}```")
 
         
-        output.append ("</table><br>");
-                
-        for (item in doc.items) {
-            self.formatItem (item, output);
-        }
+        argnames = classdecl.parameters.map (lambda (p) => p [0])
         
-        output.append ("</div>");
-        output.append ("<br/>");
+        opt_argnames = classdecl.optional_parameters.map (
+            lambda (p) => "[" + p[0] + "]"
+        )
+        
+        argnames.appendrange (opt_argnames)
+        
+        output.writeln (" ({})".format (", ".join (argnames)))
+        
+        output.writeln ("___")
+        
+        output.writeln (classdecl.description)
+
+        self.format (output, classdecl.members)
+        
     }
     
-    func formatContract (self, doc, output) {
+    func format_module_func (self, output, funcdoc) {
+
+        output.write ("#### func ```#{funcdoc.name}```")
+
         
+        argnames = funcdoc.parameters.map (lambda (p) => p [0])
+        
+        opt_argnames = funcdoc.optional_parameters.map (
+            lambda (p) => "[" + p[0] + "]"
+        )
+        
+        argnames.appendrange (opt_argnames)
+        
+        output.writeln (" ({})".format (", ".join (argnames)))
+        
+        output.writeln ("___")
+        
+        output.writeln (funcdoc.description)
+        
+    }
+    
+    func format_func (self, output, function) {
+        headings = [
+            "",
+            "#",
+            "##",
+            "###",
+            "####",
+            "#####",
+            "######"
+        ]
+        
+        
+        output.write ("|")
+        
+        output.write ("#{function.name}")
+        
+        argnames = function.parameters.map (lambda (p) => p [0])
+        
+        opt_argnames = function.optional_parameters.map (
+            lambda (p) => "[" + p[0] + "]"
+        )
+        
+        argnames.appendrange (opt_argnames)
+        
+        if (len (argnames) > 0) {
+            output.write ("| {} |".format (", ".join (argnames)))
+        }
+        else {
+            output.write ("| **None** |")
+        }
+        output.writeln (function.description + "|")
     }
 }
 
 func compiledoc (obj, *args) {
     items = [];
     
-    _compileAttributes (items, inspect.getmembers (obj));
+    _compileAttributes (items, inspect.getmembers (obj))
     
-    items = sort (items, lambda (p) => p.name);
+    items = sort (items, lambda (p) => p.name)
     
     return items;
 }
@@ -213,11 +275,28 @@ func compiledoc (obj, *args) {
 func _compileAttributes (items, attrs) {
     for (name, attr in attrs) {
         if (inspect.hasattribute (attr, "__doc__")) {
+            lines = attr.__doc__.split ("\n")
+            
             if (inspect.ismethod (attr) || inspect.isbuiltin (attr)) {
-                items.append (FuncElement (name, attr));
+                funcdoc = FunctionDocumentation (name)
+                
+                _parse_function_doc (funcdoc, lines) 
+                
+                items.append (funcdoc);
             }
+            
             if (inspect.istype (attr)) {
-                items.append (ClassElement (name, attr));
+                classdoc = ClassDocumentation (name)
+                                
+                _parse_function_doc (classdoc, lines) 
+                
+                classattr = []
+                
+                _compileAttributes (classattr, inspect.getmembers (attr))
+                
+                classdoc.members = classattr
+                
+                items.append (classdoc)
             }
         }
     }
