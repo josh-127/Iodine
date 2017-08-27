@@ -11,7 +11,11 @@ IODINE_DEPS += ./bin/LibIodine.dll
 IODINE_DOCS += __builtins__
 IODINE_DOCS += sys
 IODINE_DOCS += os
+IODINE_DOCS += math
+IODINE_DOCS += struct
+IODINE_DOCS += inspect
 IODINE_DOCS += fsutils
+IODINE_DOCS += random
 IODINE_DOCS += psutils
 IODINE_DOCS += threading
 
@@ -58,7 +62,7 @@ install:
 	cp $(IODINE) $(PREFIX)/iodine/iodine.exe
 	cp -f $(IODINE_DEPS) $(PREFIX)/iodine
 	cp -f $(IODINE_MODS) $(PREFIX)/iodine/modules
-	cp -f ./bin/extensions/*.dll $(PREFIX)/iodine/extensions
+	cp -f ./bin/extensions/* $(PREFIX)/iodine/extensions
 	cp -f $(IODINE_NETMODS) $(PREFIX)/iodine/modules/net
 	echo "#! /bin/bash" > /bin/iodine
 	echo "/usr/bin/mono $(PREFIX)/iodine/iodine.exe \"\$$@\"" >> /usr/bin/iodine
@@ -67,4 +71,3 @@ install:
 	echo "IODINE_HOME=\"$(PREFIX)/iodine\"" >> /etc/environment
 	echo "IODINE_MODULES=\"$(PREFIX)/iodine/modules\"" >> /etc/environment
 	chmod +x /bin/iodine
-
