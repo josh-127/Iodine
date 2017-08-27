@@ -41,6 +41,7 @@ An arbitrary size integer
 #### class ```Dict``` ([values])
 ___
 A dictionary containing a list of unique keys and an associated value
+
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |clear| **None** |Clears the dictionary, removing all items.|
@@ -53,6 +54,7 @@ A dictionary containing a list of unique keys and an associated value
 #### class ```File``` ()
 ___
 An object supporting read or write operations (Typically a file)
+
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |readln| **None** |Reads a single line from the underlying stream.|
@@ -77,6 +79,7 @@ A 64 bit signed integer
 #### class ```List``` ()
 ___
 A mutable sequence of objects
+
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |reduce| callable, default |Reduces all members of the specified iterable by applying the specified callable to each item left to right. The callable passed to reduce receives two arguments, the first one being the result of the last call to it and the second one being the current item from the iterable.|
@@ -102,6 +105,7 @@ A mutable sequence of objects
 #### class ```Str``` ()
 ___
 An immutable string of UTF-16 characters
+
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |isalpha| **None** |Returns true if all characters in this string are letters.|
@@ -136,6 +140,7 @@ An immutable string of UTF-16 characters
 #### class ```StringBuffer``` ()
 ___
 A mutable string of UTF-16 characters
+
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |prepend| item |Prepends text to the beginning of the string buffer.|
@@ -146,6 +151,7 @@ A mutable string of UTF-16 characters
 #### class ```Tuple``` ()
 ___
 An immutable collection of objects
+
 | Functions Name          | Arguments         | Description |
 | ----------------------- | ----------------- | ----------- |
 |filter| callable |Iterates over the specified iterable, passing the result of each iteration to the specified callable. If the callable returns true, the result is appended to a list that is returned to the caller.|
