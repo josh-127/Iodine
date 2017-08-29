@@ -42,12 +42,18 @@ IODINE_MODS += ./modules/_whirlpool.id
 IODINE_NETMODS += ./modules/net/http.id
 IODINE_NETMODS += ./modules/net/dns.id
 
-all:
+all:$(IODINE_MODS) $(IODINE_NETMODS)
+
+%.id:iodine-binaries
+	mono ./bin/iodine.exe -c $@
+
+iodine-binaries:
 	mkdir -p $(OUTPUT_DIR)
 	nuget restore
 	xbuild ./Iodine.sln /p:Configuration=Release /p:DefineConstants="COMPILE_EXTRAS" /t:Build "/p:Mono=true;BaseConfiguration=Release"
-define make-doc
-iodine ./tools/mkiododoc.id $(1) -f markdown -o ./docs/modules/$(1).md ; 
+	
+define iodine-check
+mono ./bin/iodine.exe -c $(1) ; 
 endef
 
 docs:
