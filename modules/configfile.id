@@ -50,7 +50,7 @@ class ConfigFile {
             for (section in self.sections) {
                 file.write ("[{}]\n".format (section));
                 dict = self.sections [section];
-                foreach (key in dict) {
+                for (key in dict) {
                     file.write ("{}={}\n".format (key, dict [key]));
                 }
             }
