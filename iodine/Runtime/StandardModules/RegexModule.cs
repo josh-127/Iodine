@@ -27,7 +27,6 @@
   * DAMAGE.
 **/
 
-using System;
 using System.Text.RegularExpressions;
 
 namespace Iodine.Runtime
@@ -52,16 +51,18 @@ namespace Iodine.Runtime
 
                 public override IodineObject BindAttributes (IodineObject obj)
                 {
-                    SetAttribute ("match", new BuiltinMethodCallback (Match, obj));
+                    SetAttribute ("find", new BuiltinMethodCallback (Match, obj));
                     SetAttribute ("ismatch", new BuiltinMethodCallback (IsMatch, obj));
                     SetAttribute ("replace", new BuiltinMethodCallback (Replace, obj));
 
                     return base.BindAttributes (obj);
                 }
-                /**
-                 * Iodine Method: Regex.find (self, pattern)
-                 * Description: Finds the first match of pattern
-                 */
+
+
+                [BuiltinDocString (
+                    "Finds the first occurance of the regular expression within the supplied string.",
+                    "@param str The string to search"
+                )]
                 IodineObject Match (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     if (args.Length < 1) {
@@ -86,10 +87,10 @@ namespace Iodine.Runtime
                     return new IodineMatch (regexObj.Value.Match (expr.ToString ()));
                 }
 
-                /**
-                 * Iodine Method: Regex.isMatch (str)
-                 * Description: Returns true if str is a match
-                 */
+                [BuiltinDocString (
+                    "Returns true if the specified string matches the regular expression",
+                    "@param str The string to test"
+                )]
                 IodineObject IsMatch (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     if (args.Length <= 0) {
@@ -114,10 +115,13 @@ namespace Iodine.Runtime
                     return IodineBool.Create (regexObj.Value.IsMatch (expr.ToString ()));
                 }
 
-                /**
-                 * Iodine Method: Regex.replace (self, pattern, value)
-                 * Description: Replaces all substrings that match pattern with value
-                 */
+
+                [BuiltinDocString (
+                    "Returns a string, where all instances of the specified regular expression",
+                    "have been replaced with the specified value",
+                    "@param pattern The pattern",
+                    "@param value The value to replace all occurances of the supplied pattern"
+                )]
                 IodineObject Replace (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
                     if (args.Length <= 1) {
@@ -193,7 +197,7 @@ namespace Iodine.Runtime
                 }
 
                 [BuiltinDocString (
-                    "Returns the next "
+                    "Returns the next match"
                 )]
                 static IodineObject GetNextMatch (VirtualMachine vm, IodineObject self, IodineObject [] args)
                 {
@@ -286,14 +290,15 @@ namespace Iodine.Runtime
             : base ("regex")
         {
             SetAttribute ("compile", new BuiltinMethodCallback (Compile, this));
-            SetAttribute ("match", new BuiltinMethodCallback (Match, this));
+            SetAttribute ("find", new BuiltinMethodCallback (Match, this));
             SetAttribute ("ismatch", new BuiltinMethodCallback (IsMatch, this));
         }
 
-        /**
-         * Iodine Function: compile (pattern)
-         * Description: Compiles a regular expression pattern
-         */
+
+        [BuiltinDocString (
+            "Compiles the specified string, returning a Regex object",
+            "@param pattern The regular expression to compile"
+        )]
         IodineObject Compile (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 0) {
@@ -311,10 +316,11 @@ namespace Iodine.Runtime
             return new IodineRegex (expr.ToString ());
         }
 
-        /**
-         * Iodine Function: find (str, pattern)
-         * Description: Finds the first match in str
-         */
+        [BuiltinDocString (
+            "Finds the first occurance of the specified regular expression within the supplied string ",
+            "@param str The string to search",
+            "@param pattern The regular expression"
+        )]
         IodineObject Match (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
@@ -333,10 +339,11 @@ namespace Iodine.Runtime
             return new IodineMatch (Regex.Match (data.ToString (), pattern.ToString ()));
         }
 
-        /**
-         * Iodine Function: isMatch (str, pattern)
-         * Description: Returns true if any values in str match pattern
-         */
+        [BuiltinDocString (
+            "Returns true if the specified string matches the specified pattern",
+            "@param str The string to test",
+            "@param pattern The regular expression to match str with"
+        )]
         IodineObject IsMatch (VirtualMachine vm, IodineObject self, IodineObject[] args)
         {
             if (args.Length <= 1) {
