@@ -115,6 +115,188 @@ class HtmlFormatter {
     }
 }
 
+class TerminalFormatter {
+    func TerminalFormatter (self) {
+
+    }
+
+    func format_module (self, output, moduleName, moduleDoc, items) {
+        
+        self.write_title (output, "NAME")
+        
+        self.write_indent (output, moduleName, 1)
+
+        self.write_title (output, "DESCRIPTION")
+
+        self.write_indent (output, moduleDoc, 1)
+ 
+        classes = items.filter (lambda (p) => p is ClassDocumentation)
+        
+        funcs = items.filter (lambda (p) => p is FunctionDocumentation)
+
+        if (len (classes) > 0) {
+            self.write_title (output, "CLASSES")
+
+            classes.each (lambda (p) => self.format_module_class (output, p))
+        }
+        
+        if (len (funcs) > 0) {
+            self.write_title (output, "FUNCTIONS")
+
+            funcs.each (lambda (p) => self.format_module_func (output, p))
+        } 
+        
+    }
+
+    func format_module_func (self, output, funcdoc) {
+
+        output.write ("    ")
+
+        self.write_bold (output, "#{funcdoc.name}(...)")
+
+        output.writeln ("")
+
+        argnames = funcdoc.parameters.map (lambda (p) => p [0])
+
+        opt_argnames = funcdoc.optional_parameters.map (
+            lambda (p) => "[" + p[0] + "]"
+        )
+
+        argnames.appendrange (opt_argnames)
+
+        output.write ("        ")
+
+        self.write_bold (output, funcdoc.name)
+
+        output.writeln ("({})".format (funcdoc.name, ", ".join (argnames)))
+        
+        output.writeln ("")
+       
+        self.write_indent (output, funcdoc.description, 2)
+
+
+        output.writeln ("")
+    }
+   
+
+    func format_module_class (self, output, classdoc) {
+       
+        argnames = classdoc.parameters.map (lambda (p) => p [0])
+
+        opt_argnames = classdoc.optional_parameters.map (
+            lambda (p) => "[" + p[0] + "]"
+        )
+
+        func new_line () => self.write_tree (output, "", 2, 2)
+        
+        func print_line (text, indent=2, newline=true) => self.write_tree (
+            output, text, indent, 2, newline
+        )
+
+        argnames.appendrange (opt_argnames)
+
+        self.write_indent (output, "class ", 1, false)
+
+        self.write_bold (output, classdoc.name)
+
+        output.writeln ("({})".format (", ".join (argnames)))
+
+        new_line ()
+
+        print_line (classdoc.description)
+
+        methods = classdoc.members.filter (lambda (p) => p is FunctionDocumentation)
+
+        new_line ()
+
+        if (len (methods) > 0) {
+            
+            print_line ("Methods defined here:")
+            
+            new_line ()            
+        }
+
+        for (member in methods) {
+         
+            print_line ("", 2, false)
+         
+            self.write_bold (output, member.name)
+            
+            output.writeln ("(...)")
+            
+            print_line (member.description, 3)
+
+            new_line ()    
+        }
+
+        output.writeln ("")
+    }
+ 
+    func write_tree (self, output, str, indent_level, tree_level, new_line=true) {
+        real_ilevel = indent_level - tree_level
+
+        padding = "| ".rjust (tree_level * 4 - 2)
+
+        padding += "".rjust (real_ilevel * 4)
+
+        self._write_indent (output, str, padding, new_line)
+    }
+
+    func write_indent (self, output, str, indent_level, new_line=true) {
+        padding = "".rjust (indent_level * 4)
+
+        self._write_indent (output, str, padding, new_line)
+    }
+
+    func _write_indent (self, output, str, indent_str, new_line) {
+        
+        output.write (indent_str)
+
+        words = str.split (' ')
+
+        lineLen = 0                     # Tracks the amount of characters present on a given line
+        maxLen = 80 - len (indent_str)  # Maximum length before word wrap
+
+        for (word in words) {
+            lineLen += len (word) + 1
+
+            if (lineLen < 80) {
+                output.write (word, " ")
+            } else {
+                lineLen = 0
+                output.writeln ("")
+                output.write (indent_str)
+                output.write (word)
+            }
+        }
+
+        if (new_line) {
+            output.writeln ("")
+        }
+    }
+
+    func write_title (self, output, str) {
+        esc = chr (0x1B) # Hack until I add an escape sequence for numeric character values
+        output.writeln ("")
+        output.write ("#{esc}[1m")
+        output.writeln (str)
+        output.write ("#{esc}[0m")
+    }
+
+    func write_bold (self, output, str) {
+        esc = chr (0x1B)
+
+        output.write ("#{esc}[1m")
+        output.write (str)
+        output.write ("#{esc}[0m")
+    }
+
+    func disable_terminal_attr (self, output) {
+        esc = chr (0x1B)
+        output.write ("#{esc}[0m")
+    }
+}
+
 class MarkdownFormatter {
     
     func MarkdownFormatter (self) {
@@ -135,7 +317,8 @@ class MarkdownFormatter {
         
         funcs = items.filter (lambda (p) => p is FunctionDocumentation)
         
-       if (len  (funcs) > 0) { 
+
+        if (len  (funcs) > 0) { 
         
             output.writeln ("### Functions")
             output.writeln ("")
