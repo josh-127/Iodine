@@ -38,37 +38,41 @@ namespace Iodine.Compiler
 {
     public sealed class Parser
     {
-        private ErrorSink errorLog;
-        private IodineContext context;
-        private List<Token> tokens = new List<Token> ();
+        ErrorSink errorLog;
+        IodineContext context;
 
-        private int position = 0;
+        readonly List<Token> tokens = new List<Token> ();
 
-        private Token Current {
+        int position = 0;
+
+        Token Current {
             get {
                 return PeekToken ();
             }
         }
 
-        private bool EndOfStream {
+        bool EndOfStream {
             get {
                 return tokens.Count <= position;
             }
         }
 
-        private SourceLocation Location {
+        SourceLocation Location {
             get {
-                if (PeekToken () != null)
+                if (PeekToken () != null) {
                     return PeekToken ().Location;
-                else if (tokens.Count == 0) {
+                }
+
+                if (tokens.Count == 0) {
                     return new SourceLocation (0, 0, "");
                 }
+
                 return PeekToken (-1).Location;
 
             }
         }
             
-        private Parser (IodineContext context, IEnumerable<Token> tokens)
+        Parser (IodineContext context, IEnumerable<Token> tokens)
         {
             errorLog = context.ErrorLog;
 
@@ -114,7 +118,7 @@ namespace Iodine.Compiler
          * 
          * class <name> (parameters, ...) [extends <baseclass> [implements <interfaces>, ...]]
          */
-        private AstNode ParseClass ()
+        AstNode ParseClass ()
         {
             string doc = Expect (TokenClass.Keyword, "class").Documentation;
 
@@ -203,7 +207,7 @@ namespace Iodine.Compiler
          * }
          * 
          */
-        private AstNode ParseEnum ()
+        AstNode ParseEnum ()
         {
             string doc = Expect (TokenClass.Keyword, "enum").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
@@ -241,7 +245,7 @@ namespace Iodine.Compiler
          *     ...
          * }
          */
-        private AstNode ParseContract ()
+        AstNode ParseContract ()
         {
             string doc = Expect (TokenClass.Keyword, "contract").Value;
             string name = Expect (TokenClass.Identifier).Value;
@@ -257,8 +261,10 @@ namespace Iodine.Compiler
                 } else {
                     errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
                 }
-                while (Accept (TokenClass.SemiColon))
-                    ;
+
+                while (Accept (TokenClass.SemiColon)) {
+
+                }
             }
 
             Expect (TokenClass.CloseBrace);
@@ -271,7 +277,7 @@ namespace Iodine.Compiler
          *     ...
          * }
          */
-        private AstNode ParseTrait ()
+        AstNode ParseTrait ()
         {
             string doc = Expect (TokenClass.Keyword, "trait").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
@@ -287,8 +293,9 @@ namespace Iodine.Compiler
                 } else {
                     errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
                 }
-                while (Accept (TokenClass.SemiColon))
-                    ;
+                while (Accept (TokenClass.SemiColon)) {
+
+                }
             }
 
             Expect (TokenClass.CloseBrace);
@@ -301,7 +308,7 @@ namespace Iodine.Compiler
          *     ...
          * }
          */
-        private AstNode ParseMixin ()
+        AstNode ParseMixin ()
         {
             string doc = Expect (TokenClass.Keyword, "mixin").Documentation;
             string name = Expect (TokenClass.Identifier).Value;
@@ -317,8 +324,9 @@ namespace Iodine.Compiler
                 } else {
                     errorLog.Add (Errors.IllegalInterfaceDeclaration, Location);
                 }
-                while (Accept (TokenClass.SemiColon))
-                    ;
+
+                while (Accept (TokenClass.SemiColon)) {
+                }
             }
 
             Expect (TokenClass.CloseBrace);
@@ -326,7 +334,7 @@ namespace Iodine.Compiler
             return mixin;
         }
 
-        private string ParseClassName ()
+        string ParseClassName ()
         {
             var ret = new StringBuilder ();
             do {
@@ -340,7 +348,7 @@ namespace Iodine.Compiler
         }
 
 
-        private AstNode ParseFunction (bool prototype = false, ClassDeclaration cdecl = null)
+        AstNode ParseFunction (bool prototype = false, ClassDeclaration cdecl = null)
         {
             string doc = Current.Documentation;
 
@@ -404,7 +412,7 @@ namespace Iodine.Compiler
             return decl;
         }
 
-        private List<NamedParameter> ParseFuncParameters (
+        List<NamedParameter> ParseFuncParameters (
             out bool isInstanceMethod,
             out bool isVariadic,
             out bool hasKeywordArgs,
@@ -480,7 +488,7 @@ namespace Iodine.Compiler
          * use <module> |
          * use <class> from <module>
          */
-        private UseStatement ParseUse ()
+        UseStatement ParseUse ()
         {
             Expect (TokenClass.Keyword, "use");
 
@@ -528,7 +536,7 @@ namespace Iodine.Compiler
             return new UseStatement (Location, modPath, isRelative);
         }
 
-        private string ParseModuleName ()
+        string ParseModuleName ()
         {
             var initialModule = Expect (TokenClass.Identifier);
 
@@ -550,7 +558,7 @@ namespace Iodine.Compiler
             return initialModule.Value;
         }
 
-        private AstNode ParseStatement ()
+        AstNode ParseStatement ()
         {
             try {
                 return DoParseStatement ();
@@ -560,7 +568,7 @@ namespace Iodine.Compiler
             }
         }
 
-        private AstNode DoParseStatement ()
+        AstNode DoParseStatement ()
         {
             if (Match (TokenClass.Keyword)) {
                 switch (Current.Value) {
@@ -631,7 +639,7 @@ namespace Iodine.Compiler
             }
         }
 
-        private AstNode ParseBlock ()
+        AstNode ParseBlock ()
         {
             var ret = new CodeBlock (Location);
             Expect (TokenClass.OpenBrace);
@@ -649,7 +657,7 @@ namespace Iodine.Compiler
          *      ...
          * }
          */
-        private AstNode ParseExtend ()
+        AstNode ParseExtend ()
         {
             Expect (TokenClass.Keyword, "extend");
             var clazz = ParseExpression ();
@@ -679,7 +687,7 @@ namespace Iodine.Compiler
          * 
          * }
          */
-        private AstNode ParseTryExcept ()
+        AstNode ParseTryExcept ()
         {
             string exceptionVariable = null;
             Expect (TokenClass.Keyword, "try");
@@ -688,6 +696,7 @@ namespace Iodine.Compiler
             Expect (TokenClass.Keyword, "except");
             if (Accept (TokenClass.OpenParan)) {
                 var ident = Expect (TokenClass.Identifier);
+
                 if (Accept (TokenClass.Operator, "as")) {
                     typeList = ParseTypeList ();
                 }
@@ -698,7 +707,7 @@ namespace Iodine.Compiler
             return new TryExceptStatement (Location, exceptionVariable, tryBody, exceptBody, typeList);
         }
 
-        private ArgumentList ParseTypeList ()
+        ArgumentList ParseTypeList ()
         {
             var argList = new ArgumentList (Location);
             while (!Match (TokenClass.CloseParan)) {
@@ -710,7 +719,7 @@ namespace Iodine.Compiler
             return argList;
         }
 
-        private VariableDeclaration ParseVariableDeclaration ()
+        VariableDeclaration ParseVariableDeclaration ()
         {
             bool global = false;
 
@@ -741,9 +750,10 @@ namespace Iodine.Compiler
          *     <statement>
          * ]
          */
-        private AstNode ParseIf ()
+        AstNode ParseIf ()
         {
             SourceLocation location = Location;
+
             Expect (TokenClass.Keyword, "if");
 
             var predicate = ParseExpression ();
@@ -765,7 +775,7 @@ namespace Iodine.Compiler
          * for (<identifier> in <expression) 
          *     <statement>
          */
-        private AstNode ParseFor ()
+        AstNode ParseFor ()
         {
             SourceLocation location = Location;
 
@@ -796,7 +806,7 @@ namespace Iodine.Compiler
          * foreach (<identifier> in <expression>)
          *     <statement>
          */
-        private AstNode ParseForeach ()
+        AstNode ParseForeach ()
         {
             Expect (TokenClass.Keyword, "for");
 
@@ -829,15 +839,18 @@ namespace Iodine.Compiler
          *     <statement>
          * while (<expression>)
          */
-        private AstNode ParseDoWhile ()
+        AstNode ParseDoWhile ()
         {
             SourceLocation location = Location;
+
             Expect (TokenClass.Keyword, "do");
+
             var body = ParseStatement ();
+
             Expect (TokenClass.Keyword, "while");
-            Expect (TokenClass.OpenParan);
+
             var condition = ParseExpression ();
-            Expect (TokenClass.CloseParan);
+
             return new DoStatement (location, condition, body);
         }
 
@@ -845,14 +858,16 @@ namespace Iodine.Compiler
          * while (<expression>) 
          *     <statement>
          */
-        private AstNode ParseWhile ()
+        AstNode ParseWhile ()
         {
             SourceLocation location = Location;
+
             Expect (TokenClass.Keyword, "while");
-            Expect (TokenClass.OpenParan);
+
             var condition = ParseExpression ();
-            Expect (TokenClass.CloseParan);
+
             var body = ParseStatement ();
+
             return new WhileStatement (location, condition, body);
         }
 
@@ -860,52 +875,54 @@ namespace Iodine.Compiler
          * with (<expression) 
          *      <statement>
          */
-        private AstNode ParseWith ()
+        AstNode ParseWith ()
         {
             SourceLocation location = Location;
+
             Expect (TokenClass.Keyword, "with");
-            Expect (TokenClass.OpenParan);
+
             var value = ParseExpression ();
-            Expect (TokenClass.CloseParan);
+
             var body = ParseStatement ();
+
             return new WithStatement (location, value, body);
         }
 
         /*
          * raise <expression>;
          */
-        private AstNode ParseRaise ()
+        AstNode ParseRaise ()
         {
             Expect (TokenClass.Keyword, "raise");
             return new RaiseStatement (Location, ParseExpression ());
         }
 
-        private AstNode ParseReturn ()
+        AstNode ParseReturn ()
         {
             Expect (TokenClass.Keyword, "return");
 
             if (Accept (TokenClass.SemiColon)) {
                 return new ReturnStatement (Location, new CodeBlock (Location));
-            } else {
-
-                AstNode ret = new ReturnStatement (Location, ParseExpression ());
-
-                if (Accept (TokenClass.Keyword, "when")) {
-                    return new IfStatement (Location, ParseExpression (), ret);
-                }
-
-                return ret;
             }
+
+            var ret = new ReturnStatement (Location, ParseExpression ());
+
+            if (Accept (TokenClass.Keyword, "when")) {
+                return new IfStatement (Location, ParseExpression (), ret);
+            }
+
+            return ret;
+
         }
 
-        private AstNode ParseYield ()
+        AstNode ParseYield ()
         {
             Expect (TokenClass.Keyword, "yield");
             return new YieldStatement (Location, ParseExpression ());
         }
 
 
-        private AstNode ParseAssignStatement ()
+        AstNode ParseAssignStatement ()
         {
             var identifiers = new List<string> ();
 
@@ -949,12 +966,12 @@ namespace Iodine.Compiler
 
         #region Expressions
 
-        private AstNode ParseExpression ()
+        AstNode ParseExpression ()
         {
             return ParseGeneratorExpression ();
         }
 
-        private AstNode ParseGeneratorExpression ()
+        AstNode ParseGeneratorExpression ()
         {
             var expr = ParseAssign ();
 
@@ -978,7 +995,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParseAssign ()
+        AstNode ParseAssign ()
         {
             var expr = ParseTernaryIfElse ();
             while (Match (TokenClass.Operator)) {
@@ -1067,15 +1084,13 @@ namespace Iodine.Compiler
                             expr,
                             ParseTernaryIfElse ()));
                     continue;
-                default:
-                    break;
                 }
                 break;
             }
             return expr;
         }
 
-        private AstNode ParseTernaryIfElse ()
+        AstNode ParseTernaryIfElse ()
         {
             var expr = ParseRange ();
 
@@ -1093,7 +1108,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParseRange ()
+        AstNode ParseRange ()
         {
             var expr = ParseBoolOr ();
             while (Match (TokenClass.Operator)) {
@@ -1116,15 +1131,13 @@ namespace Iodine.Compiler
                         ParseBoolOr ()
                     );
                     continue;
-                default:
-                    break;
                 }
                 break;
             }
             return expr;
         }
 
-        private AstNode ParseBoolOr ()
+        AstNode ParseBoolOr ()
         {
             var expr = ParseBoolAnd ();
             while (Match (TokenClass.Operator)) {
@@ -1139,15 +1152,13 @@ namespace Iodine.Compiler
                     expr = new BinaryExpression (Location, BinaryOperation.NullCoalescing, expr,
                         ParseBoolAnd ());
                     continue;
-                default:
-                    break;
                 }
                 break;
             }
             return expr;
         }
 
-        private AstNode ParseBoolAnd ()
+        AstNode ParseBoolAnd ()
         {
             var expr = ParseOr ();
             while (Accept (TokenClass.Operator, "&&")) {
@@ -1156,7 +1167,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParseOr ()
+        AstNode ParseOr ()
         {
             var expr = ParseXor ();
             while (Accept (TokenClass.Operator, "|")) {
@@ -1165,7 +1176,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParseXor ()
+        AstNode ParseXor ()
         {
             var expr = ParseAnd ();
             while (Accept (TokenClass.Operator, "^")) {
@@ -1174,7 +1185,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParseAnd ()
+        AstNode ParseAnd ()
         {
             var expr = ParseEquals ();
             while (Accept (TokenClass.Operator, "&")) {
@@ -1184,7 +1195,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParseEquals ()
+        AstNode ParseEquals ()
         {
             var expr = ParseRelationalOp ();
             while (Match (TokenClass.Operator)) {
@@ -1205,7 +1216,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParseRelationalOp ()
+        AstNode ParseRelationalOp ()
         {
             var expr = ParseBitshift ();
             while (Match (TokenClass.Operator)) {
@@ -1266,15 +1277,13 @@ namespace Iodine.Compiler
                         ParseBitshift ()
                     );
                     continue;
-                default:
-                    break;
                 }
                 break;
             }
             return expr;
         }
 
-        private AstNode ParseBitshift ()
+        AstNode ParseBitshift ()
         {
             var expr = ParseAdditive ();
             while (Match (TokenClass.Operator)) {
@@ -1289,15 +1298,13 @@ namespace Iodine.Compiler
                     expr = new BinaryExpression (Location, BinaryOperation.RightShift, expr,
                         ParseAdditive ());
                     continue;
-                default:
-                    break;
                 }
                 break;
             }
             return expr;
         }
 
-        private AstNode ParseAdditive ()
+        AstNode ParseAdditive ()
         {
             var expr = ParseMultiplicative ();
             while (Match (TokenClass.Operator)) {
@@ -1312,15 +1319,13 @@ namespace Iodine.Compiler
                     expr = new BinaryExpression (Location, BinaryOperation.Sub, expr,
                         ParseMultiplicative ());
                     continue;
-                default:
-                    break;
                 }
                 break;
             }
             return expr;
         }
 
-        private AstNode ParseMultiplicative ()
+        AstNode ParseMultiplicative ()
         {
             var expr = ParseUnary ();
             while (Match (TokenClass.Operator)) {
@@ -1345,15 +1350,13 @@ namespace Iodine.Compiler
                     expr = new BinaryExpression (Location, BinaryOperation.Mod, expr,
                         ParseUnary ());
                     continue;
-                default:
-                    break;
                 }
                 break;
             }
             return expr;
         }
 
-        private AstNode ParseUnary ()
+        AstNode ParseUnary ()
         {
             if (Match (TokenClass.Operator)) {
                 switch (Current.Value) {
@@ -1372,12 +1375,12 @@ namespace Iodine.Compiler
             return ParseCallSubscriptAccess ();
         }
 
-        private AstNode ParseCallSubscriptAccess ()
+        AstNode ParseCallSubscriptAccess ()
         {
             return ParseCallSubscriptAccess (ParseMatchExpression ());
         }
 
-        private AstNode ParseCallSubscriptAccess (AstNode lvalue)
+        AstNode ParseCallSubscriptAccess (AstNode lvalue)
         {
             if (Current != null) {
                 switch (Current.Class) {
@@ -1397,7 +1400,7 @@ namespace Iodine.Compiler
             return lvalue;
         }
 
-        private AstNode ParseIndexerExpression (AstNode lvalue)
+        AstNode ParseIndexerExpression (AstNode lvalue)
         {
             Expect (TokenClass.OpenBracket);
 
@@ -1415,21 +1418,25 @@ namespace Iodine.Compiler
             return new IndexerExpression (Location, lvalue, index);
         }
 
-        private AstNode ParseGetExpression (AstNode lvalue)
+        AstNode ParseGetExpression (AstNode lvalue)
         {
             Expect (TokenClass.MemberAccess);
+
             var ident = Expect (TokenClass.Identifier);
+
             return new MemberExpression (Location, lvalue, ident.Value);
         }
 
-        private AstNode ParseGetOrNullExpression (AstNode lvalue)
+        AstNode ParseGetOrNullExpression (AstNode lvalue)
         {
             Expect (TokenClass.MemberDefaultAccess);
+
             var ident = Expect (TokenClass.Identifier);
+
             return new MemberDefaultExpression (Location, lvalue, ident.Value);
         }
 
-        private AstNode ParseMatchExpression ()
+        AstNode ParseMatchExpression ()
         {
             var matchLocation = Location;
 
@@ -1474,12 +1481,12 @@ namespace Iodine.Compiler
             return ParseLambdaExpression ();
         }
 
-        private AstNode ParsePattern ()
+        AstNode ParsePattern ()
         {
             return ParsePatternOr ();
         }
 
-        private AstNode ParsePatternOr ()
+        AstNode ParsePatternOr ()
         {
             var expr = ParsePatternAnd ();
             while (Match (TokenClass.Operator, "|")) {
@@ -1493,7 +1500,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParsePatternAnd ()
+        AstNode ParsePatternAnd ()
         {
             var expr = ParsePatternExtractor ();
             while (Match (TokenClass.Operator, "&")) {
@@ -1507,7 +1514,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParsePatternExtractor ()
+        AstNode ParsePatternExtractor ()
         {
             var ret = ParsePatternRange ();
 
@@ -1530,7 +1537,7 @@ namespace Iodine.Compiler
             return ret;
         }
 
-        private AstNode ParsePatternRange ()
+        AstNode ParsePatternRange ()
         {
             var expr = ParsePatternClosedRange ();
 
@@ -1546,7 +1553,7 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParsePatternClosedRange ()
+        AstNode ParsePatternClosedRange ()
         {
             var expr = ParsePatternTerm ();
 
@@ -1562,12 +1569,12 @@ namespace Iodine.Compiler
             return expr;
         }
 
-        private AstNode ParsePatternTerm ()
+        AstNode ParsePatternTerm ()
         {
             return ParseLiteral ();
         }
 
-        private AstNode ParseLambdaExpression ()
+        AstNode ParseLambdaExpression ()
         {
             if (Accept (TokenClass.Keyword, "lambda")) {
                 bool isInstanceMethod;
@@ -1606,7 +1613,7 @@ namespace Iodine.Compiler
             return ParseLiteral ();
         }
             
-        private AstNode ParseLiteral ()
+        AstNode ParseLiteral ()
         {
             if (Current == null) {
                 errorLog.Add (Errors.UnexpectedEndOfFile, Location);
@@ -1631,7 +1638,7 @@ namespace Iodine.Compiler
             }
         }
 
-        private AstNode ParseListLiteral ()
+        AstNode ParseListLiteral ()
         {
             Expect (TokenClass.OpenBracket);
             var ret = new ListExpression (Location);
@@ -1657,7 +1664,7 @@ namespace Iodine.Compiler
             return ret;
         }
 
-        private AstNode ParseHashLiteral ()
+        AstNode ParseHashLiteral ()
         {
             Expect (TokenClass.OpenBrace);
             var ret = new HashExpression (Location);
@@ -1674,7 +1681,7 @@ namespace Iodine.Compiler
             return ret;
         }
 
-        private AstNode ParseTupleLiteral (AstNode firstVal)
+        AstNode ParseTupleLiteral (AstNode firstVal)
         {
             var tuple = new TupleExpression (Location);
             tuple.AddItem (firstVal);
@@ -1688,7 +1695,7 @@ namespace Iodine.Compiler
             return tuple;
         }
 
-        private AstNode ParseTerminal ()
+        AstNode ParseTerminal ()
         {
             switch (Current.Class) {
             case TokenClass.Identifier:
@@ -1745,7 +1752,7 @@ namespace Iodine.Compiler
             return null;
         }
             
-        private AstNode ParseSlice (AstNode lvalue, AstNode start)
+        AstNode ParseSlice (AstNode lvalue, AstNode start)
         {
             if (Accept (TokenClass.CloseBracket)) {
                 return new SliceExpression (lvalue.Location, lvalue, start, null, null);
@@ -1769,7 +1776,7 @@ namespace Iodine.Compiler
             return new SliceExpression (lvalue.Location, lvalue, start, end, step);
         }
             
-        private SuperCallStatement ParseSuperCall (ClassDeclaration parent)
+        SuperCallStatement ParseSuperCall (ClassDeclaration parent)
         {
             SourceLocation location = Location;
             Expect (TokenClass.Keyword, "super");
@@ -1779,7 +1786,7 @@ namespace Iodine.Compiler
             return new SuperCallStatement (location, parent, argumentList);
         }
 
-        private ArgumentList ParseArgumentList ()
+        ArgumentList ParseArgumentList ()
         {
             var argList = new ArgumentList (Location);
             Expect (TokenClass.OpenParan);
@@ -1817,7 +1824,7 @@ namespace Iodine.Compiler
 
         }
 
-        private AstNode ParseString (SourceLocation loc, string str)
+        AstNode ParseString (SourceLocation loc, string str)
         {
             /*
              * This might be a *bit* hacky, but, basically Iodine string interpolation
@@ -2002,7 +2009,7 @@ namespace Iodine.Compiler
             throw new SyntaxException (errorLog);
         }
 
-        private Token PeekToken ()
+        Token PeekToken ()
         {
             return PeekToken (0);
         }
