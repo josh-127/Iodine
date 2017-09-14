@@ -1,6 +1,8 @@
 #! /usr/bin/iodine
 
+use os
 use sys
+use random
 use fsutils
 use iododoc
 use argparse
@@ -23,7 +25,7 @@ func main (args) {
     module = result ["module"]
 
     format = result ["f"]
-    ofile = result ["o"]
+    ofile = stdout#result ["o"]
    
      
     try {
@@ -32,14 +34,19 @@ func main (args) {
         items = iododoc.compiledoc (code)
         
         buffer = StringBuffer ()
-        
-        doc = iododoc.MarkdownFormatter ()
 
-        with (output = open (ofile, "w")) {
-            doc.format_module (output, module, code.__doc__, items)            
+        tmpname = "/tmp/{}".format (random.cryptostr(8))
+
+        with (fd = open (tmpname, "w")) {        
+            doc = iododoc.TerminalFormatter ()
+ 
+            doc.format_module (fd, module, code.__doc__, items)            
         }
+
+        os.system ("less -ir #{tmpname}")
+
     } except (e) {
-        print (Str (e))
+        print (Str (e.message))
         print (e.stacktrace)
     }
 }
