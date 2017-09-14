@@ -686,6 +686,11 @@ namespace Iodine.Runtime
                         top.Push (new IodineGeneratorExpr (Top, method));
                         break;
                     }
+                case Opcode.BuildRegex: {
+                        var str = top.Pop () as IodineString;
+                        top.Push (new RegexModule.IodineRegex (str.Value));
+                        break;
+                    }
                 case Opcode.Slice: {
                         var target = top.Pop ();
 

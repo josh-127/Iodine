@@ -270,6 +270,9 @@ namespace Iodine.Compiler
         {
         }
 
+        public virtual void Accept (RegexExpression regex)
+        {
+        }
     }
 }
 

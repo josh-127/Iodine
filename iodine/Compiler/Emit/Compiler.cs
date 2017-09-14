@@ -2202,6 +2202,17 @@ namespace Iodine.Compiler
             }
         }
 
+
+        public override void Accept (RegexExpression regex)
+        {
+            Context.CurrentMethod.EmitInstruction (regex.Location,
+                                                   Opcode.LoadConst,
+                                                   new IodineString (regex.Value));
+
+            Context.CurrentMethod.EmitInstruction (regex.Location, Opcode.BuildRegex);
+        }
+
+
         public override void Accept (StringExpression stringConst)
         {
             stringConst.VisitChildren (this); // A string can contain a list of sub expressions for string interpolation

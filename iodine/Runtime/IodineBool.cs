@@ -46,7 +46,7 @@ namespace Iodine.Runtime
             {
             }
 
-            public override IodineObject Invoke (VirtualMachine vm, IodineObject[] args)
+            public override IodineObject Invoke (VirtualMachine vm, IodineObject [] args)
             {
                 if (args.Length <= 0) {
                     vm.RaiseException (new IodineArgumentException (1));
@@ -175,4 +175,3 @@ namespace Iodine.Runtime
         }
     }
 }
-

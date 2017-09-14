@@ -306,6 +306,35 @@ namespace Iodine.Compiler
             );
         }
 
+        Token ReadRegexString ()
+        {
+            SourceLocation location = source.Location;
+
+            var accum = new StringBuilder ();
+
+            source.Skip ();
+
+            var delimiter = source.Read ();
+            var ch = source.Peek ();
+
+            while (source.See () && ch != delimiter) {
+                accum.Append (source.Read ());
+                ch = source.Peek ();
+            }
+
+            if (!source.See ()) {
+                errorLog.Add (Errors.UnterminatedStringLiteral, location);
+            }
+
+            source.Skip ();
+
+            return new Token (TokenClass.RegexLiteral,
+                accum.ToString (),
+                lastDocStr,
+                location
+            );
+        }
+
         char ParseEscapeCode ()
         {
             switch (source.Read ()) {
@@ -337,6 +366,11 @@ namespace Iodine.Compiler
             var accum = new StringBuilder ();
 
             var ch = source.Peek ();
+
+            if (source.Peeks (2) == "r\"") {
+
+                return ReadRegexString ();
+            }
 
             while (char.IsLetterOrDigit (ch) || ch == '_') {
                 accum.Append (source.Read ());

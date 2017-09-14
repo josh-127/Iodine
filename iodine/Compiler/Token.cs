@@ -36,6 +36,7 @@ namespace Iodine.Compiler
     {
         Identifier,
         StringLiteral,
+        RegexLiteral,
         BinaryStringLiteral,
         InterpolatedStringLiteral,
         IntLiteral,

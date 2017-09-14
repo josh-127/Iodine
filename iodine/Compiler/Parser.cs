@@ -1719,6 +1719,8 @@ namespace Iodine.Compiler
                 return val;
             case TokenClass.StringLiteral:
                 return new StringExpression (Location, ReadToken ().Value);
+            case TokenClass.RegexLiteral:
+                return new RegexExpression (Location, ReadToken ().Value);
             case TokenClass.BinaryStringLiteral:
                 return new StringExpression (Location, ReadToken ().Value, true);
             case TokenClass.Keyword:

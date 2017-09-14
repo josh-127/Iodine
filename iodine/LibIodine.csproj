@@ -234,7 +234,6 @@
     <Compile Include="Runtime\IodineProperty.cs" />
     <Compile Include="Runtime\IodineRange.cs" />
     <Compile Include="Runtime\IodineSlice.cs" />
-    <Compile Include="Runtime\IodineSomething.cs" />
     <Compile Include="Runtime\IodineStackFrameWrapper.cs" />
     <Compile Include="Runtime\IodineStream.cs" />
     <Compile Include="Runtime\IodineString.cs" />
@@ -244,6 +243,7 @@
     <Compile Include="Runtime\StandardModules\PsUtilsModule.cs" />
     <Compile Include="Util\MarshalUtil.cs" />
     <Compile Include="Runtime\IodineEnumValue.cs" />
+    <Compile Include="Compiler\Ast\RegexExpression.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
