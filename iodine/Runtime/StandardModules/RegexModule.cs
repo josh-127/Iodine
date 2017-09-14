@@ -44,7 +44,7 @@ namespace Iodine.Runtime
             sealed class RegexTypeDefinition : IodineTypeDefinition
             {
                 public RegexTypeDefinition ()
-                    : base ("regex")
+                    : base ("Regex")
                 {
                     BindAttributes (this);
                 }
