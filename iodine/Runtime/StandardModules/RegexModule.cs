@@ -34,7 +34,7 @@ namespace Iodine.Runtime
     [IodineBuiltinModule ("regex")]
     public class RegexModule : IodineModule
     {
-        internal class IodineRegex : IodineObject
+        public class IodineRegex : IodineObject
         {
             public static readonly IodineTypeDefinition TypeDefinition = new RegexTypeDefinition ();
 
