@@ -14,7 +14,7 @@ func __isBuiltinType (arg) {
 func __keyName (self, key) {
     accum = StringBuffer ();
     strip = true;
-    for (c in typecast (Str, key)) {
+    for c in typecast (Str, key) {
         match (c) {
             case '-' when !strip => accum.append ('_')
             case '-' => null
@@ -36,9 +36,9 @@ class ArgumentParser {
         self.epilog     = null;
         self.program    = null;
         self.version    = null;
-        for (key in kwargs) {
+        for key in kwargs {
             current = kwargs [key];
-            match (key) {
+            match key {
                 case "usage"    => self.usage   = typecast (Str, current)
                 case "prolog"   => self.prolog  = typecast (Str, current)
                 case "epilog"   => self.epilog  = typecast (Str, current)
@@ -54,33 +54,33 @@ class ArgumentParser {
     # TODO: Extend the functionality of this
     # TODO: Iterate through the arguments and print the help strings
     func help (self) {
-        if (self.program isnot Null) {
-            version = match (self.version isnot Null) {
+        if self.program isnot Null {
+            version = match self.version isnot Null {
                 case true   => "({0})".format (self.version)
                 case false  => "(unknown)"
             }
             print ("{0} {1}".format (self.program, version))
-            if (self.usage is Null)
+            if self.usage is Null
                 print ('') # newline
         }
-        if (self.usage isnot Null) {
+        if self.usage isnot Null {
             print ("Usage: {0}".format (self.usage))
             print ('') # newline
         }
-        if (self.prolog isnot Null) {
+        if self.prolog isnot Null {
             print (self.prolog)
             print ('') # newline
         }
-        if (self.epilog isnot Null) {
+        if self.epilog isnot Null {
             print (self.epilog)
         }
     }
 
     func add (self, name, **kwargs) {
         argdef = ArgumentDefinition (name)
-        for (key in kwargs) {
+        for key in kwargs {
             current = kwargs [key]
-            match (key) {
+            match key {
                 case "type"     => argdef.setType (current)
                 case "metavar"  => argdef.setMetaVar (current)
                 case "nargs"    => argdef.setNargs (current)
@@ -105,37 +105,37 @@ class ArgumentParser {
         realdest = 0
 
         # Iterate through the argument strings
-        for (i in 0 .. argcount) {
+        for i in 0 .. argcount {
             key = args [i]
 
             # Continue if the current string is not an argument
-            if (!self.isArgument (key)) {
+            if !self.isArgument (key) {
                 continue
             }
 
             # Get the argument definition for the current string
             # Continue if no argument definition is found
             def = null
-            if ((def = self.tryGetDefinition (key)) == false) {
+            if (def = self.tryGetDefinition (key)) == false {
                 continue
             }
 
             # Check if the argument is optional or positional
-            if (def.isOptional ()) {
+            if def.isOptional () {
 
                 # Check if the argument should be parsed normally
                 nargs = def.getNargs ()
-                if (nargs == def.DEFAULT) {
+                if nargs == def.DEFAULT {
                     i += 1
                     def.setValue (args [i])
                 }
 
                 # Check if the argument is optional
-                else if (nargs == def.OPTIONAL) {
+                else if nargs == def.OPTIONAL {
 
                     # Check if the argument is a switch
-                    if ((i + 1) == argcount
-                        || ((i + 1) < argcount && self.isArgument (args [i + 1]))) {
+                    if (i + 1) == argcount
+                       || ((i + 1) < argcount && self.isArgument (args [i + 1])) {
                         def.setValue (def.getConst ())
                         continue
                     }
@@ -146,18 +146,18 @@ class ArgumentParser {
                 }
 
                 # Check if the value of the argument should be a list
-                else if (false
+                else if false
                     || nargs == def.ZERO_OR_MORE
-                    || nargs == def.ONE_OR_MORE) {
+                    || nargs == def.ONE_OR_MORE {
                     lst = []
 
                     # Check if the argument is a switch
                     # Only if nargs is ZERO_OR_MORE
-                    if (nargs == def.ZERO_OR_MORE && ((i + 1) == argcount
-                        || (i + 1) < argcount && self.isArgument (args [i + 1]))) {
+                    if nargs == def.ZERO_OR_MORE && ((i + 1) == argcount
+                       || (i + 1) < argcount && self.isArgument (args [i + 1])) {
 
                         # Set the value of the argument to the default value
-                        if (def.hasDefault ()) {
+                        if def.hasDefault () {
                             lst.append (def.getDefault ())
                         }
 
@@ -171,19 +171,19 @@ class ArgumentParser {
 
                     # Raise an exception if the argument is a switch
                     # Only if nargs is ONE_OR_MORE
-                    else if (nargs == def.ONE_OR_MORE && ((i + 1) == argcount
-                        || (i + 1) < argcount && self.isArgument (args [i + 1]))) {
+                    else if nargs == def.ONE_OR_MORE && ((i + 1) == argcount
+                        || (i + 1) < argcount && self.isArgument (args [i + 1])) {
                         raise Exception ("Unable to assign value to argument '{0}'"
                             .format (def.getName ()))
                         continue
                     }
 
                     # Take the following elements if no limit is specified
-                    if (nargs isnot Int) {
+                    if nargs isnot Int {
 
                         # Fetch elements that are not actual arguments
                         elements = takewhile (skip (args, i + 1), lambda (x) => !self.isArgument (x))
-                        for (element in elements) {
+                        for element in elements {
                             lst.append (element)
                         }
                     }
@@ -194,16 +194,16 @@ class ArgumentParser {
 
                         # Raise an exception if more items are requested
                         # than there are elements available
-                        if (argcount >= (i + 1 + count)) {
+                        if argcount >= (i + 1 + count) {
                             raise Exception ("Requested {0} elements; only {1} more available!"
                                 .format (count))
                         }
                         elements = take (skip (args, i + 1), count)
-                        for (element in elements) {
+                        for element in elements {
 
                             # Raise an exception if one of the fetched elements
                             # is an actual argument
-                            if (self.isArgument (element)) {
+                            if self.isArgument (element) {
                                 raise Exception ("Fetched argument '{0}'' when element was expected!"
                                     .format (__keyName (element)))
                             }
@@ -216,7 +216,7 @@ class ArgumentParser {
             }
 
             # Positional argument
-            else if (def.isPositional ()) {
+            else if def.isPositional () {
 
             }
         }
@@ -225,44 +225,44 @@ class ArgumentParser {
         func getNthParam (n) {
             pos = 0
             i = 0
-            while (i < len (args) && pos != n) {
-                if (!self.isArgument (args [i])) {
+            while i < len (args) && pos != n {
+                if !self.isArgument (args [i]) {
                     pos += 1
                 }
                 i += 1
             }
 
-            if (pos < len (args)) {
+            if pos < len (args) {
                 return args [pos]
             }
             return null # Not found
         }
 
         # Set any positional arguments (If any)
-        for (i in 0 .. len (self.defs)) {
+        for i in 0 .. len (self.defs) {
             def = self.defs [i]
-            if (def.isPositional ()) {
+            if def.isPositional () {
                 def.setValue (getNthParam (i))
             }
         }
 
         # Iterate through the argument definitions
-        for (def in self.defs) {
+        for def in self.defs {
 
             # Check if the value is required and not set
             # raise an exception
-            if (def.isRequired () && !def.hasValue () && !def.hasDefault ()) {
+            if def.isRequired () && !def.hasValue () && !def.hasDefault () {
                 raise Exception ("Required argument {0} not set!".format (def.getName ()))
             }
 
             # Check if the value is required and has no value
             # but can be set to a default value
-            else if (def.isRequired () && def.hasDefault ()) {
+            else if def.isRequired () && def.hasDefault () {
 
                 # Check if the value should be a list
                 nargs = def.getNargs ()
-                if (nargs == def.ZERO_OR_MORE
-                    || nargs == def.ONE_OR_MORE) {
+                if nargs == def.ZERO_OR_MORE
+                   || nargs == def.ONE_OR_MORE {
                     def.setValue ([def.getDefault ()])
                 }
 
@@ -274,7 +274,7 @@ class ArgumentParser {
 
             # Check if the argument definition satisfies
             # the choices, if any
-            if (def.satisfiesChoices ()) {
+            if def.satisfiesChoices () {
 
                 # Set the dict entry
                 dict [def.getName ()] = def.getValue ()
@@ -289,8 +289,8 @@ class ArgumentParser {
     }
 
     func tryGetDefinition (self, key) {
-        for (def in self.defs) {
-            if (def.name == key) {
+        for def in self.defs {
+            if def.name == key {
                 return def
             }
         }
@@ -345,14 +345,13 @@ class ArgumentDefinition {
 	}
 
     func getValue (self) {
-        if (self.hasValue ())
-            return self.value
+        if self.hasValue ()  return self.value
         return self.getDefault ()
     }
 
     func setValue (self, str) {
         result = self.tryCast (self.type, str)
-        if (!result [0]) {
+        if !result [0] {
             raise Exception ("Cast from '{0}' to '{1}' failed for '{2}'."
                 .format (str.__name__, self.type.__name__, self.getName ()))
         }
@@ -361,9 +360,9 @@ class ArgumentDefinition {
 
     func setValueList (self, lst) {
         self.value = []
-        for (item in lst) {
+        for item in lst {
             result = self.tryCast (self.type, item)
-            if (!result [0]) {
+            if !result [0] {
                 raise Exception ("Cast from '{0}' to '{1}' failed for '{2}'."
                     .format (item.__name__, self.type.__name__, self.getName ()))
             }
@@ -376,7 +375,7 @@ class ArgumentDefinition {
     }
     
     func setMetaVar (self, T) {
-        if (T is Str) {
+        if T is Str {
             self.metavar = T
         } else {
             self.metavar = Str (T)
@@ -396,16 +395,16 @@ class ArgumentDefinition {
     }
 
     func setNargs (self, num) {
-        if (num is Int) {
-            if (num < 0) {
+        if num is Int {
+            if num < 0 {
                 raise Exception ("Nargs has to be a positive integer!")
             }
             self.nargs = num
-        } else if (false
+        } else if false
             || num == self.DEFAULT
             || num == self.OPTIONAL
             || num == self.ONE_OR_MORE
-            || num == self.ZERO_OR_MORE) {
+            || num == self.ZERO_OR_MORE {
             self.nargs = num
         } else {
             raise Exception ("Invalid nargs value!")
@@ -417,15 +416,15 @@ class ArgumentDefinition {
     }
 
     func satisfiesChoices (self) {
-        if (!self.hasChoices ()) {
+        if !self.hasChoices () {
             return true
         }
-        if (!self.hasValue ()) {
+        if !self.hasValue () {
             return false
         }
         value = repr (self.getValue ())
-        for (choice in self.choices) {
-            if (value == repr (choice)) {
+        for choice in self.choices {
+            if value == repr (choice) {
                 return true
             }
         }
