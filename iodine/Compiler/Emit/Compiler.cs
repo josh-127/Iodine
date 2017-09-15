@@ -1058,8 +1058,8 @@ namespace Iodine.Compiler
                 forStmt.AfterThought.Location,
                 Opcode.Jump,
                 skipAfterThought
-            )
-                   ;
+            );
+
             Context.CurrentMethod.MarkLabelPosition (breakLabel);
 
             Context.BreakLabels.Pop ();

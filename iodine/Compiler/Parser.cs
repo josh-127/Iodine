@@ -589,8 +589,6 @@ namespace Iodine.Compiler
                 case "if":
                     return ParseIf ();
                 case "for":
-                    return ParseFor ();
-                case "foreach":
                     return ParseForeach ();
                 case "with":
                     return ParseWith ();
@@ -621,27 +619,35 @@ namespace Iodine.Compiler
                     return ParseSuperCall (new ClassDeclaration (Location, "", null));
                 }
             }
-
             if (Match (TokenClass.OpenBrace)) {
                 return ParseBlock ();
-            } else if (Accept (TokenClass.SemiColon)) {
-                return new Statement (Location);
-            } else if (Match (TokenClass.Operator, "@")) {
-                return ParseFunction ();
-            } else if (PeekToken (1) != null && PeekToken (1).Class == TokenClass.Comma) {
-                return ParseAssignStatement ();
-            } else {
-                var node = ParseExpression ();
-                if (node == null) {
-                    MakeError ();
-                }
-                return new Expression (Location, node);
             }
+
+            if (Accept (TokenClass.SemiColon)) {
+                return new Statement (Location);
+            }
+
+            if (Match (TokenClass.Operator, "@")) {
+                return ParseFunction ();
+            }
+
+            if (PeekToken (1) != null && PeekToken (1).Class == TokenClass.Comma) {
+                return ParseAssignStatement ();
+            } 
+
+            var node = ParseExpression ();
+
+            if (node == null) {
+                MakeError ();
+            }
+            return new Expression (Location, node);
+
         }
 
         AstNode ParseBlock ()
         {
             var ret = new CodeBlock (Location);
+
             Expect (TokenClass.OpenBrace);
 
             while (!Match (TokenClass.CloseBrace)) {
@@ -769,41 +775,9 @@ namespace Iodine.Compiler
         }
 
         /*
-         * for (<initializer>; <condition>; <afterthought>)
-         *     <statement>
-         * --- OR ---
-         * for (<identifier> in <expression) 
-         *     <statement>
-         */
-        AstNode ParseFor ()
-        {
-            SourceLocation location = Location;
-
-            return ParseForeach ();
-
-
-            context.Warn (
-                WarningType.SyntaxWarning,
-                "C style for loop is deprecated infavor of for each loop."
-            );
-
-            Expect (TokenClass.Keyword, "for");
-
-            AstNode initializer = new Expression (Location, ParseExpression ());
-            Expect (TokenClass.SemiColon);
-            var condition = ParseExpression ();
-            Expect (TokenClass.SemiColon);
-            AstNode afterThought = new Expression (Location, ParseExpression ());
-
-            var body = ParseStatement ();
-
-            return new ForStatement (location, initializer, condition, afterThought, body);
-        }
-
-        /*
          * NOTE: Usage of this foreach keyword is deprecated infavor of doing 
-         * for (<identifier> in <expression>
-         * foreach (<identifier> in <expression>)
+         * for <identifier> in <expression>
+         * for <identifier> in <expression>
          *     <statement>
          */
         AstNode ParseForeach ()
@@ -973,18 +947,21 @@ namespace Iodine.Compiler
 
         AstNode ParseGeneratorExpression ()
         {
-            var expr = ParseAssign ();
+            return ParseAssign ();
+            // TODO: Reimplement generator expressions in a way that does
+            // confict with new for statement
 
+            /*
             bool isGenExpr = Match (TokenClass.Keyword, "for")
                 && PeekToken (1) != null
                 && PeekToken (1).Class != TokenClass.OpenParan;
-            
             if (isGenExpr) {
                 Expect (TokenClass.Keyword, "for");
 
                 string ident = Expect (TokenClass.Identifier).Value;
 
                 Expect (TokenClass.Keyword, "in");
+
                 var iterator = ParseExpression ();
                 AstNode predicate = null;
                 if (Accept (TokenClass.Keyword, "if")) {
@@ -993,6 +970,7 @@ namespace Iodine.Compiler
                 return new GeneratorExpression (expr.Location, expr, ident, iterator, predicate);
             }
             return expr;
+            */
         }
 
         AstNode ParseAssign ()
