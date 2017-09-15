@@ -7,7 +7,7 @@ class Base64 {
         encoded = StringBuffer ()
         i = 0
 
-        while (i < length - 2) {
+        while i < length - 2 {
             encoded.append (Base64.chars  [(ord (str [i + 0]) >>    2) &  0x3F])
             encoded.append (Base64.chars [((ord (str [i + 0]) &  0x03) <<   4)|
                 ((ord (str [i + 1]) &  0xF0) >>   4)])
@@ -17,9 +17,9 @@ class Base64 {
             i += 3    
         }
 
-        if (i < length) {
+        if i < length {
             encoded.append (Base64.chars  [(ord (str [i + 0]) >>    2) &  0x3F])
-            if (i == (length - 1)) {
+            if i == (length - 1) {
                 encoded.append (Base64.chars  [(ord (str [i + 0]) & 0x03) << 4])
                 encoded.append ('=')
             } else {
@@ -37,8 +37,8 @@ class Base64 {
         length = len (str)
         i = 0
 
-        for (i in 0 .. length) {
-            if (Base64.lut [ord (str [i])] > 63) {
+        for i in 0 .. length {
+            if Base64.lut [ord (str [i])] > 63 {
                 break
             }
         }
@@ -48,7 +48,7 @@ class Base64 {
 
         i = 0
         
-        while (remaining > 4) {
+        while remaining > 4 {
             decoded.append (chr ((Base64.lut [ord (str [i + 0]) & 0xFF] << 2 |
                                   Base64.lut [ord (str [i + 1]) & 0xFF] >> 4) & 0xFF))
             decoded.append (chr ((Base64.lut [ord (str [i + 1]) & 0xFF] << 4 |
@@ -58,15 +58,15 @@ class Base64 {
             i += 4
             remaining -= 4
         }
-        if (remaining > 1) {
+        if remaining > 1 {
             decoded.append (chr ((Base64.lut [ord (str [i + 0]) & 0xFF] << 2 |
                                   Base64.lut [ord (str [i + 1]) & 0xFF] >> 4) & 0xFF))
         }
-        if (remaining > 2) {
+        if remaining > 2 {
             decoded.append (chr ((Base64.lut [ord (str [i + 1]) & 0xFF] << 4 |
                                   Base64.lut [ord (str [i + 2]) & 0xFF] >> 2) & 0xFF))
         }
-        if (remaining > 3) {
+        if remaining > 3 {
             decoded.append (chr ((Base64.lut [ord (str [i + 2]) & 0xFF] << 6 |
                 Base64.lut [ord (str [i + 3]) & 0xFF]     ) & 0xFF))
         }
@@ -78,7 +78,7 @@ class Base16 {
     func encode (str) {
         typecast (Str, str)
         buf = StringBuffer ();
-        for (ch in str) {
+        for ch in str {
             buf.append (Base16.lut [ord (ch)]);
         }
         return Str (buf);
@@ -87,7 +87,7 @@ class Base16 {
     func decode (str) {
         typecast (Str, str)
         buf = StringBuffer ();
-        for (i in range (0, len (str), 2)) {
+        for i in range (0, len (str), 2) {
             chrstr = str.substr (i, i + 2);
             buf.append (chr (Int (chrstr, 16)));
         }

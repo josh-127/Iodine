@@ -68,7 +68,7 @@ class Logger {
      */
     func info (self, msg) {
         
-        if (self._loglevel > 10) {
+        if self._loglevel > 10 {
             return false
         }
         
@@ -89,7 +89,7 @@ class Logger {
      */
     func warn (self, msg) {
 
-        if (self._loglevel > 20) {
+        if self._loglevel > 20 {
             return false
         }
         now = datetime.now ()
@@ -108,7 +108,7 @@ class Logger {
      * @param msg The message to be logged
      */
     func error (self, msg) {
-        if (self._loglevel > 30) {
+        if self._loglevel > 30 {
             return false
         }
         
@@ -128,7 +128,7 @@ class Logger {
      * @param msg The message to be logged
      */
     func fatal (self, msg) {
-        if (self._loglevel > 40) {
+        if self._loglevel > 40 {
             return false
         }
         

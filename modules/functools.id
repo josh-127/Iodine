@@ -14,7 +14,7 @@ use inspect
 func memoize (f) {
     func wrapper (*args) {
         key = args
-        if (wrapper.cache.contains (key)) {
+        if wrapper.cache.contains (key) {
             wrapper.hits += 1
             return wrapper.cache [key]
         }
@@ -60,7 +60,7 @@ class MultiFunc {
 
     func __invoke__ (self, *args) {
         size = len (args)
-        if (self._dispatchTable.contains (size)) {
+        if self._dispatchTable.contains (size) {
             return self._dispatchTable [size] (*args)
         } else {
             return self._default (args)
@@ -81,12 +81,12 @@ class TypedMultiFunc {
 
 
         func isMatch (self, args) {
-            if (len (args) != len (self._types)) {
+            if len (args) != len (self._types) {
                 return false
             }
 
-            for (i in 0 .. len (args)) {
-                if (args [i] isnot self._types [i]) {
+            for i in 0 .. len (args) {
+                if args [i] isnot self._types [i] {
                     return false
                 }
             }
@@ -114,11 +114,11 @@ class TypedMultiFunc {
 
     func __invoke__ (self, *args) {
         matches = filter (self._dispatchTable, lambda (p) => p.isMatch (args))
-        if (len (matches) == 0) {
+        if len (matches) == 0 {
             return self._default (args)
-        } else {
-            return matches [0]._method (*args)
         }
+        
+        return matches [0]._method (*args)
     }
 }
 
@@ -132,7 +132,7 @@ func multi (method) {
     
     qualname = "#{method.__module__}.#{method.__name__}"
     
-    if (!_multifuncMap.contains (qualname)) {
+    if !_multifuncMap.contains (qualname) {
         _multifuncMap [qualname] = MultiFunc ()
     }
     
@@ -145,7 +145,7 @@ func typedmulti (*types) {
     func inner (method) {
         qualname = "#{method.__module__}.#{method.__name__}"
 
-        if (!_multifuncMap.contains (qualname)) {
+        if !_multifuncMap.contains (qualname) {
             _multifuncMap [qualname] = TypedMultiFunc ()
         }
 
