@@ -18,7 +18,7 @@ class EventEmitter {
      * @param callback The event handler
      */
     func on (self, event, callback) {
-        if (!self.dict.contains (event)) {
+        if !self.dict.contains (event) {
             self.dict [event] = []
         } 
         self.dict [event].append (callback);
@@ -31,7 +31,7 @@ class EventEmitter {
      * @param callback The event handler
      */
     func once (self, event, callback) {
-        if (!self.dict.contains (event)) {
+        if !self.dict.contains (event) {
             self.dict [event] = [];
         }
 
@@ -39,8 +39,8 @@ class EventEmitter {
             callback (*args);
             innerId = id (inner);
 
-            for (callback in dict[event]) {
-                if (id (callback) == id (inner)) {
+            for callback in dict[event] {
+                if id (callback) == id (inner) {
                     dict[event].remove (callback)
                     return null;
                 }
@@ -56,7 +56,7 @@ class EventEmitter {
      */
     func remove (self, callback) {
         
-        for (key, value in self.dict) {
+        for key, value in self.dict {
             value.discard (callback)
         }   
     }
@@ -68,12 +68,12 @@ class EventEmitter {
      * @param args Arguments to be passed to the event hander
      */
     func emit (self, event, *args) {
-        if (self.dict.contains (event)) {
-            for (callback in self.dict [event]) {
+        if self.dict.contains (event) {
+            for callback in self.dict [event] {
                 try {
                     callback (*args);
                 } except (e) {
-                    if (event != "exception" && self.dict.contains ("exception")) {
+                    if event != "exception" && self.dict.contains ("exception") {
                         self.emit ("exception", e);
                     } else {
                         raise e;
@@ -97,7 +97,7 @@ class Event {
      * @param *args Arguments to pass on to each handler
      */
     func __invoke__ (self, *args) {
-        for (handler in self._handlers) {
+        for handler in self._handlers {
             handler (*args);
         }   
     }

@@ -15,9 +15,9 @@ trait Iterable {
  */
 func chain (*iterables) {
     typecast (Iterable, iterables)
-    for (iterable in iterables) {
+    for iterable in iterables {
         typecast (Iterable, iterable)
-        for (item in iterable) {
+        for item in iterable {
             yield item
         }
     }
@@ -33,11 +33,11 @@ func chain (*iterables) {
  */
 func any (iterable: Iterable, *callback) {
     callbacklen = len (callback)
-    if (callbacklen > 1) {
+    if callbacklen > 1 {
         raise ArgumentException ("callback", "Pass zero or one callbacks")
     }
     
-    if (len (iterable) > 0 && callbacklen > 0) {
+    if len (iterable) > 0 && callbacklen > 0 {
         return filter (iterable, callback [0]) isnot Null
     }
     
@@ -50,7 +50,7 @@ func any (iterable: Iterable, *callback) {
  * @param callback The callback
  */
 func each (iterable: Iterable, callback) {
-    for (item in iterable) {
+    for item in iterable {
         callback (item)
     }
 }
@@ -63,8 +63,8 @@ func each (iterable: Iterable, callback) {
  */
 func take (iterable: Iterable, count) {
     i = 0
-    for (item in iterable) {
-        if (i < count) {
+    for item in iterable {
+        if i < count {
             yield item
         }
         i += 1
@@ -79,11 +79,11 @@ func take (iterable: Iterable, count) {
  */
 func takewhile (iterable: Iterable, callback) {
     stop = false
-    for (item in iterable) {
-        if (!stop && !typecast (Bool, callback (item))) {
+    for item in iterable {
+        if !stop && !typecast (Bool, callback (item)) {
             stop = true
         }
-        if (stop) {
+        if stop {
             continue
         }
         yield item
@@ -98,8 +98,8 @@ func takewhile (iterable: Iterable, callback) {
  */
 func skip (iterable: Iterable, count) {
     i = 0
-    for (item in iterable) {
-        if (i >= count) {
+    for item in iterable {
+        if i >= count {
             yield item
         }
         i += 1
@@ -114,11 +114,11 @@ func skip (iterable: Iterable, count) {
  */
 func skipwhile (iterable, callback) {
     _skip = true
-    for (item in iterable) {
-        if (_skip && !typecast (Bool, callback (item))) {
+    for item in iterable {
+        if _skip && !typecast (Bool, callback (item)) {
             _skip = false
         }
-        if (_skip) {
+        if _skip {
             continue
         }
         yield item
@@ -135,13 +135,13 @@ func skipwhile (iterable, callback) {
 func sum (iterable, **kwargs) {
     typecast (Iterable, iterable)
     result = 0
-    for (key in kwargs) {
-        match (key) {
+    for key in kwargs {
+        match key {
             case "start" => result = kwargs [key]
             case _ { }
         }
     }
-    for (item in iterable) {
+    for item in iterable {
         result += item
     }
     return result
@@ -157,24 +157,24 @@ func zip (*iterables) {
     iterators = List ()
     iteratorIndices = List ()
     iteratorCounts = List ()
-    for (iterator in iterables) {
+    for iterator in iterables {
         typecast (Iterable, iterator)
         iterators.append (iterator)
         iteratorIndices.append (0)
         iteratorCounts.append (len (iterator))
     }
     loop = true
-    while (loop) {
+    while loop {
         objs = []
-        for (i in 0 .. iteratorCount) {
-            if (iteratorCounts [i] == iteratorIndices [i]) {
+        for i in 0 .. iteratorCount {
+            if iteratorCounts [i] == iteratorIndices [i] {
                 loop = false
                 break
             }
             objs.append (iterators [i] [iteratorIndices [i]])
             iteratorIndices [i] += 1
         }
-        if (loop) {
+        if loop {
             yield Tuple (objs)
         }
     }
@@ -193,13 +193,13 @@ func zip (*iterables) {
 func reduce (iterable: Iterable, callback, **kwargs) {
     # TODO: Use trait Callable/Invokable for callback
     result = 0
-    for (key in kwargs) {
-        match (key) {
+    for key in kwargs {
+        match key {
             case "start" => result = kwargs [key]
             case _ { }
         }
     }
-    for (item in iterable) {
+    for item in iterable {
         result = callback (result, item)
     }
     return result
@@ -215,8 +215,8 @@ func reduce (iterable: Iterable, callback, **kwargs) {
  */
 func filter (iterable: Iterable, callback) {
     # TODO: Use trait Callable/Invokable for callback
-    for (item in iterable) {
-        if (callback (item)) {
+    for item in iterable {
+        if callback (item) {
             yield item
         }
     }
@@ -232,7 +232,7 @@ func filter (iterable: Iterable, callback) {
  */
 func map (iterable: Iterable, callback) {
     # TODO: Use trait Callable/Invokable for callback
-    for (item in iterable) {
+    for item in iterable {
         yield callback (item)
     }
 }

@@ -11,13 +11,13 @@
  */
 class SemanticVersion {
     func SemanticVersion (self, *args) {
-        if (len (args) == 1) {
+        if len (args) == 1 {
             self.versionString = args [0]
             self._parseVersionString ()
         }
-        else if (len (args) >= 2) {
+        else if len (args) >= 2 {
             argList = List () + args
-            while (len (argList) < 4) {
+            while len (argList) < 4 {
                 argList.append (null)
             }
             self._createVersionString (argList [0], argList [1], argList [2], 
@@ -39,18 +39,18 @@ class SemanticVersion {
     func _parseVersionString (self) {
         ver = self.versionString
         
-        if (self.versionString.startswith ("v")) {
+        if self.versionString.startswith ("v") {
             ver = self.versionString.substr (1)
         }
         
         verSplit = ver.split ("-")
         versionBase = verSplit [0].split (".")
-        if (len (verSplit) == 2) {
+        if len (verSplit) == 2 {
             self.versionTag = verSplit [1]
         }
         
-        for (i in range (3)) {
-            if (len (versionBase) <= i) {
+        for i in range (3) {
+            if len (versionBase) <= i {
                 versionBase.append (0)
             }
             else {
@@ -64,12 +64,12 @@ class SemanticVersion {
     }
     
     func _createVersionString (self, major, minor, patch, tag) {
-        if (null == patch) {
+        if patch is Null {
             patch = 0
         }
         fmt = "v{}.{}.{}"
         ver = fmt.format (major, minor, patch)
-        if (tag != null && tag != "") {
+        if tag isnot Null && tag != "" {
             ver += "-{}".format (tag)
         } 
         self.versionString = ver
@@ -84,21 +84,21 @@ class SemanticVersion {
     func isGreaterThan (self, version) {
         ver = SemanticVersion (version)
         
-        if (ver.versionMajor < self.versionMajor) {
+        if ver.versionMajor < self.versionMajor {
             return true
         }
-        else if (ver.versionMajor > self.versionMajor) {
+        else if ver.versionMajor > self.versionMajor {
             return false
         }
         
-        if (ver.versionMinor < self.versionMinor) {
+        if ver.versionMinor < self.versionMinor {
             return true
         }
-        else if (ver.versionMinor > self.versionMinor) {
+        else if ver.versionMinor > self.versionMinor {
             return false
         }
         
-        if (ver.versionPatch < self.versionPatch) {
+        if ver.versionPatch < self.versionPatch {
             return true
         }
         
@@ -113,8 +113,9 @@ class SemanticVersion {
      */   
     func isGTE (self, version) {
         ver = SemanticVersion (version)
-        if (ver.versionMajor == self.versionMajor && ver.versionMinor == 
-            self.versionMinor && ver.versionPatch == self.versionPatch) {
+        if ver.versionMajor == self.versionMajor
+           && ver.versionMinor == self.versionMinor
+           && ver.versionPatch == self.versionPatch {
             return true
         }
         return self.isGreaterThan (version)
@@ -127,8 +128,9 @@ class SemanticVersion {
      */
     func isLTE (self, version) {
         ver = SemanticVersion (version)
-        if (ver.versionMajor == self.versionMajor && ver.versionMinor == 
-            self.versionMinor && ver.versionPatch == self.versionPatch) {
+        if ver.versionMajor == self.versionMajor
+           && ver.versionMinor == self.versionMinor
+           && ver.versionPatch == self.versionPatch {
             return true
         }
         return self.isLessThan (version)
@@ -142,21 +144,21 @@ class SemanticVersion {
     func isLessThan (self, version) {
         ver = SemanticVersion (version)
         
-        if (ver.versionMajor > self.versionMajor) {
+        if ver.versionMajor > self.versionMajor {
             return true
         }
-        else if (ver.versionMajor < self.versionMajor) {
+        else if ver.versionMajor < self.versionMajor {
             return false
         }
         
-        if (ver.versionMinor > self.versionMinor) {
+        if ver.versionMinor > self.versionMinor {
             return true
         }
-        else if (ver.versionMinor < self.versionMinor) {
+        else if ver.versionMinor < self.versionMinor {
             return false
         }
         
-        if (ver.versionPatch > self.versionPatch) {
+        if ver.versionPatch > self.versionPatch {
             return true
         }
         
@@ -170,9 +172,9 @@ class SemanticVersion {
      */
     func isEqual (self, ver) {
         v = SemanticVersion (ver)
-        if (v.versionMajor == self.versionMajor && 
-            v.versionMinor == self.versionMinor && 
-            v.versionPatch == self.versionPatch) {
+        if v.versionMajor == self.versionMajor && 
+           v.versionMinor == self.versionMinor && 
+           v.versionPatch == self.versionPatch {
             return true
         }
         return false
@@ -184,43 +186,43 @@ class SemanticVersion {
      * @returns True if match
      */   
     func isMatch (self, requestedVersion) {
-        if (requestedVersion == "*") {
+        if requestedVersion == "*" {
             return true
         }
         
-        if (requestedVersion.startswith ("~")) {
+        if requestedVersion.startswith ("~") {
             return self._isTildeMatch (requestedVersion)
         }
         
-        if (requestedVersion.startswith ("^")) {
+        if requestedVersion.startswith ("^") {
             return self._isCaretMatch (requestedVersion)
         }
         
         reqVer = requestedVersion.split (" ")
-        if (reqVer.contains ("-")) {
+        if reqVer.contains ("-") {
             return self._isRangeMatch (reqVer)
         }
         
         conds = List ()
         
-        for (v in reqVer) {
-            if (v.startswith (">=")) {
+        for v in reqVer {
+            if v.startswith (">=") {
                 conds.append (self.isGTE (v.substr (2)))
             }
-            else if (v.startswith (">")) {
+            else if v.startswith (">") {
                 conds.append (self.isGreaterThan (v.substr (1)))
             }
-            else if (v.startswith ("<=")) {
+            else if v.startswith ("<=") {
                 conds.append (self.isLTE (v.substr (2)))
             }
-            else if (v.startswith ("<")) {
+            else if v.startswith ("<") {
                 conds.append (self.isLessThan (v.substr (1)))
             }
             else {
                 conds.append (self.isEqual (v))
             }
         }
-        if (!conds.contains (false)) {
+        if !conds.contains (false) {
             return true
         }
         
@@ -228,12 +230,12 @@ class SemanticVersion {
     }
     
     func _isRangeMatch (self, reqVer) {
-        if (len (reqVer) != 3) {
+        if len (reqVer) != 3 {
             return false
         }
        
         
-        if (self.isGTE (reqVer [0]) && self.isLTE (reqVer [2])) {
+        if self.isGTE (reqVer [0]) && self.isLTE (reqVer [2]) {
             return true
         }
         
@@ -242,8 +244,9 @@ class SemanticVersion {
     
     func _isTildeMatch (self, requestedVersion) {
         ver = SemanticVersion (requestedVersion.substr (1))
-        if (ver.versionMajor == self.versionMajor && ver.versionMinor == 
-            self.versionMinor && ver.versionPatch <= self.versionPatch) {
+        if ver.versionMajor == self.versionMajor &&
+           ver.versionMinor == self.versionMinor &&
+           ver.versionPatch <= self.versionPatch {
             return true    
         }
         return false
@@ -251,12 +254,12 @@ class SemanticVersion {
     
     func _isCaretMatch (self, requestedVersion) {
         ver = SemanticVersion (requestedVersion.substr (1))
-        if (ver.versionMajor == self.versionMajor) {
-            if (ver.versionMinor == self.versionMinor && ver.versionPatch <=
-                self.versionPatch) {
+        if ver.versionMajor == self.versionMajor {
+            if ver.versionMinor == self.versionMinor &&
+               ver.versionPatch <= self.versionPatch {
                 return true   
             }
-            if (ver.versionMinor < self.versionMinor) {
+            if ver.versionMinor < self.versionMinor {
                 return true
             }
         }

@@ -57,14 +57,14 @@ func _parse_function_doc (obj, lines) {
     
     text = StringBuffer ();
     
-    for (line in lines) {
-        if (line.startswith ("@param")) {
+    for line in lines {
+        if line.startswith ("@param") {
             name, type, description = _parse_param_tag (line)
             
             obj.add_parameter (name, description)
             
         }
-        else if (line.startswith ("@optional")) {
+        else if line.startswith ("@optional") {
             name, type, description = _parse_param_tag (line)
             
             obj.add_optional_parameter (name, description)
@@ -78,30 +78,30 @@ func _parse_function_doc (obj, lines) {
 }
 
 func _parse_param_tag (line) {
-    tokens = line.split (' ');
+    tokens = line.split (' ')
     
-    if (len (line) > 2) {
-        name = tokens [1];
-        type = null;
-        description = null;
+    if len (line) > 2 {
+        name = tokens [1]
+        type = null
+        description = null
         
-        if (tokens [2] == ":") {
+        if tokens [2] == ":" {
             type = tokens [3];
-            description = " ".join (tokens [4::1]);
-        } else if (tokens [2].startswith (":")) {
-            type = tokens [2].substr (1);
-            description = " ".join (tokens [3::1]);
-        } else if (name.contains (":")) {
-            name = tokens [1].substr (0, name.find (":"));
-            type = tokens [1].substr (tokens [1].find (":") + 1);
-            description = " ".join (tokens [2::1]);
+            description = " ".join (tokens [4::1])
+        } else if tokens [2].startswith (":") {
+            type = tokens [2].substr (1)
+            description = " ".join (tokens [3::1])
+        } else if name.contains (":") {
+            name = tokens [1].substr (0, name.find (":"))
+            type = tokens [1].substr (tokens [1].find (":") + 1)
+            description = " ".join (tokens [2::1])
         } else {
-            description = " ".join (tokens [2::1]);
+            description = " ".join (tokens [2::1])
         }
         
-        return (name, type, description);
+        return (name, type, description)
     }       
-    raise Exception ("Invalid param tag");
+    raise Exception ("Invalid param tag")
 }
 
 class HtmlFormatter {
@@ -134,13 +134,13 @@ class TerminalFormatter {
         
         funcs = items.filter (lambda (p) => p is FunctionDocumentation)
 
-        if (len (classes) > 0) {
+        if len (classes) > 0 {
             self.write_title (output, "CLASSES")
 
             classes.each (lambda (p) => self.format_module_class (output, p))
         }
         
-        if (len (funcs) > 0) {
+        if len (funcs) > 0 {
             self.write_title (output, "FUNCTIONS")
 
             funcs.each (lambda (p) => self.format_module_func (output, p))
@@ -209,14 +209,14 @@ class TerminalFormatter {
 
         new_line ()
 
-        if (len (methods) > 0) {
+        if len (methods) > 0 {
             
             print_line ("Methods defined here:")
             
             new_line ()            
         }
 
-        for (member in methods) {
+        for member in methods {
          
             print_line ("", 2, false)
          
@@ -257,10 +257,10 @@ class TerminalFormatter {
         lineLen = 0                     # Tracks the amount of characters present on a given line
         maxLen = 80 - len (indent_str)  # Maximum length before word wrap
 
-        for (word in words) {
+        for word in words {
             lineLen += len (word) + 1
 
-            if (lineLen < 80) {
+            if lineLen < 80 {
                 output.write (word, " ")
             } else {
                 lineLen = 0
@@ -270,7 +270,7 @@ class TerminalFormatter {
             }
         }
 
-        if (new_line) {
+        if new_line {
             output.writeln ("")
         }
     }
@@ -309,7 +309,7 @@ class MarkdownFormatter {
         output.writeln ("## ```#{moduleName}``` module")
         output.writeln ("")
         
-        if (len (moduleDoc) > 0) {
+        if len (moduleDoc) > 0 {
             output.writeln (moduleDoc)
         }
         
@@ -318,7 +318,7 @@ class MarkdownFormatter {
         funcs = items.filter (lambda (p) => p is FunctionDocumentation)
         
 
-        if (len  (funcs) > 0) { 
+        if len (funcs) > 0 { 
         
             output.writeln ("### Functions")
             output.writeln ("")
@@ -343,7 +343,7 @@ class MarkdownFormatter {
         
         funcs = items.filter (lambda (p) => p is FunctionDocumentation)
         
-       if (len  (funcs) > 0) { 
+       if len  (funcs) > 0 { 
         
             output.writeln ("##### Methods")
             output.writeln ("")
@@ -435,7 +435,7 @@ class MarkdownFormatter {
         
         argnames.appendrange (opt_argnames)
         
-        if (len (argnames) > 0) {
+        if len (argnames) > 0 {
             output.write ("| {} |".format (", ".join (argnames)))
         }
         else {
@@ -446,7 +446,7 @@ class MarkdownFormatter {
 }
 
 func compiledoc (obj, *args) {
-    items = [];
+    items = []
     
     _compileAttributes (items, inspect.getmembers (obj))
     
@@ -456,11 +456,11 @@ func compiledoc (obj, *args) {
 }
 
 func _compileAttributes (items, attrs) {
-    for (name, attr in attrs) {
-        if (inspect.hasattribute (attr, "__doc__")) {
+    for name, attr in attrs {
+        if inspect.hasattribute (attr, "__doc__") {
             lines = attr.__doc__.split ("\n")
             
-            if (inspect.ismethod (attr) || inspect.isbuiltin (attr)) {
+            if inspect.ismethod (attr) || inspect.isbuiltin (attr) {
                 funcdoc = FunctionDocumentation (name)
                 
                 _parse_function_doc (funcdoc, lines) 
@@ -468,7 +468,7 @@ func _compileAttributes (items, attrs) {
                 items.append (funcdoc);
             }
             
-            if (inspect.istype (attr)) {
+            if inspect.istype (attr) {
                 classdoc = ClassDocumentation (name)
                                 
                 _parse_function_doc (classdoc, lines) 

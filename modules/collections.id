@@ -1,6 +1,6 @@
 /**
  * Provides classes for working with collections
- * @module std/collections
+ * @module collections
  * @author SplittyDev
  */
 
@@ -86,17 +86,17 @@ class Array implements Collection {
         self.list = []
         self.length = 0
         self.capacity = -1
-        for (key, value in kwargs) {
-            match (key) {
+        for key, value in kwargs {
+            match key {
                 case "capacity" {
                     self.capacity = typecast (Int, value)
-                    for (i in 0 .. self.capacity) {
+                    for i in 0 .. self.capacity {
                         self.add (null)
                     }
                 }
                 case "items" {
                     self.clear ()
-                    for (i in typecast (Iterable, value)) {
+                    for i in typecast (Iterable, value) {
                         self.add (i)
                     }
                 }
@@ -133,7 +133,7 @@ class Array implements Collection {
      * @param item : Object The element to be added
      */
     func add (self, item) {
-        if (self.length == self.capacity) {
+        if self.length == self.capacity {
             raise Exception ("Maximum capacity reached.")
         }
         self.list.append (item)
@@ -145,10 +145,10 @@ class Array implements Collection {
      * @param item : Object The element to be removed
      */
     func remove (self, item) {
-        if (!self.list.contains (item)) {
+        if !self.list.contains (item) {
             raise Exception ("The item is not an element of the collection.")
         }
-        if (!self.list.discard (item)) {
+        if !self.list.discard (item) {
             raise Exception ("Unable to remove item '#{item}'")
         }
         self.length -= 1
@@ -182,7 +182,7 @@ class Array implements Collection {
      * @returns Array The modified collection
      */
     func fill (self, filler) {
-        for (i in 0 .. self.length) {
+        for i in 0 .. self.length {
             self [i] = filler
         }
         return self
@@ -196,7 +196,7 @@ class Array implements Collection {
      * @returns Array The modified collection
      */
     func fillrange (self, src_start, length, filler) {
-        for (i in 0 .. length) {
+        for i in 0 .. length {
             self [src_start + i] = filler
         }
         return self
@@ -249,17 +249,17 @@ class Array implements Collection {
      * @yields Object The items
      */
     func __iter__ (self) {
-        for (i in 0 .. self.length) {
+        for i in 0 .. self.length {
             yield self.list [i]
         }
 
-        if (self.length == 0) {
+        if self.length == 0 {
             return []
         }
     }
 
     func Copy (src, src_start, dst, dst_start, length) {
-        for (i in 0 .. length) {
+        for i in 0 .. length {
             dst [dst_start + i] = src [src_start + i]
         }
     }
@@ -280,11 +280,11 @@ class Set implements Collection {
         self.list = []
         self.cardinality = 0
         self.capacity = -1
-        for (key, value in kwargs) {
-            match (key) {
+        for key, value in kwargs {
+            match key {
                 case "capacity" => self.capacity = typecast (Int, value)
                 case "items" {
-                    for (i in typecast (Iterable, value)) {
+                    for i in typecast (Iterable, value) {
                         self.add (i)
                     }
                 }
@@ -321,10 +321,10 @@ class Set implements Collection {
      * @param item : Object The element to be added
      */
     func add (self, item) {
-        if (self.cardinality == self.capacity) {
+        if self.cardinality == self.capacity {
             raise Exception ("Maximum capacity reached.")
         }
-        if (self.contains (item)) {
+        if self.contains (item) {
             return null
         }
         self.list.append (item)
@@ -337,8 +337,8 @@ class Set implements Collection {
      */
     func remove (self, item) {
         i = 0
-        for (x in self.list) {
-            if (x == item) {
+        for x in self.list {
+            if x == item {
                 self.list.removeat (i)
                 self.cardinality -= 1
                 return null
@@ -356,8 +356,8 @@ class Set implements Collection {
     func union (self, other) {
         typecast (Set, other)
         set = Set (items: other.list)
-        for (item in self.list) {
-            if (!other.contains (item)) {
+        for item in self.list {
+            if !other.contains (item) {
                 set.add (item)
             }
         }
@@ -372,8 +372,8 @@ class Set implements Collection {
     func intersection (self, other) {
         typecast (Set, other)
         set = Set ()
-        for (item in self.list) {
-            if (other.contains (item)) {
+        for item in self.list {
+            if other.contains (item) {
                 set.add (item)
             }
         }
@@ -388,8 +388,8 @@ class Set implements Collection {
     func difference (self, other) {
         typecast (Set, other)
         set = Set ()
-        for (item in self.list) {
-            if (!other.contains (item)) {
+        for item in self.list {
+            if !other.contains (item) {
                 set.add (item)
             }
         }
@@ -404,8 +404,8 @@ class Set implements Collection {
     func superset (self, other) {
         typecast (Set, other)
         i = 0
-        for (item in self.list) {
-            if (other.contains (item)) {
+        for item in self.list {
+            if other.contains (item) {
                 i += 1
             }
         }
@@ -420,8 +420,8 @@ class Set implements Collection {
     func subset (self, other) {
         typecast (Set, other)
         i = 0
-        for (item in other.list) {
-            if (self.contains (item)) {
+        for item in other.list {
+            if self.contains (item) {
                 i += 1
             }
         }
@@ -475,7 +475,7 @@ class Set implements Collection {
      * @yields Object The items
      */
     func __iter__ (self) {
-        for (i in 0 .. self.cardinality) {
+        for i in 0 .. self.cardinality {
             yield self.list [i]
         }
     }
@@ -555,8 +555,8 @@ class GenericSet extends Set implements Collection {
     func GenericSet (self, **kwargs) {
         super (kwargs);
         self.type = null
-        for (key, value in kwargs) {
-            match (key) {
+        for key, value in kwargs {
+            match key {
                 case "T" => self.type = value
             }
         }
@@ -567,7 +567,7 @@ class GenericSet extends Set implements Collection {
      * @param item : Object The element to be added
      */
     func add (self, item) {
-        if (self.type is Null) {
+        if self.type is Null {
             self.type = type (item)
         }
         typecast (self.type, item)
@@ -599,11 +599,11 @@ class Stack implements Collection {
         self.list = []
         self.top = 0
         self.capacity = -1
-        for (key, value in kwargs) {
-            match (key) {
+        for key, value in kwargs {
+            match key {
                 case "capacity" => self.capacity = typecast (Int, value)
                 case "items" {
-                    for (i in typecast (Iterable, value)) {
+                    for i in typecast (Iterable, value) {
                         self.push (i)
                     }
                 }
@@ -648,7 +648,7 @@ class Stack implements Collection {
      * @param item : Object The item to be pushed onto the stack
      */
     func push (self, item) {
-        if (self.top == self.capacity) {
+        if self.top == self.capacity {
             raise Exception ("Maximum capacity reached.")
         }
         self.list.append (item)
@@ -660,7 +660,7 @@ class Stack implements Collection {
      * @returns Object The item that was popped from the stack
      */
     func pop (self) {
-        if (self.top == 0) {
+        if self.top == 0 {
             raise Exception ("There are no elements on the stack.")
         }
         self.top -= 1
@@ -674,8 +674,8 @@ class Stack implements Collection {
      * @param item : Object The element to be removed
      */
     func remove (self, item) {
-        for (i in 0 .. self.top) {
-            if (self [i] == item) {
+        for i in 0 .. self.top {
+            if self [i] == item {
                 self.list.removeat (self.top - i - 1)
                 self.top -= 1
                 return null
@@ -748,7 +748,7 @@ class Stack implements Collection {
      * @yields Object The items
      */
     func __iter__ (self) {
-        for (i in 0 .. self.top) {
+        for i in 0 .. self.top {
             yield self [i]
         }
     }
@@ -769,8 +769,8 @@ class GenericStack extends Stack implements Collection {
     func GenericStack (self, **kwargs) {
         super (kwargs);
         self.type = null
-        for (key, value in kwargs) {
-            match (key) {
+        for key, value in kwargs {
+            match key {
                 case "T" => self.type = value
             }
         }
@@ -781,7 +781,7 @@ class GenericStack extends Stack implements Collection {
      * @param item : Object The item to be pushed onto the stack
      */
     func push (self, item) {
-        if (self.type is Null) {
+        if self.type is Null {
             self.type = type (item)
         }
         typecast (self.type, item)
