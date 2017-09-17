@@ -77,3 +77,12 @@ install:
 	echo "IODINE_HOME=\"$(PREFIX)/iodine\"" >> /etc/environment
 	echo "IODINE_MODULES=\"$(PREFIX)/iodine/modules\"" >> /etc/environment
 	chmod +x /bin/iodine
+install-ion:
+	tmpdir="`mktemp -d`" ; \
+	cd $$tmpdir ; \
+	pwd ; \
+	git clone https://github.com/IodineLang/Ion ; \
+	cd Ion ; \
+	make install ; \
+	cd .. ; \
+	rm -rf $$tmpdir

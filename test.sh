@@ -1,5 +1,6 @@
 mono -V
-make
+make all
+make install-ion
 cd tests
 module_path=$(readlink -f ../modules)
 echo $module_path
