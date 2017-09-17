@@ -318,17 +318,17 @@ namespace Iodine.Compiler
             return null;
         }
 
-        string FindModuleSource(string moduleName)
+        string FindModuleSource (string moduleName)
         {
             return FileFile (moduleName, ".id");
         }
 
-        string FindExtension(string extensionName)
+        string FindExtension (string extensionName)
         {
             return FileFile (extensionName, ".dll");
         }
 
-        string FileFile(string moduleName, string fileExtension)
+        string FileFile (string moduleName, string fileExtension)
         {
             /*
              * Iodine module search algorithm
@@ -341,9 +341,12 @@ namespace Iodine.Compiler
              * 
              * If that fails, return null
              */
-            if (VirtualMachine.Top == null || VirtualMachine.Top.Module.Location == null) {
+            if (VirtualMachine.Top == null ||
+                VirtualMachine.Top.Module.Location == null) {
+
                 return FindInSearchPath (moduleName, fileExtension);
             }
+
             var moduleDir = Path.GetDirectoryName (VirtualMachine.Top.Module.Location);
 
             var file = FindInDirectory (moduleDir, moduleName, fileExtension);
@@ -371,16 +374,26 @@ namespace Iodine.Compiler
             return FindInSearchPath (moduleName, fileExtension);
         }
 
-        string FindInDirectory(
+        string FindInDirectory (
             string directory,
             string moduleName,
             string fileExtension)
         {
-            if (File.Exists (Path.Combine (directory, moduleName + fileExtension))) {
+
+            string originalPath = VirtualMachine?.Top?.Module?.Location;
+
+            var relativeFile = Path.Combine (directory, moduleName + fileExtension);
+            var depFile = Path.Combine (directory, ".deps", moduleName + fileExtension);
+
+            if (originalPath != null && originalPath == relativeFile) {
+                return null;
+            }
+
+            if (File.Exists (relativeFile)) {
                 return Path.Combine (directory, moduleName + fileExtension);
             }
 
-            if (File.Exists (Path.Combine (directory, ".deps", moduleName + fileExtension))) {
+            if (File.Exists (depFile)) {
                 return Path.Combine (directory, ".deps", moduleName + fileExtension);
             }
 
@@ -406,13 +419,22 @@ namespace Iodine.Compiler
             return null;
         }
 
-        string FindInSearchPath(string moduleName, string fileExtension)
+        string FindInSearchPath (string moduleName, string fileExtension)
         {
+            string originalPath = VirtualMachine?.Top?.Module?.Location;
+
             foreach (string path in SearchPath) {
                 var file = FindInDirectory (path, moduleName, fileExtension);
+
                 if (file != null) {
                     return file;
                 }
+            }
+
+
+            if (originalPath != null &&
+                Path.GetFullPath (originalPath) == Path.GetFullPath (moduleName)) {
+                return null;
             }
 
             if (File.Exists (moduleName)) {
