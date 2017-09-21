@@ -26,33 +26,18 @@
   * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
   * DAMAGE.
 **/
-using Iodine.Compiler.Ast;
+
+using System.Collections.Generic;
 
 namespace Iodine.Compiler
 {
-    public class NamedParameter : FunctionParameter
+    public class DecompositionParameter : FunctionParameter
     {
-        public readonly string Name;
+        public readonly IReadOnlyList<FunctionParameter> CaptureNames;
 
-        public readonly AstNode Type;
-        public readonly AstNode DefaultValue;
-
-        public readonly bool HasType;
-        public readonly bool HasDefaultValue;
-
-        public NamedParameter (string name, AstNode type = null, AstNode value = null)
+        public DecompositionParameter (List<FunctionParameter> captureNames)
         {
-            if (type != null) {
-                HasType = true;
-            }
-
-            if (value != null) {
-                HasDefaultValue = true;
-            }
-
-            Name = name;
-            Type = type;
-            DefaultValue = value;
+            CaptureNames = captureNames;
         }
     }
 }

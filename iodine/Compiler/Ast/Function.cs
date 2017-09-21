@@ -45,7 +45,7 @@ namespace Iodine.Compiler.Ast
             get;
         }
 
-        public List<NamedParameter> Parameters { 
+        public List<FunctionParameter> Parameters { 
             protected set;
             get; 
         }

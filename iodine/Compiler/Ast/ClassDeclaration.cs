@@ -77,7 +77,7 @@ namespace Iodine.Compiler.Ast
                 false,
                 false,
                 false,
-                new List<NamedParameter> (),
+                new List<FunctionParameter> (),
                 doc
             );
 
@@ -97,7 +97,7 @@ namespace Iodine.Compiler.Ast
         public ClassDeclaration (SourceLocation location,
             string name,
             string doc,
-            List<NamedParameter> parameters)
+            List<FunctionParameter> parameters)
             : base (location)
         {
             Name = name;

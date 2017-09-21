@@ -350,7 +350,13 @@ namespace Iodine.Runtime
             IodineObject[] parametersTuple = new IodineObject[paramCount];
 
             for (int i = 0; i < paramCount; i++) {
-                parametersTuple [i] = new IodineString (names [i]);
+
+                var namedParam = names [i] as IodineNamedParameter;
+
+
+                if (namedParam != null) {
+                    parametersTuple [i] = new IodineString (namedParam.Name);
+                }
             }
 
             items [0] = new IodineTuple (parametersTuple);

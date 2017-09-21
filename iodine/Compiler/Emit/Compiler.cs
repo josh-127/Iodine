@@ -337,6 +337,59 @@ namespace Iodine.Compiler
             );
         }
 
+
+        void CompileMethodParameters (FunctionParameter parameter)
+        {
+            var namedParam = parameter as NamedParameter;
+
+            if (namedParam != null) {
+                Context.SymbolTable.AddSymbol (namedParam.Name);
+
+                if (namedParam.HasType) {
+                    namedParam.Type.Visit (this);
+
+                    Context.CurrentMethod.EmitInstruction (
+                        Opcode.CastLocal,
+                        CreateName (namedParam.Name)
+                    );
+                }
+            }
+
+            var tupleParam = parameter as DecompositionParameter;
+
+            if (tupleParam != null) {
+                foreach (FunctionParameter subparam in tupleParam.CaptureNames) {
+                    CompileMethodParameters (subparam);
+                }
+            }
+        }
+
+        void LoadParameterNames (FunctionParameter parameter)
+        {
+            var namedParam = parameter as NamedParameter;
+
+            if (namedParam != null) {
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.LoadConst,
+                    new IodineName (namedParam.Name)
+                );
+            }
+
+            var tupleParam = parameter as DecompositionParameter;
+
+            if (tupleParam != null) {
+
+                foreach (FunctionParameter param in tupleParam.CaptureNames) {
+                    LoadParameterNames (param);
+                }
+
+                Context.CurrentMethod.EmitInstruction (
+                    Opcode.BuildTuple,
+                    tupleParam.CaptureNames.Count
+                );
+            }
+        }
+
         void CompileMethod (Function funcDecl)
         {
             Context.SymbolTable.AddSymbol (funcDecl.Name);
@@ -347,17 +400,8 @@ namespace Iodine.Compiler
 
             CreateContext (bytecode);
 
-            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-                Context.SymbolTable.AddSymbol (funcDecl.Parameters [i].Name);
-
-                if (funcDecl.Parameters [i].HasType) {
-                    funcDecl.Parameters [i].Type.Visit (this);
-
-                    Context.CurrentMethod.EmitInstruction (
-                        Opcode.CastLocal,
-                        CreateName (funcDecl.Parameters [i].Name)
-                    );
-                }
+            foreach (FunctionParameter param in funcDecl.Parameters) {
+                CompileMethodParameters (param);
             }
 
             funcDecl.VisitChildren (this);
@@ -382,7 +426,7 @@ namespace Iodine.Compiler
                 flags |= MethodFlags.HasDefaultParameters;
 
                 var startingIndex = funcDecl.Parameters.FindIndex (
-                    p => p.HasDefaultValue
+                    p => p is NamedParameter && ((NamedParameter)p).HasDefaultValue
                 );
 
                 int defaultParamCount = 0;
@@ -392,9 +436,12 @@ namespace Iodine.Compiler
                     new IodineInteger (startingIndex)
                 );
 
-                for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-                    if (funcDecl.Parameters [i].HasDefaultValue) {
-                        funcDecl.Parameters [i].DefaultValue.Visit (this);
+                foreach (FunctionParameter param in funcDecl.Parameters) {
+
+                    var namedParameter = param as NamedParameter; 
+
+                    if (namedParameter != null && namedParameter.HasDefaultValue) {
+                        namedParameter.DefaultValue.Visit (this);
                         defaultParamCount++;
                     }
                 }
@@ -405,11 +452,8 @@ namespace Iodine.Compiler
                 );
             }
 
-            for (int i = 0; i < funcDecl.Parameters.Count; i++) {
-                Context.CurrentMethod.EmitInstruction (
-                    Opcode.LoadConst,
-                    new IodineString (funcDecl.Parameters [i].Name)
-                );
+            foreach (FunctionParameter param in funcDecl.Parameters) {
+                LoadParameterNames (param);
             }
 
             /*

@@ -348,6 +348,53 @@ namespace Iodine.Compiler
         }
 
 
+        NamedParameter ParseParameterName ()
+        {
+            var param = Expect (TokenClass.Identifier);
+
+            AstNode type = null;
+            AstNode value = null;
+
+            if (Accept (TokenClass.Colon)) {
+                type = ParseExpression ();
+            }
+
+            if (Accept (TokenClass.Operator, "=")) {
+                value = ParseExpression ();
+            }
+
+            return new NamedParameter (param.Value, type, value);
+
+        }
+
+        DecompositionParameter ParseTupleParameter ()
+        {
+            Expect (TokenClass.OpenBracket);
+
+            var paramList = new List<FunctionParameter> ();
+
+            if (Match (TokenClass.CloseBracket)) {
+                errorLog.Add (Errors.EmptyDecompositionList, PeekToken ().Location);
+            }
+
+            while (!Match (TokenClass.CloseBracket)) {
+
+                if (Match (TokenClass.OpenBracket)) {
+                    paramList.Add (ParseTupleParameter ());
+                } else {
+                    paramList.Add (ParseParameterName ());
+                }
+
+                if (!Accept (TokenClass.Comma)) {
+                    break;
+                }
+            }
+
+            Expect (TokenClass.CloseBracket);
+
+            return new DecompositionParameter (paramList);
+        }
+
         AstNode ParseFunction (bool prototype = false, ClassDeclaration cdecl = null)
         {
             string doc = Current.Documentation;
@@ -412,7 +459,7 @@ namespace Iodine.Compiler
             return decl;
         }
 
-        List<NamedParameter> ParseFuncParameters (
+        List<FunctionParameter> ParseFuncParameters (
             out bool isInstanceMethod,
             out bool isVariadic,
             out bool hasKeywordArgs,
@@ -424,7 +471,7 @@ namespace Iodine.Compiler
 
             hasDefaultValues = false;
 
-            var ret = new List<NamedParameter> ();
+            var ret = new List<FunctionParameter> ();
 
             if (!Accept (TokenClass.OpenParan)) {
                 return ret;
@@ -444,34 +491,32 @@ namespace Iodine.Compiler
                     hasKeywordArgs = true;
                     var ident = Expect (TokenClass.Identifier);
                     ret.Add (new NamedParameter (ident.Value));
-                } else if (hasKeywordArgs) {
+                    continue;
+                }
+
+                if (hasKeywordArgs) {
                     errorLog.Add (Errors.ArgumentAfterKeywordArgs, Location);
-                } else if (!isVariadic && Accept (TokenClass.Operator, "*")) {
+                    continue;
+                }
+
+                if (!isVariadic && Accept (TokenClass.Operator, "*")) {
                     isVariadic = true;
                     var ident = Expect (TokenClass.Identifier);
                     ret.Add (new NamedParameter (ident.Value));
-                } else if (isVariadic) {
-                    errorLog.Add (Errors.ArgumentAfterVariadicArgs, Location);
-                } else {
-                    var param = Expect (TokenClass.Identifier);
+                    continue;
 
-                    AstNode type = null;
-                    AstNode value = null;
-
-                    if (Accept (TokenClass.Colon)) {
-                        type = ParseExpression ();
-                    }
-
-                    if (Accept (TokenClass.Operator, "=")) {
-                        value = ParseExpression ();
-                        hasDefaultValues = true;
-                    } else if (hasDefaultValues) {
-                        //TODO: create error
-                    }
-
-                    ret.Add (new NamedParameter (param.Value, type, value));
                 }
 
+                if (isVariadic) {
+                    errorLog.Add (Errors.ArgumentAfterVariadicArgs, Location);
+                    continue;
+                }
+
+                if (Match (TokenClass.OpenBracket)) {
+                    ret.Add (ParseTupleParameter ());
+                } else {
+                    ret.Add (ParseParameterName ());
+                }
                 if (!Accept (TokenClass.Comma)) {
                     break;
                 }

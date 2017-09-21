@@ -244,6 +244,9 @@
     <Compile Include="Util\MarshalUtil.cs" />
     <Compile Include="Runtime\IodineEnumValue.cs" />
     <Compile Include="Compiler\Ast\RegexExpression.cs" />
+    <Compile Include="Compiler\FunctionParameter.cs" />
+    <Compile Include="Compiler\DecompositionParameter.cs" />
+    <Compile Include="Runtime\IodineParameter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

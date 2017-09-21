@@ -27,6 +27,7 @@
   * DAMAGE.
 **/
 
+using System.Collections.Generic;
 using Iodine.Compiler.Ast;
 
 namespace Iodine.Compiler
@@ -62,15 +63,31 @@ namespace Iodine.Compiler
             symbolTable.AddSymbol (interfaceDecl.Name);
         }
 
+        void AddFunctionParameters (IEnumerable<FunctionParameter> parameters)
+        {
+            foreach (FunctionParameter param in parameters) {
+                var namedParam = param as NamedParameter;
+
+                if (namedParam != null) {
+                    symbolTable.AddSymbol (namedParam.Name);
+                    continue;
+                }
+
+                var tupleParam = param as DecompositionParameter;
+
+                if (tupleParam != null) {
+                    AddFunctionParameters (tupleParam.CaptureNames);
+                }
+            }
+        }
+
         public override void Accept (FunctionDeclaration funcDecl)
         {
             symbolTable.AddSymbol (funcDecl.Name);
 
             symbolTable.EnterScope ();
 
-            foreach (NamedParameter param in funcDecl.Parameters) {
-                symbolTable.AddSymbol (param.Name);
-            }
+            AddFunctionParameters (funcDecl.Parameters);
 
             funcDecl.VisitChildren (this);
 

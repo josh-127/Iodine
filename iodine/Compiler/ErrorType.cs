@@ -53,7 +53,8 @@ namespace Iodine.Compiler
         RecordCantHaveVargs = 0x11,
         RecordCantHaveKwargs = 0x12,
         RecordCantHaveSelf = 0x13,
-        MatchDoesNotAccountForAllConditions = 0x14
+        MatchDoesNotAccountForAllConditions = 0x14,
+        EmptyDecompositionList = 0x15
     }
 
     public sealed class Error
@@ -79,8 +80,9 @@ namespace Iodine.Compiler
             "Integer value exceeds the maximum bounds of a 64 bit integer",
             "Record cannot have variable length arguments!",
             "Record cannot have keyword aguments!",
-            "Self keyword invalid in record field list!",
-            "match expression does not account for all possible values"
+            "self keyword invalid in record field list!",
+            "match expression does not account for all possible values",
+            "You must specify at least one capture within a tuple decomposition list"
         };
 
         public readonly string Text;

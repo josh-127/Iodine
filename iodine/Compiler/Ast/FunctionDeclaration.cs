@@ -39,7 +39,7 @@ namespace Iodine.Compiler.Ast
             bool isVariadic,
             bool hasKeywordArgs,
             bool hasDefaultVals,
-            List<NamedParameter> parameters,
+            List<FunctionParameter> parameters,
             string doc
         ) : base (location)
         {

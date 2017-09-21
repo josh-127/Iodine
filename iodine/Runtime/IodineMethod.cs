@@ -109,7 +109,7 @@ namespace Iodine.Runtime
         /// <summary>
         /// Maps each parameter to a local variable index, used by the virtual machine
         /// </summary>
-        public readonly List<string> Parameters = new List<string> ();
+        public readonly List<IodineParameter> Parameters = new List<IodineParameter> ();
         public readonly IodineObject[] DefaultValues;
 
         public readonly string VarargsParameter;
@@ -127,7 +127,6 @@ namespace Iodine.Runtime
             : base (MethodTypeDef)
         {
             Module = module;
-            SetParameters (parameters);
             Bytecode = bytecode;
             ParameterCount = Parameters.Count;
             Variadic = (flags & MethodFlags.AcceptsVarArgs) != 0;
@@ -135,26 +134,52 @@ namespace Iodine.Runtime
             HasDefaultValues = (flags & MethodFlags.HasDefaultParameters) != 0;
             DefaultValuesStartIndex = defaultStart;
             DefaultValues = defaultValues;
+            SetParameters (Parameters, parameters);
+
             Name = name.ToString ();
+
             SetAttribute ("__doc__", IodineString.Empty);
             SetAttribute ("__invoke__", new BuiltinMethodCallback (invoke, this));
 
             if (AcceptsKeywordArgs) {
-                KwargsParameter = Parameters.Last ();
+
+                var lastParameter = Parameters.Last () as IodineNamedParameter;
+
+                KwargsParameter = lastParameter.Name;
 
                 if (Variadic) {
-                    VarargsParameter = Parameters [Parameters.Count - 2];
+                    var secondToLastParameter = Parameters [Parameters.Count - 2] as
+                                                          IodineNamedParameter;
+
+                    VarargsParameter = secondToLastParameter.Name;
                 }
             } else if (Variadic) {
-                VarargsParameter = Parameters.Last ();
+                var lastParameter = Parameters.Last () as IodineNamedParameter;
+                VarargsParameter = lastParameter.Name;
             }
         }
 
 
-        void SetParameters (IodineTuple tuple)
+        void SetParameters (List<IodineParameter> paramList, IodineTuple tuple)
         {
-            for (int i = 0; i < tuple.Objects.Length; i++) {
-                Parameters.Add (tuple.Objects [i].ToString ());
+            foreach (IodineObject obj in tuple.Objects) {
+                var strObj = obj as IodineName;
+
+                if (strObj != null) {
+                    paramList.Add (new IodineNamedParameter (strObj.Value));
+                    continue;
+                }
+
+                var tupleObj = obj as IodineTuple;
+
+                if (tupleObj != null) {
+                    var deconstructionList = new List<IodineParameter> ();
+
+                    SetParameters (deconstructionList, tupleObj);
+
+                    paramList.Add (new IodineTupleParameter (deconstructionList));
+                }
+
             }
         }
 

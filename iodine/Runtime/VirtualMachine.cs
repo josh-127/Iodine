@@ -186,29 +186,29 @@ namespace Iodine.Runtime
             /*
              * Store function arguments into their respective local variable slots
              */
-            foreach (string param in method.Parameters) {
-                if (param == method.VarargsParameter) {
-                    // Variable list arguments
-                    IodineObject [] tupleItems = new IodineObject [arguments.Length - i];
-                    Array.Copy (arguments, i, tupleItems, 0, arguments.Length - i);
-                    Top.StoreLocalExplicit (param, new IodineTuple (tupleItems));
+            foreach (IodineParameter param in method.Parameters) {
 
-                } else if (param == method.KwargsParameter) {
-                    /*
-                     * At the moment, keyword arguments are passed to the function as an IodineHashMap,
-                     */
-                    if (i < arguments.Length && arguments [i] is IodineDictionary) {
-                        Top.StoreLocalExplicit (param, arguments [i]);
-                    } else {
-                        Top.StoreLocalExplicit (param, new IodineDictionary ());
-                    }
-                } else {
-                    if (arguments.Length <= i && method.HasDefaultValues) {
-                        Top.StoreLocalExplicit (param, method.DefaultValues [i - method.DefaultValuesStartIndex]);
-                    } else {
-                        Top.StoreLocalExplicit (param, arguments [i++]);
-                    }
+                var namedParam = param as IodineNamedParameter;
+
+                if (namedParam != null) {
+                    StoreNamedParameter (method, arguments, namedParam, i);
                 }
+
+                var tupleParam = param as IodineTupleParameter;
+
+                if (tupleParam != null) {
+
+                    var tuple = arguments [i] as IodineTuple;
+
+                    if (tuple == null) {
+                        RaiseException (new IodineException ("Tuple"));
+                        return null;
+                    }
+
+                    DecomposeTupleParameter (tuple, tupleParam);
+                }
+
+                i++;
             }
 
             StackFrame top = Top;
@@ -246,6 +246,58 @@ namespace Iodine.Runtime
             EndFrame ();
 
             return retVal;
+        }
+
+        void StoreNamedParameter (IodineMethod method,
+                                  IodineObject [] arguments,
+                                  IodineNamedParameter param,
+                                  int paramIndex)
+        {
+            if (param.Name == method.VarargsParameter) {
+                // Variable list arguments
+                IodineObject [] tupleItems = new IodineObject [arguments.Length - paramIndex];
+                Array.Copy (arguments, paramIndex, tupleItems, 0, arguments.Length - paramIndex);
+                Top.StoreLocalExplicit (param.Name, new IodineTuple (tupleItems));
+
+            } else if (param.Name == method.KwargsParameter) {
+                /*
+                 * At the moment, keyword arguments are passed to the function as an IodineHashMap,
+                 */
+                if (paramIndex < arguments.Length && arguments [paramIndex] is IodineDictionary) {
+                    Top.StoreLocalExplicit (param.Name, arguments [paramIndex]);
+                } else {
+                    Top.StoreLocalExplicit (param.Name, new IodineDictionary ());
+                }
+            } else {
+                if (arguments.Length <= paramIndex && method.HasDefaultValues) {
+                    Top.StoreLocalExplicit (param.Name, method.DefaultValues [paramIndex - method.DefaultValuesStartIndex]);
+                } else {
+                    Top.StoreLocalExplicit (param.Name, arguments [paramIndex++]);
+                }
+            }
+        }
+
+        void DecomposeTupleParameter (IodineTuple tuple, IodineTupleParameter param)
+        {
+            int index = 0;
+
+            foreach (IodineParameter subparam in param.ElementNames) {
+                var namedParam = subparam as IodineNamedParameter;
+
+                if (namedParam != null) {
+                    Top.StoreLocalExplicit (namedParam.Name, tuple.Objects [index]);
+                }
+
+                var tupleParam = subparam as IodineTupleParameter;
+
+                if (tupleParam != null) {
+                    var tupleObj = tuple.Objects [index] as IodineTuple;
+
+                    DecomposeTupleParameter (tupleObj, tupleParam);
+                }
+
+                index++;
+            }
         }
 
         /// <summary>
