@@ -230,10 +230,6 @@ namespace Iodine.Compiler
         {
         }
 
-        public virtual void Accept (VariableDeclaration varDecl)
-        {
-        }
-
         public virtual void Accept (RaiseStatement raise)
         {
         }

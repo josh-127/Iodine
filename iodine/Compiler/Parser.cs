@@ -93,6 +93,7 @@ namespace Iodine.Compiler
         {
             try {
                 var root = new CompilationUnit (Location);
+
                 while (!EndOfStream) {
                     root.Add (ParseStatement ());
                 }
@@ -173,7 +174,7 @@ namespace Iodine.Compiler
             if (Accept (TokenClass.OpenBrace)) {
                 while (!Match (TokenClass.CloseBrace)) {
                     if (Match (TokenClass.Keyword, "func") || Match (TokenClass.Operator,
-                        "@")) {
+                        "+")) {
                         var node = ParseFunction (false, clazz);
                         if (node is FunctionDeclaration) {
                             var func = node as FunctionDeclaration;
@@ -399,7 +400,7 @@ namespace Iodine.Compiler
         {
             string doc = Current.Documentation;
 
-            if (Accept (TokenClass.Operator, "@")) {
+            if (Accept (TokenClass.Operator, "+")) {
                 var decorator = ParseExpression (); 
                 var originalFunc = ParseFunction (prototype, cdecl) as FunctionDeclaration;
                 return new DecoratedFunction (decorator.Location, decorator, originalFunc);
@@ -664,6 +665,7 @@ namespace Iodine.Compiler
                     return ParseSuperCall (new ClassDeclaration (Location, "", null));
                 }
             }
+
             if (Match (TokenClass.OpenBrace)) {
                 return ParseBlock ();
             }
@@ -672,7 +674,7 @@ namespace Iodine.Compiler
                 return new Statement (Location);
             }
 
-            if (Match (TokenClass.Operator, "@")) {
+            if (Match (TokenClass.Operator, "+")) {
                 return ParseFunction ();
             }
 
@@ -769,29 +771,6 @@ namespace Iodine.Compiler
             }
             return argList;
         }
-
-        VariableDeclaration ParseVariableDeclaration ()
-        {
-            bool global = false;
-
-            if (Accept (TokenClass.Keyword, "global")) {
-                global = true;
-            } else {
-                Expect (TokenClass.Keyword, "local");
-            }
-
-            var ident = Expect (TokenClass.Identifier);
-            AstNode value = null;
-            if (Accept (TokenClass.Operator, "=")) {
-                value = new BinaryExpression (Location,
-                    BinaryOperation.Assign,
-                    new NameExpression (ident.Location, ident.Value),
-                    ParseExpression ()
-                );
-            }
-            return new VariableDeclaration (Location, global, ident.Value, value);
-        }
-
 
         /*
          * if (<expression> 

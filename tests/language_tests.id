@@ -65,12 +65,12 @@ func multiplyDecorator(times) {
     return wrapper;
 }
 
-@doubleDecorator
++doubleDecorator
 func four() {
     return 2;
 }
 
-@multiplyDecorator(3)
++multiplyDecorator(3)
 func six() {
     return 2;
 }
