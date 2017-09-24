@@ -1,5 +1,6 @@
 script:
   - ./test.sh
+sudo: required
 language: csharp
 mono:
   - latest
