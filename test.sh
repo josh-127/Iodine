@@ -2,6 +2,7 @@
 
 mono -V
 make all
+sudo make install
 sudo make install-ion
 cd tests
 module_path=$(readlink -f ../modules)
