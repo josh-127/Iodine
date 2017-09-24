@@ -1,5 +1,0 @@
-use _dns;
-
-func lookup (hostname) {
-    return _dns.lookup (hostname);
-}

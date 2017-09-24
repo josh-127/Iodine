@@ -1,5 +1,5 @@
 use * from collections;
-use describe, expect from testing;
+use describe, expect from espresso;
 
 func run_tests (test) {
     describe ('collections', lambda (test) {

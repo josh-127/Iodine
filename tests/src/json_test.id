@@ -1,5 +1,5 @@
-use JsonFile, parse from json;
-use describe, expect from testing;
+use JsonFile, parse from json
+use describe, expect from espresso
 
 func run_tests (test) {
     test.describe ("json module", lambda (test) {
