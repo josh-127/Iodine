@@ -26,7 +26,6 @@ IODINE_MODS += ./modules/argparse.id
 IODINE_MODS += ./modules/base64.id
 IODINE_MODS += ./modules/cryptoutils.id
 IODINE_MODS += ./modules/collections.id
-IODINE_MODS += ./modules/configfile.id
 IODINE_MODS += ./modules/dis.id
 IODINE_MODS += ./modules/events.id
 IODINE_MODS += ./modules/ints.id
@@ -34,15 +33,9 @@ IODINE_MODS += ./modules/iododoc.id
 IODINE_MODS += ./modules/iterutils.id
 IODINE_MODS += ./modules/functools.id
 IODINE_MODS += ./modules/json.id
-IODINE_MODS += ./modules/logging.id
-IODINE_MODS += ./modules/semver.id
-IODINE_MODS += ./modules/testing.id
 IODINE_MODS += ./modules/_whirlpool.id
 
-IODINE_NETMODS += ./modules/net/http.id
-IODINE_NETMODS += ./modules/net/dns.id
-
-all:$(IODINE_MODS) $(IODINE_NETMODS)
+all:$(IODINE_MODS)
 
 %.id:iodine-binaries
 	mono ./bin/iodine.exe -c $@
