@@ -6,10 +6,10 @@
  
  
 # Builtin hash functions
-use __hashfunctions__;
+use __hashfunctions__
 
 # SplittyDev's Whirlpool implementation
-use WhirlpoolAlgol from _whirlpool;
+use Whirlpool from _whirlpool
 
 
 class HashAlgol {
@@ -31,8 +31,7 @@ func md5 (obj) => __hashfunctions__.md5 (obj);
  * @returns The whirlpool digest of the given parameter
  */
 func whirlpool (obj) {
-    algol = WhirlpoolAlgol ();
-    algol.update (obj);
+    algol = Whirlpool (obj);
     return algol.digest ();
 }
 

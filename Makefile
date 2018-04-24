@@ -30,9 +30,11 @@ IODINE_MODS += ./modules/dis.id
 IODINE_MODS += ./modules/events.id
 IODINE_MODS += ./modules/ints.id
 IODINE_MODS += ./modules/iterutils.id
+IODINE_MODS += ./modules/hashlib.id
 IODINE_MODS += ./modules/functools.id
 IODINE_MODS += ./modules/json.id
 IODINE_MODS += ./modules/_whirlpool.id
+IODINE_MODS += ./modules/argparse2.id
 
 all:$(IODINE_MODS)
 
