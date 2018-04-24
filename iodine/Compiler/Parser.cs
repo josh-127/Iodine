@@ -642,6 +642,8 @@ namespace Iodine.Compiler
                     return ParseWith ();
                 case "while":
                     return ParseWhile ();
+                case "until":
+                    return ParseUntil ();
                 case "do":
                     return ParseDoWhile ();
                 case "use":
@@ -867,11 +869,22 @@ namespace Iodine.Compiler
 
             var body = ParseStatement ();
 
+            if (Accept (TokenClass.Keyword, "while")) {
+
+                var condition = ParseExpression ();
+
+                return new DoStatement (location, condition, body);
+            }
+
+            if (Accept (TokenClass.Keyword, "until")) {
+                var condition = new UnaryExpression (location, UnaryOperation.BoolNot, ParseExpression ());
+
+                return new DoStatement (location, condition, body);
+            }
+
             Expect (TokenClass.Keyword, "while");
 
-            var condition = ParseExpression ();
-
-            return new DoStatement (location, condition, body);
+            return null;
         }
 
         /*
@@ -890,6 +903,25 @@ namespace Iodine.Compiler
 
             return new WhileStatement (location, condition, body);
         }
+
+        /*
+         * until <expression>
+         *    <statement>
+         */
+
+        AstNode ParseUntil ()
+        {
+            SourceLocation location = Location;
+
+            Expect (TokenClass.Keyword, "until");
+
+            var condition = new UnaryExpression (location, UnaryOperation.BoolNot, ParseExpression ());
+
+            var body = ParseStatement ();
+
+            return new WhileStatement (location, condition, body);
+        }
+
 
         /*
          * with (<expression) 

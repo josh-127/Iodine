@@ -387,7 +387,8 @@ namespace Iodine.Compiler
                 "enum", "raise", "contract", "trait", "mixin",
                 "given", "case", "yield", "default", "return",
                 "match", "when", "var", "with", "global",
-                "extend", "extends", "implements", "unless"
+                "extend", "extends", "implements", "unless",
+                "until"
             };
 
             var operators = new string [] { "in", "is", "isnot", "as" };
