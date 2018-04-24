@@ -634,6 +634,8 @@ namespace Iodine.Compiler
                     return ParseFunction ();
                 case "if":
                     return ParseIf ();
+                case "unless":
+                    return ParseUnless ();
                 case "for":
                     return ParseForeach ();
                 case "with":
@@ -797,6 +799,26 @@ namespace Iodine.Compiler
             }
             return new IfStatement (location, predicate, body, elseBody);
         }
+
+        AstNode ParseUnless ()
+        {
+            SourceLocation location = Location;
+
+            Expect (TokenClass.Keyword, "unless");
+
+            var predicate = new UnaryExpression(location, UnaryOperation.BoolNot, ParseExpression ());
+
+            var body = ParseStatement ();
+
+            AstNode elseBody = null;
+
+            if (Accept (TokenClass.Keyword, "else")) {
+                elseBody = ParseStatement ();
+            }
+
+            return new IfStatement (location, predicate, body, elseBody);
+        }
+
 
         /*
          * NOTE: Usage of this foreach keyword is deprecated infavor of doing 
