@@ -62,7 +62,7 @@ install:
 	cp -f $(IODINE_MODS) $(PREFIX)/iodine/modules
 	cp -f ./bin/extensions/* $(PREFIX)/iodine/extensions
 	echo "#! /bin/bash" > /bin/iodine
-	echo "/usr/bin/mono $(PREFIX)/iodine/iodine.exe \"\$$@\"" >> /usr/bin/iodine
+	echo "/usr/bin/mono $(PREFIX)/iodine/iodine.exe \"\$$@\"" >> /bin/iodine
 	grep -v "IODINE" /etc/environment | cat > /tmp/environment
 	mv /tmp/environment /etc/environment
 	echo "IODINE_HOME=\"$(PREFIX)/iodine\"" >> /etc/environment
